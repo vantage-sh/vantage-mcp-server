@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "costs-mcp-server": {
+      "command": "<your path to golang MCP server go executable>",
+      "args": [],
+      "env": {}
+    }
+  }
+}
