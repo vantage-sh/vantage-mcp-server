@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	//"log"
+	"io"
+	"log"
 	"os"
 
 	"github.com/go-openapi/runtime"
@@ -15,12 +16,26 @@ import (
 	"github.com/vantage-sh/vantage-go/vantagev2/vantage/integrations"
 )
 
+func setup_logger() {
+	logFilename, envLookupFound := os.LookupEnv("MCP_LOG_FILE")
+	if !envLookupFound {
+		log.SetOutput(io.Discard)
+		return
+	}
+	logFile, err := os.OpenFile(logFilename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		panic(fmt.Sprintf("Failed to open log file: %v", err))
+	}
+	log.SetOutput(logFile)
+}
+
 func main() {
+	setup_logger()
 	bearerToken, found := os.LookupEnv("VANTAGE_BEARER_TOKEN")
 	if !found {
 		panic("VANTAGE_BEARER_TOKEN not found")
 	}
-	//log.Println("Server Starting, bearer token found")
+	log.Println("Server Starting, bearer token found")
 
 	done := make(chan struct{})
 	server := mcp_golang.NewServer(stdio.NewStdioServerTransport())
@@ -33,7 +48,7 @@ func main() {
 		"List of available cost providers",
 		"application/json",
 		func() (*mcp_golang.ResourceResponse, error) {
-			//log.Println("invoked - resource - cost providers")
+			log.Println("invoked - resource - cost providers")
 			resource := mcp_golang.NewTextEmbeddedResource(
 				"vntg://providers",
 				"['aws', 'azure', 'gcp']",
@@ -58,7 +73,7 @@ func main() {
 	}
 
 	err = server.RegisterTool("list-cost-reports", "List all cost reports available", func(params ListCostReportsParams) (*mcp_golang.ToolResponse, error) {
-		//log.Println("invoked - tool - list cost reports")
+		log.Println("invoked - tool - list cost reports")
 		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		var limit int32 = 10
 
@@ -86,7 +101,7 @@ func main() {
 
 	type ListAccountsParams struct{}
 	err = server.RegisterTool("list-cost-integrations", "List all cost provider integrations available to provide costs data from and their associated accounts.", func(params ListAccountsParams) (*mcp_golang.ToolResponse, error) {
-		//log.Println("invoked - tool - list accounts")
+		log.Println("invoked - tool - list accounts")
 		client := integrations.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		getAccountsParams := integrations.NewGetIntegrationsParams() // timeout is only available param
 		response, err := client.GetIntegrations(getAccountsParams, authInfo)
