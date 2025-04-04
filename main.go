@@ -43,20 +43,26 @@ func main() {
 		err := req.SetHeaderParam("Authorization", fmt.Sprintf("Bearer %s", bearerToken))
 		return err
 	})
-	type ListCostReportsParams struct {
-	}
-	err = server.RegisterTool("list-cost-reports", "List all cost reports available", func(_params ListCostReportsParams) (*mcp_golang.ToolResponse, error) {
-		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
-		params := costs.NewGetCostReportsParams()
-		var limit int32 = 10
-		params.SetLimit(&limit)
 
-		response, err := client.GetCostReports(params, authInfo)
+	type ListCostReportsParams struct {
+		Page int32 `json:"page" jsonschema:"optional,description=page"`
+	}
+
+	err = server.RegisterTool("list-cost-reports", "List all cost reports available", func(params ListCostReportsParams) (*mcp_golang.ToolResponse, error) {
+		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
+		var limit int32 = 10
+
+		getCostReportParams := costs.NewGetCostReportsParams()
+		getCostReportParams.SetLimit(&limit)
+		getCostReportParams.SetPage(&params.Page)
+
+		response, err := client.GetCostReports(getCostReportParams, authInfo)
 		if err != nil {
 			return nil, errors.New(fmt.Sprintf("Error fetching cost reports: %v", err))
 		}
 
-		costReports, err := json.Marshal(response.Payload)
+		payload := response.GetPayload()
+		costReports, err := json.Marshal(payload.CostReports)
 		if err != nil {
 			return nil, errors.New(fmt.Sprintf("Error marshalling cost reports: %v", err))
 		}
