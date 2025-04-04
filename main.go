@@ -81,7 +81,7 @@ func main() {
 	}
 
 	type ListAccountsParams struct{}
-	err = server.RegisterTool("list-accounts", "List all accounts available", func(params ListAccountsParams) (*mcp_golang.ToolResponse, error) {
+	err = server.RegisterTool("list-cost-integrations", "List all cost provider integrations available to provide costs data from and their associated accounts.", func(params ListAccountsParams) (*mcp_golang.ToolResponse, error) {
 		log.Println("invoked - tool - list accounts")
 		client := integrations.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		getAccountsParams := integrations.NewGetIntegrationsParams() // timeout is only available param
