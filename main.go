@@ -4,12 +4,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
+	"os"
+
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"github.com/metoro-io/mcp-golang"
+	mcp_golang "github.com/metoro-io/mcp-golang"
 	"github.com/metoro-io/mcp-golang/transport/stdio"
 	"github.com/vantage-sh/vantage-go/vantagev2/vantage/costs"
-	"os"
+	"github.com/vantage-sh/vantage-go/vantagev2/vantage/integrations"
 )
 
 func main() {
@@ -17,6 +20,7 @@ func main() {
 	if !found {
 		panic("VANTAGE_BEARER_TOKEN not found")
 	}
+	log.Println("Server Starting, bearer token found")
 
 	done := make(chan struct{})
 	server := mcp_golang.NewServer(stdio.NewStdioServerTransport())
@@ -27,6 +31,7 @@ func main() {
 		"List of available cost providers",
 		"application/json",
 		func() (*mcp_golang.ResourceResponse, error) {
+			log.Println("invoked - resource - cost providers")
 			resource := mcp_golang.NewTextEmbeddedResource(
 				"vntg://providers",
 				"['aws', 'azure', 'gcp']",
@@ -49,6 +54,7 @@ func main() {
 	}
 
 	err = server.RegisterTool("list-cost-reports", "List all cost reports available", func(params ListCostReportsParams) (*mcp_golang.ToolResponse, error) {
+		log.Println("invoked - tool - list cost reports")
 		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		var limit int32 = 10
 
@@ -68,6 +74,27 @@ func main() {
 		}
 
 		content := mcp_golang.NewTextContent(string(costReports))
+		return mcp_golang.NewToolResponse(content), nil
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	type ListAccountsParams struct{}
+	err = server.RegisterTool("list-accounts", "List all accounts available", func(params ListAccountsParams) (*mcp_golang.ToolResponse, error) {
+		log.Println("invoked - tool - list accounts")
+		client := integrations.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
+		getAccountsParams := integrations.NewGetIntegrationsParams() // timeout is only available param
+		response, err := client.GetIntegrations(getAccountsParams, authInfo)
+		if err != nil {
+			return nil, fmt.Errorf("error fetching integrations endpoint to populate accounts: %v", err)
+		}
+		payload := response.GetPayload()
+		integrationsResponse, err := json.Marshal(payload.Integrations)
+		if err != nil {
+			return nil, fmt.Errorf("error marshalling json: %v", err)
+		}
+		content := mcp_golang.NewTextContent(string(integrationsResponse))
 		return mcp_golang.NewToolResponse(content), nil
 	})
 	if err != nil {
