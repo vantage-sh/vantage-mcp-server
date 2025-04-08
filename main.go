@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -84,13 +83,13 @@ func main() {
 
 		response, err := client.GetCostReports(getCostReportParams, authInfo)
 		if err != nil {
-			return nil, errors.New(fmt.Sprintf("Error fetching cost reports: %v", err))
+			return nil, fmt.Errorf("Error fetching cost reports: %v", err)
 		}
 
 		payload := response.GetPayload()
 		costReports, err := json.Marshal(payload.CostReports)
 		if err != nil {
-			return nil, errors.New(fmt.Sprintf("Error marshalling cost reports: %v", err))
+			return nil, fmt.Errorf("Error marshalling cost reports: %v", err)
 		}
 
 		content := mcp_golang.NewTextContent(string(costReports))
@@ -138,13 +137,13 @@ func main() {
 
 		response, err := client.GetCosts(getCostsParams, authInfo)
 		if err != nil {
-			return nil, errors.New(fmt.Sprintf("Error fetching costs: %v", err))
+			return nil, fmt.Errorf("Error fetching costs: %v", err)
 		}
 
 		payload := response.GetPayload()
 		groupedCosts, err := json.Marshal(payload.Costs)
 		if err != nil {
-			return nil, errors.New(fmt.Sprintf("Error marshalling costs: %v", err))
+			return nil, fmt.Errorf("Error marshalling costs: %v", err)
 		}
 
 		content := mcp_golang.NewTextContent(string(groupedCosts))
@@ -169,13 +168,13 @@ func main() {
 
 		response, err := client.GetTags(getTagsParams, authInfo)
 		if err != nil {
-			return nil, errors.New(fmt.Sprintf("Error fetching tags: %v", err))
+			return nil, fmt.Errorf("Error fetching tags: %v", err)
 		}
 
 		payload := response.GetPayload()
 		tags, err := json.Marshal(payload.Tags)
 		if err != nil {
-			return nil, errors.New(fmt.Sprintf("Error marshalling tags: %v", err))
+			return nil, fmt.Errorf("Error marshalling tags: %v", err)
 		}
 
 		content := mcp_golang.NewTextContent(string(tags))
@@ -201,13 +200,13 @@ func main() {
 
 		response, err := client.GetTagValues(getTagValuesParams, authInfo)
 		if err != nil {
-			return nil, errors.New(fmt.Sprintf("Error fetching tags: %v", err))
+			return nil, fmt.Errorf("Error fetching tags: %v", err)
 		}
 
 		payload := response.GetPayload()
 		tags, err := json.Marshal(payload.TagValues)
 		if err != nil {
-			return nil, errors.New(fmt.Sprintf("Error marshalling tags: %v", err))
+			return nil, fmt.Errorf("Error marshalling tags: %v", err)
 		}
 
 		content := mcp_golang.NewTextContent(string(tags))
