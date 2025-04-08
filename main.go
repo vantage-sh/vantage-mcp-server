@@ -14,9 +14,10 @@ import (
 	"github.com/metoro-io/mcp-golang/transport/stdio"
 	"github.com/vantage-sh/vantage-go/vantagev2/vantage/costs"
 	"github.com/vantage-sh/vantage-go/vantagev2/vantage/integrations"
+	tagsClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/tags"
 )
 
-func setup_logger() {
+func setupLogger() {
 	logFilename, envLookupFound := os.LookupEnv("MCP_LOG_FILE")
 	if !envLookupFound {
 		log.SetOutput(io.Discard)
@@ -30,7 +31,7 @@ func setup_logger() {
 }
 
 func main() {
-	setup_logger()
+	setupLogger()
 	bearerToken, found := os.LookupEnv("VANTAGE_BEARER_TOKEN")
 	if !found {
 		panic("VANTAGE_BEARER_TOKEN not found")
@@ -127,7 +128,7 @@ func main() {
 
 	err = server.RegisterTool("list-costs", "List costs given a cost report", func(params ListCostsParams) (*mcp_golang.ToolResponse, error) {
 		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
-		var limit int32 = 10
+		var limit int32 = 64
 
 		getCostsParams := costs.NewGetCostsParams()
 		getCostsParams.SetLimit(&limit)
@@ -147,6 +148,69 @@ func main() {
 		}
 
 		content := mcp_golang.NewTextContent(string(groupedCosts))
+		return mcp_golang.NewToolResponse(content), nil
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	type ListTagsParams struct {
+		Page int32 `json:"page" jsonschema:"optional,description=page"`
+	}
+
+	// TODO(nel): can tags be exposed as a resource instead? Would need MCP clients to support pagination.
+	err = server.RegisterTool("list-tags", "List tags that can be used to filter cost reports", func(params ListTagsParams) (*mcp_golang.ToolResponse, error) {
+		client := tagsClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
+		var limit int32 = 128
+
+		getTagsParams := tagsClient.NewGetTagsParams()
+		getTagsParams.SetLimit(&limit)
+		getTagsParams.SetPage(&params.Page)
+
+		response, err := client.GetTags(getTagsParams, authInfo)
+		if err != nil {
+			return nil, errors.New(fmt.Sprintf("Error fetching tags: %v", err))
+		}
+
+		payload := response.GetPayload()
+		tags, err := json.Marshal(payload.Tags)
+		if err != nil {
+			return nil, errors.New(fmt.Sprintf("Error marshalling tags: %v", err))
+		}
+
+		content := mcp_golang.NewTextContent(string(tags))
+		return mcp_golang.NewToolResponse(content), nil
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	type ListTagValuesParams struct {
+		Page int32  `json:"page" jsonschema:"optional,description=page"`
+		Key  string `json:"key" jsonschema:"required,description=Tag key to list values for"`
+	}
+
+	err = server.RegisterTool("list-tag-values", "List tags that can be used to filter cost reports", func(params ListTagValuesParams) (*mcp_golang.ToolResponse, error) {
+		client := tagsClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
+		var limit int32 = 128
+
+		getTagValuesParams := tagsClient.NewGetTagValuesParams()
+		getTagValuesParams.SetLimit(&limit)
+		getTagValuesParams.SetPage(&params.Page)
+		getTagValuesParams.SetKey(params.Key)
+
+		response, err := client.GetTagValues(getTagValuesParams, authInfo)
+		if err != nil {
+			return nil, errors.New(fmt.Sprintf("Error fetching tags: %v", err))
+		}
+
+		payload := response.GetPayload()
+		tags, err := json.Marshal(payload.TagValues)
+		if err != nil {
+			return nil, errors.New(fmt.Sprintf("Error marshalling tags: %v", err))
+		}
+
+		content := mcp_golang.NewTextContent(string(tags))
 		return mcp_golang.NewToolResponse(content), nil
 	})
 	if err != nil {
