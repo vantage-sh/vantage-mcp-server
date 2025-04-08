@@ -13,6 +13,7 @@ import (
 	"github.com/metoro-io/mcp-golang/transport/stdio"
 	"github.com/vantage-sh/vantage-go/vantagev2/vantage/costs"
 	"github.com/vantage-sh/vantage-go/vantagev2/vantage/integrations"
+	meClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/me"
 	tagsClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/tags"
 )
 
@@ -153,6 +154,30 @@ func main() {
 		panic(err)
 	}
 
+	type MyselfParams struct {
+	}
+
+	err = server.RegisterTool("get-myself", "Get data that is available to the current auth token", func(params MyselfParams) (*mcp_golang.ToolResponse, error) {
+		client := meClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
+		getMyselfParams := meClient.NewGetMeParams()
+		response, err := client.GetMe(getMyselfParams, authInfo)
+		if err != nil {
+			log.Printf("Error fetching myself: %v", err)
+			return nil, fmt.Errorf("Error fetching myself: %v", err)
+		}
+		payload := response.GetPayload()
+		myself, err := json.Marshal(payload)
+		if err != nil {
+			return nil, fmt.Errorf("Error marshalling myself: %v", err)
+		}
+		content := mcp_golang.NewTextContent(string(myself))
+		log.Println("myself: ", string(myself))
+		return mcp_golang.NewToolResponse(content), nil
+	})
+	if err != nil {
+		panic(err)
+	}
+
 	type ListTagsParams struct {
 		Page int32 `json:"page" jsonschema:"optional,description=page"`
 	}
@@ -176,7 +201,6 @@ func main() {
 		if err != nil {
 			return nil, fmt.Errorf("Error marshalling tags: %v", err)
 		}
-
 		content := mcp_golang.NewTextContent(string(tags))
 		return mcp_golang.NewToolResponse(content), nil
 	})
