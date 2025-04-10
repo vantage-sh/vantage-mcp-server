@@ -25,21 +25,24 @@ type McpResponseLinks struct {
 	HasNextPage bool  `json:"has_next_page"`
 }
 
-var NoNextPage = McpResponseLinks{
+var NO_NEXT_PAGE = McpResponseLinks{
 	NextPage:    0,
 	HasNextPage: false,
 }
 
-func buildLinksFromUrl(nextPageUrl string) *McpResponseLinks {
+// Given the "next" URL from the API response, this function will return a
+// McpResponseLinks object with the next page number and a boolean indicating
+// whether there is a next page or not. If the URL does not contain a "page"
+func buildLinksFromUrl(nextPageUrl string) McpResponseLinks {
 	nextPageNumber := getPageParamFromUrl(nextPageUrl)
 	if nextPageNumber == 0 {
-		return &NoNextPage
+		return NO_NEXT_PAGE
 	}
 	pageObj := McpResponseLinks{
 		NextPage:    nextPageNumber,
 		HasNextPage: true,
 	}
-	return &pageObj
+	return pageObj
 }
 
 func getPageParamFromUrl(inputUrl string) int32 {
@@ -143,9 +146,9 @@ func main() {
 		}
 		nextPageUrl, ok := links["next"]
 		if ok && nextPageUrl != nil {
-			result.PageData = *buildLinksFromUrl(nextPageUrl.(string))
+			result.PageData = buildLinksFromUrl(nextPageUrl.(string))
 		} else {
-			result.PageData = NoNextPage
+			result.PageData = NO_NEXT_PAGE
 		}
 
 		costReports, err := json.Marshal(result)
@@ -213,9 +216,9 @@ func main() {
 		}
 		nextPageUrl, ok := links["next"]
 		if ok && nextPageUrl != nil {
-			result.PageData = *buildLinksFromUrl(nextPageUrl.(string))
+			result.PageData = buildLinksFromUrl(nextPageUrl.(string))
 		} else {
-			result.PageData = NoNextPage
+			result.PageData = NO_NEXT_PAGE
 		}
 
 		jsonResult, err := json.Marshal(result)
