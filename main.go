@@ -20,7 +20,29 @@ import (
 	tagsClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/tags"
 )
 
-func GetPageParamFromUrl(inputUrl string) int32 {
+type McpResponseLinks struct {
+	NextPage    int32 `json:"next_page"`
+	HasNextPage bool  `json:"has_next_page"`
+}
+
+var NoNextPage = McpResponseLinks{
+	NextPage:    0,
+	HasNextPage: false,
+}
+
+func buildLinksFromUrl(nextPageUrl string) *McpResponseLinks {
+	nextPageNumber := getPageParamFromUrl(nextPageUrl)
+	if nextPageNumber == 0 {
+		return &NoNextPage
+	}
+	pageObj := McpResponseLinks{
+		NextPage:    nextPageNumber,
+		HasNextPage: true,
+	}
+	return &pageObj
+}
+
+func getPageParamFromUrl(inputUrl string) int32 {
 	parsedUrl, err := url.Parse(inputUrl)
 	if err != nil {
 		log.Printf("Couldn't parse the given URL %s %+v", inputUrl, err)
@@ -95,16 +117,14 @@ func main() {
 		Page int32 `json:"page" jsonschema:"optional,description=page"`
 	}
 	type ListCostReportsResult struct {
-		CostReports  []*models.CostReport `json:"cost_reports"`
-		NextPage     int32                `json:"next_page"`
-		PreviousPage int32                `json:"previous_page"`
-		HasNextPage  bool                 `json:"has_next_page"`
+		CostReports []*models.CostReport `json:"cost_reports"`
+		PageData    McpResponseLinks     `json:page_data`
 	}
 
 	err = server.RegisterTool("list-cost-reports", "List all cost reports available. When you first call this function, use the `Page` parameter of 1.", func(params ListCostReportsParams) (*mcp_golang.ToolResponse, error) {
 		log.Printf("invoked - tool - list cost reports %+v", params)
 		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
-		var limit int32 = 10
+		var limit int32 = 128
 
 		getCostReportParams := costs.NewGetCostReportsParams()
 		getCostReportParams.SetLimit(&limit)
@@ -117,27 +137,15 @@ func main() {
 
 		result := ListCostReportsResult{}
 		result.CostReports = apiResponse.GetPayload().CostReports
-		result.NextPage = params.Page + 1
-		result.HasNextPage = true
-		if params.Page == 0 {
-			result.PreviousPage = 0
-		} else {
-			result.PreviousPage = params.Page - 1
-		}
 		links, ok := apiResponse.GetPayload().Links.(map[string]interface{})
 		if !ok {
 			return nil, fmt.Errorf("Error asserting Links to map[string]interface{}")
 		}
 		nextPageUrl, ok := links["next"]
 		if ok && nextPageUrl != nil {
-			result.NextPage = GetPageParamFromUrl(nextPageUrl.(string))
-			result.HasNextPage = true
+			result.PageData = *buildLinksFromUrl(nextPageUrl.(string))
 		} else {
-			result.HasNextPage = false
-		}
-		previousPageUrl, ok := links["previous"]
-		if ok && previousPageUrl != nil {
-			result.PreviousPage = GetPageParamFromUrl(previousPageUrl.(string))
+			result.PageData = NoNextPage
 		}
 
 		costReports, err := json.Marshal(result)
@@ -177,29 +185,45 @@ func main() {
 		CostReportToken string `json:"cost_report_token" jsonschema:"required,description=Cost report to limit costs to"`
 	}
 
+	type ListCostsResults struct {
+		Costs    []*models.Cost   `json:"cost_reports"`
+		PageData McpResponseLinks `json:page_data`
+	}
+
 	err = server.RegisterTool("list-costs", "List costs given a cost report", func(params ListCostsParams) (*mcp_golang.ToolResponse, error) {
 		log.Printf("invoked - tool - list costs %+v", params)
 		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
-		var limit int32 = 10
+		var limit int32 = 128
 
 		getCostsParams := costs.NewGetCostsParams()
 		getCostsParams.SetLimit(&limit)
 		getCostsParams.SetCostReportToken(&params.CostReportToken)
-		// TODO(nel): missing from our API?
-		// getCostsParams.SetPage(&params.Page)
+		getCostsParams.SetPage(&params.Page)
 
-		response, err := client.GetCosts(getCostsParams, authInfo)
+		apiResponse, err := client.GetCosts(getCostsParams, authInfo)
 		if err != nil {
 			return nil, fmt.Errorf("Error fetching costs: %+v", err)
 		}
 
-		payload := response.GetPayload()
-		groupedCosts, err := json.Marshal(payload.Costs)
+		result := ListCostsResults{}
+		result.Costs = apiResponse.GetPayload().Costs
+		links, ok := apiResponse.GetPayload().Links.(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("Error asserting Links to map[string]interface{}")
+		}
+		nextPageUrl, ok := links["next"]
+		if ok && nextPageUrl != nil {
+			result.PageData = *buildLinksFromUrl(nextPageUrl.(string))
+		} else {
+			result.PageData = NoNextPage
+		}
+
+		jsonResult, err := json.Marshal(result)
 		if err != nil {
 			return nil, fmt.Errorf("Error marshalling costs: %+v", err)
 		}
 
-		content := mcp_golang.NewTextContent(string(groupedCosts))
+		content := mcp_golang.NewTextContent(string(jsonResult))
 		return mcp_golang.NewToolResponse(content), nil
 	})
 	if err != nil {
