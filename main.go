@@ -5,17 +5,39 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net/url"
 	"os"
+	"strconv"
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
 	mcp_golang "github.com/metoro-io/mcp-golang"
 	"github.com/metoro-io/mcp-golang/transport/stdio"
+	"github.com/vantage-sh/vantage-go/vantagev2/models"
 	"github.com/vantage-sh/vantage-go/vantagev2/vantage/costs"
 	"github.com/vantage-sh/vantage-go/vantagev2/vantage/integrations"
 	meClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/me"
 	tagsClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/tags"
 )
+
+func GetPageParamFromUrl(inputUrl string) int32 {
+	parsedUrl, err := url.Parse(inputUrl)
+	if err != nil {
+		log.Printf("Couldn't parse the given URL %s %+v", inputUrl, err)
+		return 0
+	}
+	params := parsedUrl.Query()
+	pageParam := params.Get("page")
+	if pageParam == "" {
+		return 0
+	}
+	pageInt, err := strconv.ParseInt(pageParam, 10, 32)
+	if err != nil {
+		log.Printf("Couldn't convert page param to int32 %s %+v", pageParam, err)
+		return 0
+	}
+	return int32(pageInt)
+}
 
 func setupLogger() {
 	logFilename, envLookupFound := os.LookupEnv("MCP_LOG_FILE")
@@ -25,7 +47,7 @@ func setupLogger() {
 	}
 	logFile, err := os.OpenFile(logFilename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
-		panic(fmt.Sprintf("Failed to open log file: %v", err))
+		panic(fmt.Sprintf("Failed to open log file: %+v", err))
 	}
 	log.SetOutput(logFile)
 }
@@ -36,7 +58,7 @@ func main() {
 	if !found {
 		panic("VANTAGE_BEARER_TOKEN not found")
 	}
-	log.Println("Server Starting, bearer token found")
+	log.Printf("Server Starting, bearer token found")
 
 	done := make(chan struct{})
 	server := mcp_golang.NewServer(stdio.NewStdioServerTransport())
@@ -49,7 +71,7 @@ func main() {
 		"List of available cost providers",
 		"application/json",
 		func() (*mcp_golang.ResourceResponse, error) {
-			log.Println("invoked - resource - cost providers")
+			log.Printf("invoked - resource - cost providers")
 			resource := mcp_golang.NewTextEmbeddedResource(
 				"vntg://providers",
 				"['aws', 'azure', 'gcp']",
@@ -72,9 +94,15 @@ func main() {
 	type ListCostReportsParams struct {
 		Page int32 `json:"page" jsonschema:"optional,description=page"`
 	}
+	type ListCostReportsResult struct {
+		CostReports  []*models.CostReport `json:"cost_reports"`
+		NextPage     int32                `json:"next_page"`
+		PreviousPage int32                `json:"previous_page"`
+		HasNextPage  bool                 `json:"has_next_page"`
+	}
 
-	err = server.RegisterTool("list-cost-reports", "List all cost reports available", func(params ListCostReportsParams) (*mcp_golang.ToolResponse, error) {
-		log.Println("invoked - tool - list cost reports")
+	err = server.RegisterTool("list-cost-reports", "List all cost reports available. When you first call this function, use the `Page` parameter of 1.", func(params ListCostReportsParams) (*mcp_golang.ToolResponse, error) {
+		log.Printf("invoked - tool - list cost reports %+v", params)
 		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		var limit int32 = 10
 
@@ -82,17 +110,40 @@ func main() {
 		getCostReportParams.SetLimit(&limit)
 		getCostReportParams.SetPage(&params.Page)
 
-		response, err := client.GetCostReports(getCostReportParams, authInfo)
+		apiResponse, err := client.GetCostReports(getCostReportParams, authInfo)
 		if err != nil {
-			return nil, fmt.Errorf("Error fetching cost reports: %v", err)
+			return nil, fmt.Errorf("Error fetching cost reports: %+v", err)
 		}
 
-		payload := response.GetPayload()
-		costReports, err := json.Marshal(payload.CostReports)
-		if err != nil {
-			return nil, fmt.Errorf("Error marshalling cost reports: %v", err)
+		result := ListCostReportsResult{}
+		result.CostReports = apiResponse.GetPayload().CostReports
+		result.NextPage = params.Page + 1
+		result.HasNextPage = true
+		if params.Page == 0 {
+			result.PreviousPage = 0
+		} else {
+			result.PreviousPage = params.Page - 1
+		}
+		links, ok := apiResponse.GetPayload().Links.(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("Error asserting Links to map[string]interface{}")
+		}
+		nextPageUrl, ok := links["next"]
+		if ok && nextPageUrl != nil {
+			result.NextPage = GetPageParamFromUrl(nextPageUrl.(string))
+			result.HasNextPage = true
+		} else {
+			result.HasNextPage = false
+		}
+		previousPageUrl, ok := links["previous"]
+		if ok && previousPageUrl != nil {
+			result.PreviousPage = GetPageParamFromUrl(previousPageUrl.(string))
 		}
 
+		costReports, err := json.Marshal(result)
+		if err != nil {
+			return nil, fmt.Errorf("Error marshalling cost reports: %+v", err)
+		}
 		content := mcp_golang.NewTextContent(string(costReports))
 		return mcp_golang.NewToolResponse(content), nil
 	})
@@ -102,17 +153,17 @@ func main() {
 
 	type ListAccountsParams struct{}
 	err = server.RegisterTool("list-cost-integrations", "List all cost provider integrations available to provide costs data from and their associated accounts.", func(params ListAccountsParams) (*mcp_golang.ToolResponse, error) {
-		log.Println("invoked - tool - list accounts")
+		log.Printf("invoked - tool - list accounts")
 		client := integrations.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
-		getAccountsParams := integrations.NewGetIntegrationsParams() // timeout is only available param
+		getAccountsParams := integrations.NewGetIntegrationsParams()
 		response, err := client.GetIntegrations(getAccountsParams, authInfo)
 		if err != nil {
-			return nil, fmt.Errorf("error fetching integrations endpoint to populate accounts: %v", err)
+			return nil, fmt.Errorf("error fetching integrations endpoint to populate accounts: %+v", err)
 		}
 		payload := response.GetPayload()
 		integrationsResponse, err := json.Marshal(payload.Integrations)
 		if err != nil {
-			return nil, fmt.Errorf("error marshalling json: %v", err)
+			return nil, fmt.Errorf("error marshalling json: %+v", err)
 		}
 		content := mcp_golang.NewTextContent(string(integrationsResponse))
 		return mcp_golang.NewToolResponse(content), nil
@@ -127,8 +178,9 @@ func main() {
 	}
 
 	err = server.RegisterTool("list-costs", "List costs given a cost report", func(params ListCostsParams) (*mcp_golang.ToolResponse, error) {
+		log.Printf("invoked - tool - list costs %+v", params)
 		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
-		var limit int32 = 64
+		var limit int32 = 10
 
 		getCostsParams := costs.NewGetCostsParams()
 		getCostsParams.SetLimit(&limit)
@@ -138,13 +190,13 @@ func main() {
 
 		response, err := client.GetCosts(getCostsParams, authInfo)
 		if err != nil {
-			return nil, fmt.Errorf("Error fetching costs: %v", err)
+			return nil, fmt.Errorf("Error fetching costs: %+v", err)
 		}
 
 		payload := response.GetPayload()
 		groupedCosts, err := json.Marshal(payload.Costs)
 		if err != nil {
-			return nil, fmt.Errorf("Error marshalling costs: %v", err)
+			return nil, fmt.Errorf("Error marshalling costs: %+v", err)
 		}
 
 		content := mcp_golang.NewTextContent(string(groupedCosts))
@@ -162,16 +214,16 @@ func main() {
 		getMyselfParams := meClient.NewGetMeParams()
 		response, err := client.GetMe(getMyselfParams, authInfo)
 		if err != nil {
-			log.Printf("Error fetching myself: %v", err)
-			return nil, fmt.Errorf("Error fetching myself: %v", err)
+			log.Printf("Error fetching myself: %+v", err)
+			return nil, fmt.Errorf("Error fetching myself: %+v", err)
 		}
 		payload := response.GetPayload()
 		myself, err := json.Marshal(payload)
 		if err != nil {
-			return nil, fmt.Errorf("Error marshalling myself: %v", err)
+			return nil, fmt.Errorf("Error marshalling myself: %+v", err)
 		}
 		content := mcp_golang.NewTextContent(string(myself))
-		log.Println("myself: ", string(myself))
+		log.Printf("myself: %s", string(myself))
 		return mcp_golang.NewToolResponse(content), nil
 	})
 	if err != nil {
@@ -193,13 +245,13 @@ func main() {
 
 		response, err := client.GetTags(getTagsParams, authInfo)
 		if err != nil {
-			return nil, fmt.Errorf("Error fetching tags: %v", err)
+			return nil, fmt.Errorf("Error fetching tags: %+v", err)
 		}
 
 		payload := response.GetPayload()
 		tags, err := json.Marshal(payload.Tags)
 		if err != nil {
-			return nil, fmt.Errorf("Error marshalling tags: %v", err)
+			return nil, fmt.Errorf("Error marshalling tags: %+v", err)
 		}
 		content := mcp_golang.NewTextContent(string(tags))
 		return mcp_golang.NewToolResponse(content), nil
@@ -224,13 +276,13 @@ func main() {
 
 		response, err := client.GetTagValues(getTagValuesParams, authInfo)
 		if err != nil {
-			return nil, fmt.Errorf("Error fetching tags: %v", err)
+			return nil, fmt.Errorf("Error fetching tags: %+v", err)
 		}
 
 		payload := response.GetPayload()
 		tags, err := json.Marshal(payload.TagValues)
 		if err != nil {
-			return nil, fmt.Errorf("Error marshalling tags: %v", err)
+			return nil, fmt.Errorf("Error marshalling tags: %+v", err)
 		}
 
 		content := mcp_golang.NewTextContent(string(tags))
