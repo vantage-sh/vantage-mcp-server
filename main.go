@@ -121,7 +121,7 @@ func main() {
 	}
 	type ListCostReportsResult struct {
 		CostReports []*models.CostReport `json:"cost_reports"`
-		PageData    McpResponseLinks     `json:page_data`
+		PageData    McpResponseLinks     `json:"page_data"`
 	}
 
 	err = server.RegisterTool("list-cost-reports", "List all cost reports available. When you first call this function, use the `Page` parameter of 1. The 'Title' of a report is a good way to know what the report is about. The 'filter' of a report also gives clues to the data it provides.", func(params ListCostReportsParams) (*mcp_golang.ToolResponse, error) {
@@ -162,21 +162,43 @@ func main() {
 		panic(err)
 	}
 
-	type ListAccountsParams struct{}
-	err = server.RegisterTool("list-cost-integrations", "List all cost provider integrations available to provide costs data from and their associated accounts.", func(params ListAccountsParams) (*mcp_golang.ToolResponse, error) {
-		log.Printf("invoked - tool - list accounts")
+	type ListCostIntegrations struct {
+		Page int32 `json:"page" jsonschema:"optional,description=page"`
+	}
+	type ListCostIntegrationsResult struct {
+		Integrations []*models.Integration `json:"integrations"`
+		PageData     McpResponseLinks      `json:"page_data"`
+	}
+	err = server.RegisterTool("list-cost-integrations", "List all cost provider integrations available to provide costs data from and their associated accounts.", func(params ListCostIntegrations) (*mcp_golang.ToolResponse, error) {
+		log.Printf("invoked - tool - list integrations")
 		client := integrations.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		getAccountsParams := integrations.NewGetIntegrationsParams()
-		response, err := client.GetIntegrations(getAccountsParams, authInfo)
+		getAccountsParams.SetPage(&params.Page)
+		var limit int32 = 128
+		getAccountsParams.SetLimit(&limit)
+		apiResponse, err := client.GetIntegrations(getAccountsParams, authInfo)
 		if err != nil {
 			return nil, fmt.Errorf("error fetching integrations endpoint to populate accounts: %+v", err)
 		}
-		payload := response.GetPayload()
-		integrationsResponse, err := json.Marshal(payload.Integrations)
+		payload := apiResponse.GetPayload()
+		results := ListCostIntegrationsResult{
+			Integrations: payload.Integrations,
+		}
+		links, ok := apiResponse.GetPayload().Links.(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("error asserting Links to map[string]interface{}")
+		}
+		nextPageUrl, ok := links["next"]
+		if ok && nextPageUrl != nil {
+			results.PageData = buildLinksFromUrl(nextPageUrl.(string))
+		} else {
+			results.PageData = NO_NEXT_PAGE
+		}
+		jsonResults, err := json.Marshal(results)
 		if err != nil {
 			return nil, fmt.Errorf("error marshalling json: %+v", err)
 		}
-		content := mcp_golang.NewTextContent(string(integrationsResponse))
+		content := mcp_golang.NewTextContent(string(jsonResults))
 		return mcp_golang.NewToolResponse(content), nil
 	})
 	if err != nil {
@@ -190,7 +212,7 @@ func main() {
 
 	type ListCostsResults struct {
 		Costs    []*models.Cost   `json:"cost_reports"`
-		PageData McpResponseLinks `json:page_data`
+		PageData McpResponseLinks `json:"page_data"`
 	}
 
 	err = server.RegisterTool("list-costs", "List the cost items inside a report. The Token of a Report must be provided. Use the page value of 1 to start.", func(params ListCostsParams) (*mcp_golang.ToolResponse, error) {
