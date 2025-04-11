@@ -5,17 +5,64 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net/url"
 	"os"
+	"strconv"
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
 	mcp_golang "github.com/metoro-io/mcp-golang"
 	"github.com/metoro-io/mcp-golang/transport/stdio"
+	"github.com/vantage-sh/vantage-go/vantagev2/models"
 	"github.com/vantage-sh/vantage-go/vantagev2/vantage/costs"
 	"github.com/vantage-sh/vantage-go/vantagev2/vantage/integrations"
 	meClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/me"
 	tagsClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/tags"
 )
+
+type McpResponseLinks struct {
+	NextPage    int32 `json:"next_page"`
+	HasNextPage bool  `json:"has_next_page"`
+}
+
+var NO_NEXT_PAGE = McpResponseLinks{
+	NextPage:    0,
+	HasNextPage: false,
+}
+
+// Given the "next" URL from the API response, this function will return a
+// McpResponseLinks object with the next page number and a boolean indicating
+// whether there is a next page or not. If the URL does not contain a "page"
+func buildLinksFromUrl(nextPageUrl string) McpResponseLinks {
+	nextPageNumber := getPageParamFromUrl(nextPageUrl)
+	if nextPageNumber == 0 {
+		return NO_NEXT_PAGE
+	}
+	pageObj := McpResponseLinks{
+		NextPage:    nextPageNumber,
+		HasNextPage: true,
+	}
+	return pageObj
+}
+
+func getPageParamFromUrl(inputUrl string) int32 {
+	parsedUrl, err := url.Parse(inputUrl)
+	if err != nil {
+		log.Printf("Couldn't parse the given URL %s %+v", inputUrl, err)
+		return 0
+	}
+	params := parsedUrl.Query()
+	pageParam := params.Get("page")
+	if pageParam == "" {
+		return 0
+	}
+	pageInt, err := strconv.ParseInt(pageParam, 10, 32)
+	if err != nil {
+		log.Printf("Couldn't convert page param to int32 %s %+v", pageParam, err)
+		return 0
+	}
+	return int32(pageInt)
+}
 
 func setupLogger() {
 	logFilename, envLookupFound := os.LookupEnv("MCP_LOG_FILE")
@@ -25,7 +72,7 @@ func setupLogger() {
 	}
 	logFile, err := os.OpenFile(logFilename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
-		panic(fmt.Sprintf("Failed to open log file: %v", err))
+		panic(fmt.Sprintf("Failed to open log file: %+v", err))
 	}
 	log.SetOutput(logFile)
 }
@@ -36,7 +83,7 @@ func main() {
 	if !found {
 		panic("VANTAGE_BEARER_TOKEN not found")
 	}
-	log.Println("Server Starting, bearer token found")
+	log.Printf("Server Starting, bearer token found")
 
 	done := make(chan struct{})
 	server := mcp_golang.NewServer(stdio.NewStdioServerTransport())
@@ -49,7 +96,7 @@ func main() {
 		"List of available cost providers",
 		"application/json",
 		func() (*mcp_golang.ResourceResponse, error) {
-			log.Println("invoked - resource - cost providers")
+			log.Printf("invoked - resource - cost providers")
 			resource := mcp_golang.NewTextEmbeddedResource(
 				"vntg://providers",
 				"['aws', 'azure', 'gcp']",
@@ -72,27 +119,42 @@ func main() {
 	type ListCostReportsParams struct {
 		Page int32 `json:"page" jsonschema:"optional,description=page"`
 	}
+	type ListCostReportsResult struct {
+		CostReports []*models.CostReport `json:"cost_reports"`
+		PageData    McpResponseLinks     `json:"page_data"`
+	}
 
-	err = server.RegisterTool("list-cost-reports", "List all cost reports available", func(params ListCostReportsParams) (*mcp_golang.ToolResponse, error) {
-		log.Println("invoked - tool - list cost reports")
+	err = server.RegisterTool("list-cost-reports", "List all cost reports available. When you first call this function, use the `Page` parameter of 1. The 'Title' of a report is a good way to know what the report is about. The 'filter' of a report also gives clues to the data it provides.", func(params ListCostReportsParams) (*mcp_golang.ToolResponse, error) {
+		log.Printf("invoked - tool - list cost reports %+v", params)
 		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
-		var limit int32 = 10
+		var limit int32 = 128
 
 		getCostReportParams := costs.NewGetCostReportsParams()
 		getCostReportParams.SetLimit(&limit)
 		getCostReportParams.SetPage(&params.Page)
 
-		response, err := client.GetCostReports(getCostReportParams, authInfo)
+		apiResponse, err := client.GetCostReports(getCostReportParams, authInfo)
 		if err != nil {
-			return nil, fmt.Errorf("Error fetching cost reports: %v", err)
+			return nil, fmt.Errorf("Error fetching cost reports: %+v", err)
 		}
 
-		payload := response.GetPayload()
-		costReports, err := json.Marshal(payload.CostReports)
-		if err != nil {
-			return nil, fmt.Errorf("Error marshalling cost reports: %v", err)
+		result := ListCostReportsResult{}
+		result.CostReports = apiResponse.GetPayload().CostReports
+		links, ok := apiResponse.GetPayload().Links.(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("Error asserting Links to map[string]interface{}")
+		}
+		nextPageUrl, ok := links["next"]
+		if ok && nextPageUrl != nil {
+			result.PageData = buildLinksFromUrl(nextPageUrl.(string))
+		} else {
+			result.PageData = NO_NEXT_PAGE
 		}
 
+		costReports, err := json.Marshal(result)
+		if err != nil {
+			return nil, fmt.Errorf("Error marshalling cost reports: %+v", err)
+		}
 		content := mcp_golang.NewTextContent(string(costReports))
 		return mcp_golang.NewToolResponse(content), nil
 	})
@@ -100,21 +162,43 @@ func main() {
 		panic(err)
 	}
 
-	type ListAccountsParams struct{}
-	err = server.RegisterTool("list-cost-integrations", "List all cost provider integrations available to provide costs data from and their associated accounts.", func(params ListAccountsParams) (*mcp_golang.ToolResponse, error) {
-		log.Println("invoked - tool - list accounts")
+	type ListCostIntegrations struct {
+		Page int32 `json:"page" jsonschema:"optional,description=page"`
+	}
+	type ListCostIntegrationsResult struct {
+		Integrations []*models.Integration `json:"integrations"`
+		PageData     McpResponseLinks      `json:"page_data"`
+	}
+	err = server.RegisterTool("list-cost-integrations", "List all cost provider integrations available to provide costs data from and their associated accounts.", func(params ListCostIntegrations) (*mcp_golang.ToolResponse, error) {
+		log.Printf("invoked - tool - list integrations")
 		client := integrations.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
-		getAccountsParams := integrations.NewGetIntegrationsParams() // timeout is only available param
-		response, err := client.GetIntegrations(getAccountsParams, authInfo)
+		getAccountsParams := integrations.NewGetIntegrationsParams()
+		getAccountsParams.SetPage(&params.Page)
+		var limit int32 = 128
+		getAccountsParams.SetLimit(&limit)
+		apiResponse, err := client.GetIntegrations(getAccountsParams, authInfo)
 		if err != nil {
-			return nil, fmt.Errorf("error fetching integrations endpoint to populate accounts: %v", err)
+			return nil, fmt.Errorf("error fetching integrations endpoint to populate accounts: %+v", err)
 		}
-		payload := response.GetPayload()
-		integrationsResponse, err := json.Marshal(payload.Integrations)
+		payload := apiResponse.GetPayload()
+		results := ListCostIntegrationsResult{
+			Integrations: payload.Integrations,
+		}
+		links, ok := apiResponse.GetPayload().Links.(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("error asserting Links to map[string]interface{}")
+		}
+		nextPageUrl, ok := links["next"]
+		if ok && nextPageUrl != nil {
+			results.PageData = buildLinksFromUrl(nextPageUrl.(string))
+		} else {
+			results.PageData = NO_NEXT_PAGE
+		}
+		jsonResults, err := json.Marshal(results)
 		if err != nil {
-			return nil, fmt.Errorf("error marshalling json: %v", err)
+			return nil, fmt.Errorf("error marshalling json: %+v", err)
 		}
-		content := mcp_golang.NewTextContent(string(integrationsResponse))
+		content := mcp_golang.NewTextContent(string(jsonResults))
 		return mcp_golang.NewToolResponse(content), nil
 	})
 	if err != nil {
@@ -126,28 +210,45 @@ func main() {
 		CostReportToken string `json:"cost_report_token" jsonschema:"required,description=Cost report to limit costs to"`
 	}
 
-	err = server.RegisterTool("list-costs", "List costs given a cost report", func(params ListCostsParams) (*mcp_golang.ToolResponse, error) {
+	type ListCostsResults struct {
+		Costs    []*models.Cost   `json:"cost_reports"`
+		PageData McpResponseLinks `json:"page_data"`
+	}
+
+	err = server.RegisterTool("list-costs", "List the cost items inside a report. The Token of a Report must be provided. Use the page value of 1 to start.", func(params ListCostsParams) (*mcp_golang.ToolResponse, error) {
+		log.Printf("invoked - tool - list costs %+v", params)
 		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
-		var limit int32 = 64
+		var limit int32 = 128
 
 		getCostsParams := costs.NewGetCostsParams()
 		getCostsParams.SetLimit(&limit)
 		getCostsParams.SetCostReportToken(&params.CostReportToken)
-		// TODO(nel): missing from our API?
-		// getCostsParams.SetPage(&params.Page)
+		getCostsParams.SetPage(&params.Page)
 
-		response, err := client.GetCosts(getCostsParams, authInfo)
+		apiResponse, err := client.GetCosts(getCostsParams, authInfo)
 		if err != nil {
-			return nil, fmt.Errorf("Error fetching costs: %v", err)
+			return nil, fmt.Errorf("Error fetching costs: %+v", err)
 		}
 
-		payload := response.GetPayload()
-		groupedCosts, err := json.Marshal(payload.Costs)
-		if err != nil {
-			return nil, fmt.Errorf("Error marshalling costs: %v", err)
+		result := ListCostsResults{}
+		result.Costs = apiResponse.GetPayload().Costs
+		links, ok := apiResponse.GetPayload().Links.(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("Error asserting Links to map[string]interface{}")
+		}
+		nextPageUrl, ok := links["next"]
+		if ok && nextPageUrl != nil {
+			result.PageData = buildLinksFromUrl(nextPageUrl.(string))
+		} else {
+			result.PageData = NO_NEXT_PAGE
 		}
 
-		content := mcp_golang.NewTextContent(string(groupedCosts))
+		jsonResult, err := json.Marshal(result)
+		if err != nil {
+			return nil, fmt.Errorf("Error marshalling costs: %+v", err)
+		}
+
+		content := mcp_golang.NewTextContent(string(jsonResult))
 		return mcp_golang.NewToolResponse(content), nil
 	})
 	if err != nil {
@@ -158,20 +259,20 @@ func main() {
 	}
 
 	err = server.RegisterTool("get-myself", "Get data that is available to the current auth token", func(params MyselfParams) (*mcp_golang.ToolResponse, error) {
+		log.Printf("invoked - tool - get myself %+v", params)
 		client := meClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		getMyselfParams := meClient.NewGetMeParams()
 		response, err := client.GetMe(getMyselfParams, authInfo)
 		if err != nil {
-			log.Printf("Error fetching myself: %v", err)
-			return nil, fmt.Errorf("Error fetching myself: %v", err)
+			log.Printf("Error fetching myself: %+v", err)
+			return nil, fmt.Errorf("Error fetching myself: %+v", err)
 		}
 		payload := response.GetPayload()
 		myself, err := json.Marshal(payload)
 		if err != nil {
-			return nil, fmt.Errorf("Error marshalling myself: %v", err)
+			return nil, fmt.Errorf("Error marshalling myself: %+v", err)
 		}
 		content := mcp_golang.NewTextContent(string(myself))
-		log.Println("myself: ", string(myself))
 		return mcp_golang.NewToolResponse(content), nil
 	})
 	if err != nil {
@@ -184,6 +285,7 @@ func main() {
 
 	// TODO(nel): can tags be exposed as a resource instead? Would need MCP clients to support pagination.
 	err = server.RegisterTool("list-tags", "List tags that can be used to filter cost reports", func(params ListTagsParams) (*mcp_golang.ToolResponse, error) {
+		log.Printf("invoked - tool - list tags %+v", params)
 		client := tagsClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		var limit int32 = 128
 
@@ -193,13 +295,13 @@ func main() {
 
 		response, err := client.GetTags(getTagsParams, authInfo)
 		if err != nil {
-			return nil, fmt.Errorf("Error fetching tags: %v", err)
+			return nil, fmt.Errorf("Error fetching tags: %+v", err)
 		}
 
 		payload := response.GetPayload()
 		tags, err := json.Marshal(payload.Tags)
 		if err != nil {
-			return nil, fmt.Errorf("Error marshalling tags: %v", err)
+			return nil, fmt.Errorf("Error marshalling tags: %+v", err)
 		}
 		content := mcp_golang.NewTextContent(string(tags))
 		return mcp_golang.NewToolResponse(content), nil
@@ -214,6 +316,7 @@ func main() {
 	}
 
 	err = server.RegisterTool("list-tag-values", "List tags that can be used to filter cost reports", func(params ListTagValuesParams) (*mcp_golang.ToolResponse, error) {
+		log.Printf("invoked - tool - list tag values %+v", params)
 		client := tagsClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		var limit int32 = 128
 
@@ -224,13 +327,13 @@ func main() {
 
 		response, err := client.GetTagValues(getTagValuesParams, authInfo)
 		if err != nil {
-			return nil, fmt.Errorf("Error fetching tags: %v", err)
+			return nil, fmt.Errorf("Error fetching tags: %+v", err)
 		}
 
 		payload := response.GetPayload()
 		tags, err := json.Marshal(payload.TagValues)
 		if err != nil {
-			return nil, fmt.Errorf("Error marshalling tags: %v", err)
+			return nil, fmt.Errorf("Error marshalling tags: %+v", err)
 		}
 
 		content := mcp_golang.NewTextContent(string(tags))
