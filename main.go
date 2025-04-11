@@ -124,7 +124,7 @@ func main() {
 		PageData    McpResponseLinks     `json:page_data`
 	}
 
-	err = server.RegisterTool("list-cost-reports", "List all cost reports available. When you first call this function, use the `Page` parameter of 1.", func(params ListCostReportsParams) (*mcp_golang.ToolResponse, error) {
+	err = server.RegisterTool("list-cost-reports", "List all cost reports available. When you first call this function, use the `Page` parameter of 1. The 'Title' of a report is a good way to know what the report is about. The 'filter' of a report also gives clues to the data it provides.", func(params ListCostReportsParams) (*mcp_golang.ToolResponse, error) {
 		log.Printf("invoked - tool - list cost reports %+v", params)
 		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		var limit int32 = 128
@@ -193,7 +193,7 @@ func main() {
 		PageData McpResponseLinks `json:page_data`
 	}
 
-	err = server.RegisterTool("list-costs", "List costs given a cost report", func(params ListCostsParams) (*mcp_golang.ToolResponse, error) {
+	err = server.RegisterTool("list-costs", "List the cost items inside a report. The Token of a Report must be provided. Use the page value of 1 to start.", func(params ListCostsParams) (*mcp_golang.ToolResponse, error) {
 		log.Printf("invoked - tool - list costs %+v", params)
 		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		var limit int32 = 128
@@ -237,6 +237,7 @@ func main() {
 	}
 
 	err = server.RegisterTool("get-myself", "Get data that is available to the current auth token", func(params MyselfParams) (*mcp_golang.ToolResponse, error) {
+		log.Printf("invoked - tool - get myself %+v", params)
 		client := meClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		getMyselfParams := meClient.NewGetMeParams()
 		response, err := client.GetMe(getMyselfParams, authInfo)
@@ -250,7 +251,6 @@ func main() {
 			return nil, fmt.Errorf("Error marshalling myself: %+v", err)
 		}
 		content := mcp_golang.NewTextContent(string(myself))
-		log.Printf("myself: %s", string(myself))
 		return mcp_golang.NewToolResponse(content), nil
 	})
 	if err != nil {
@@ -263,6 +263,7 @@ func main() {
 
 	// TODO(nel): can tags be exposed as a resource instead? Would need MCP clients to support pagination.
 	err = server.RegisterTool("list-tags", "List tags that can be used to filter cost reports", func(params ListTagsParams) (*mcp_golang.ToolResponse, error) {
+		log.Printf("invoked - tool - list tags %+v", params)
 		client := tagsClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		var limit int32 = 128
 
@@ -293,6 +294,7 @@ func main() {
 	}
 
 	err = server.RegisterTool("list-tag-values", "List tags that can be used to filter cost reports", func(params ListTagValuesParams) (*mcp_golang.ToolResponse, error) {
+		log.Printf("invoked - tool - list tag values %+v", params)
 		client := tagsClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		var limit int32 = 128
 
