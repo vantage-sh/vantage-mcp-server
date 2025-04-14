@@ -77,13 +77,35 @@ func setupLogger() {
 	log.SetOutput(logFile)
 }
 
+func verifyReadonlyToken(bearerToken string, authInfo runtime.ClientAuthInfoWriterFunc) {
+	client := meClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
+	response, err := client.GetMe(meClient.NewGetMeParams(), authInfo)
+	if err != nil {
+		log.Printf("Error fetching myself to verify read-only token %+v", err)
+		panic(err)
+	}
+	payload := response.GetPayload()
+	if payload == nil {
+		log.Printf("Error fetching myself to verify read-only token, payload is nil")
+		panic("While verifing token is read-only, Payload is nil %+V")
+	}
+	if !(len(payload.BearerToken.Scope) == 1 && payload.BearerToken.Scope[0] == "read") {
+		panic("Bearer token is not read-only. Please provide a read-only Service Token or Personal Access Token for use with this MCP. See https://console.vantage.sh/settings/access_tokens")
+	}
+}
+
 func main() {
 	setupLogger()
 	bearerToken, found := os.LookupEnv("VANTAGE_BEARER_TOKEN")
 	if !found {
-		panic("VANTAGE_BEARER_TOKEN not found")
+		panic("VANTAGE_BEARER_TOKEN not found, please create a read-only Service Token or Personal Access Token at https://console.vantage.sh/settings/access_tokens")
 	}
-	log.Printf("Server Starting, bearer token found")
+	authInfo := runtime.ClientAuthInfoWriterFunc(func(req runtime.ClientRequest, reg strfmt.Registry) error {
+		err := req.SetHeaderParam("Authorization", fmt.Sprintf("Bearer %s", bearerToken))
+		return err
+	})
+	verifyReadonlyToken(bearerToken, authInfo)
+	log.Printf("Server Starting, read-only bearer token found")
 
 	done := make(chan struct{})
 	server := mcp_golang.NewServer(stdio.NewStdioServerTransport())
@@ -108,11 +130,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	authInfo := runtime.ClientAuthInfoWriterFunc(func(req runtime.ClientRequest, reg strfmt.Registry) error {
-		err := req.SetHeaderParam("Authorization", fmt.Sprintf("Bearer %s", bearerToken))
-		return err
-	})
 
 	// ******** Tools ********
 
