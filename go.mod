@@ -1,4 +1,4 @@
-module github.com/vantage-sh/costs-mcp-server
+module github.com/vantage-sh/vantage-mcp-server
 
 go 1.22.5
 
