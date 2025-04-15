@@ -16,7 +16,7 @@ npx @modelcontextprotocol/inspector -e VANTAGE_BEARER_TOKEN=<token> ./vantage-mc
 ```
 {
   "mcpServers": {
-    "vantage-mcp-server": {
+    "Vantage": {
       "command": "<path_to_compiled_vantage_mcp_server_binary>",
       "args": [],
       "env": {"VANTAGE_BEARER_TOKEN": "<personal_vantage_api_token>"}
