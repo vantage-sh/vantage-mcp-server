@@ -1,11 +1,11 @@
 ```
-go build -o costs-mcp-server
-chmod +x costs-mcp-server
+go build -o vantage-mcp-server
+chmod +x vantage-mcp-server
 ```
 
 For a faster feedback loop, run using the MCP inspector:
 ```
-npx @modelcontextprotocol/inspector -e VANTAGE_BEARER_TOKEN=<token> ./costs-mcp-server
+npx @modelcontextprotocol/inspector -e VANTAGE_BEARER_TOKEN=<token> ./vantage-mcp-server
 ```
 
 ### Setting up MCP Server
@@ -16,8 +16,8 @@ npx @modelcontextprotocol/inspector -e VANTAGE_BEARER_TOKEN=<token> ./costs-mcp-
 ```
 {
   "mcpServers": {
-    "costs-mcp-server": {
-      "command": "<path_to_compiled_costs_mcp_server_binary>",
+    "vantage-mcp-server": {
+      "command": "<path_to_compiled_vantage_mcp_server_binary>",
       "args": [],
       "env": {"VANTAGE_BEARER_TOKEN": "<personal_vantage_api_token>"}
     }
