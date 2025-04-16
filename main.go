@@ -100,9 +100,19 @@ func main() {
 	if !found {
 		panic("VANTAGE_BEARER_TOKEN not found, please create a read-only Service Token or Personal Access Token at https://console.vantage.sh/settings/access_tokens")
 	}
+
+	const Version = "v0.0.1alpha"
+
 	authInfo := runtime.ClientAuthInfoWriterFunc(func(req runtime.ClientRequest, reg strfmt.Registry) error {
-		err := req.SetHeaderParam("Authorization", fmt.Sprintf("Bearer %s", bearerToken))
-		return err
+		if err := req.SetHeaderParam("Authorization", fmt.Sprintf("Bearer %s", bearerToken)); err != nil {
+			return err
+		}
+
+		if err := req.SetHeaderParam("User-Agent", fmt.Sprintf("vantage-mcp-server/%s", Version)); err != nil {
+			return err
+		}
+
+		return nil
 	})
 	verifyReadonlyToken(bearerToken, authInfo)
 	log.Printf("Server Starting, read-only bearer token found")
