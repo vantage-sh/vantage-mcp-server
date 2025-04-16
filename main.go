@@ -299,7 +299,7 @@ func main() {
 
 	type ListAnomaliesParams struct {
 		Page            int32  `json:"page" jsonschema:"optional,description=page"`
-		CostReportToken string `json:"cost_report_token" jsonschema:"optional,description=Cost report to filter anomalies to"`
+		CostReportToken string `json:"cost_report_token" jsonschema:"optional,description=Cost report to filter anomalies by"`
 		Service         string `json:"service" jsonschema:"optional,description=Service to filter anomalies to"`
 		Provider        string `json:"provider" jsonschema:"optional,description=Provider to filter anomalies to"`
 		CostCategory    string `json:"cost_category" jsonschema:"optional,description=Cost category to filter anomalies to"`
