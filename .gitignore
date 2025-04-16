@@ -1,2 +1,3 @@
-costs-mcp-server
 *.log
+.cursor/
+vantage-mcp-server

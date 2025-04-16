@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "costs-mcp-server": {
+    "vantage-mcp-server": {
       "command": "<your path to golang MCP server go executable>",
       "args": [],
       "env": {"VANTAGE_BEARER_TOKEN":  "<your bearer token>"}
