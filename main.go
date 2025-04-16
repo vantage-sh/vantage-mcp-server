@@ -142,7 +142,7 @@ func main() {
 	}
 
 	listCostReportsDescription := `
-	List all cost reports available. Cost reports are already created reports authored by the user. If the user isn't asking about a specific report, it's better to use the query-costs tool. 
+	List all cost reports available. Cost reports are already created reports authored by a user in Vantage. If the user isn't asking about a specific report, it's better to use the query-costs tool. 
 	When you first call this function, use the "Page" parameter of 1. 
 	The 'Title' of a report is a good way to know what the report is about. 
 	The 'filter' of a report also gives clues to the data it provides.
