@@ -151,7 +151,14 @@ func main() {
 		PageData    McpResponseLinks     `json:"page_data"`
 	}
 
-	err = server.RegisterTool("list-cost-reports", "List all cost reports available. When you first call this function, use the `Page` parameter of 1. The 'Title' of a report is a good way to know what the report is about. The 'filter' of a report also gives clues to the data it provides.", func(params ListCostReportsParams) (*mcp_golang.ToolResponse, error) {
+	listCostReportsDescription := `
+	List all cost reports available. Cost reports are already created reports authored by a user in Vantage. If the user isn't asking about a specific report, it's better to use the query-costs tool. 
+	When you first call this function, use the "Page" parameter of 1. 
+	The 'Title' of a report is a good way to know what the report is about. 
+	The 'filter' of a report also gives clues to the data it provides.
+	`
+
+	err = server.RegisterTool("list-cost-reports", listCostReportsDescription, func(params ListCostReportsParams) (*mcp_golang.ToolResponse, error) {
 		log.Printf("invoked - tool - list cost reports %+v", params)
 		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		var limit int32 = 128
@@ -226,6 +233,73 @@ func main() {
 			return nil, fmt.Errorf("error marshalling json: %+v", err)
 		}
 		content := mcp_golang.NewTextContent(string(jsonResults))
+
+		return mcp_golang.NewToolResponse(content), nil
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	type QueryCostsParams struct {
+		Page           int32  `json:"page" jsonschema:"required,description=page"`
+		VqlInput       string `json:"vql_input" jsonschema:"required,description=A VQL query to run against your vantage account"`
+		StartDate      string `json:"start_date" jsonschema:"optional,description=Start date to filter costs by, format=YYYY-MM-DD"`
+		EndDate        string `json:"end_date" jsonschema:"optional,description=End date to filter costs by, format=YYYY-MM-DD"`
+		WorkspaceToken string `json:"workspace_token" jsonschema:"required,description=Workspace token to filter costs by"`
+	}
+
+	type QueryCostsResults struct {
+		Costs    []*models.Cost   `json:"cost_reports"`
+		PageData McpResponseLinks `json:"page_data"`
+	}
+
+	queryCostsDescription := `
+	Query for costs in a Vantage Account. These are independent of a cost reports.
+	Use Vantage VQL to structure a query. 
+	To query for all costs from a provider, use "(cost.provider=aws)".
+	You can further filter to services from a provider: "(costs.provider = 'aws' AND costs.service = 'Amazon Relational Database Service')". 
+	Costs are often tagged, you can query like this: "(costs.provider = 'aws' AND tags.name = 'environment' AND tags.value = 'production')"
+	Queries must be scoped to a Workspace. Use the get-myself tool to know about available workspaces, and the get-cost-integrations tool to know about available cost providers. If the user didn't tell you a workspace it is best to ask them than to guess it.
+	It's best to set a date range of about 30 days unless the user specifically wants to query for a longer time period.
+	`
+
+	err = server.RegisterTool("query-costs", queryCostsDescription, func(params QueryCostsParams) (*mcp_golang.ToolResponse, error) {
+		log.Printf("invoked - tool - query costs %+v", params)
+		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
+		var limit int32 = 2000
+
+		getCostsParams := costs.NewGetCostsParams()
+		getCostsParams.SetFilter(&params.VqlInput)
+		getCostsParams.SetWorkspaceToken(&params.WorkspaceToken)
+		getCostsParams.SetStartDate(&params.StartDate)
+		getCostsParams.SetEndDate(&params.EndDate)
+		getCostsParams.SetPage(&params.Page)
+		getCostsParams.SetLimit(&limit)
+
+		apiResponse, err := client.GetCosts(getCostsParams, authInfo)
+		if err != nil {
+			return nil, fmt.Errorf("Error fetching costs: %+v", err)
+		}
+
+		result := QueryCostsResults{}
+		result.Costs = apiResponse.GetPayload().Costs
+		links, ok := apiResponse.GetPayload().Links.(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("Error asserting Links to map[string]interface{}")
+		}
+		nextPageUrl, ok := links["next"]
+		if ok && nextPageUrl != nil {
+			result.PageData = buildLinksFromUrl(nextPageUrl.(string))
+		} else {
+			result.PageData = NO_NEXT_PAGE
+		}
+
+		jsonResult, err := json.Marshal(result)
+		if err != nil {
+			return nil, fmt.Errorf("Error marshalling costs: %+v", err)
+		}
+
+		content := mcp_golang.NewTextContent(string(jsonResult))
 		return mcp_golang.NewToolResponse(content), nil
 	})
 	if err != nil {
