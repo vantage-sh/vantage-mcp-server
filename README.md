@@ -1,3 +1,10 @@
+<div align="center">
+
+# Vantage MCP Server
+
+<img src="/static/img/mcp.jpg" alt="image" width="600" height="auto">
+</div>
+
 ```
 go build -o vantage-mcp-server
 chmod +x vantage-mcp-server
