@@ -14,6 +14,7 @@ import (
 	mcp_golang "github.com/metoro-io/mcp-golang"
 	"github.com/metoro-io/mcp-golang/transport/stdio"
 	"github.com/vantage-sh/vantage-go/vantagev2/models"
+	anomaliesClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/anomaly_alerts"
 	"github.com/vantage-sh/vantage-go/vantagev2/vantage/costs"
 	"github.com/vantage-sh/vantage-go/vantagev2/vantage/integrations"
 	meClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/me"
@@ -376,6 +377,63 @@ func main() {
 		content := mcp_golang.NewTextContent(string(myself))
 		return mcp_golang.NewToolResponse(content), nil
 	})
+	if err != nil {
+		panic(err)
+	}
+
+	type ListAnomaliesParams struct {
+		Page            int32  `json:"page" jsonschema:"optional,description=page"`
+		CostReportToken string `json:"cost_report_token" jsonschema:"optional,description=Cost report to filter anomalies by"`
+		Service         string `json:"service" jsonschema:"optional,description=Service to filter anomalies to"`
+		Provider        string `json:"provider" jsonschema:"optional,description=Provider to filter anomalies to"`
+		CostCategory    string `json:"cost_category" jsonschema:"optional,description=Cost category to filter anomalies to"`
+		StartDate       string `json:"start_date" jsonschema:"optional,description=Start date to filter anomalies to"`
+		EndDate         string `json:"end_date" jsonschema:"optional,description=End date to filter anomalies to"`
+	}
+
+	err = server.RegisterTool("list-anomalies", "List anomalies that were detected on cost reports.", func(params ListAnomaliesParams) (*mcp_golang.ToolResponse, error) {
+		log.Printf("invoked - tool - list anomalies %+v", params)
+		client := anomaliesClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
+		var limit int32 = 128
+
+		getAnomaliesParams := anomaliesClient.NewGetAnomalyAlertsParams()
+		getAnomaliesParams.SetLimit(&limit)
+		getAnomaliesParams.SetPage(&params.Page)
+		getAnomaliesParams.SetCostReportToken(&params.CostReportToken)
+		getAnomaliesParams.SetService(&params.Service)
+		getAnomaliesParams.SetProvider(&params.Provider)
+		getAnomaliesParams.SetCostCategory(&params.CostCategory)
+
+		// Convert string dates to strfmt.DateTime
+		if params.StartDate != "" {
+			startDate, err := strfmt.ParseDateTime(params.StartDate)
+			if err != nil {
+				return nil, fmt.Errorf("Error parsing start date: %+v", err)
+			}
+			getAnomaliesParams.SetStartDate(&startDate)
+		}
+		if params.EndDate != "" {
+			endDate, err := strfmt.ParseDateTime(params.EndDate)
+			if err != nil {
+				return nil, fmt.Errorf("Error parsing end date: %+v", err)
+			}
+			getAnomaliesParams.SetEndDate(&endDate)
+		}
+
+		response, err := client.GetAnomalyAlerts(getAnomaliesParams, authInfo)
+		if err != nil {
+			return nil, fmt.Errorf("Error fetching anomalies: %+v", err)
+		}
+
+		payload := response.GetPayload()
+		anomalies, err := json.Marshal(payload.AnomalyAlerts)
+		if err != nil {
+			return nil, fmt.Errorf("Error marshalling anomalies: %+v", err)
+		}
+		content := mcp_golang.NewTextContent(string(anomalies))
+		return mcp_golang.NewToolResponse(content), nil
+	})
+
 	if err != nil {
 		panic(err)
 	}
