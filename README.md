@@ -2,7 +2,7 @@
 
 # Vantage MCP Server
 
-<img src="static/img/MCP.jpg" alt="image" width="600" height="auto">
+<img src="static/img/MCP.png" alt="image" width="600" height="auto">
 </div> 
 
 
