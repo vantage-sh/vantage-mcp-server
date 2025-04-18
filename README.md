@@ -1,10 +1,10 @@
 <div align="center">
 
-<h1>Vantage MCP Server</h1>
+# Vantage MCP Server
 
 <h4>Use natural language to explore your organization’s cloud costs via MCP clients, like Claude, Cursor, and others. Ask questions about your organization's previous and current cloud cost spend, cost tagging, provider integrations, and more.</h4>
 
-<!-- <img src="#" alt="Vantage MCP Server logo image" width="600" height="auto"> -->
+<img src="static/img/MCP.png" alt="image" width="600" height="auto">
 
 </div>
 
@@ -68,6 +68,7 @@ git clone https://github.com/vantage-sh/vantage-mcp-server
 go build -o vantage-mcp-server
 chmod +x vantage-mcp-server
 ```
+
 > 📝 _Note: If you pull down new changes from the repository, be sure to re-run `go build` to rebuild the server and ensure you're running the latest version._
 
 3. Run using the MCP inspector.
@@ -97,17 +98,17 @@ See the [MCP documentation](https://modelcontextprotocol.io/clients) for a list 
 
 5. Open the `claude_desktop_config.json` file and update its contents. Make sure to replace the placeholders `<path_to_compiled_vantage_mcp_server_binary>` with the path where you downloaded the Vantage MCP Server binary, and `<personal_vantage_api_token>` with your Vantage API token.
 
-    ```json
-    {
-      "mcpServers": {
-        "Vantage": {
-          "command": "<path_to_compiled_vantage_mcp_server_binary>",
-          "args": [],
-          "env": { "VANTAGE_BEARER_TOKEN": "<personal_vantage_api_token>" }
-        }
-      }
-    }
-    ```
+   ```json
+   {
+     "mcpServers": {
+       "Vantage": {
+         "command": "<path_to_compiled_vantage_mcp_server_binary>",
+         "args": [],
+         "env": { "VANTAGE_BEARER_TOKEN": "<personal_vantage_api_token>" }
+       }
+     }
+   }
+   ```
 
 6. Save the configuration file and restart Claude.
 7. In the bottom-right corner of the Claude for Desktop input box, click the hammer icon to see the available tools for the Vantage MCP Server.
