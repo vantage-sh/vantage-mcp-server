@@ -554,6 +554,38 @@ func main() {
 		panic(err)
 	}
 
+	// ******** Prompts ********
+
+	type NoInputs struct{}
+
+	err = server.RegisterPrompt("query-tips", "A tutorial on how to query costs in Vantage in VQL", func(params NoInputs) (*mcp_golang.PromptResponse, error) {
+		log.Printf("invoked - prompt - query tips")
+		content := `
+		Here is some more detailed info on using VQL.
+		All costs originate from a Cost Provider (generally a cloud company like AWS, Azure, Datadog) and then filter on a service that they provide (like EC2, S3, etc).
+		A cost provider is quired on every VQL query.
+		VQL is always in paraenthesis. Always use single quotes around names that are being queried. 
+		To query on a cost provider, use this syntax: (costs.provider = 'aws')
+		You can only filter against one cost provider at a time. If you want to query for costs from two providers, you need to use the OR operator. Example: ((costs.provider = 'aws') OR (costs.provider = 'azure'))
+		You can otherwise use the IN system to compare against a list of items, like this: (costs.provider = 'aws' AND costs.service IN ('AWSQueueService', 'AWSLambda'))
+		To filter within a cost provider, keep the cost provider part and add a AND section, example: (costs.provider = 'aws' AND costs.service = 'Amazon Relational Database Service')
+		Many costs have tags on them. A tag is a "name" and one or more values.
+		To find an AWS cost that has a tag of "enviornment" the value "production", use this syntax: (costs.provider = 'aws' AND tags.name = 'environment' AND tags.value = 'production')
+		You can also query for any value of the "environment" tag, like this: (costs.provider = 'aws' AND tags.name = 'environment')
+		Items without a tag can also be filtered, example: (costs.provider = 'aws' AND tags.name = NULL)
+		Parenthesis can be nested. Here we surround an OR clause to look for either of two values for a tag: (costs.provider = 'aws' AND tags.name = 'environment' AND (tags.value = 'dev' OR tags.value = 'staging'))
+		A user can have more than one provider account. They can filter on provider accounts if they supply you with the account id. Example: (costs.provider = 'aws' AND costs.provider_account_id = '1000000717')
+		You can also combine top-level queries to find for two providers: ((costs.provider = 'datadog') OR (costs.provider = 'azure'))
+		Some cost providers operate in a specific region, you can filter using the costs.region field. Example: (costs.provider = 'aws' AND costs.region = 'us-east-1')
+		`
+
+		response := mcp_golang.NewPromptMessage(mcp_golang.NewTextContent(content), mcp_golang.RoleAssistant)
+		return mcp_golang.NewPromptResponse("query tutorial", response), nil
+	})
+	if err != nil {
+		panic(err)
+	}
+
 	err = server.Serve()
 	if err != nil {
 		panic(err)
