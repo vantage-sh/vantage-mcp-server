@@ -16,6 +16,8 @@ For a faster feedback loop, run using the MCP inspector:
 npx @modelcontextprotocol/inspector -e VANTAGE_BEARER_TOKEN=<token> ./vantage-mcp-server
 ```
 
+Follow these steps to generate a Read only API token: https://vantage.readme.io/reference/authentication#create-an-api-service-token
+
 ### Setting up MCP Server
 
 1. Follow the instructions at https://modelcontextprotocol.io/quickstart/user
