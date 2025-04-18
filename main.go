@@ -157,6 +157,7 @@ func main() {
 	When you first call this function, use the "Page" parameter of 1. 
 	The 'Title' of a report is a good way to know what the report is about. 
 	The 'filter' of a report also gives clues to the data it provides.
+	The 'token' of a report is a unique identifier for the report. It can be used to generate a link to the report in the Vantage Web UI. If a user wants to see a report, you can link them like this: https://console.vantage.sh/go/<token>
 	`
 
 	err = server.RegisterTool("list-cost-reports", listCostReportsDescription, func(params ListCostReportsParams) (*mcp_golang.ToolResponse, error) {
@@ -204,7 +205,13 @@ func main() {
 		Integrations []*models.Integration `json:"integrations"`
 		PageData     McpResponseLinks      `json:"page_data"`
 	}
-	err = server.RegisterTool("list-cost-integrations", "List all cost provider integrations available to provide costs data from and their associated accounts.", func(params ListCostIntegrations) (*mcp_golang.ToolResponse, error) {
+
+	listCostIntegrationsDescription := `
+	List all cost provider integrations available to provide costs data from and their associated accounts.
+	Integrations are the cost providers that Vantage is configured to connect to and pull cost data from.
+	If a user wants to see their providers in the Vantage Web UI, they can visit https://console.vantage.sh/settings/integrations
+	`
+	err = server.RegisterTool("list-cost-integrations", listCostIntegrationsDescription, func(params ListCostIntegrations) (*mcp_golang.ToolResponse, error) {
 		log.Printf("invoked - tool - list integrations")
 		client := integrations.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		getAccountsParams := integrations.NewGetIntegrationsParams()
@@ -317,7 +324,12 @@ func main() {
 		PageData McpResponseLinks `json:"page_data"`
 	}
 
-	err = server.RegisterTool("list-costs", "List the cost items inside a report. The Token of a Report must be provided. Use the page value of 1 to start.", func(params ListCostsParams) (*mcp_golang.ToolResponse, error) {
+	listCostsDescription := `
+	List the cost items inside a report. The Token of a Report must be provided. Use the page value of 1 to start.
+	The report token can be used to link the user to the report in the Vantage Web UI. Build the link like this: https://console.vantage.sh/go/<CostReportToken>
+	`
+
+	err = server.RegisterTool("list-costs", listCostsDescription, func(params ListCostsParams) (*mcp_golang.ToolResponse, error) {
 		log.Printf("invoked - tool - list costs %+v", params)
 		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		var limit int32 = 128
@@ -360,7 +372,11 @@ func main() {
 	type MyselfParams struct {
 	}
 
-	err = server.RegisterTool("get-myself", "Get data that is available to the current auth token", func(params MyselfParams) (*mcp_golang.ToolResponse, error) {
+	getMyselfDescription := `
+	Get data that is available to the current auth token. This includes the list of Workspaces they have access to.
+	`
+
+	err = server.RegisterTool("get-myself", getMyselfDescription, func(params MyselfParams) (*mcp_golang.ToolResponse, error) {
 		log.Printf("invoked - tool - get myself %+v", params)
 		client := meClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		getMyselfParams := meClient.NewGetMeParams()
@@ -391,7 +407,12 @@ func main() {
 		EndDate         string `json:"end_date" jsonschema:"optional,description=End date to filter anomalies to"`
 	}
 
-	err = server.RegisterTool("list-anomalies", "List anomalies that were detected on cost reports.", func(params ListAnomaliesParams) (*mcp_golang.ToolResponse, error) {
+	listAnomaliesDescription := `
+	Given a token of a Cost Report, look for anomalies in the report. You may optionally pass a Provider, like AWS to filter on. If you do pass a Provider, you can futher filter on a Service, like EC2 or S3.
+	The report token can be used to link the user to the report in the Vantage Web UI. Build the link like this: https://console.vantage.sh/go/<CostReportToken>
+	`
+
+	err = server.RegisterTool("list-anomalies", listAnomaliesDescription, func(params ListAnomaliesParams) (*mcp_golang.ToolResponse, error) {
 		log.Printf("invoked - tool - list anomalies %+v", params)
 		client := anomaliesClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		var limit int32 = 128
@@ -442,8 +463,14 @@ func main() {
 		Page int32 `json:"page" jsonschema:"optional,description=page"`
 	}
 
+	listTagsDescription := `
+	List tags that can be used to filter costs and cost reports.
+	Tags are associated with one or more Cost Providers.
+	Tags can be edited in the Vantage Web UI, or have further details displayed there. Link a user to the tag page like this: https://console.vantage.sh/settings/tags?search_query=<tag>
+	`
+
 	// TODO(nel): can tags be exposed as a resource instead? Would need MCP clients to support pagination.
-	err = server.RegisterTool("list-tags", "List tags that can be used to filter cost reports", func(params ListTagsParams) (*mcp_golang.ToolResponse, error) {
+	err = server.RegisterTool("list-tags", listTagsDescription, func(params ListTagsParams) (*mcp_golang.ToolResponse, error) {
 		log.Printf("invoked - tool - list tags %+v", params)
 		client := tagsClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		var limit int32 = 128
@@ -474,7 +501,9 @@ func main() {
 		Key  string `json:"key" jsonschema:"required,description=Tag key to list values for"`
 	}
 
-	err = server.RegisterTool("list-tag-values", "List tags that can be used to filter cost reports", func(params ListTagValuesParams) (*mcp_golang.ToolResponse, error) {
+	listTagValuesDescription := `Tags can have many values. Use this tool to find the values and service providers that are associated with a tag.`
+
+	err = server.RegisterTool("list-tag-values", listTagValuesDescription, func(params ListTagValuesParams) (*mcp_golang.ToolResponse, error) {
 		log.Printf("invoked - tool - list tag values %+v", params)
 		client := tagsClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		var limit int32 = 128
