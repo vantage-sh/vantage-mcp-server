@@ -463,6 +463,11 @@ func main() {
 		Page int32 `json:"page" jsonschema:"optional,description=page"`
 	}
 
+	type ListTagsResult struct {
+		Tags     []*models.Tag `json:"tags"`
+		PageData McpResponseLinks
+	}
+
 	listTagsDescription := `
 	List tags that can be used to filter costs and cost reports.
 	Tags are associated with one or more Cost Providers.
@@ -479,17 +484,31 @@ func main() {
 		getTagsParams.SetLimit(&limit)
 		getTagsParams.SetPage(&params.Page)
 
-		response, err := client.GetTags(getTagsParams, authInfo)
+		apiResponse, err := client.GetTags(getTagsParams, authInfo)
 		if err != nil {
-			return nil, fmt.Errorf("Error fetching tags: %+v", err)
+			return nil, fmt.Errorf("error fetching tags: %+v", err)
 		}
 
-		payload := response.GetPayload()
-		tags, err := json.Marshal(payload.Tags)
-		if err != nil {
-			return nil, fmt.Errorf("Error marshalling tags: %+v", err)
+		payload := apiResponse.GetPayload()
+		results := ListTagsResult{
+			Tags: payload.Tags,
 		}
-		content := mcp_golang.NewTextContent(string(tags))
+		links, ok := apiResponse.GetPayload().Links.(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("error asserting Links to map[string]interface{}")
+		}
+		nextPageUrl, ok := links["next"]
+		if ok && nextPageUrl != nil {
+			results.PageData = buildLinksFromUrl(nextPageUrl.(string))
+		} else {
+			results.PageData = NO_NEXT_PAGE
+		}
+		jsonResults, err := json.Marshal(results)
+		if err != nil {
+			return nil, fmt.Errorf("error marshalling json: %+v", err)
+		}
+		content := mcp_golang.NewTextContent(string(jsonResults))
+
 		return mcp_golang.NewToolResponse(content), nil
 	})
 	if err != nil {
