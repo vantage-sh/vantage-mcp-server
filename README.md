@@ -52,7 +52,7 @@ Ensure the following packages are installed (see `.tool-versions` for exact vers
 
 You can use a version manager (e.g., [`asdf`](https://asdf-vm.com/)) or package manager (e.g., [Homebrew](https://brew.sh/)) to install these dependencies.
 
-You will also need to create a **Read** Vantage API token (Write will not work at this time). Follow the instructions on the [Vantage API documentation](https://vantage.readme.io/reference/authentication).
+You will also need to create a **Read-Only** Vantage API token (Write will not work at this time). Follow the instructions on the [Vantage API documentation](https://vantage.readme.io/reference/authentication). We recommend creating a brand-new read-only API token for exclusive use with the MCP Server.
 
 ### Installation
 
@@ -83,8 +83,9 @@ Setup instructions vary depending on which MCP client you use. Example clients i
 
 - [Claude for Desktop](https://modelcontextprotocol.io/quickstart/user)
 - [Cursor](https://docs.cursor.com/context/model-context-protocol)
+- [Goose](https://block.github.io/goose/)
 
-See the [MCP documentation](https://modelcontextprotocol.io/clients) for a list of available clients. Detailed instructions for Claude for Desktop are provided below.
+See the [MCP documentation](https://modelcontextprotocol.io/clients) for a list of available clients. Detailed instructions for Claude for Desktop, Cursor, and Goose are provided below.
 
 #### Claude for Desktop
 
@@ -113,6 +114,38 @@ See the [MCP documentation](https://modelcontextprotocol.io/clients) for a list 
 6. Save the configuration file and restart Claude.
 7. In the bottom-right corner of the Claude for Desktop input box, click the hammer icon to see the available tools for the Vantage MCP Server.
 8. Once you've set up the configuration, you can start prompting Claude. Each time you use a new tool, Claude will ask for your approval before proceeding.
+
+#### Cursor
+
+1. Download [Cursor](https://www.cursor.com).
+2. Open Cursor and click **Cursor > Settings > Cursor Settings** from the menu bar.
+3. In the left pane, select **MCP**.
+4. Click **Add new global MCP Server**.
+5. Update the contents of the opened `mcp.json` file. Make sure to replace the placeholders `<path_to_compiled_vantage_mcp_server_binary>` with the path where you downloaded the Vantage MCP Server binary, and `<personal_vantage_api_token>` with your Vantage API token.
+
+   ```json
+   {
+     "mcpServers": {
+       "Vantage": {
+         "command": "<path_to_compiled_vantage_mcp_server_binary>",
+         "args": [],
+         "env": { "VANTAGE_BEARER_TOKEN": "<personal_vantage_api_token>" }
+       }
+     }
+   }
+   ```
+
+#### Goose
+
+1. Download [Goose](https://block.github.io/goose/).
+2. Open Goose and click **Goose > Settings** from the menu bar (keyboard shortcut `Command + ,`).
+3. Under the **Extensions** section, click **Add custom extension**.
+4. In the **ID** field, enter `vantage-mcp-server`.
+5. In the **Name** field, enter `Vantage`.
+6. In the **Description** field, enter `Query costs and usage data`.
+7. In the **Command** field, enter the path to the Vantage MCP Server binary.
+8. In the **Environment Variables** section, add a new variable with the name `VANTAGE_BEARER_TOKEN` and the value set to your Vantage API token.
+9. Click **Add**.
 
 ## Contribution Guidelines
 
