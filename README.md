@@ -52,7 +52,7 @@ Ensure the following packages are installed (see `.tool-versions` for exact vers
 
 You can use a version manager (e.g., [`asdf`](https://asdf-vm.com/)) or package manager (e.g., [Homebrew](https://brew.sh/)) to install these dependencies.
 
-You will also need to create a **Read-Only** Vantage API token (Write will not work at this time). Follow the instructions on the [Vantage API documentation](https://vantage.readme.io/reference/authentication).
+You will also need to create a **Read-Only** Vantage API token (Write will not work at this time). Follow the instructions on the [Vantage API documentation](https://vantage.readme.io/reference/authentication). We recommend creating a brand-new read-only API token for exclusive use with the MCP Server.
 
 ### Installation
 
