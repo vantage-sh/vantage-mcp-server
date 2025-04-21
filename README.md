@@ -147,6 +147,10 @@ See the [MCP documentation](https://modelcontextprotocol.io/clients) for a list 
 8. In the **Environment Variables** section, add a new variable with the name `VANTAGE_BEARER_TOKEN` and the value set to your Vantage API token.
 9. Click **Add**.
 
+#### Note for MacOS users
+
+If you download a release from our Github page and the executable fails to run "because the developer cannot be verified", please open your System Settings. Then find the "Privacy and Security" section. Then scroll to the bottom and you should see a message that "vantage-mcp-server-macos" was blocked, click the "open anyway" button. After this flow, the executable should be able to be run without issue.
+
 ## Contribution Guidelines
 
 If you'd like to contribute to this project:
