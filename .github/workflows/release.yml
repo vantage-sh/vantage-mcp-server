@@ -8,7 +8,7 @@ on:
 jobs:
   build-and-attach:
     name: Build and Attach Release Binaries
-    runs-on: ubuntu-latest
+    runs-on: depot-ubuntu-22.04
 
     steps:
       # Checkout the repository
