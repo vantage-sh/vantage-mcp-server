@@ -37,6 +37,8 @@ jobs:
           asset_path: ./vantage-mcp-server-linux
           asset_name: vantage-mcp-server-linux
           asset_content_type: application/octet-stream
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload macOS binary
         uses: actions/upload-release-asset@v1
@@ -45,6 +47,8 @@ jobs:
           asset_path: ./vantage-mcp-server-macos
           asset_name: vantage-mcp-server-macos
           asset_content_type: application/octet-stream
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Windows binary
         uses: actions/upload-release-asset@v1
@@ -53,3 +57,5 @@ jobs:
           asset_path: ./vantage-mcp-server-windows.exe
           asset_name: vantage-mcp-server-windows.exe
           asset_content_type: application/octet-stream
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
