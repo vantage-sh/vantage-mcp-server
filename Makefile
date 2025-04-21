@@ -11,4 +11,5 @@ vantage-mcp-server-linux: *.go go.mod go.sum
 	GOOS=linux GOARCH=amd64 go build -o vantage-mcp-server-linux
 vantage-mcp-server-windows: *.go go.mod go.sum
 	GOOS=windows GOARCH=amd64 go build -o vantage-mcp-server-windows.exe
+
 build-all: vantage-mcp-server-macos vantage-mcp-server-linux vantage-mcp-server-windows
