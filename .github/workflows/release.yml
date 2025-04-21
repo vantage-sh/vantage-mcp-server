@@ -1,0 +1,55 @@
+name: Build and Attach Release Binaries
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  build-and-attach:
+    name: Build and Attach Release Binaries
+    runs-on: depot-ubuntu-22.04
+
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up Go
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.22.5" # Match the version in go.mod
+
+      # Install dependencies
+      - name: Install dependencies
+        run: go mod tidy
+
+      # Build all binaries
+      - name: Build all binaries
+        run: make build-all
+
+      # Upload release assets
+      - name: Upload Linux binary
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./vantage-mcp-server-linux
+          asset_name: vantage-mcp-server-linux
+          asset_content_type: application/octet-stream
+
+      - name: Upload macOS binary
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./vantage-mcp-server-macos
+          asset_name: vantage-mcp-server-macos
+          asset_content_type: application/octet-stream
+
+      - name: Upload Windows binary
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./vantage-mcp-server-windows.exe
+          asset_name: vantage-mcp-server-windows.exe
+          asset_content_type: application/octet-stream

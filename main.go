@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/url"
 	"os"
+	goruntime "runtime"
 	"strconv"
 
 	"github.com/go-openapi/runtime"
@@ -116,7 +117,7 @@ func main() {
 		return nil
 	})
 	verifyReadonlyToken(bearerToken, authInfo)
-	log.Printf("Server Starting, read-only bearer token found")
+	log.Printf("Server Starting, read-only bearer token found, OS: %s, Arch: %s", goruntime.GOOS, goruntime.GOARCH)
 
 	done := make(chan struct{})
 	server := mcp_golang.NewServer(stdio.NewStdioServerTransport())
