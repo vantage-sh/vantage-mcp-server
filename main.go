@@ -332,7 +332,10 @@ func main() {
 	err = server.RegisterTool("list-costs", listCostsDescription, func(params ListCostsParams) (*mcp_golang.ToolResponse, error) {
 		log.Printf("invoked - tool - list costs %+v", params)
 		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
-		var limit int32 = 128
+
+		// We keep this purposefully small to avoid overwhelming the LLM client with data, which can result in network errors.
+		// Sadly, this has the side effect of increasing the chance the user's API token is rate-limited.
+		var limit int32 = 64
 
 		getCostsParams := costs.NewGetCostsParams()
 		getCostsParams.SetLimit(&limit)
