@@ -82,21 +82,28 @@ func setupLogger() {
 	log.SetOutput(logFile)
 }
 
-func verifyReadonlyToken(bearerToken string, authInfo runtime.ClientAuthInfoWriterFunc) {
+func checkReadonlyToken(bearerToken string, authInfo runtime.ClientAuthInfoWriterFunc) error {
+	if bearerToken == "" {
+		return fmt.Errorf("VANTAGE_BEARER_TOKEN not found, please create a read-only Service Token or Personal Access Token at https://console.vantage.sh/settings/access_tokens")
+	}
+
 	client := meClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 	response, err := client.GetMe(meClient.NewGetMeParams(), authInfo)
+
 	if err != nil {
-		log.Printf("Error fetching myself to verify read-only token %+v", err)
-		panic(err)
+		return fmt.Errorf("Error fetching myself to verify read-only token %+v", err)
 	}
+
 	payload := response.GetPayload()
 	if payload == nil {
-		log.Printf("Error fetching myself to verify read-only token, payload is nil")
-		panic("While verifing token is read-only, Payload is nil %+V")
+		return fmt.Errorf("Error fetching myself to verify read-only token, payload is nil")
 	}
+
 	if !(len(payload.BearerToken.Scope) == 1 && payload.BearerToken.Scope[0] == "read") {
-		panic("Bearer token is not read-only. Please provide a read-only Service Token or Personal Access Token for use with this MCP. See https://console.vantage.sh/settings/access_tokens")
+		return fmt.Errorf("Bearer token is not read-only. Please provide a read-only Service Token or Personal Access Token for use with this MCP. See https://console.vantage.sh/settings/access_tokens")
 	}
+
+	return nil
 }
 
 func main() {
@@ -109,11 +116,8 @@ func main() {
 	}
 
 	setupLogger()
-	bearerToken, found := os.LookupEnv("VANTAGE_BEARER_TOKEN")
-	if !found {
-		panic("VANTAGE_BEARER_TOKEN not found, please create a read-only Service Token or Personal Access Token at https://console.vantage.sh/settings/access_tokens")
-	}
 
+	bearerToken, _ := os.LookupEnv("VANTAGE_BEARER_TOKEN")
 	authInfo := runtime.ClientAuthInfoWriterFunc(func(req runtime.ClientRequest, reg strfmt.Registry) error {
 		if err := req.SetHeaderParam("Authorization", fmt.Sprintf("Bearer %s", bearerToken)); err != nil {
 			return err
@@ -125,7 +129,8 @@ func main() {
 
 		return nil
 	})
-	verifyReadonlyToken(bearerToken, authInfo)
+
+	bearerTokenError := checkReadonlyToken(bearerToken, authInfo)
 	log.Printf("Server Starting, read-only bearer token found, OS: %s, Arch: %s", goruntime.GOOS, goruntime.GOARCH)
 
 	done := make(chan struct{})
@@ -140,6 +145,11 @@ func main() {
 		"application/json",
 		func() (*mcp_golang.ResourceResponse, error) {
 			log.Printf("invoked - resource - cost providers")
+
+			if bearerTokenError != nil {
+				return nil, bearerTokenError
+			}
+
 			resource := mcp_golang.NewTextEmbeddedResource(
 				"vntg://providers",
 				"['aws', 'azure', 'gcp']",
@@ -172,6 +182,11 @@ func main() {
 
 	err = server.RegisterTool("list-cost-reports", listCostReportsDescription, func(params ListCostReportsParams) (*mcp_golang.ToolResponse, error) {
 		log.Printf("invoked - tool - list cost reports %+v", params)
+
+		if bearerTokenError != nil {
+			return nil, bearerTokenError
+		}
+
 		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		var limit int32 = 128
 
@@ -223,6 +238,11 @@ func main() {
 	`
 	err = server.RegisterTool("list-cost-integrations", listCostIntegrationsDescription, func(params ListCostIntegrations) (*mcp_golang.ToolResponse, error) {
 		log.Printf("invoked - tool - list integrations")
+
+		if bearerTokenError != nil {
+			return nil, bearerTokenError
+		}
+
 		client := integrations.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		getAccountsParams := integrations.NewGetIntegrationsParams()
 		getAccountsParams.SetPage(&params.Page)
@@ -297,6 +317,11 @@ func main() {
 
 	err = server.RegisterTool("query-costs", queryCostsDescription, func(params QueryCostsParams) (*mcp_golang.ToolResponse, error) {
 		log.Printf("invoked - tool - query costs %+v", params)
+
+		if bearerTokenError != nil {
+			return nil, bearerTokenError
+		}
+
 		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		var limit int32 = 2000
 
@@ -355,6 +380,11 @@ func main() {
 
 	err = server.RegisterTool("list-costs", listCostsDescription, func(params ListCostsParams) (*mcp_golang.ToolResponse, error) {
 		log.Printf("invoked - tool - list costs %+v", params)
+
+		if bearerTokenError != nil {
+			return nil, bearerTokenError
+		}
+
 		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 
 		// We keep this purposefully small to avoid overwhelming the LLM client with data, which can result in network errors.
@@ -405,6 +435,11 @@ func main() {
 
 	err = server.RegisterTool("get-myself", getMyselfDescription, func(params MyselfParams) (*mcp_golang.ToolResponse, error) {
 		log.Printf("invoked - tool - get myself %+v", params)
+
+		if bearerTokenError != nil {
+			return nil, bearerTokenError
+		}
+
 		client := meClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		getMyselfParams := meClient.NewGetMeParams()
 		response, err := client.GetMe(getMyselfParams, authInfo)
@@ -441,6 +476,11 @@ func main() {
 
 	err = server.RegisterTool("list-anomalies", listAnomaliesDescription, func(params ListAnomaliesParams) (*mcp_golang.ToolResponse, error) {
 		log.Printf("invoked - tool - list anomalies %+v", params)
+
+		if bearerTokenError != nil {
+			return nil, bearerTokenError
+		}
+
 		client := anomaliesClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		var limit int32 = 128
 
@@ -504,6 +544,11 @@ func main() {
 	// TODO(nel): can tags be exposed as a resource instead? Would need MCP clients to support pagination.
 	err = server.RegisterTool("list-tags", listTagsDescription, func(params ListTagsParams) (*mcp_golang.ToolResponse, error) {
 		log.Printf("invoked - tool - list tags %+v", params)
+
+		if bearerTokenError != nil {
+			return nil, bearerTokenError
+		}
+
 		client := tagsClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		var limit int32 = 128
 
@@ -551,6 +596,11 @@ func main() {
 
 	err = server.RegisterTool("list-tag-values", listTagValuesDescription, func(params ListTagValuesParams) (*mcp_golang.ToolResponse, error) {
 		log.Printf("invoked - tool - list tag values %+v", params)
+
+		if bearerTokenError != nil {
+			return nil, bearerTokenError
+		}
+
 		client := tagsClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
 		var limit int32 = 128
 
