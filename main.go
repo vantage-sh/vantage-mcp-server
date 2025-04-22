@@ -23,7 +23,7 @@ import (
 	tagsClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/tags"
 )
 
-const Version = "v0.0.1"
+const Version = "v0.0.2"
 
 type McpResponseLinks struct {
 	NextPage    int32 `json:"next_page"`
@@ -139,20 +139,16 @@ func main() {
 	// ******** Resources ********
 
 	err := server.RegisterResource(
-		"vntg://providers",
-		"Cost Providers",
-		"List of available cost providers",
+		"vntg://version",
+		"Vantage MCP Server Version",
+		"Current version of the Vantage MCP server",
 		"application/json",
 		func() (*mcp_golang.ResourceResponse, error) {
-			log.Printf("invoked - resource - cost providers")
-
-			if bearerTokenError != nil {
-				return nil, bearerTokenError
-			}
+			log.Printf("invoked - resource - version")
 
 			resource := mcp_golang.NewTextEmbeddedResource(
-				"vntg://providers",
-				"['aws', 'azure', 'gcp']",
+				"vntg://version",
+				fmt.Sprintf("\"%s\"", Version),
 				"application/json",
 			)
 
