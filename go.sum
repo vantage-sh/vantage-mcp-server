@@ -161,6 +161,8 @@ github.com/vantage-sh/vantage-go v0.0.63 h1:rKG5/rxMM4MB4QoPsBzzbtExc6lKswtEO5GJ
 github.com/vantage-sh/vantage-go v0.0.63/go.mod h1:MsSI4gX/Wvkzo9kqWphZfE6puolmnbHcXSaoGkDCmXg=
 github.com/vantage-sh/vantage-go v0.0.64-0.20250424190845-6ffd11376c4a h1:E7lNZxgFFWwvtsEpjEsH+kopFCcoZlth/KzY5k08cr4=
 github.com/vantage-sh/vantage-go v0.0.64-0.20250424190845-6ffd11376c4a/go.mod h1:MsSI4gX/Wvkzo9kqWphZfE6puolmnbHcXSaoGkDCmXg=
+github.com/vantage-sh/vantage-go v0.0.64-0.20250424222337-3d4b15f9128b h1:Y3DqrmmkS29qdstP46mHXjH4ibGRzWmF/xf3ODhuX84=
+github.com/vantage-sh/vantage-go v0.0.64-0.20250424222337-3d4b15f9128b/go.mod h1:MsSI4gX/Wvkzo9kqWphZfE6puolmnbHcXSaoGkDCmXg=
 github.com/wk8/go-ordered-map/v2 v2.1.8 h1:5h/BUHu93oj4gIdvHHHGsScSTMijfx5PeYkE/fJgbpc=
 github.com/wk8/go-ordered-map/v2 v2.1.8/go.mod h1:5nJHM5DyteebpVlHnWMV0rPz6Zp7+xBAnxjb1X5vnTw=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=
