@@ -17,6 +17,7 @@ import (
 	"github.com/metoro-io/mcp-golang/transport/stdio"
 	"github.com/vantage-sh/vantage-go/vantagev2/models"
 	anomaliesClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/anomaly_alerts"
+	costProvidersClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/cost_provider"
 	"github.com/vantage-sh/vantage-go/vantagev2/vantage/costs"
 	"github.com/vantage-sh/vantage-go/vantagev2/vantage/integrations"
 	meClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/me"
@@ -159,6 +160,48 @@ func main() {
 	}
 
 	// ******** Tools ********
+
+	type ListCostProvidersParams struct {
+		WorkspaceToken string `json:"workspace_token" jsonschema:"required,description=Workspace token to list cost providers for"`
+	}
+
+	type ListCostProvidersResult struct {
+		CostProviders []*models.CostProvider `json:"cost_providers"`
+	}
+
+	listCostProvidersDescription := `
+	List of cost providers available to query for a given Workspace. Can be used to filter costs down to a specific provider in VQL queries.
+	`
+
+	err = server.RegisterTool("list-cost-providers", listCostProvidersDescription, func(params ListCostProvidersParams) (*mcp_golang.ToolResponse, error) {
+		log.Printf("invoked - tool - list cost providers %+v", params)
+
+		if bearerTokenError != nil {
+			return nil, bearerTokenError
+		}
+
+		client := costProvidersClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
+
+		getCostProvidersParams := costProvidersClient.NewGetCostProvidersParams()
+		getCostProvidersParams.SetWorkspaceToken(&params.WorkspaceToken)
+
+		apiResponse, err := client.GetCostProviders(getCostProvidersParams, authInfo)
+		if err != nil {
+			return nil, fmt.Errorf("Error fetching cost providers: %+v", err)
+		}
+
+		result := ListCostProvidersResult{}
+		result.CostProviders = apiResponse.GetPayload().CostProviders
+		costProviders, err := json.Marshal(result)
+		if err != nil {
+			return nil, fmt.Errorf("Error marshalling cost providers: %+v", err)
+		}
+		content := mcp_golang.NewTextContent(string(costProviders))
+		return mcp_golang.NewToolResponse(content), nil
+	})
+	if err != nil {
+		panic(err)
+	}
 
 	type ListCostReportsParams struct {
 		Page int32 `json:"page" jsonschema:"optional,description=page"`
