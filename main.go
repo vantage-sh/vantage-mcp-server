@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -21,6 +22,8 @@ import (
 	meClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/me"
 	tagsClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/tags"
 )
+
+const Version = "v0.0.1"
 
 type McpResponseLinks struct {
 	NextPage    int32 `json:"next_page"`
@@ -97,13 +100,19 @@ func verifyReadonlyToken(bearerToken string, authInfo runtime.ClientAuthInfoWrit
 }
 
 func main() {
+	showVersion := flag.Bool("version", false, "Print version and exit")
+	flag.Parse()
+
+	if *showVersion {
+		fmt.Println(Version)
+		os.Exit(0)
+	}
+
 	setupLogger()
 	bearerToken, found := os.LookupEnv("VANTAGE_BEARER_TOKEN")
 	if !found {
 		panic("VANTAGE_BEARER_TOKEN not found, please create a read-only Service Token or Personal Access Token at https://console.vantage.sh/settings/access_tokens")
 	}
-
-	const Version = "v0.0.1alpha"
 
 	authInfo := runtime.ClientAuthInfoWriterFunc(func(req runtime.ClientRequest, reg strfmt.Registry) error {
 		if err := req.SetHeaderParam("Authorization", fmt.Sprintf("Bearer %s", bearerToken)); err != nil {
