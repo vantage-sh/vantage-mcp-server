@@ -16,7 +16,7 @@ The Vantage MCP Server is an open-source tool, written in Golang, that lets you 
 
 ### Available Tools
 
-The Vantage MCP Server currently exposes the following tools, which can be invoked by any compatible MCP client (e.g., Claude, Cursor):
+The Vantage MCP Server currently exposes the following tools, which can be invoked by any compatible MCP client (e.g., Claude, Cursor, Goose):
 
 - `get-costs`
 
@@ -40,6 +40,9 @@ The Vantage MCP Server currently exposes the following tools, which can be invok
 
 - `list-anomalies`
   - List anomalies that were detected on cost reports.
+
+- `list-cost-providers`
+  - List cost providers that can be used to filter costs in VQL queries.
 
 ## Getting Started
 
