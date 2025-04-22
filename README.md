@@ -45,7 +45,7 @@ The Vantage MCP Server currently exposes the following tools, which can be invok
 
 ### Prerequisites
 
-Ensure the following packages are installed (see `.tool-versions` for exact versions):
+If you're installing from source, ensure the following packages are installed (see `.tool-versions` for exact versions):
 
 - [Go](https://go.dev/doc/install)
 - [Node.js](https://nodejs.org/en/download)
@@ -55,6 +55,14 @@ You can use a version manager (e.g., [`asdf`](https://asdf-vm.com/)) or package 
 You will also need to create a **Read-Only** Vantage API token (Write will not work at this time). Follow the instructions on the [Vantage API documentation](https://vantage.readme.io/reference/authentication). We recommend creating a brand-new read-only API token for exclusive use with the MCP Server.
 
 ### Installation
+
+#### Using Homebrew
+
+```bash
+brew install vantage-sh/tap/vantage-mcp-server
+```
+
+#### From Source
 
 1. Clone this repository.
 
@@ -71,7 +79,7 @@ chmod +x vantage-mcp-server
 
 > 📝 _Note: If you pull down new changes from the repository, be sure to re-run `go build` to rebuild the server and ensure you're running the latest version._
 
-3. Run using the MCP inspector.
+3. Debug using the MCP inspector.
 
 ```bash
 npx @modelcontextprotocol/inspector -e VANTAGE_BEARER_TOKEN=<token> ./vantage-mcp-server
