@@ -6,7 +6,7 @@ require (
 	github.com/go-openapi/runtime v0.26.0
 	github.com/go-openapi/strfmt v0.21.7
 	github.com/metoro-io/mcp-golang v0.9.0
-	github.com/vantage-sh/vantage-go v0.0.62
+	github.com/vantage-sh/vantage-go v0.0.64-0.20250424190845-6ffd11376c4a
 )
 
 require (
