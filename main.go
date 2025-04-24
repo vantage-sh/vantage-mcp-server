@@ -18,6 +18,7 @@ import (
 	"github.com/vantage-sh/vantage-go/vantagev2/models"
 	anomaliesClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/anomaly_alerts"
 	costProvidersClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/cost_provider"
+	costServicesClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/cost_service"
 	"github.com/vantage-sh/vantage-go/vantagev2/vantage/costs"
 	"github.com/vantage-sh/vantage-go/vantagev2/vantage/integrations"
 	meClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/me"
@@ -203,6 +204,48 @@ func main() {
 		panic(err)
 	}
 
+	type ListCostServicesParams struct {
+		WorkspaceToken string `json:"workspace_token" jsonschema:"required,description=Workspace token to list cost services for"`
+	}
+
+	type ListCostServicesResult struct {
+		CostServices []*models.CostService `json:"cost_services"`
+	}
+
+	listCostServicesDescription := `
+	List of cost services available to query for a given Workspace. Can be used to filter costs down to a specific service in VQL queries.
+	`
+
+	err = server.RegisterTool("list-cost-services", listCostServicesDescription, func(params ListCostServicesParams) (*mcp_golang.ToolResponse, error) {
+		log.Printf("invoked - tool - list cost services %+v", params)
+
+		if bearerTokenError != nil {
+			return nil, bearerTokenError
+		}
+
+		client := costServicesClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken)
+
+		getCostServicesParams := costServicesClient.NewGetCostServicesParams()
+		getCostServicesParams.SetWorkspaceToken(&params.WorkspaceToken)
+
+		apiResponse, err := client.GetCostServices(getCostServicesParams, authInfo)
+		if err != nil {
+			return nil, fmt.Errorf("Error fetching cost services: %+v", err)
+		}
+
+		result := ListCostServicesResult{}
+		result.CostServices = apiResponse.GetPayload().CostServices
+		costServices, err := json.Marshal(result)
+		if err != nil {
+			return nil, fmt.Errorf("Error marshalling cost services: %+v", err)
+		}
+		content := mcp_golang.NewTextContent(string(costServices))
+		return mcp_golang.NewToolResponse(content), nil
+	})
+	if err != nil {
+		panic(err)
+	}
+
 	type ListCostReportsParams struct {
 		Page int32 `json:"page" jsonschema:"optional,description=page"`
 	}
@@ -334,13 +377,14 @@ func main() {
 	Query for costs in a Vantage Account. These are independent of a cost reports.
 	Use Vantage VQL to structure a query. 
 	Queries must be scoped to a Workspace. Use the get-myself tool to know about available workspaces, and the get-cost-integrations tool to know about available cost providers. If the user didn't tell you a workspace it is best to ask them than to guess it.
-	It's best to set a date range of about 30 days unless the user specifically wants to query for a longer time period.
+	It's best to set a date range of 30 days unless the user specifically wants to query for a longer time period.
 
 	Here is some more detailed info on using VQL:
 	All costs originate from a Cost Provider (generally a cloud company like AWS, Azure, Datadog) and then filter on a service that they provide (like EC2, S3, etc).
 	A cost provider is required on every VQL query.
-	VQL is always in paraenthesis. Always use single quotes around names that are being queried. 
-	To query on a cost provider, use this syntax: (costs.provider = 'aws')
+	VQL is always in parenthesis. Always use single quotes around names that are being queried. 
+	To query on a cost provider, use this syntax: (costs.provider = '<provider name>'). The provider name must come from the list-cost-providers tool.
+	To query on a cost service, use this syntax: (costs.provider = '<provider name>' AND costs.service = '<service name>'). The service name must come from the list-cost-services tool.
 	You can only filter against one cost provider at a time. If you want to query for costs from two providers, you need to use the OR operator. Example: ((costs.provider = 'aws') OR (costs.provider = 'azure'))
 	You can otherwise use the IN system to compare against a list of items, like this: (costs.provider = 'aws' AND costs.service IN ('AWSQueueService', 'AWSLambda'))
 	To filter within a cost provider, keep the cost provider part and add a AND section, example: (costs.provider = 'aws' AND costs.service = 'Amazon Relational Database Service')
