@@ -110,7 +110,7 @@ func main() {
 
 	setupLogger()
 
-	bearerToken := NewBearerTokenMgr()
+	bearerTokenMgr := NewBearerTokenMgr()
 
 	log.Printf("Server Starting, OS: %s, Arch: %s", goruntime.GOOS, goruntime.GOARCH)
 
@@ -153,14 +153,14 @@ func main() {
 	List of cost providers available to query for a given Workspace. Can be used to filter costs down to a specific provider in VQL queries.
 	`
 
-	registerVantageTool(server, *bearerToken, "list-cost-providers", listCostProvidersDescription, func(params ListCostProvidersParams) (*mcp_golang.ToolResponse, error) {
+	registerVantageTool(server, *bearerTokenMgr, "list-cost-providers", listCostProvidersDescription, func(params ListCostProvidersParams) (*mcp_golang.ToolResponse, error) {
 
-		client := costProvidersClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken.BearerToken)
+		client := costProvidersClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerTokenMgr.BearerToken)
 
 		getCostProvidersParams := costProvidersClient.NewGetCostProvidersParams()
 		getCostProvidersParams.SetWorkspaceToken(&params.WorkspaceToken)
 
-		apiResponse, err := client.GetCostProviders(getCostProvidersParams, bearerToken.AuthInfo())
+		apiResponse, err := client.GetCostProviders(getCostProvidersParams, bearerTokenMgr.AuthInfo())
 		if err != nil {
 			return nil, fmt.Errorf("Error fetching cost providers: %+v", err)
 		}
@@ -190,13 +190,13 @@ func main() {
 	List of cost services available to query for a given Workspace. Can be used to filter costs down to a specific service in VQL queries.
 	`
 
-	registerVantageTool(server, *bearerToken, "list-cost-services", listCostServicesDescription, func(params ListCostServicesParams) (*mcp_golang.ToolResponse, error) {
-		client := costServicesClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken.BearerToken)
+	registerVantageTool(server, *bearerTokenMgr, "list-cost-services", listCostServicesDescription, func(params ListCostServicesParams) (*mcp_golang.ToolResponse, error) {
+		client := costServicesClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerTokenMgr.BearerToken)
 
 		getCostServicesParams := costServicesClient.NewGetCostServicesParams()
 		getCostServicesParams.SetWorkspaceToken(&params.WorkspaceToken)
 
-		apiResponse, err := client.GetCostServices(getCostServicesParams, bearerToken.AuthInfo())
+		apiResponse, err := client.GetCostServices(getCostServicesParams, bearerTokenMgr.AuthInfo())
 		if err != nil {
 			return nil, fmt.Errorf("Error fetching cost services: %+v", err)
 		}
@@ -230,16 +230,16 @@ func main() {
 	The 'token' of a report is a unique identifier for the report. It can be used to generate a link to the report in the Vantage Web UI. If a user wants to see a report, you can link them like this: https://console.vantage.sh/go/<token>
 	`
 
-	registerVantageTool(server, *bearerToken, "list-cost-reports", listCostReportsDescription, func(params ListCostReportsParams) (*mcp_golang.ToolResponse, error) {
+	registerVantageTool(server, *bearerTokenMgr, "list-cost-reports", listCostReportsDescription, func(params ListCostReportsParams) (*mcp_golang.ToolResponse, error) {
 
-		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken.BearerToken)
+		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerTokenMgr.BearerToken)
 		var limit int32 = 128
 
 		getCostReportParams := costs.NewGetCostReportsParams()
 		getCostReportParams.SetLimit(&limit)
 		getCostReportParams.SetPage(&params.Page)
 
-		apiResponse, err := client.GetCostReports(getCostReportParams, bearerToken.AuthInfo())
+		apiResponse, err := client.GetCostReports(getCostReportParams, bearerTokenMgr.AuthInfo())
 		if err != nil {
 			return nil, fmt.Errorf("Error fetching cost reports: %+v", err)
 		}
@@ -281,14 +281,14 @@ func main() {
 	Integrations are the cost providers that Vantage is configured to connect to and pull cost data from.
 	If a user wants to see their providers in the Vantage Web UI, they can visit https://console.vantage.sh/settings/integrations
 	`
-	registerVantageTool(server, *bearerToken, "list-cost-integrations", listCostIntegrationsDescription, func(params ListCostIntegrations) (*mcp_golang.ToolResponse, error) {
+	registerVantageTool(server, *bearerTokenMgr, "list-cost-integrations", listCostIntegrationsDescription, func(params ListCostIntegrations) (*mcp_golang.ToolResponse, error) {
 
-		client := integrations.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken.BearerToken)
+		client := integrations.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerTokenMgr.BearerToken)
 		getAccountsParams := integrations.NewGetIntegrationsParams()
 		getAccountsParams.SetPage(&params.Page)
 		var limit int32 = 128
 		getAccountsParams.SetLimit(&limit)
-		apiResponse, err := client.GetIntegrations(getAccountsParams, bearerToken.AuthInfo())
+		apiResponse, err := client.GetIntegrations(getAccountsParams, bearerTokenMgr.AuthInfo())
 		if err != nil {
 			return nil, fmt.Errorf("error fetching integrations endpoint to populate accounts: %+v", err)
 		}
@@ -356,9 +356,9 @@ func main() {
 	Some cost providers operate in a specific region, you can filter using the costs.region field. Example: (costs.provider = 'aws' AND costs.region = 'us-east-1')
 	`
 
-	registerVantageTool(server, *bearerToken, "query-costs", queryCostsDescription, func(params QueryCostsParams) (*mcp_golang.ToolResponse, error) {
+	registerVantageTool(server, *bearerTokenMgr, "query-costs", queryCostsDescription, func(params QueryCostsParams) (*mcp_golang.ToolResponse, error) {
 
-		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken.BearerToken)
+		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerTokenMgr.BearerToken)
 		var limit int32 = 2000
 
 		getCostsParams := costs.NewGetCostsParams()
@@ -369,7 +369,7 @@ func main() {
 		getCostsParams.SetPage(&params.Page)
 		getCostsParams.SetLimit(&limit)
 
-		apiResponse, err := client.GetCosts(getCostsParams, bearerToken.AuthInfo())
+		apiResponse, err := client.GetCosts(getCostsParams, bearerTokenMgr.AuthInfo())
 		if err != nil {
 			return nil, fmt.Errorf("Error fetching costs: %+v", err)
 		}
@@ -414,9 +414,9 @@ func main() {
 	The report token can be used to link the user to the report in the Vantage Web UI. Build the link like this: https://console.vantage.sh/go/<CostReportToken>
 	`
 
-	registerVantageTool(server, *bearerToken, "list-costs", listCostsDescription, func(params ListCostsParams) (*mcp_golang.ToolResponse, error) {
+	registerVantageTool(server, *bearerTokenMgr, "list-costs", listCostsDescription, func(params ListCostsParams) (*mcp_golang.ToolResponse, error) {
 
-		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken.BearerToken)
+		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerTokenMgr.BearerToken)
 
 		// We keep this purposefully small to avoid overwhelming the LLM client with data, which can result in network errors.
 		// Sadly, this has the side effect of increasing the chance the user's API token is rate-limited.
@@ -427,7 +427,7 @@ func main() {
 		getCostsParams.SetCostReportToken(&params.CostReportToken)
 		getCostsParams.SetPage(&params.Page)
 
-		apiResponse, err := client.GetCosts(getCostsParams, bearerToken.AuthInfo())
+		apiResponse, err := client.GetCosts(getCostsParams, bearerTokenMgr.AuthInfo())
 		if err != nil {
 			return nil, fmt.Errorf("Error fetching costs: %+v", err)
 		}
@@ -464,11 +464,11 @@ func main() {
 	Get data that is available to the current auth token. This includes the list of Workspaces they have access to.
 	`
 
-	registerVantageTool(server, *bearerToken, "get-myself", getMyselfDescription, func(params MyselfParams) (*mcp_golang.ToolResponse, error) {
+	registerVantageTool(server, *bearerTokenMgr, "get-myself", getMyselfDescription, func(params MyselfParams) (*mcp_golang.ToolResponse, error) {
 
-		client := meClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken.BearerToken)
+		client := meClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerTokenMgr.BearerToken)
 		getMyselfParams := meClient.NewGetMeParams()
-		response, err := client.GetMe(getMyselfParams, bearerToken.AuthInfo())
+		response, err := client.GetMe(getMyselfParams, bearerTokenMgr.AuthInfo())
 		if err != nil {
 			log.Printf("Error fetching myself: %+v", err)
 			return nil, fmt.Errorf("Error fetching myself: %+v", err)
@@ -500,9 +500,9 @@ func main() {
 	The report token can be used to link the user to the report in the Vantage Web UI. Build the link like this: https://console.vantage.sh/go/<CostReportToken>
 	`
 
-	registerVantageTool(server, *bearerToken, "list-anomalies", listAnomaliesDescription, func(params ListAnomaliesParams) (*mcp_golang.ToolResponse, error) {
+	registerVantageTool(server, *bearerTokenMgr, "list-anomalies", listAnomaliesDescription, func(params ListAnomaliesParams) (*mcp_golang.ToolResponse, error) {
 
-		client := anomaliesClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken.BearerToken)
+		client := anomaliesClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerTokenMgr.BearerToken)
 		var limit int32 = 128
 
 		getAnomaliesParams := anomaliesClient.NewGetAnomalyAlertsParams()
@@ -529,7 +529,7 @@ func main() {
 			getAnomaliesParams.SetEndDate(&endDate)
 		}
 
-		response, err := client.GetAnomalyAlerts(getAnomaliesParams, bearerToken.AuthInfo())
+		response, err := client.GetAnomalyAlerts(getAnomaliesParams, bearerTokenMgr.AuthInfo())
 		if err != nil {
 			return nil, fmt.Errorf("Error fetching anomalies: %+v", err)
 		}
@@ -563,16 +563,16 @@ func main() {
 	`
 
 	// TODO(nel): can tags be exposed as a resource instead? Would need MCP clients to support pagination.
-	registerVantageTool(server, *bearerToken, "list-tags", listTagsDescription, func(params ListTagsParams) (*mcp_golang.ToolResponse, error) {
+	registerVantageTool(server, *bearerTokenMgr, "list-tags", listTagsDescription, func(params ListTagsParams) (*mcp_golang.ToolResponse, error) {
 
-		client := tagsClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken.BearerToken)
+		client := tagsClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerTokenMgr.BearerToken)
 		var limit int32 = 128
 
 		getTagsParams := tagsClient.NewGetTagsParams()
 		getTagsParams.SetLimit(&limit)
 		getTagsParams.SetPage(&params.Page)
 
-		apiResponse, err := client.GetTags(getTagsParams, bearerToken.AuthInfo())
+		apiResponse, err := client.GetTags(getTagsParams, bearerTokenMgr.AuthInfo())
 		if err != nil {
 			return nil, fmt.Errorf("error fetching tags: %+v", err)
 		}
@@ -610,9 +610,9 @@ func main() {
 
 	listTagValuesDescription := `Tags can have many values. Use this tool to find the values and service providers that are associated with a tag.`
 
-	registerVantageTool(server, *bearerToken, "list-tag-values", listTagValuesDescription, func(params ListTagValuesParams) (*mcp_golang.ToolResponse, error) {
+	registerVantageTool(server, *bearerTokenMgr, "list-tag-values", listTagValuesDescription, func(params ListTagValuesParams) (*mcp_golang.ToolResponse, error) {
 
-		client := tagsClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken.BearerToken)
+		client := tagsClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerTokenMgr.BearerToken)
 		var limit int32 = 128
 
 		getTagValuesParams := tagsClient.NewGetTagValuesParams()
@@ -620,7 +620,7 @@ func main() {
 		getTagValuesParams.SetPage(&params.Page)
 		getTagValuesParams.SetKey(params.Key)
 
-		response, err := client.GetTagValues(getTagValuesParams, bearerToken.AuthInfo())
+		response, err := client.GetTagValues(getTagValuesParams, bearerTokenMgr.AuthInfo())
 		if err != nil {
 			return nil, fmt.Errorf("Error fetching tags: %+v", err)
 		}
@@ -655,9 +655,9 @@ func main() {
 	listUnitCostsDescription := `
    Retrieve the unit costs for a given CostReport, with optional paging, date filters, and ordering.
    `
-	registerVantageTool(server, *bearerToken, "list-unit-costs", listUnitCostsDescription, func(params ListUnitCostsParams) (*mcp_golang.ToolResponse, error) {
+	registerVantageTool(server, *bearerTokenMgr, "list-unit-costs", listUnitCostsDescription, func(params ListUnitCostsParams) (*mcp_golang.ToolResponse, error) {
 
-		client := unitCostsClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken.BearerToken)
+		client := unitCostsClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerTokenMgr.BearerToken)
 		getParams := unitCostsClient.NewGetUnitCostsParams()
 		var limit int32 = 64
 		getParams.SetLimit(&limit)
@@ -677,7 +677,7 @@ func main() {
 		if params.Order != "" {
 			getParams.SetOrder(&params.Order)
 		}
-		apiResp, err := client.GetUnitCosts(getParams, bearerToken.AuthInfo())
+		apiResp, err := client.GetUnitCosts(getParams, bearerTokenMgr.AuthInfo())
 		if err != nil {
 			return nil, fmt.Errorf("Error fetching unit costs: %+v", err)
 		}
@@ -719,15 +719,15 @@ func main() {
     Submit feedback on using the Vantage MCP Server. Ask the user if they'd like to provide feedback any time you sense they might be frustrated.
     Stop suggesting if they say they're not interested in providing feedback.
     `
-	registerVantageTool(server, *bearerToken, "submit-user-feedback", submitFeedbackDescription, func(params SubmitUserFeedbackParams) (*mcp_golang.ToolResponse, error) {
+	registerVantageTool(server, *bearerTokenMgr, "submit-user-feedback", submitFeedbackDescription, func(params SubmitUserFeedbackParams) (*mcp_golang.ToolResponse, error) {
 
-		client := userFeedbackClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerToken.BearerToken)
+		client := userFeedbackClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerTokenMgr.BearerToken)
 		createUserFeedbackParams := userFeedbackClient.NewCreateUserFeedbackParams()
 		createUserFeedbackParams.SetCreateUserFeedback(&models.CreateUserFeedback{
 			Message: &params.Message,
 		})
 
-		_, err := client.CreateUserFeedback(createUserFeedbackParams, bearerToken.AuthInfo())
+		_, err := client.CreateUserFeedback(createUserFeedbackParams, bearerTokenMgr.AuthInfo())
 		if err != nil {
 			return nil, fmt.Errorf("Error submitting user feedback: %+v", err)
 		}
