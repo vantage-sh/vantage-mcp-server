@@ -20,6 +20,7 @@ import (
 	costProvidersClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/cost_provider"
 	costServicesClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/cost_service"
 	"github.com/vantage-sh/vantage-go/vantagev2/vantage/costs"
+	"github.com/vantage-sh/vantage-go/vantagev2/vantage/dashboards"
 	"github.com/vantage-sh/vantage-go/vantagev2/vantage/integrations"
 	meClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/me"
 	tagsClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/tags"
@@ -640,6 +641,70 @@ func main() {
 		}
 
 		content := mcp_golang.NewTextContent(string(tags))
+		return mcp_golang.NewToolResponse(content), nil
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	// ******** List Dashboards Tool ********
+
+	type ListDashboardsParams struct {
+		Page int32 `json:"page" jsonschema:"optional,description=page number"`
+	}
+
+	type ListDashboardsResult struct {
+		Dashboards []*models.Dashboard `json:"dashboards"`
+		PageData   McpResponseLinks    `json:"page_data"`
+	}
+
+	listDashboardsDescription := `
+	List all dashboards available in the Vantage account. Dashboards provide visualizations of cost data.
+	Use the page value of 1 to start.
+	The token of a dashboard can be used to link the user to the dashboard in the Vantage Web UI. Build the link like this: https://console.vantage.sh/go/<token>
+	`
+
+	registerVantageTool(server, *bearerTokenMgr, "list-dashboards", listDashboardsDescription, func(params ListDashboardsParams) (*mcp_golang.ToolResponse, error) {
+
+		client := dashboards.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerTokenMgr.BearerToken)
+		var limit int32 = 64 // Hardcoded limit
+
+		getDashboardsParams := dashboards.NewGetDashboardsParams()
+		getDashboardsParams.SetLimit(&limit)
+		if params.Page != 0 {
+			getDashboardsParams.SetPage(&params.Page)
+		}
+
+		apiResponse, err := client.GetDashboards(getDashboardsParams, bearerTokenMgr.AuthInfo())
+		if err != nil {
+			return nil, fmt.Errorf("error fetching dashboards: %+v", err)
+		}
+
+		payload := apiResponse.GetPayload()
+		result := ListDashboardsResult{
+			Dashboards: payload.Dashboards,
+		}
+
+		// Handle pagination links
+		links, ok := payload.Links.(map[string]interface{})
+		if !ok {
+			log.Printf("Warning: could not assert links to map[string]interface{} for dashboards")
+			result.PageData = NO_NEXT_PAGE
+		} else {
+			nextPageUrl, ok := links["next"]
+			if ok && nextPageUrl != nil {
+				result.PageData = buildLinksFromUrl(nextPageUrl.(string))
+			} else {
+				result.PageData = NO_NEXT_PAGE
+			}
+		}
+
+		jsonResult, err := json.Marshal(result)
+		if err != nil {
+			return nil, fmt.Errorf("error marshalling dashboards: %+v", err)
+		}
+
+		content := mcp_golang.NewTextContent(string(jsonResult))
 		return mcp_golang.NewToolResponse(content), nil
 	})
 	if err != nil {
