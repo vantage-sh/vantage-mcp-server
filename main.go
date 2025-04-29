@@ -19,7 +19,7 @@ import (
 	budgetsClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/budgets"
 	costProvidersClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/cost_provider"
 	costServicesClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/cost_service"
-	"github.com/vantage-sh/vantage-go/vantagev2/vantage/costs"
+	costsClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/costs"
 	"github.com/vantage-sh/vantage-go/vantagev2/vantage/dashboards"
 	"github.com/vantage-sh/vantage-go/vantagev2/vantage/integrations"
 	meClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/me"
@@ -230,14 +230,15 @@ func main() {
 	The 'Title' of a report is a good way to know what the report is about. 
 	The 'filter' of a report also gives clues to the data it provides.
 	The 'token' of a report is a unique identifier for the report. It can be used to generate a link to the report in the Vantage Web UI. If a user wants to see a report, you can link them like this: https://console.vantage.sh/go/<token>
+	Vantage offers data related to a cost report: Forecasts. The same report token can be used on the get-cost-report-forecast tool and Vantage will forecast future costs.
 	`
 
 	registerVantageTool(server, *bearerTokenMgr, "list-cost-reports", listCostReportsDescription, func(params ListCostReportsParams) (*mcp_golang.ToolResponse, error) {
 
-		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerTokenMgr.BearerToken)
+		client := costsClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerTokenMgr.BearerToken)
 		var limit int32 = 128
 
-		getCostReportParams := costs.NewGetCostReportsParams()
+		getCostReportParams := costsClient.NewGetCostReportsParams()
 		getCostReportParams.SetLimit(&limit)
 		getCostReportParams.SetPage(&params.Page)
 
@@ -360,10 +361,10 @@ func main() {
 
 	registerVantageTool(server, *bearerTokenMgr, "query-costs", queryCostsDescription, func(params QueryCostsParams) (*mcp_golang.ToolResponse, error) {
 
-		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerTokenMgr.BearerToken)
+		client := costsClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerTokenMgr.BearerToken)
 		var limit int32 = 2000
 
-		getCostsParams := costs.NewGetCostsParams()
+		getCostsParams := costsClient.NewGetCostsParams()
 		getCostsParams.SetFilter(&params.VqlInput)
 		getCostsParams.SetWorkspaceToken(&params.WorkspaceToken)
 		getCostsParams.SetStartDate(&params.StartDate)
@@ -420,13 +421,13 @@ func main() {
 
 	registerVantageTool(server, *bearerTokenMgr, "list-costs", listCostsDescription, func(params ListCostsParams) (*mcp_golang.ToolResponse, error) {
 
-		client := costs.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerTokenMgr.BearerToken)
+		client := costsClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerTokenMgr.BearerToken)
 
 		// We keep this purposefully small to avoid overwhelming the LLM client with data, which can result in network errors.
 		// Sadly, this has the side effect of increasing the chance the user's API token is rate-limited.
 		var limit int32 = 64
 
-		getCostsParams := costs.NewGetCostsParams()
+		getCostsParams := costsClient.NewGetCostsParams()
 		getCostsParams.SetLimit(&limit)
 		getCostsParams.SetCostReportToken(&params.CostReportToken)
 		getCostsParams.SetPage(&params.Page)
@@ -465,6 +466,91 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	// ====
+
+	type GetCostReportForecastInput struct {
+		Page            int32  `json:"page" jsonschema:"optional,description=page"`
+		CostReportToken string `json:"cost_report_token" jsonschema:"required,description=Cost report to limit costs to"`
+		StartDate       string `json:"start_date" jsonschema:"optional,description=Start date to filter costs by, format=YYYY-MM-DD"`
+		EndDate         string `json:"end_date" jsonschema:"optional,description=End date to filter costs by, format=YYYY-MM-DD"`
+		Provider        string `json:"provider" jsonschema:"optional,description=Provider to filter costs by, refer to the list-cost-providers tool"`
+		Service         string `json:"service" jsonschema:"optional,description=Service to filter costs by, refer to the list-cost-services tool, must pass a provider when you pass a service"`
+	}
+
+	type GetCostReportForecastResult struct {
+		ForecastedCost []*models.ForecastedCost `json:"forecasted_costs"`
+		PageData       McpResponseLinks         `json:"page_data"`
+		Currency       string                   `json:"currency" jsonschema:"optional,description=Currency of the forecasted costs"`
+	}
+
+	getCostReportForecastDescription := `
+	Given a Cost Report Token, Vantage can forecast the costs for a given time range. Vantage will return costs that are *predicted*, but have not yet been actually incurred.
+	If the user does not set a date, best to pick the next month as the default.
+	The report token can be used to link the user to the report in the Vantage Web UI. Build the link like this: https://console.vantage.sh/go/<CostReportToken>
+	`
+
+	registerVantageTool(server, *bearerTokenMgr, "get-cost-report-forecast", getCostReportForecastDescription, func(params GetCostReportForecastInput) (*mcp_golang.ToolResponse, error) {
+
+		client := costsClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerTokenMgr.BearerToken)
+
+		// We keep this purposefully small to avoid overwhelming the LLM client with data, which can result in network errors.
+		// Sadly, this has the side effect of increasing the chance the user's API token is rate-limited.
+		var limit int32 = 128
+
+		getForecastParams := costsClient.NewGetForecastedCostsParams()
+		getForecastParams.SetPage(&params.Page)
+		getForecastParams.SetLimit(&limit)
+		getForecastParams.SetCostReportToken(params.CostReportToken)
+		if params.Provider != "" {
+			getForecastParams.SetProvider(&params.Provider)
+		}
+		if params.Service != "" {
+			getForecastParams.SetService(&params.Service)
+		}
+		var userStartDate strfmt.Date
+		err := userStartDate.UnmarshalText([]byte(params.StartDate))
+		if err == nil {
+			getForecastParams.SetStartDate(&userStartDate)
+		}
+		var userEndDate strfmt.Date
+		err = userEndDate.UnmarshalText([]byte(params.EndDate))
+		if err == nil {
+			getForecastParams.SetEndDate(&userEndDate)
+		}
+
+		apiResponse, err := client.GetForecastedCosts(getForecastParams, bearerTokenMgr.AuthInfo())
+		if err != nil {
+			return nil, fmt.Errorf("error fetching costs: %+v", err)
+		}
+
+		result := GetCostReportForecastResult{}
+		result.ForecastedCost = apiResponse.GetPayload().ForecastedCosts
+		result.Currency = apiResponse.GetPayload().Currency
+		links, ok := apiResponse.GetPayload().Links.(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("error asserting Links to map[string]interface{}")
+		}
+		nextPageUrl, ok := links["next"]
+		if ok && nextPageUrl != nil {
+			result.PageData = buildLinksFromUrl(nextPageUrl.(string))
+		} else {
+			result.PageData = NO_NEXT_PAGE
+		}
+
+		jsonResult, err := json.Marshal(result)
+		if err != nil {
+			return nil, fmt.Errorf("error marshalling costs: %+v", err)
+		}
+
+		content := mcp_golang.NewTextContent(string(jsonResult))
+		return mcp_golang.NewToolResponse(content), nil
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	// ====
 
 	type MyselfParams struct {
 	}
@@ -521,20 +607,14 @@ func main() {
 		getAnomaliesParams.SetService(&params.Service)
 		getAnomaliesParams.SetProvider(&params.Provider)
 		getAnomaliesParams.SetCostCategory(&params.CostCategory)
-
-		// Convert string dates to strfmt.DateTime
-		if params.StartDate != "" {
-			startDate, err := strfmt.ParseDateTime(params.StartDate)
-			if err != nil {
-				return nil, fmt.Errorf("Error parsing start date: %+v", err)
-			}
+		var startDate strfmt.DateTime
+		err := startDate.UnmarshalText([]byte(params.StartDate))
+		if err == nil {
 			getAnomaliesParams.SetStartDate(&startDate)
 		}
-		if params.EndDate != "" {
-			endDate, err := strfmt.ParseDateTime(params.EndDate)
-			if err != nil {
-				return nil, fmt.Errorf("Error parsing end date: %+v", err)
-			}
+		var endDate strfmt.DateTime
+		err = endDate.UnmarshalText([]byte(params.EndDate))
+		if err == nil {
 			getAnomaliesParams.SetEndDate(&endDate)
 		}
 

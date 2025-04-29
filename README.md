@@ -18,31 +18,59 @@ The Vantage MCP Server is an open-source tool, written in Golang, that lets you 
 
 The Vantage MCP Server currently exposes the following tools, which can be invoked by any compatible MCP client (e.g., Claude, Cursor, Goose):
 
-- `get-costs`
+- `query-costs`
+  - A general purpose way to fetch Cost data using VQL.
 
-  - Allows filtering costs by date and VQL.
+- `list-costs`
+
+  - Display all the Costs in an associated Cost Report.
 
 - `list-cost-reports`
 
-  - List all cost reports available.
+  - List all Cost Reports available.
+
+- `get-cost-report-forecast`
+
+  - List all Forecasts of spending related to a Cost Report.
 
 - `list-cost-integrations`
 
-  - List all cost provider integrations (e.g., AWS, Azure, GCP) available to provide costs data from and their associated accounts.
+  - List all Cost Provider integrations (e.g., AWS, Azure, GCP) available to provide Costs data from and their associated accounts.
+
+- `list-cost-providers`
+  - List of just the Providers that the given Workspace has shared with it.
+
+- `list-cost-services`
+  - Lists all the Services and their associated Provider that is shared with the given Workspace.
+
+- `list-budgets`
+  - List all Budgets available to compare against a Cost Report and track spending.
+
+- `list-dashboards`
+  - List all Dashboards created in the Vantage account.
 
 - `list-tags`
 
-  - List tags that can be used to filter cost reports.
+  - List Tags that can be used to filter Cost Reports.
 
 - `list-tag-values`
 
-  - List tag values that can be used to filter cost reports.
+  - List Tag values that can be used to filter Cost Reports.
 
 - `list-anomalies`
-  - List anomalies that were detected on cost reports.
+  - List Anomalies that were detected on Cost Reports.
 
 - `list-cost-providers`
-  - List cost providers that can be used to filter costs in VQL queries.
+  - List Cost Providers that can be used to filter Costs in VQL queries.
+
+- `list-unit-costs`
+  - Retrieve the Unit Costs for a given Cost Report.
+
+- `get-myself`
+  - A utility to list available Workspaces and check the access level of your auth token.
+
+- `submit-user-feedback`
+  - A simple way to send feedback about the MCP or overall Vantage experience to the Vantage team.
 
 ## Getting Started
 
