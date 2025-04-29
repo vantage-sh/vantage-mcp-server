@@ -660,9 +660,9 @@ func main() {
 	listBudgetsDescription := `
 	List all budgets available in the Vantage account. Budgets help track spending against predefined limits.
 	Use the page value of 1 to start.
-	A budget is built against a Cost Report. The Budget objects returned by this tool will have a "cost_report_token" field that contains the token of the Cost Report. The Cost Report has the "filter" field to know what is the range of providres & services that the budget is tracking.
+	A budget is built against a Cost Report. The Budget objects returned by this tool will have a "cost_report_token" field that contains the token of the Cost Report. The Cost Report has the "filter" field to know what is the range of providers & services that the budget is tracking.
 	When a user is looking at a Cost Report for a specific date range, they can decide if the proivers and services spend is higher than desired by looking at the budgets for that report and the date range of the budget.
-	The token of a budget can be used to link the user to the budget in the Vantage Web UI. Build the link like this: https://console.vantage.sh/budgets/<BudgetToken>
+	The token of a budget can be used to link the user to the budget in the Vantage Web UI. Build the link like this: https://console.vantage.sh/go/<BudgetToken>
 	`
 
 	registerVantageTool(server, *bearerTokenMgr, "list-budgets", listBudgetsDescription, func(params ListBudgetsParams) (*mcp_golang.ToolResponse, error) {
