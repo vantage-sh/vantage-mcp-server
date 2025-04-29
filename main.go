@@ -16,6 +16,7 @@ import (
 	"github.com/metoro-io/mcp-golang/transport/stdio"
 	"github.com/vantage-sh/vantage-go/vantagev2/models"
 	anomaliesClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/anomaly_alerts"
+	budgetsClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/budgets"
 	costProvidersClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/cost_provider"
 	costServicesClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/cost_service"
 	"github.com/vantage-sh/vantage-go/vantagev2/vantage/costs"
@@ -402,6 +403,8 @@ func main() {
 	type ListCostsParams struct {
 		Page            int32  `json:"page" jsonschema:"optional,description=page"`
 		CostReportToken string `json:"cost_report_token" jsonschema:"required,description=Cost report to limit costs to"`
+		StartDate       string `json:"start_date" jsonschema:"optional,description=Start date to filter costs by, format=YYYY-MM-DD"`
+		EndDate         string `json:"end_date" jsonschema:"optional,description=End date to filter costs by, format=YYYY-MM-DD"`
 	}
 
 	type ListCostsResults struct {
@@ -426,10 +429,15 @@ func main() {
 		getCostsParams.SetLimit(&limit)
 		getCostsParams.SetCostReportToken(&params.CostReportToken)
 		getCostsParams.SetPage(&params.Page)
-
+		if params.StartDate != "" {
+			getCostsParams.SetStartDate(&params.StartDate)
+		}
+		if params.EndDate != "" {
+			getCostsParams.SetEndDate(&params.EndDate)
+		}
 		apiResponse, err := client.GetCosts(getCostsParams, bearerTokenMgr.AuthInfo())
 		if err != nil {
-			return nil, fmt.Errorf("Error fetching costs: %+v", err)
+			return nil, fmt.Errorf("error fetching costs: %+v", err)
 		}
 
 		result := ListCostsResults{}
@@ -637,6 +645,64 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	// ******** List Budgets Tool ********
+
+	type ListBudgetsParams struct {
+		Page int32 `json:"page" jsonschema:"description=page number, starts at 1"`
+	}
+
+	type ListBudgetsResult struct {
+		Budgets  []*models.Budget `json:"budgets"`
+		PageData McpResponseLinks `json:"page_data"`
+	}
+
+	listBudgetsDescription := `
+	List all budgets available in the Vantage account. Budgets help track spending against predefined limits.
+	Use the page value of 1 to start.
+	A budget is built against a Cost Report. The Budget objects returned by this tool will have a "cost_report_token" field that contains the token of the Cost Report. The Cost Report has the "filter" field to know what is the range of providers & services that the budget is tracking.
+	When a user is looking at a Cost Report for a specific date range, they can decide if the proivers and services spend is higher than desired by looking at the budgets for that report and the date range of the budget.
+	The token of a budget can be used to link the user to the budget in the Vantage Web UI. Build the link like this: https://console.vantage.sh/go/<BudgetToken>
+	`
+
+	registerVantageTool(server, *bearerTokenMgr, "list-budgets", listBudgetsDescription, func(params ListBudgetsParams) (*mcp_golang.ToolResponse, error) {
+
+		client := budgetsClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerTokenMgr.BearerToken)
+		var limit int32 = 128
+
+		getBudgetsParams := budgetsClient.NewGetBudgetsParams()
+		getBudgetsParams.SetLimit(&limit)
+		if params.Page != 0 {
+			getBudgetsParams.SetPage(&params.Page)
+		}
+
+		apiResponse, err := client.GetBudgets(getBudgetsParams, bearerTokenMgr.AuthInfo())
+		if err != nil {
+			return nil, fmt.Errorf("error fetching budgets: %+v", err)
+		}
+
+		payload := apiResponse.GetPayload()
+		result := ListBudgetsResult{
+			Budgets:  payload.Budgets,
+			PageData: NO_NEXT_PAGE,
+		}
+
+		links, ok := payload.Links.(map[string]interface{})
+		if ok {
+			nextPageUrl, ok := links["next"]
+			if ok && nextPageUrl != nil {
+				result.PageData = buildLinksFromUrl(nextPageUrl.(string))
+			}
+		}
+
+		jsonResult, err := json.Marshal(result)
+		if err != nil {
+			return nil, fmt.Errorf("error marshalling budgets: %+v", err)
+		}
+
+		content := mcp_golang.NewTextContent(string(jsonResult))
+		return mcp_golang.NewToolResponse(content), nil
+	})
 
 	// ******** List unit costs tool ********
 
