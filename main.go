@@ -28,7 +28,7 @@ import (
 	userFeedbackClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/user_feedback"
 )
 
-const Version = "v0.0.2"
+const Version = "v0.0.3"
 
 type McpResponseLinks struct {
 	NextPage    int32 `json:"next_page"`
