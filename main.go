@@ -331,7 +331,8 @@ func main() {
 	}
 
 	type QueryCostsResults struct {
-		Costs     []*models.Cost   `json:"cost_reports"`
+		Notes     string           `json:"notes" jsonschema:"optional,description=Notes about the results"`
+		Costs     []*models.Cost   `json:"costs"`
 		TotalCost interface{}      `json:"total_costs" jsonschema:"optional,description=Total costs"`
 		PageData  McpResponseLinks `json:"page_data"`
 	}
@@ -394,6 +395,15 @@ func main() {
 		result := QueryCostsResults{}
 		result.Costs = apiResponse.GetPayload().Costs
 		result.TotalCost = apiResponse.GetPayload().TotalCost
+		switch *getCostsParams.DateBin {
+		case "day":
+			result.Notes = "Costs records represent one day."
+		case "week":
+			result.Notes = "Costs records represent one week, the accrued_at field is the first day of the week. If your date range is less than one week, this record includes only data for that date range, not the full week."
+		default:
+			result.Notes = "Costs records represent one month, the accrued_at field is the first day of the month. If your date range is less than one month, this record includes only data for that date range, not the full month."
+		}
+
 		links, ok := apiResponse.GetPayload().Links.(map[string]interface{})
 		if !ok {
 			return nil, fmt.Errorf("Error asserting Links to map[string]interface{}")
@@ -426,8 +436,9 @@ func main() {
 	}
 
 	type ListCostsResults struct {
+		Notes     string           `json:"notes" jsonschema:"optional,description=Notes about the results"`
 		TotalCost interface{}      `json:"total_costs" jsonschema:"optional,description=Total costs"`
-		Costs     []*models.Cost   `json:"cost_reports"`
+		Costs     []*models.Cost   `json:"costs"`
 		PageData  McpResponseLinks `json:"page_data"`
 	}
 
@@ -475,6 +486,14 @@ func main() {
 		result := ListCostsResults{}
 		result.Costs = apiResponse.GetPayload().Costs
 		result.TotalCost = apiResponse.GetPayload().TotalCost
+		switch *getCostsParams.DateBin {
+		case "day":
+			result.Notes = "Costs records represent one day."
+		case "week":
+			result.Notes = "Costs records represent one week, the accrued_at field is the first day of the week. If your date range is less than one week, this record includes only data for that date range, not the full week."
+		default:
+			result.Notes = "Costs records represent one month, the accrued_at field is the first day of the month. If your date range is less than one month, this record includes only data for that date range, not the full month."
+		}
 		links, ok := apiResponse.GetPayload().Links.(map[string]interface{})
 		if !ok {
 			return nil, fmt.Errorf("Error asserting Links to map[string]interface{}")
