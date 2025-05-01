@@ -114,7 +114,7 @@ func main() {
 
 	bearerTokenMgr := NewBearerTokenMgr()
 
-	log.Printf("Server Starting, OS: %s, Arch: %s", goruntime.GOOS, goruntime.GOARCH)
+	log.Printf("Server Starting, Version: %s, OS: %s, Arch: %s", Version, goruntime.GOOS, goruntime.GOARCH)
 
 	done := make(chan struct{})
 	server := mcp_golang.NewServer(stdio.NewStdioServerTransport())
@@ -327,11 +327,14 @@ func main() {
 		StartDate      string `json:"start_date" jsonschema:"optional,description=Start date to filter costs by, format=YYYY-MM-DD"`
 		EndDate        string `json:"end_date" jsonschema:"optional,description=End date to filter costs by, format=YYYY-MM-DD"`
 		WorkspaceToken string `json:"workspace_token" jsonschema:"required,description=Workspace token to filter costs by"`
+		DateBin        string `json:"date_bin" jsonschema:"required,description=Date binning for returned costs, default to month unless user says otherwise, allowed values: day, week, month"`
 	}
 
 	type QueryCostsResults struct {
-		Costs    []*models.Cost   `json:"cost_reports"`
-		PageData McpResponseLinks `json:"page_data"`
+		Notes     string           `json:"notes" jsonschema:"optional,description=Notes about the results"`
+		Costs     []*models.Cost   `json:"costs"`
+		TotalCost interface{}      `json:"total_costs" jsonschema:"optional,description=Total costs"`
+		PageData  McpResponseLinks `json:"page_data"`
 	}
 
 	queryCostsDescription := `
@@ -357,6 +360,12 @@ func main() {
 	A user can have more than one provider account. They can filter on provider accounts if they supply you with the account id. Example: (costs.provider = 'aws' AND costs.provider_account_id = '1000000717')
 	You can also combine top-level queries to find for two providers: ((costs.provider = 'datadog') OR (costs.provider = 'azure'))
 	Some cost providers operate in a specific region, you can filter using the costs.region field. Example: (costs.provider = 'aws' AND costs.region = 'us-east-1')
+
+	The DateBin parameter will let you get the information with fewer returned results. 
+	When DateBin=day you get a record for each service spend on that day. For DateBin=week you get one entry per week, 
+	with the accrued_at field set to the first day of the week, but the spend item represents spend for a full week. 
+	Same with DateBin=month, each record returned covers a month of data. This lets you get answers with processing fewer 
+	records. Only use day/week if needed, otherwise DateBin=month is preferred, and month is the value set if you pass no value for DateBin.
 	`
 
 	registerVantageTool(server, *bearerTokenMgr, "query-costs", queryCostsDescription, func(params QueryCostsParams) (*mcp_golang.ToolResponse, error) {
@@ -371,6 +380,12 @@ func main() {
 		getCostsParams.SetEndDate(&params.EndDate)
 		getCostsParams.SetPage(&params.Page)
 		getCostsParams.SetLimit(&limit)
+		if params.DateBin != "" {
+			getCostsParams.SetDateBin(&params.DateBin)
+		} else {
+			defaultDateBin := "month"
+			getCostsParams.SetDateBin(&defaultDateBin)
+		}
 
 		apiResponse, err := client.GetCosts(getCostsParams, bearerTokenMgr.AuthInfo())
 		if err != nil {
@@ -379,6 +394,16 @@ func main() {
 
 		result := QueryCostsResults{}
 		result.Costs = apiResponse.GetPayload().Costs
+		result.TotalCost = apiResponse.GetPayload().TotalCost
+		switch *getCostsParams.DateBin {
+		case "day":
+			result.Notes = "Costs records represent one day."
+		case "week":
+			result.Notes = "Costs records represent one week, the accrued_at field is the first day of the week. If your date range is less than one week, this record includes only data for that date range, not the full week."
+		default:
+			result.Notes = "Costs records represent one month, the accrued_at field is the first day of the month. If your date range is less than one month, this record includes only data for that date range, not the full month."
+		}
+
 		links, ok := apiResponse.GetPayload().Links.(map[string]interface{})
 		if !ok {
 			return nil, fmt.Errorf("Error asserting Links to map[string]interface{}")
@@ -407,16 +432,25 @@ func main() {
 		CostReportToken string `json:"cost_report_token" jsonschema:"required,description=Cost report to limit costs to"`
 		StartDate       string `json:"start_date" jsonschema:"optional,description=Start date to filter costs by, format=YYYY-MM-DD"`
 		EndDate         string `json:"end_date" jsonschema:"optional,description=End date to filter costs by, format=YYYY-MM-DD"`
+		DateBin         string `json:"date_bin" jsonschema:"required,description=Date binning for returned costs, default to month unless user says otherwise, allowed values: day, week, month"`
 	}
 
 	type ListCostsResults struct {
-		Costs    []*models.Cost   `json:"cost_reports"`
-		PageData McpResponseLinks `json:"page_data"`
+		Notes     string           `json:"notes" jsonschema:"optional,description=Notes about the results"`
+		TotalCost interface{}      `json:"total_costs" jsonschema:"optional,description=Total costs"`
+		Costs     []*models.Cost   `json:"costs"`
+		PageData  McpResponseLinks `json:"page_data"`
 	}
 
 	listCostsDescription := `
 	List the cost items inside a report. The Token of a Report must be provided. Use the page value of 1 to start.
 	The report token can be used to link the user to the report in the Vantage Web UI. Build the link like this: https://console.vantage.sh/go/<CostReportToken>
+	
+	The DateBin parameter will let you get the information with fewer returned results. 
+	When DateBin=day you get a record for each service spend on that day. For DateBin=week you get one entry per week, 
+	with the accrued_at field set to the first day of the week, but the spend item represents spend for a full week. 
+	Same with DateBin=month, each record returned covers a month of data. This lets you get answers with processing fewer 
+	records. Only use day/week if needed, otherwise DateBin=month is preferred, and month is the value set if you pass no value for DateBin.
 	`
 
 	registerVantageTool(server, *bearerTokenMgr, "list-costs", listCostsDescription, func(params ListCostsParams) (*mcp_golang.ToolResponse, error) {
@@ -437,6 +471,13 @@ func main() {
 		if params.EndDate != "" {
 			getCostsParams.SetEndDate(&params.EndDate)
 		}
+		if params.DateBin != "" {
+			getCostsParams.SetDateBin(&params.DateBin)
+		} else {
+			defaultDateBin := "month"
+			getCostsParams.SetDateBin(&defaultDateBin)
+		}
+
 		apiResponse, err := client.GetCosts(getCostsParams, bearerTokenMgr.AuthInfo())
 		if err != nil {
 			return nil, fmt.Errorf("error fetching costs: %+v", err)
@@ -444,6 +485,15 @@ func main() {
 
 		result := ListCostsResults{}
 		result.Costs = apiResponse.GetPayload().Costs
+		result.TotalCost = apiResponse.GetPayload().TotalCost
+		switch *getCostsParams.DateBin {
+		case "day":
+			result.Notes = "Costs records represent one day."
+		case "week":
+			result.Notes = "Costs records represent one week, the accrued_at field is the first day of the week. If your date range is less than one week, this record includes only data for that date range, not the full week."
+		default:
+			result.Notes = "Costs records represent one month, the accrued_at field is the first day of the month. If your date range is less than one month, this record includes only data for that date range, not the full month."
+		}
 		links, ok := apiResponse.GetPayload().Links.(map[string]interface{})
 		if !ok {
 			return nil, fmt.Errorf("Error asserting Links to map[string]interface{}")
