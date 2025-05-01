@@ -967,11 +967,6 @@ func main() {
 		panic(err)
 	}
 
-	err = server.Serve()
-	if err != nil {
-		panic(err)
-	}
-
 	type SubmitUserFeedbackParams struct {
 		Message string `json:"message" jsonschema:"required,description=Feedback message regarding using the Vantage MCP Server"`
 	}
@@ -995,6 +990,11 @@ func main() {
 		content := mcp_golang.NewTextContent("User feedback submitted successfully.")
 		return mcp_golang.NewToolResponse(content), nil
 	})
+	if err != nil {
+		panic(err)
+	}
+
+	err = server.Serve()
 	if err != nil {
 		panic(err)
 	}
