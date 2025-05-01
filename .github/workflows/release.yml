@@ -5,10 +5,20 @@ on:
     types:
       - published
 
+# Add concurrency control
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-attach:
     name: Build and Attach Release Binaries
-    runs-on: depot-ubuntu-22.04
+    runs-on: ubuntu-latest
+    timeout-minutes: 10 # Add timeout for the job
+
+    # Add explicit permissions
+    permissions:
+      contents: write # Needed to upload release assets
 
     steps:
       # Checkout the repository
@@ -20,8 +30,9 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: "1.22.5" # Match the version in go.mod
+          cache: true # Enable Go dependency caching
 
-      # Install dependencies
+      # Install dependencies (runs only if cache missed or go.sum changed)
       - name: Install dependencies
         run: go mod tidy
 
