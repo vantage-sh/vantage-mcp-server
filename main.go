@@ -13,6 +13,7 @@ import (
 
 	"github.com/go-openapi/strfmt"
 	mcp_golang "github.com/metoro-io/mcp-golang"
+	"github.com/metoro-io/mcp-golang/transport/http"
 	"github.com/metoro-io/mcp-golang/transport/stdio"
 	"github.com/vantage-sh/vantage-go/vantagev2/models"
 	anomaliesClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/anomaly_alerts"
@@ -89,7 +90,7 @@ func setupLogger() {
 
 // run code that is common to all tools
 func registerVantageTool[ParamType any](server *mcp_golang.Server, bearerToken BearerTokenMgr, name string, description string, givenHandler func(params ParamType) (*mcp_golang.ToolResponse, error)) {
-	server.RegisterTool(name, description, func(params ParamType) (*mcp_golang.ToolResponse, error) {
+	err := server.RegisterTool(name, description, func(params ParamType) (*mcp_golang.ToolResponse, error) {
 		log.Printf("invoked - tool - %s %+v", name, params)
 		if bearerToken.BearerToken == "" {
 			return nil, fmt.Errorf("VANTAGE_BEARER_TOKEN not found, please create a read-only Service Token or Personal Access Token at https://console.vantage.sh/settings/access_tokens")
@@ -99,6 +100,9 @@ func registerVantageTool[ParamType any](server *mcp_golang.Server, bearerToken B
 		}
 		return givenHandler(params)
 	})
+	if err != nil {
+		panic(fmt.Sprintf("Failed to register tool %s: %+v", name, err))
+	}
 }
 
 func main() {
@@ -117,7 +121,16 @@ func main() {
 	log.Printf("Server Starting, Version: %s, OS: %s, Arch: %s", Version, goruntime.GOOS, goruntime.GOARCH)
 
 	done := make(chan struct{})
-	server := mcp_golang.NewServer(stdio.NewStdioServerTransport())
+
+	var server *mcp_golang.Server
+	if os.Getenv("MCP_SERVER_TRANSPORT") == "http" {
+		transport := http.NewHTTPTransport("/mcp").WithAddr(":8081")
+		server = mcp_golang.NewServer(transport, mcp_golang.WithVersion("0.0.1"))
+		// fmt.Println("HTTP transport selected, port 8081")
+	} else {
+		transport := stdio.NewStdioServerTransport()
+		server = mcp_golang.NewServer(transport)
+	}
 
 	// ******** Resources ********
 
