@@ -89,7 +89,7 @@ func setupLogger() {
 
 // run code that is common to all tools
 func registerVantageTool[ParamType any](server *mcp_golang.Server, bearerToken BearerTokenMgr, name string, description string, givenHandler func(params ParamType) (*mcp_golang.ToolResponse, error)) {
-	server.RegisterTool(name, description, func(params ParamType) (*mcp_golang.ToolResponse, error) {
+	err := server.RegisterTool(name, description, func(params ParamType) (*mcp_golang.ToolResponse, error) {
 		log.Printf("invoked - tool - %s %+v", name, params)
 		if bearerToken.BearerToken == "" {
 			return nil, fmt.Errorf("VANTAGE_BEARER_TOKEN not found, please create a read-only Service Token or Personal Access Token at https://console.vantage.sh/settings/access_tokens")
@@ -99,6 +99,9 @@ func registerVantageTool[ParamType any](server *mcp_golang.Server, bearerToken B
 		}
 		return givenHandler(params)
 	})
+	if err != nil {
+		panic(err)
+	}
 }
 
 func main() {
@@ -176,9 +179,6 @@ func main() {
 		content := mcp_golang.NewTextContent(string(costProviders))
 		return mcp_golang.NewToolResponse(content), nil
 	})
-	if err != nil {
-		panic(err)
-	}
 
 	type ListCostServicesParams struct {
 		WorkspaceToken string `json:"workspace_token" jsonschema:"required,description=Workspace token to list cost services for"`
@@ -212,9 +212,6 @@ func main() {
 		content := mcp_golang.NewTextContent(string(costServices))
 		return mcp_golang.NewToolResponse(content), nil
 	})
-	if err != nil {
-		panic(err)
-	}
 
 	type ListCostReportsParams struct {
 		Page int32 `json:"page" jsonschema:"optional,description=page"`
@@ -267,9 +264,6 @@ func main() {
 		content := mcp_golang.NewTextContent(string(costReports))
 		return mcp_golang.NewToolResponse(content), nil
 	})
-	if err != nil {
-		panic(err)
-	}
 
 	type ListCostIntegrations struct {
 		Page int32 `json:"page" jsonschema:"optional,description=page"`
@@ -317,9 +311,6 @@ func main() {
 
 		return mcp_golang.NewToolResponse(content), nil
 	})
-	if err != nil {
-		panic(err)
-	}
 
 	type QueryCostsParams struct {
 		Page           int32  `json:"page" jsonschema:"required,description=page"`
@@ -423,9 +414,6 @@ func main() {
 		content := mcp_golang.NewTextContent(string(jsonResult))
 		return mcp_golang.NewToolResponse(content), nil
 	})
-	if err != nil {
-		panic(err)
-	}
 
 	type ListCostsParams struct {
 		Page            int32  `json:"page" jsonschema:"optional,description=page"`
@@ -513,9 +501,6 @@ func main() {
 		content := mcp_golang.NewTextContent(string(jsonResult))
 		return mcp_golang.NewToolResponse(content), nil
 	})
-	if err != nil {
-		panic(err)
-	}
 
 	// ====
 
@@ -596,9 +581,6 @@ func main() {
 		content := mcp_golang.NewTextContent(string(jsonResult))
 		return mcp_golang.NewToolResponse(content), nil
 	})
-	if err != nil {
-		panic(err)
-	}
 
 	// ====
 
@@ -626,9 +608,6 @@ func main() {
 		content := mcp_golang.NewTextContent(string(myself))
 		return mcp_golang.NewToolResponse(content), nil
 	})
-	if err != nil {
-		panic(err)
-	}
 
 	type ListAnomaliesParams struct {
 		Page            int32  `json:"page" jsonschema:"optional,description=page"`
@@ -682,10 +661,6 @@ func main() {
 		return mcp_golang.NewToolResponse(content), nil
 	})
 
-	if err != nil {
-		panic(err)
-	}
-
 	type ListTagsParams struct {
 		Page int32 `json:"page" jsonschema:"optional,description=page"`
 	}
@@ -738,9 +713,6 @@ func main() {
 
 		return mcp_golang.NewToolResponse(content), nil
 	})
-	if err != nil {
-		panic(err)
-	}
 
 	type ListTagValuesParams struct {
 		Page int32  `json:"page" jsonschema:"optional,description=page"`
@@ -773,9 +745,6 @@ func main() {
 		content := mcp_golang.NewTextContent(string(tags))
 		return mcp_golang.NewToolResponse(content), nil
 	})
-	if err != nil {
-		panic(err)
-	}
 
 	// ******** List Dashboards Tool ********
 
@@ -837,9 +806,6 @@ func main() {
 		content := mcp_golang.NewTextContent(string(jsonResult))
 		return mcp_golang.NewToolResponse(content), nil
 	})
-	if err != nil {
-		panic(err)
-	}
 
 	// ******** List Budgets Tool ********
 
@@ -963,9 +929,6 @@ func main() {
 		content := mcp_golang.NewTextContent(string(data))
 		return mcp_golang.NewToolResponse(content), nil
 	})
-	if err != nil {
-		panic(err)
-	}
 
 	type SubmitUserFeedbackParams struct {
 		Message string `json:"message" jsonschema:"required,description=Feedback message regarding using the Vantage MCP Server"`
@@ -990,9 +953,6 @@ func main() {
 		content := mcp_golang.NewTextContent("User feedback submitted successfully.")
 		return mcp_golang.NewToolResponse(content), nil
 	})
-	if err != nil {
-		panic(err)
-	}
 
 	err = server.Serve()
 	if err != nil {
