@@ -21,6 +21,7 @@ import (
 	costServicesClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/cost_service"
 	costsClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/costs"
 	"github.com/vantage-sh/vantage-go/vantagev2/vantage/dashboards"
+	foldersClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/folders"
 	"github.com/vantage-sh/vantage-go/vantagev2/vantage/integrations"
 	meClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/me"
 	tagsClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/tags"
@@ -28,7 +29,7 @@ import (
 	userFeedbackClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/user_feedback"
 )
 
-const Version = "v0.0.4"
+const Version = "v0.0.5alpha"
 
 type McpResponseLinks struct {
 	NextPage    int32 `json:"next_page"`
@@ -120,7 +121,10 @@ func main() {
 	log.Printf("Server Starting, Version: %s, OS: %s, Arch: %s", Version, goruntime.GOOS, goruntime.GOARCH)
 
 	done := make(chan struct{})
-	server := mcp_golang.NewServer(stdio.NewStdioServerTransport())
+
+	serverNameOption := mcp_golang.WithName("Vantage MCP Server")
+	serverVersionOption := mcp_golang.WithVersion(Version)
+	server := mcp_golang.NewServer(stdio.NewStdioServerTransport(), serverNameOption, serverVersionOption)
 
 	// ******** Resources ********
 
@@ -128,14 +132,14 @@ func main() {
 		"vntg://version",
 		"Vantage MCP Server Version",
 		"Current version of the Vantage MCP server",
-		"application/json",
+		"text/plain",
 		func() (*mcp_golang.ResourceResponse, error) {
 			log.Printf("invoked - resource - version")
 
 			resource := mcp_golang.NewTextEmbeddedResource(
 				"vntg://version",
-				fmt.Sprintf("\"%s\"", Version),
-				"application/json",
+				fmt.Sprintf("%s", Version),
+				"text/plain",
 			)
 
 			return mcp_golang.NewResourceResponse(resource), nil
@@ -222,9 +226,9 @@ func main() {
 	}
 
 	listCostReportsDescription := `
-	List all cost reports available. Cost reports are already created reports authored by a user in Vantage. If the user isn't asking about a specific report, it's better to use the query-costs tool. 
-	When you first call this function, use the "Page" parameter of 1. 
-	The 'Title' of a report is a good way to know what the report is about. 
+	List all cost reports available. Cost reports are already created reports authored by a user in Vantage. If the user isn't asking about a specific report, it's better to use the query-costs tool.
+	When you first call this function, use the "Page" parameter of 1.
+	The 'Title' of a report is a good way to know what the report is about.
 	The 'filter' of a report also gives clues to the data it provides.
 	The 'token' of a report is a unique identifier for the report. It can be used to generate a link to the report in the Vantage Web UI. If a user wants to see a report, you can link them like this: https://console.vantage.sh/go/<token>
 	Vantage offers data related to a cost report: Forecasts. The same report token can be used on the get-cost-report-forecast tool and Vantage will forecast future costs.
@@ -330,14 +334,14 @@ func main() {
 
 	queryCostsDescription := `
 	Query for costs in a Vantage Account. These are independent of a cost reports.
-	Use Vantage VQL to structure a query. 
+	Use Vantage VQL to structure a query.
 	Queries must be scoped to a Workspace. Use the get-myself tool to know about available workspaces, and the get-cost-integrations tool to know about available cost providers. If the user didn't tell you a workspace it is best to ask them than to guess it.
 	It's best to set a date range of 30 days unless the user specifically wants to query for a longer time period.
 
 	Here is some more detailed info on using VQL:
 	All costs originate from a Cost Provider (generally a cloud company like AWS, Azure, Datadog) and then filter on a service that they provide (like EC2, S3, etc).
 	A cost provider is required on every VQL query.
-	VQL is always in parenthesis. Always use single quotes around names that are being queried. 
+	VQL is always in parenthesis. Always use single quotes around names that are being queried.
 	To query on a cost provider, use this syntax: (costs.provider = '<provider name>'). The provider name must come from the list-cost-providers tool.
 	To query on a cost service, use this syntax: (costs.provider = '<provider name>' AND costs.service = '<service name>'). The service name must come from the list-cost-services tool.
 	You can only filter against one cost provider at a time. If you want to query for costs from two providers, you need to use the OR operator. Example: ((costs.provider = 'aws') OR (costs.provider = 'azure'))
@@ -352,10 +356,10 @@ func main() {
 	You can also combine top-level queries to find for two providers: ((costs.provider = 'datadog') OR (costs.provider = 'azure'))
 	Some cost providers operate in a specific region, you can filter using the costs.region field. Example: (costs.provider = 'aws' AND costs.region = 'us-east-1')
 
-	The DateBin parameter will let you get the information with fewer returned results. 
-	When DateBin=day you get a record for each service spend on that day. For DateBin=week you get one entry per week, 
-	with the accrued_at field set to the first day of the week, but the spend item represents spend for a full week. 
-	Same with DateBin=month, each record returned covers a month of data. This lets you get answers with processing fewer 
+	The DateBin parameter will let you get the information with fewer returned results.
+	When DateBin=day you get a record for each service spend on that day. For DateBin=week you get one entry per week,
+	with the accrued_at field set to the first day of the week, but the spend item represents spend for a full week.
+	Same with DateBin=month, each record returned covers a month of data. This lets you get answers with processing fewer
 	records. Only use day/week if needed, otherwise DateBin=month is preferred, and month is the value set if you pass no value for DateBin.
 	`
 
@@ -433,11 +437,11 @@ func main() {
 	listCostsDescription := `
 	List the cost items inside a report. The Token of a Report must be provided. Use the page value of 1 to start.
 	The report token can be used to link the user to the report in the Vantage Web UI. Build the link like this: https://console.vantage.sh/go/<CostReportToken>
-	
-	The DateBin parameter will let you get the information with fewer returned results. 
-	When DateBin=day you get a record for each service spend on that day. For DateBin=week you get one entry per week, 
-	with the accrued_at field set to the first day of the week, but the spend item represents spend for a full week. 
-	Same with DateBin=month, each record returned covers a month of data. This lets you get answers with processing fewer 
+
+	The DateBin parameter will let you get the information with fewer returned results.
+	When DateBin=day you get a record for each service spend on that day. For DateBin=week you get one entry per week,
+	with the accrued_at field set to the first day of the week, but the spend item represents spend for a full week.
+	Same with DateBin=month, each record returned covers a month of data. This lets you get answers with processing fewer
 	records. Only use day/week if needed, otherwise DateBin=month is preferred, and month is the value set if you pass no value for DateBin.
 	`
 
@@ -806,6 +810,68 @@ func main() {
 		content := mcp_golang.NewTextContent(string(jsonResult))
 		return mcp_golang.NewToolResponse(content), nil
 	})
+
+	// ******** List Folders Tool ********
+
+	type ListFoldersParams struct {
+		Page int32 `json:"page" jsonschema:"optional,description=page number"`
+	}
+
+	type ListFoldersResult struct {
+		Folders  []*models.Folder `json:"folders"`
+		PageData McpResponseLinks `json:"page_data"`
+	}
+
+	listFoldersDescription := `
+	Return all Folders for CostReports. Use the page value of 1 to start.
+	`
+
+	registerVantageTool(server, *bearerTokenMgr, "list-folders", listFoldersDescription, func(params ListFoldersParams) (*mcp_golang.ToolResponse, error) {
+
+		client := foldersClient.NewClientWithBearerToken("api.vantage.sh", "/v2", "https", bearerTokenMgr.BearerToken)
+		var limit int32 = 128
+
+		getFoldersParams := foldersClient.NewGetFoldersParams()
+		getFoldersParams.SetLimit(&limit)
+		if params.Page != 0 {
+			getFoldersParams.SetPage(&params.Page)
+		}
+
+		apiResponse, err := client.GetFolders(getFoldersParams, bearerTokenMgr.AuthInfo())
+		if err != nil {
+			return nil, fmt.Errorf("error fetching folders: %+v", err)
+		}
+
+		payload := apiResponse.GetPayload()
+		result := ListFoldersResult{
+			Folders: payload.Folders,
+		}
+
+		// Handle pagination links
+		links, ok := payload.Links.(map[string]interface{})
+		if !ok {
+			log.Printf("Warning: could not assert links to map[string]interface{} for folders")
+			result.PageData = NO_NEXT_PAGE
+		} else {
+			nextPageUrl, ok := links["next"]
+			if ok && nextPageUrl != nil {
+				result.PageData = buildLinksFromUrl(nextPageUrl.(string))
+			} else {
+				result.PageData = NO_NEXT_PAGE
+			}
+		}
+
+		jsonResult, err := json.Marshal(result)
+		if err != nil {
+			return nil, fmt.Errorf("error marshalling folders: %+v", err)
+		}
+
+		content := mcp_golang.NewTextContent(string(jsonResult))
+		return mcp_golang.NewToolResponse(content), nil
+	})
+	if err != nil {
+		panic(err)
+	}
 
 	// ******** List Budgets Tool ********
 
