@@ -13,6 +13,8 @@ import (
 
 	"github.com/go-openapi/strfmt"
 	mcp_golang "github.com/metoro-io/mcp-golang"
+	"github.com/metoro-io/mcp-golang/transport"
+	"github.com/metoro-io/mcp-golang/transport/http"
 	"github.com/metoro-io/mcp-golang/transport/stdio"
 	"github.com/vantage-sh/vantage-go/vantagev2/models"
 	anomaliesClient "github.com/vantage-sh/vantage-go/vantagev2/vantage/anomaly_alerts"
@@ -101,12 +103,13 @@ func registerVantageTool[ParamType any](server *mcp_golang.Server, bearerToken B
 		return givenHandler(params)
 	})
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("Failed to register tool %s: %+v", name, err))
 	}
 }
 
 func main() {
 	showVersion := flag.Bool("version", false, "Print version and exit")
+	useHttp := flag.Bool("http", false, "Use HTTP transport")
 	flag.Parse()
 
 	if *showVersion {
@@ -124,7 +127,13 @@ func main() {
 
 	serverNameOption := mcp_golang.WithName("Vantage MCP Server")
 	serverVersionOption := mcp_golang.WithVersion(Version)
-	server := mcp_golang.NewServer(stdio.NewStdioServerTransport(), serverNameOption, serverVersionOption)
+	var transport transport.Transport
+	if *useHttp {
+		transport = http.NewHTTPTransport("/mcp").WithAddr(":8081")
+	} else {
+		transport = stdio.NewStdioServerTransport()
+	}
+	server := mcp_golang.NewServer(transport, serverNameOption, serverVersionOption)
 
 	// ******** Resources ********
 
