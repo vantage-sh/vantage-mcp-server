@@ -109,6 +109,7 @@ func registerVantageTool[ParamType any](server *mcp_golang.Server, bearerToken B
 
 func main() {
 	showVersion := flag.Bool("version", false, "Print version and exit")
+	useHttp := flag.Bool("http", false, "Use HTTP transport")
 	flag.Parse()
 
 	if *showVersion {
@@ -127,7 +128,7 @@ func main() {
 	serverNameOption := mcp_golang.WithName("Vantage MCP Server")
 	serverVersionOption := mcp_golang.WithVersion(Version)
 	var transport transport.Transport
-	if os.Getenv("MCP_SERVER_TRANSPORT") == "http" {
+	if *useHttp {
 		transport = http.NewHTTPTransport("/mcp").WithAddr(":8081")
 	} else {
 		transport = stdio.NewStdioServerTransport()
