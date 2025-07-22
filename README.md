@@ -38,7 +38,7 @@ The Vantage MCP Server currently exposes the following tools, which can be invok
   - List all Cost Provider integrations (e.g., AWS, Azure, GCP) available to provide Costs data from and their associated accounts.
 
 - `list-cost-providers`
-  - List of just the Providers that the given Workspace has shared with it.
+  - List of just the Providers that the given Workspace has shared with it, for filtering in VQL queries.
 
 - `list-cost-services`
   - Lists all the Services and their associated Provider that is shared with the given Workspace.
@@ -59,9 +59,6 @@ The Vantage MCP Server currently exposes the following tools, which can be invok
 
 - `list-anomalies`
   - List Anomalies that were detected on Cost Reports.
-
-- `list-cost-providers`
-  - List Cost Providers that can be used to filter Costs in VQL queries.
 
 - `list-unit-costs`
   - Retrieve the Unit Costs for a given Cost Report.
