@@ -12,7 +12,7 @@
 
 The Vantage MCP Server is an open-source tool, written in Golang, that lets you interact with your cloud cost data through AI assistants and MCP clients. By acting as a bridge to Vantage's existing APIs, the Vantage MCP Server lets you query cloud spend data using natural language and makes cost analysis more intuitive.
 
-> 📝 _Note: At this time, the Vantage MCP Server is available only as a locally run service using [Standard Input/Output (stdio) Transport](https://modelcontextprotocol.io/docs/concepts/transports#standard-input%2Foutput-stdio), meaning it must be executed on your machine or server and integrated with an MCP client._
+> 📝 _Note: The Vantage MCP Server is available in both self-hosted and remote forms. This repository supports the self-hosted version, which runs locally using [Standard Input/Output (stdio) Transport](https://modelcontextprotocol.io/docs/concepts/transports#standard-input%2Foutput-stdio). For a remote alternative, see the [Vantage MCP documentation](https://docs.vantage.sh/vantage_mcp)._
 
 ### Available Tools
 
