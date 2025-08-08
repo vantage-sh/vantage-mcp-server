@@ -317,12 +317,20 @@ func main() {
 	})
 
 	type QueryCostsParams struct {
-		Page           int32  `json:"page" jsonschema:"required,description=page"`
-		VqlInput       string `json:"vql_input" jsonschema:"required,description=A VQL query to run against your vantage account"`
-		StartDate      string `json:"start_date" jsonschema:"optional,description=Start date to filter costs by, format=YYYY-MM-DD"`
-		EndDate        string `json:"end_date" jsonschema:"optional,description=End date to filter costs by, format=YYYY-MM-DD"`
-		WorkspaceToken string `json:"workspace_token" jsonschema:"required,description=Workspace token to filter costs by"`
-		DateBin        string `json:"date_bin" jsonschema:"required,description=Date binning for returned costs, default to month unless user says otherwise, allowed values: day, week, month"`
+		Page                       int32  `json:"page" jsonschema:"required,description=page"`
+		VqlInput                   string `json:"vql_input" jsonschema:"required,description=A VQL query to run against your vantage account"`
+		StartDate                  string `json:"start_date" jsonschema:"optional,description=Start date to filter costs by, format=YYYY-MM-DD"`
+		EndDate                    string `json:"end_date" jsonschema:"optional,description=End date to filter costs by, format=YYYY-MM-DD"`
+		WorkspaceToken             string `json:"workspace_token" jsonschema:"required,description=Workspace token to filter costs by"`
+		DateBin                    string `json:"date_bin" jsonschema:"required,description=Date binning for returned costs, default to month unless user says otherwise, allowed values: day, week, month"`
+		SettingsIncludeCredits     bool   `json:"settings[include_credits]" jsonschema:"optional,description=Results will include credits, defaults to false"`
+		SettingsIncludeRefunds     bool   `json:"settings[include_refunds]" jsonschema:"optional,description=Results will include refunds, defaults to false"`
+		SettingsIncludeDiscounts   *bool  `json:"settings[include_discounts]" jsonschema:"optional,description=Results will include discounts, defaults to true"`
+		SettingsIncludeTax         *bool  `json:"settings[include_tax]" jsonschema:"optional,description=Results will include tax, defaults to true"`
+		SettingsAmortize           *bool  `json:"settings[amortize]" jsonschema:"optional,description=Results will amortize, defaults to true"`
+		SettingsUnallocated        bool   `json:"settings[unallocated]" jsonschema:"optional,description=Results will show unallocated costs, defaults to false"`
+		SettingsAggregateBy        string `json:"settings[aggregate_by]" jsonschema:"optional,description=Results will aggregate by cost or usage, defaults to cost"`
+		SettingsShowPreviousPeriod *bool  `json:"settings[show_previous_period]" jsonschema:"optional,description=Results will show previous period costs or usage comparison, defaults to true"`
 	}
 
 	type QueryCostsResults struct {
@@ -375,6 +383,32 @@ func main() {
 		getCostsParams.SetEndDate(&params.EndDate)
 		getCostsParams.SetPage(&params.Page)
 		getCostsParams.SetLimit(&limit)
+
+		t := true
+		getCostsParams.SetSettingsIncludeCredits(&params.SettingsIncludeCredits)
+		getCostsParams.SetSettingsIncludeRefunds(&params.SettingsIncludeRefunds)
+		if params.SettingsIncludeDiscounts == nil {
+			params.SettingsIncludeDiscounts = &t
+		}
+		getCostsParams.SetSettingsIncludeDiscounts(params.SettingsIncludeDiscounts)
+		if params.SettingsIncludeTax == nil {
+			params.SettingsIncludeTax = &t
+		}
+		getCostsParams.SetSettingsIncludeTax(params.SettingsIncludeTax)
+		if params.SettingsAmortize == nil {
+			params.SettingsAmortize = &t
+		}
+		getCostsParams.SetSettingsAmortize(params.SettingsAmortize)
+		getCostsParams.SetSettingsUnallocated(&params.SettingsUnallocated)
+		if params.SettingsAggregateBy != "usage" {
+			params.SettingsAggregateBy = "cost"
+		}
+		getCostsParams.SetSettingsAggregateBy(&params.SettingsAggregateBy)
+		if params.SettingsShowPreviousPeriod == nil {
+			params.SettingsShowPreviousPeriod = &t
+		}
+		getCostsParams.SetSettingsShowPreviousPeriod(params.SettingsShowPreviousPeriod)
+
 		if params.DateBin != "" {
 			getCostsParams.SetDateBin(&params.DateBin)
 		} else {
