@@ -331,7 +331,7 @@ func main() {
 		SettingsUnallocated        bool     `json:"settings[unallocated]" jsonschema:"optional,description=Results will show unallocated costs, defaults to false"`
 		SettingsAggregateBy        string   `json:"settings[aggregate_by]" jsonschema:"optional,description=Results will aggregate by cost or usage, defaults to cost"`
 		SettingsShowPreviousPeriod *bool    `json:"settings[show_previous_period]" jsonschema:"optional,description=Results will show previous period costs or usage comparison, defaults to true"`
-		Groupings                  []string `json:"groupings" jsonschema:"optional,description=Group the results by specific field(s). Defaults to provider, service, account_id. Valid groupings: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, tag:<tag_value>."`
+		Groupings                  []string `json:"groupings" jsonschema:"optional,description=Group the results by specific field(s). Defaults to provider, service, account_id. Valid groupings: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, tag:<tag_value>. Leave Groupings blank unless explicitly asked for."`
 	}
 
 	type QueryCostsResults struct {
