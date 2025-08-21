@@ -126,8 +126,8 @@ github.com/markbates/oncer v0.0.0-20181203154359-bf2de49a0be2/go.mod h1:Ld9puTsI
 github.com/markbates/safe v1.0.1/go.mod h1:nAqgmRi7cY2nqMc92/bSEeQA+R4OheNU2T1kNSCBdG0=
 github.com/mattn/go-isatty v0.0.14 h1:yVuAays6BHfxijgZPzw+3Zlu5yQgKGP2/hcQbHb7S9Y=
 github.com/mattn/go-isatty v0.0.14/go.mod h1:7GGIvUiUoEMVVmxf/4nioHXj79iQHKdU27kJ6hsGG94=
-github.com/metoro-io/mcp-golang v0.14.0 h1:fGWESeN2iaTHzDxQQH1lmrIacdWKmHheEDGlja7dJMs=
-github.com/metoro-io/mcp-golang v0.14.0/go.mod h1:ifLP9ZzKpN1UqFWNTpAHOqSvNkMK6b7d1FSZ5Lu0lN0=
+github.com/metoro-io/mcp-golang v0.16.0 h1:7NrP8Hca4IDLipPitZaTClzmN8uQcQWX8IsziXU813Y=
+github.com/metoro-io/mcp-golang v0.16.0/go.mod h1:ifLP9ZzKpN1UqFWNTpAHOqSvNkMK6b7d1FSZ5Lu0lN0=
 github.com/mitchellh/mapstructure v1.3.3/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
 github.com/mitchellh/mapstructure v1.4.1/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
 github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyuac5Z2hdY=
