@@ -40,33 +40,55 @@ jobs:
       - name: Build all binaries
         run: make build-all
 
-      # Upload release assets
-      - name: Upload Linux binary
+      # Upload release assets - Linux
+      - name: Upload Linux AMD64 binary
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./vantage-mcp-server-linux
-          asset_name: vantage-mcp-server-linux
+          asset_path: ./vantage-mcp-server-linux-amd64
+          asset_name: vantage-mcp-server-linux-amd64
           asset_content_type: application/octet-stream
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload macOS binary
+      - name: Upload Linux ARM64 binary
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./vantage-mcp-server-macos
-          asset_name: vantage-mcp-server-macos
+          asset_path: ./vantage-mcp-server-linux-arm64
+          asset_name: vantage-mcp-server-linux-arm64
           asset_content_type: application/octet-stream
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload Windows binary
+      # Upload release assets - macOS
+      - name: Upload macOS ARM64 binary
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./vantage-mcp-server-windows.exe
-          asset_name: vantage-mcp-server-windows.exe
+          asset_path: ./vantage-mcp-server-macos-arm64
+          asset_name: vantage-mcp-server-macos-arm64
+          asset_content_type: application/octet-stream
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Upload release assets - Windows
+      - name: Upload Windows AMD64 binary
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./vantage-mcp-server-windows-amd64.exe
+          asset_name: vantage-mcp-server-windows-amd64.exe
+          asset_content_type: application/octet-stream
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Windows ARM64 binary
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./vantage-mcp-server-windows-arm64.exe
+          asset_name: vantage-mcp-server-windows-arm64.exe
           asset_content_type: application/octet-stream
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
