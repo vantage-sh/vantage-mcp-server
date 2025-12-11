@@ -1,0 +1,45 @@
+{
+	"name": "vantage-mcp-server",
+	"private": true,
+	"scripts": {
+		"dev": "wrangler dev -c wrangler-DEV.jsonc",
+		"inspect": "mcp-inspector",
+		"inspector": "mcp-inspector",
+		"format": "biome format --write",
+		"lint": "biome lint",
+		"lint:fix": "biome lint --fix",
+		"check:lint:all": "biome check",
+		"cf-typegen": "wrangler types -c wrangler-DEV.jsonc",
+		"type-check": "tsc --noEmit",
+		"test": "vitest",
+		"generate-tools-index": "tsx src/tools/bin/generate-tools-index.ts",
+		"prepare": "husky",
+		"local": "tsx src/local.ts",
+		"local:dist": "tsx build/npm.ts"
+	},
+	"dependencies": {
+		"@cloudflare/workers-oauth-provider": "^0.0.11",
+		"@modelcontextprotocol/sdk": "^1.12.1",
+		"@sentry/cloudflare": "^10.14.0",
+		"agents": "^0.0.95",
+		"axios": "^1.10.0",
+		"hono": "^4.8.3",
+		"jose": "^6.0.11",
+		"oauth4webapi": "^3.5.5",
+		"zod": "^3.25.61"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.2.2",
+		"@commitlint/cli": "^20.1.0",
+		"@commitlint/config-conventional": "^20.0.0",
+		"@modelcontextprotocol/inspector": "^0.16.7",
+		"@types/node": "^24.0.3",
+		"@vitest/coverage-v8": "^3.2.4",
+		"esbuild": "^0.25.10",
+		"husky": "^9.1.7",
+		"tsx": "^4.20.5",
+		"typescript": "^5.8.3",
+		"vitest": "^3.2.4",
+		"wrangler": "^4.39.0"
+	}
+}

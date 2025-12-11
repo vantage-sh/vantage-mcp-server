@@ -1,0 +1,50 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "hosted-mcp-prod",
+	"main": "src/cf-worker.ts",
+	"compatibility_date": "2025-03-10",
+	"compatibility_flags": ["nodejs_compat"],
+	"assets": {
+		"directory": "public"
+	},
+	"version_metadata": {
+		"binding": "CF_VERSION_METADATA"
+	},
+	"observability": {
+		"enabled": true
+	},
+	"vars": {
+		"SELF_CALLBACK_URL": "http://localhost:8787/callback",
+		"AUTH0_SCOPE": "openid offline_access email",
+		"SENTRY_DSN": "local-dummy",
+		"VANTAGE_MCP_TOKEN": "",
+		"VANTAGE_API_HOST": "http://localhost:3000",
+		"AUTH0_CLIENT_ID": "local-dummy",
+		"AUTH0_CLIENT_SECRET": "local-dummy",
+		"AUTH0_DOMAIN": "local-dummy"
+	},
+	"kv_namespaces": [
+		{
+			"binding": "OAUTH_KV",
+			"id": "aa9945510d56453da98ea1af611e84f3"
+		}
+	],
+	"durable_objects": {
+		"bindings": [
+			{
+				"class_name": "VantageMCP",
+				"name": "MCP_OBJECT"
+			}
+		]
+	},
+	"migrations": [
+		{
+			"tag": "v2",
+			"new_sqlite_classes": ["VantageMCP"]
+		}
+	]
+}

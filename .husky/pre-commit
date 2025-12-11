@@ -1,0 +1,2 @@
+# Run linting with --write flag to auto-fix issues
+npm run check:lint:all -- --write
