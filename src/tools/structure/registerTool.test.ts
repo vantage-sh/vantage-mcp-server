@@ -58,7 +58,6 @@ describe("mcp server handler", () => {
 		expect(result).toEqual({
 			content: [
 				{
-					mimeType: "application/json",
 					text: JSON.stringify({ hello: "world" }, null, 2),
 					type: "text",
 				},
@@ -116,7 +115,6 @@ describe("mcp server handler", () => {
 		expect(result).toEqual({
 			content: [
 				{
-					mimeType: "application/json",
 					text: JSON.stringify({ receivedArgs: args, receivedContext: context }, null, 2),
 					type: "text",
 				},

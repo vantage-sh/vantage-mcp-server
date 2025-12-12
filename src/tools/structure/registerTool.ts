@@ -53,7 +53,6 @@ export default function registerTool<Validators extends z.ZodRawShape>(
 							{
 								type: "text",
 								text: JSON.stringify(res, null, 2),
-								mimeType: "application/json",
 							},
 						],
 						isError: false,
@@ -65,7 +64,6 @@ export default function registerTool<Validators extends z.ZodRawShape>(
 								{
 									type: "text",
 									text: JSON.stringify(e.exception, null, 2),
-									mimeType: "application/json",
 								},
 							],
 							isError: true,
