@@ -19,11 +19,11 @@
 	},
 	"dependencies": {
 		"@cloudflare/workers-oauth-provider": "^0.0.11",
-		"@modelcontextprotocol/sdk": "^1.12.1",
-		"@sentry/cloudflare": "^10.14.0",
-		"agents": "^0.0.95",
-		"axios": "^1.10.0",
-		"hono": "^4.8.3",
+		"@modelcontextprotocol/sdk": "1.24.3",
+		"@sentry/cloudflare": "10.30.0",
+		"agents": "0.2.32",
+		"axios": "1.13.2",
+		"hono": "4.10.8",
 		"jose": "^6.0.11",
 		"oauth4webapi": "^3.5.5",
 		"zod": "^3.25.61"
@@ -34,12 +34,12 @@
 		"@commitlint/config-conventional": "^20.0.0",
 		"@modelcontextprotocol/inspector": "^0.16.7",
 		"@types/node": "^24.0.3",
-		"@vitest/coverage-v8": "^3.2.4",
+		"@vitest/coverage-v8": "4.0.15",
 		"esbuild": "^0.25.10",
 		"husky": "^9.1.7",
-		"tsx": "^4.20.5",
+		"tsx": "4.21.0",
 		"typescript": "^5.8.3",
-		"vitest": "^3.2.4",
+		"vitest": "4.0.15",
 		"wrangler": "^4.39.0"
 	}
 }
