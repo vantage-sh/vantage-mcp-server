@@ -25,7 +25,8 @@
 		"VANTAGE_API_HOST": "http://localhost:3000",
 		"AUTH0_CLIENT_ID": "local-dummy",
 		"AUTH0_CLIENT_SECRET": "local-dummy",
-		"AUTH0_DOMAIN": "local-dummy"
+		"AUTH0_DOMAIN": "local-dummy",
+		"AUTH0_AUDIENCE": "local-dummy"
 	},
 	"kv_namespaces": [
 		{
