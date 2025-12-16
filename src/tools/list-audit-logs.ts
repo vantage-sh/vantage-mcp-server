@@ -9,20 +9,41 @@ List audit logs visible to the current auth token.
 
 Audit logs provide an ordered record of actions taken within the workspace.
 Use pagination via the "page" parameter. Optional filters are available
-to narrow results by actor, action, or date range.
+to narrow results by user, workspace, action, object, source, or date range.
 `.trim();
 
 const args = {
-	page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
-	actor: z.string().optional().describe("Optional: filter by actor (id or email)"),
+	page: z.number().optional().default(1).describe("The page of results to return, defaults to 1"),
+	limit: z
+		.number()
+		.int()
+		.min(1)
+		.max(1000)
+		.optional()
+		.describe("The amount of results to return. The maximum is 1000. Defaults to 100."),
+	user: z
+		.number()
+		.int()
+		.optional()
+		.describe("Filter by personal or service API token that performed the action (user ID)"),
+	workspace_token: z.string().optional().describe("Filter by workspace token"),
 	action: z
 		.string()
 		.optional()
-		.describe(
-			"Optional: filter by action type. Use 'create', 'update', or 'delete' (not 'record_created', 'record_updated', 'record_destroyed')"
-		),
-	since: z.string().optional().describe("Optional: ISO-8601 start date (inclusive)"),
-	until: z.string().optional().describe("Optional: ISO-8601 end date (inclusive)"),
+		.describe("Filter by action type (e.g., create, update, delete)"),
+	object_name: z.string().optional().describe("Filter by object name"),
+	source: z.string().optional().describe("Filter by source (e.g., console, api)"),
+	object_type: z.string().optional().describe("Filter by object type (e.g., virtual_tag, cost_report)"),
+	token: z.string().optional().describe("Filter by audit log token"),
+	object_token: z.string().optional().describe("Filter by object token (auditable_token)"),
+	start_date: z
+		.string()
+		.optional()
+		.describe("Filter by start date (ISO 8601 format) for the time period"),
+	end_date: z
+		.string()
+		.optional()
+		.describe("Filter by end date (ISO 8601 format) for the time period"),
 };
 
 export default registerTool({
@@ -30,7 +51,10 @@ export default registerTool({
 	description,
 	args,
 	async execute(args, ctx) {
-		const requestParams = { ...args, limit: DEFAULT_LIMIT };
+		const requestParams: Record<string, unknown> = {
+			...args,
+			limit: args.limit ?? DEFAULT_LIMIT,
+		};
 		const response = await ctx.callVantageApi("/v2/audit_logs", requestParams, "GET");
 		if (!response.ok) {
 			throw new MCPUserError({ errors: response.errors });
