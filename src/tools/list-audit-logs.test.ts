@@ -229,4 +229,3 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 ];
 
 testTool(tool, argumentSchemaTests, executionTests);
-
