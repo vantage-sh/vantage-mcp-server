@@ -18,7 +18,9 @@ const args = {
 	action: z
 		.string()
 		.optional()
-		.describe("Optional: filter by action type (e.g., workspace.create)"),
+		.describe(
+			"Optional: filter by action type. Use 'create', 'update', or 'delete' (not 'record_created', 'record_updated', 'record_destroyed')"
+		),
 	since: z.string().optional().describe("Optional: ISO-8601 start date (inclusive)"),
 	until: z.string().optional().describe("Optional: ISO-8601 end date (inclusive)"),
 };
