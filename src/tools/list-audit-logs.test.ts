@@ -171,6 +171,9 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 				params: {
 					page: 1,
 					actor: "user@example.com",
+					action: undefined,
+					since: undefined,
+					until: undefined,
 					limit: DEFAULT_LIMIT,
 				},
 				method: "GET",
@@ -204,6 +207,10 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 				endpoint: "/v2/audit_logs",
 				params: {
 					page: 1,
+					actor: undefined,
+					action: undefined,
+					since: undefined,
+					until: undefined,
 					limit: DEFAULT_LIMIT,
 				},
 				method: "GET",
