@@ -79,6 +79,11 @@ const args = {
 export default registerTool({
 	name: "list-costs",
 	description,
+	annotations: {
+		destructive: false,
+		openWorld: true,
+		readOnly: true,
+	},
 	args,
 	async execute(args, ctx) {
 		// Every arg we get needs to be in requestParams, but under 'settings' if it has that prefix.

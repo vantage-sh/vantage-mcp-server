@@ -13,6 +13,11 @@ const args = {
 export default registerTool({
 	name: "list-cost-services",
 	description,
+	annotations: {
+		destructive: false,
+		openWorld: true,
+		readOnly: true,
+	},
 	args,
 	async execute(args, ctx) {
 		const response = await ctx.callVantageApi("/v2/cost_services", args, "GET");

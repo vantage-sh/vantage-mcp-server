@@ -14,6 +14,11 @@ const args = {
 export default registerTool({
 	name: "submit-user-feedback",
 	description,
+	annotations: {
+		destructive: false,
+		openWorld: true,
+		readOnly: false,
+	},
 	args,
 	async execute(args, ctx) {
 		const response = await ctx.callVantageApi(

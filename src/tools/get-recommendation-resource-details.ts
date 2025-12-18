@@ -37,6 +37,11 @@ const args = {
 export default registerTool({
 	name: "get-recommendation-resource-details",
 	description,
+	annotations: {
+		destructive: false,
+		openWorld: true,
+		readOnly: true,
+	},
 	args,
 	async execute(args, ctx) {
 		const response = await ctx.callVantageApi(

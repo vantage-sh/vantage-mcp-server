@@ -36,6 +36,11 @@ const args = {
 export default registerTool({
 	name: "get-recommendation-resources",
 	description,
+	annotations: {
+		destructive: false,
+		openWorld: true,
+		readOnly: true,
+	},
 	args,
 	async execute(args, ctx) {
 		const requestParams = { page: args.page, limit: DEFAULT_LIMIT };

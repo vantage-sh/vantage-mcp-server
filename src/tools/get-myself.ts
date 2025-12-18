@@ -13,6 +13,11 @@ const args = {};
 export default registerTool({
 	name: "get-myself",
 	description,
+	annotations: {
+		destructive: false,
+		openWorld: true,
+		readOnly: true,
+	},
 	args,
 	async execute(_, ctx) {
 		const response = await ctx.callVantageApi("/v2/me", {}, "GET");

@@ -104,6 +104,11 @@ const args = {
 export default registerTool({
 	name: "query-costs",
 	description,
+	annotations: {
+		destructive: false,
+		openWorld: true,
+		readOnly: true,
+	},
 	args,
 	async execute(args, ctx) {
 		const requestParams: Record<string, unknown> = {

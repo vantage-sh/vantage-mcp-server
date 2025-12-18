@@ -85,6 +85,11 @@ Each resource has a unique token that can be used to get more details or link to
 export default registerTool({
 	name: "list-provider-resources",
 	description,
+	annotations: {
+		destructive: false,
+		openWorld: true,
+		readOnly: true,
+	},
 	args: {
 		page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
 		resource_report_token: z

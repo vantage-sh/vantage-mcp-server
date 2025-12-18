@@ -16,6 +16,11 @@ const args = {
 export default registerTool({
 	name: "list-dashboards",
 	description,
+	annotations: {
+		destructive: false,
+		openWorld: true,
+		readOnly: true,
+	},
 	args,
 	async execute(args, ctx) {
 		const requestParams = { ...args, limit: 64 };

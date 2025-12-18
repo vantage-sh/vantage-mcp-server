@@ -31,6 +31,11 @@ const args = {
 export default registerTool({
 	name: "get-cost-report-forecast",
 	description,
+	annotations: {
+		destructive: false,
+		openWorld: true,
+		readOnly: true,
+	},
 	args,
 	async execute(args, ctx) {
 		const requestParams = { ...args, limit: DEFAULT_LIMIT };

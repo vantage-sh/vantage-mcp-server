@@ -16,6 +16,11 @@ export default registerTool({
 		account_id: z.string().optional().describe("Filter by a specific account ID"),
 		provider: z.string().optional().describe("Provider to filter provider accounts to"),
 	},
+	annotations: {
+		destructive: false,
+		openWorld: true,
+		readOnly: true,
+	},
 	async execute(args, ctx) {
 		const response = await ctx.callVantageApi("/v2/cost_provider_accounts", args, "GET");
 		if (!response.ok) {
