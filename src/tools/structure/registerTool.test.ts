@@ -33,7 +33,7 @@ test("tool registration works properly", () => {
 		tool.args,
 		expect.objectContaining({
 			readOnlyHint: false,
-			openWorldHint: true,
+			openWorldHint: false,
 			destructiveHint: true,
 		}),
 		expect.any(Function)

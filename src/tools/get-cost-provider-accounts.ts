@@ -18,7 +18,7 @@ export default registerTool({
 	},
 	annotations: {
 		destructive: false,
-		openWorld: true,
+		openWorld: false,
 		readOnly: true,
 	},
 	async execute(args, ctx) {

@@ -52,7 +52,7 @@ export default function registerTool<Validators extends z.ZodRawShape>(
 			toolProps.args as any,
 			{
 				readOnlyHint: toolProps.annotations.readOnly ?? false,
-				openWorldHint: toolProps.annotations.openWorld ?? true,
+				openWorldHint: toolProps.annotations.openWorld ?? false,
 				destructiveHint: toolProps.annotations.destructive ?? true,
 			},
 			async (args: any): Promise<CallToolResult> => {

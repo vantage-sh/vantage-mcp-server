@@ -104,7 +104,7 @@ export default registerTool({
 	description,
 	annotations: {
 		destructive: false,
-		openWorld: true,
+		openWorld: false,
 		readOnly: false,
 	},
 	args: {
