@@ -139,7 +139,7 @@ export function testTool<Validators extends z.ZodRawShape>(
 		expect(toolHandler[2]).toBe(tool.args);
 		expect(toolHandler[3]).toEqual({
 			readOnlyHint: tool.annotations.readOnly ?? false,
-			openWorldHint: tool.annotations.openWorld ?? true,
+			openWorldHint: tool.annotations.openWorld ?? false,
 			destructiveHint: tool.annotations.destructive ?? true,
 		});
 		expect(typeof toolHandler[4]).toBe("function");
