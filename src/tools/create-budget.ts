@@ -17,6 +17,11 @@ const period = z.object({
 export default registerTool({
 	name: "create-budget",
 	description,
+	annotations: {
+		destructive: false,
+		openWorld: false,
+		readOnly: false,
+	},
 	args: {
 		name: z.string().min(1).describe("The name of the Budget."),
 		workspace_token: z

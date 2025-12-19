@@ -16,6 +16,11 @@ export type ToolCallContext = {
 export type ToolProperties<Validators extends z.ZodRawShape> = {
 	name: string;
 	description: string;
+	annotations: {
+		readOnly?: boolean;
+		openWorld?: boolean;
+		destructive?: boolean;
+	};
 	args: Validators;
 	execute: (
 		args: {
@@ -45,6 +50,11 @@ export default function registerTool<Validators extends z.ZodRawShape>(
 			// I don't like this, but it gets us out of type hell for now,
 			// and we type the tool anyway, so its not as bad as it could be.
 			toolProps.args as any,
+			{
+				readOnlyHint: toolProps.annotations.readOnly ?? false,
+				openWorldHint: toolProps.annotations.openWorld ?? false,
+				destructiveHint: toolProps.annotations.destructive ?? true,
+			},
 			async (args: any): Promise<CallToolResult> => {
 				try {
 					const res = await toolProps.execute(args, generateContext());

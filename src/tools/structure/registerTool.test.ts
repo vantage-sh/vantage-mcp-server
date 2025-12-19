@@ -12,6 +12,7 @@ test("tool registration works properly", () => {
 		args: {
 			example_arg: z.string().describe("An example argument"),
 		},
+		annotations: {},
 		async execute() {
 			return { message: "Hello, World!" };
 		},
@@ -30,6 +31,11 @@ test("tool registration works properly", () => {
 		tool.name,
 		tool.description,
 		tool.args,
+		expect.objectContaining({
+			readOnlyHint: false,
+			openWorldHint: false,
+			destructiveHint: true,
+		}),
 		expect.any(Function)
 	);
 });
@@ -40,6 +46,7 @@ describe("mcp server handler", () => {
 			name: "error-tool",
 			description: "A tool that throws an MCPUserError",
 			args: {},
+			annotations: {},
 			async execute() {
 				throw new MCPUserError({ hello: "world" });
 			},
@@ -52,7 +59,7 @@ describe("mcp server handler", () => {
 
 		const toolHandler = (mockServer.tool as any).mock.calls.find(
 			(call: any) => call[0] === "error-tool"
-		)[3];
+		)[4];
 
 		const result = await toolHandler({});
 		expect(result).toEqual({
@@ -71,6 +78,7 @@ describe("mcp server handler", () => {
 			name: "throw-tool",
 			description: "A tool that throws a generic error",
 			args: {},
+			annotations: {},
 			async execute() {
 				throw new Error("Generic error");
 			},
@@ -83,7 +91,7 @@ describe("mcp server handler", () => {
 
 		const toolHandler = (mockServer.tool as any).mock.calls.find(
 			(call: any) => call[0] === "throw-tool"
-		)[3];
+		)[4];
 
 		await expect(toolHandler({})).rejects.toThrow("Generic error");
 	});
@@ -97,6 +105,11 @@ describe("mcp server handler", () => {
 			args: {
 				example_arg: z.string().describe("An example argument"),
 			},
+			annotations: {
+				readOnly: true,
+				openWorld: true,
+				destructive: true,
+			},
 			async execute(receivedArgs, receivedContext) {
 				return { receivedArgs, receivedContext };
 			},
@@ -107,10 +120,17 @@ describe("mcp server handler", () => {
 		const generateContext = vi.fn(() => context);
 		setupRegisteredTools(mockServer, generateContext);
 
-		const toolHandler = (mockServer.tool as any).mock.calls.find(
+		const toolRaw = (mockServer.tool as any).mock.calls.find(
 			(call: any) => call[0] === "arg-tool"
-		)[3];
+		);
+		const annotations = toolRaw[3];
+		expect(annotations).toEqual({
+			readOnlyHint: true,
+			openWorldHint: true,
+			destructiveHint: true,
+		});
 
+		const toolHandler = toolRaw[4];
 		const result = await toolHandler(args);
 		expect(result).toEqual({
 			content: [

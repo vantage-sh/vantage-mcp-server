@@ -20,6 +20,11 @@ const args = {
 export default registerTool({
 	name: "list-cost-reports",
 	description,
+	annotations: {
+		destructive: false,
+		openWorld: false,
+		readOnly: true,
+	},
 	args,
 	async execute(args, ctx) {
 		const requestParams = { ...args, limit: DEFAULT_LIMIT };
