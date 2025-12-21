@@ -1,0 +1,66 @@
+on: push
+name: Run Tests
+
+jobs:
+    typescript-check:
+        name: TypeScript Check
+        runs-on: ubuntu-22.04
+        steps:
+            - uses: actions/checkout@v4
+            - name: Setup Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "22"
+            - name: Install Dependencies
+              run: npm install
+            - name: Run TypeScript Check
+              run: npm run type-check
+
+    biome:
+        name: Biome Lint
+        runs-on: ubuntu-22.04
+        steps:
+            - uses: actions/checkout@v4
+            - name: Setup Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "22"
+            - name: Install Dependencies
+              run: npm install
+            - run: npm run lint
+
+    commitlint:
+        name: Commit Lint
+        if: github.ref != 'refs/heads/main'
+        runs-on: ubuntu-22.04
+        steps:
+            - uses: actions/checkout@v4
+            - name: Setup Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "22"
+            - name: Fetch Main Branch
+              run: git fetch origin main:main
+            - name: Install Dependencies
+              run: npm install
+            - name: Run Commit Lint
+              run: npx commitlint --from=origin/main --to=HEAD --verbose --config ./commitlint.config.js
+
+    vitest:
+        name: Vitest
+        runs-on: ubuntu-22.04
+        steps:
+            - uses: actions/checkout@v4
+            - name: Setup Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "22"
+            - name: Install Dependencies
+              run: npm install
+            - name: Run Vitest
+              run: npm run test -- --coverage
+            - name: Upload Coverage as an Artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: coverage-report
+                  path: coverage/
