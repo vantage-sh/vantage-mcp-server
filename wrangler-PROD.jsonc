@@ -31,7 +31,6 @@
 	"vars": {
 		"SELF_CALLBACK_URL": "https://mcp.vantage.sh/callback",
 		"AUTH0_SCOPE": "openid offline_access email",
-		"SENTRY_DSN": "https://8e8674145197c3776c20962cc530b061@o390333.ingest.us.sentry.io/4509708769230849",
 		"VANTAGE_MCP_TOKEN": "",
 		"VANTAGE_API_HOST": "https://api.vantage.sh"
 	},
