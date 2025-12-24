@@ -420,6 +420,16 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 				params: {
 					page: 1,
 					limit: DEFAULT_LIMIT,
+					user: undefined,
+					workspace_token: undefined,
+					action: undefined,
+					object_name: undefined,
+					source: undefined,
+					object_type: undefined,
+					token: undefined,
+					object_token: undefined,
+					start_date: undefined,
+					end_date: undefined,
 				},
 				method: "GET",
 				result: {
