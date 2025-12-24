@@ -90,6 +90,11 @@ const args = {
 export default registerTool({
 	name: "list-audit-logs",
 	description,
+	annotations: {
+		destructive: false,
+		openWorld: false,
+		readOnly: true,
+	},
 	args,
 	async execute(args, ctx) {
 		const requestParams: Record<string, unknown> = {
