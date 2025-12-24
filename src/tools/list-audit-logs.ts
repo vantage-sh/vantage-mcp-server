@@ -58,22 +58,19 @@ const args = {
 		.optional()
 		.describe("Filter by personal or service API token that performed the action (user ID)"),
 	workspace_token: z.string().optional().describe("Filter by workspace token"),
-	action: z
-		.string()
-		.optional()
-		.describe("Filter by action type (e.g., create, update, delete)"),
+	action: z.string().optional().describe("Filter by action type (e.g., create, update, delete)"),
 	object_name: z.string().optional().describe("Filter by object name"),
 	source: z
 		.string()
 		.optional()
 		.describe(
-			"Filter by source (e.g., console, api, developer, finops_agent). Use 'finops_agent' to filter for actions specifically taken by the Finops Agent.",
+			"Filter by source (e.g., console, api, developer, finops_agent). Use 'finops_agent' to filter for actions specifically taken by the Finops Agent."
 		),
 	object_type: z
 		.string()
 		.optional()
 		.describe(
-			"Filter by object type (e.g., virtual_tag, cost_report, recommendation_commitment).",
+			"Filter by object type (e.g., virtual_tag, cost_report, recommendation_commitment)."
 		),
 	token: z.string().optional().describe("Filter by audit log token"),
 	object_token: z.string().optional().describe("Filter by object token (auditable_token)"),
