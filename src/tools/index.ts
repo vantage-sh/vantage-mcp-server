@@ -13,6 +13,7 @@ import "./get-team";
 import "./get-teams";
 import "./get-users";
 import "./list-anomalies";
+import "./list-audit-logs";
 import "./list-budgets";
 import "./list-cost-integrations";
 import "./list-cost-providers";
