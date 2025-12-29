@@ -1,7 +1,7 @@
 import z from "zod/v4";
+import { pathEncode } from "../../vantage-ts";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
-import { pathEncode } from "../../vantage-ts";
 
 const description = `
 Get detailed information about a specific provider resource using its token or UUID.

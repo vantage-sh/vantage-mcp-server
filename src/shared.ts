@@ -1,4 +1,9 @@
-import type { Path, RequestBodyForPathAndMethod, ResponseBodyForPathAndMethod, SupportedMethods } from "../vantage-ts";
+import type {
+	Path,
+	RequestBodyForPathAndMethod,
+	ResponseBodyForPathAndMethod,
+	SupportedMethods,
+} from "../vantage-ts";
 import { SERVER_VERSION } from "./tools/structure/constants";
 
 export const serverMeta = {
@@ -10,7 +15,7 @@ export async function callApi<
 	P extends Path,
 	M extends SupportedMethods<P>,
 	Request extends RequestBodyForPathAndMethod<P, M>,
-	Response extends ResponseBodyForPathAndMethod<P, M>
+	Response extends ResponseBodyForPathAndMethod<P, M>,
 >(
 	baseUrl: string,
 	headers: Record<string, string>,
@@ -20,7 +25,7 @@ export async function callApi<
 ): Promise<{ data: Response; ok: true } | { errors: unknown[]; ok: false }> {
 	headers["User-Agent"] = `vantage-mcp-server/${serverMeta.version}`;
 
-	const url = new URL("/v2" + endpoint, baseUrl);
+	const url = new URL(`/v2${endpoint}`, baseUrl);
 
 	if (method === "GET") {
 		Object.entries(params as Record<string, unknown>).forEach(([key, value]) => {
@@ -39,7 +44,7 @@ export async function callApi<
 
 	const response = await fetch(url.toString(), options);
 	if (!response.ok) {
-		let bestAnyDetail = await response.text();
+		const bestAnyDetail = await response.text();
 		try {
 			const res = JSON.parse(bestAnyDetail) as { errors?: string[] };
 			if (Array.isArray(res.errors)) {

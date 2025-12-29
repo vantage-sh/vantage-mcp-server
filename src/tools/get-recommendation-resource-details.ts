@@ -1,7 +1,7 @@
 import z from "zod/v4";
+import { pathEncode } from "../../vantage-ts";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
-import { pathEncode } from "../../vantage-ts";
 
 const description = `
 Get comprehensive details about a specific infrastructure resource within a cost optimization recommendation, including the exact actions recommended for that resource.

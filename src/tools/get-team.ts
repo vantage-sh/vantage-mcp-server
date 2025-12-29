@@ -1,7 +1,7 @@
 import z from "zod/v4";
+import { pathEncode } from "../../vantage-ts";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
-import { pathEncode } from "../../vantage-ts";
 
 const description = `
 Gets a specific team with its token.
@@ -21,11 +21,7 @@ export default registerTool({
 	},
 	args,
 	async execute(args, ctx) {
-		const response = await ctx.callVantageApi(
-			`/teams/${pathEncode(args.token)}`,
-			{},
-			"GET"
-		);
+		const response = await ctx.callVantageApi(`/teams/${pathEncode(args.token)}`, {}, "GET");
 		if (!response.ok) {
 			throw new MCPUserError({ errors: response.errors });
 		}

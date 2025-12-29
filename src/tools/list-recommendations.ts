@@ -66,7 +66,12 @@ export default registerTool({
 	},
 	args,
 	async execute(args, ctx) {
-		const requestParams = { ...args, limit: DEFAULT_LIMIT, provider: args.provider as any, category: args.category as any };
+		const requestParams = {
+			...args,
+			limit: DEFAULT_LIMIT,
+			provider: args.provider as any,
+			category: args.category as any,
+		};
 		const response = await ctx.callVantageApi("/recommendations", requestParams, "GET");
 		if (!response.ok) {
 			throw new MCPUserError({ errors: response.errors });

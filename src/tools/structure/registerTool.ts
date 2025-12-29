@@ -4,9 +4,9 @@ import type z from "zod/v4";
 import MCPUserError from "./MCPUserError";
 import type {
 	Path,
-	SupportedMethods,
 	RequestBodyForPathAndMethod,
 	ResponseBodyForPathAndMethod,
+	SupportedMethods,
 } from "../../../vantage-ts";
 
 export type ToolCallContext = {
@@ -14,7 +14,7 @@ export type ToolCallContext = {
 		P extends Path,
 		M extends SupportedMethods<P>,
 		Request extends RequestBodyForPathAndMethod<P, M>,
-		Response extends ResponseBodyForPathAndMethod<P, M>
+		Response extends ResponseBodyForPathAndMethod<P, M>,
 	>(
 		endpoint: P,
 		params: Request,
