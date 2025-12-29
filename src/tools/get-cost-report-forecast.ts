@@ -4,6 +4,7 @@ import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 import dateValidator from "./utils/dateValidator";
 import paginationData from "./utils/paginationData";
+import { pathEncode } from "../../vantage-ts";
 
 const description = `
 Given a Cost Report Token, Vantage can forecast the costs for a given time range. Vantage will return costs that are *predicted*, but have not yet been actually incurred.
@@ -38,9 +39,9 @@ export default registerTool({
 	},
 	args,
 	async execute(args, ctx) {
-		const requestParams = { ...args, limit: DEFAULT_LIMIT };
+		const requestParams = { ...args, limit: DEFAULT_LIMIT, provider: args.provider as any };
 		const response = await ctx.callVantageApi(
-			`/v2/cost_reports/${args.cost_report_token}/forecasted_costs`,
+			`/cost_reports/${pathEncode(args.cost_report_token)}/forecasted_costs`,
 			requestParams,
 			"GET"
 		);

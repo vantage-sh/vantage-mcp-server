@@ -2,15 +2,24 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import type z from "zod/v4";
 import MCPUserError from "./MCPUserError";
-
-export type AllowedMethods = "GET" | "POST" | "PUT";
+import type {
+	Path,
+	SupportedMethods,
+	RequestBodyForPathAndMethod,
+	ResponseBodyForPathAndMethod,
+} from "../../../vantage-ts";
 
 export type ToolCallContext = {
-	callVantageApi: (
-		endpoint: string,
-		params: Record<string, unknown>,
-		method: AllowedMethods
-	) => Promise<{ data: any; ok: true } | { errors: unknown[]; ok: false }>;
+	callVantageApi: <
+		P extends Path,
+		M extends SupportedMethods<P>,
+		Request extends RequestBodyForPathAndMethod<P, M>,
+		Response extends ResponseBodyForPathAndMethod<P, M>
+	>(
+		endpoint: P,
+		params: Request,
+		method: M
+	) => Promise<{ data: Response; ok: true } | { errors: unknown[]; ok: false }>;
 };
 
 export type ToolProperties<Validators extends z.ZodRawShape> = {

@@ -3,6 +3,7 @@ import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 import paginationData from "./utils/paginationData";
+import { pathEncode } from "../../vantage-ts";
 
 const description = `
 Get a paginated list of all infrastructure resources affected by a specific cost optimization recommendation.
@@ -45,7 +46,7 @@ export default registerTool({
 	async execute(args, ctx) {
 		const requestParams = { page: args.page, limit: DEFAULT_LIMIT };
 		const response = await ctx.callVantageApi(
-			`/v2/recommendations/${args.recommendation_token}/resources`,
+			`/recommendations/${pathEncode(args.recommendation_token)}/resources`,
 			requestParams,
 			"GET"
 		);

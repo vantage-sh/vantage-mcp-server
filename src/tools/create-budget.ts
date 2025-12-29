@@ -44,7 +44,7 @@ export default registerTool({
 			),
 	},
 	async execute(args, ctx) {
-		const res = await ctx.callVantageApi("/v2/budgets", args, "POST");
+		const res = await ctx.callVantageApi("/budgets", args, "POST");
 		if (!res.ok) {
 			throw new MCPUserError({ errors: res.errors });
 		}

@@ -3,6 +3,7 @@ import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 import paginationData from "./utils/paginationData";
+import { pathEncode } from "../../vantage-ts";
 
 const description = `
 Tags can have many values. Use this tool to find the values and service providers that are associated with a tag.
@@ -25,7 +26,7 @@ export default registerTool({
 	async execute(args, ctx) {
 		const requestParams = { ...args, limit: DEFAULT_LIMIT };
 		const response = await ctx.callVantageApi(
-			`/v2/tags/${args.key}/values`,
+			`/tags/${pathEncode(args.key)}/values`,
 			requestParams,
 			"GET"
 		);

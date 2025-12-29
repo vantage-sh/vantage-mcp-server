@@ -1,6 +1,7 @@
 import z from "zod/v4";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
+import { pathEncode } from "../../vantage-ts";
 
 const description = `
 Get comprehensive details about a specific cost optimization recommendation using its unique token.
@@ -39,7 +40,7 @@ export default registerTool({
 	args,
 	async execute(args, ctx) {
 		const response = await ctx.callVantageApi(
-			`/v2/recommendations/${args.recommendation_token}`,
+			`/recommendations/${pathEncode(args.recommendation_token)}`,
 			{},
 			"GET"
 		);

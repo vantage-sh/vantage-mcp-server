@@ -127,7 +127,7 @@ export default registerTool({
 			}
 		});
 
-		const response = await ctx.callVantageApi("/v2/costs", requestParams, "GET");
+		const response = await ctx.callVantageApi("/costs", requestParams, "GET");
 		if (!response.ok) {
 			throw new MCPUserError({ errors: response.errors });
 		}

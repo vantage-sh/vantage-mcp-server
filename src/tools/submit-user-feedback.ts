@@ -22,7 +22,7 @@ export default registerTool({
 	args,
 	async execute(args, ctx) {
 		const response = await ctx.callVantageApi(
-			"/v2/user_feedback",
+			"/user_feedback",
 			{ message: args.message },
 			"POST"
 		);
