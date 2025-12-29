@@ -3,6 +3,12 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import * as Sentry from "@sentry/cloudflare";
 import { McpAgent } from "agents/mcp";
 import { Hono } from "hono";
+import type {
+	Path,
+	RequestBodyForPathAndMethod,
+	ResponseBodyForPathAndMethod,
+	SupportedMethods,
+} from "../vantage-ts";
 import {
 	authorize,
 	callback,
@@ -15,7 +21,6 @@ import { HeaderAuthProvider } from "./header-auth-provider";
 import homepage from "./homepage";
 import { callApi, serverMeta } from "./shared";
 import { setupRegisteredTools } from "./tools/structure/registerTool";
-import type { Path, SupportedMethods, RequestBodyForPathAndMethod, ResponseBodyForPathAndMethod } from "../vantage-ts";
 
 // Side effect import to register all tools
 import "./tools";
@@ -46,7 +51,7 @@ export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> 
 		P extends Path,
 		M extends SupportedMethods<P>,
 		Request extends RequestBodyForPathAndMethod<P, M>,
-		Response extends ResponseBodyForPathAndMethod<P, M>
+		Response extends ResponseBodyForPathAndMethod<P, M>,
 	>(
 		endpoint: P,
 		params: Request,
