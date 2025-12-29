@@ -9,7 +9,7 @@ Retrieve the unit costs for a given CostReport, with optional paging, date filte
 `.trim();
 
 const args = {
-	cost_report_token: z.string().optional().describe("CostReport token to list unit costs for"),
+	cost_report_token: z.string().describe("CostReport token to list unit costs for"),
 	page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
 	start_date: dateValidator("First date to filter unit costs from, format=YYYY-MM-DD").optional(),
 	end_date: dateValidator("Last date to filter unit costs to, format=YYYY-MM-DD").optional(),
@@ -37,7 +37,7 @@ export default registerTool({
 	args,
 	async execute(args, ctx) {
 		const requestParams = { ...args, limit: 64 };
-		const response = await ctx.callVantageApi("/v2/unit_costs", requestParams, "GET");
+		const response = await ctx.callVantageApi("/unit_costs", requestParams, "GET");
 		if (!response.ok) {
 			throw new MCPUserError({ errors: response.errors });
 		}

@@ -1,24 +1,29 @@
+import type { Path, RequestBodyForPathAndMethod, ResponseBodyForPathAndMethod, SupportedMethods } from "../vantage-ts";
 import { SERVER_VERSION } from "./tools/structure/constants";
-import type { AllowedMethods } from "./tools/structure/registerTool";
 
 export const serverMeta = {
 	name: "Vantage Cloud Costs Helper",
 	version: SERVER_VERSION,
 };
 
-export async function callApi(
+export async function callApi<
+	P extends Path,
+	M extends SupportedMethods<P>,
+	Request extends RequestBodyForPathAndMethod<P, M>,
+	Response extends ResponseBodyForPathAndMethod<P, M>
+>(
 	baseUrl: string,
 	headers: Record<string, string>,
-	params: Record<string, unknown>,
-	method: AllowedMethods,
-	endpoint: string
-): Promise<{ data: any; ok: true } | { errors: unknown[]; ok: false }> {
+	params: Request,
+	method: M,
+	endpoint: P
+): Promise<{ data: Response; ok: true } | { errors: unknown[]; ok: false }> {
 	headers["User-Agent"] = `vantage-mcp-server/${serverMeta.version}`;
 
-	const url = new URL(endpoint, baseUrl);
+	const url = new URL("/v2" + endpoint, baseUrl);
 
 	if (method === "GET") {
-		Object.entries(params).forEach(([key, value]) => {
+		Object.entries(params as Record<string, unknown>).forEach(([key, value]) => {
 			if (value !== undefined && value !== null) {
 				url.searchParams.append(key, String(value));
 			}
@@ -36,7 +41,13 @@ export async function callApi(
 	if (!response.ok) {
 		let bestAnyDetail = await response.text();
 		try {
-			bestAnyDetail = JSON.parse(bestAnyDetail);
+			const res = JSON.parse(bestAnyDetail) as { errors?: string[] };
+			if (Array.isArray(res.errors)) {
+				return {
+					errors: res.errors,
+					ok: false,
+				};
+			}
 		} catch {
 			// ignore JSON parse error - instead just use the text
 		}
@@ -55,5 +66,5 @@ export async function callApi(
 	}
 
 	const responseData = await response.json();
-	return { data: responseData, ok: true };
+	return { data: responseData as Response, ok: true };
 }
