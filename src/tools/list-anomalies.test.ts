@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+import type { GetAnomalyAlertsResponse } from "../../vantage-ts";
 import tool from "./list-anomalies";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import {
@@ -45,10 +46,10 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	poisonOneValue(validArguments, "end_date", dateValidatorPoisoner),
 ];
 
-const successData = {
+const successData: GetAnomalyAlertsResponse = {
 	anomaly_alerts: [
-		{ id: "anomaly_123", description: "Unusual spike in EC2 costs" },
-		{ id: "anomaly_456", description: "Unexpected S3 charges" },
+		{ token: "anomaly_123", feedback: "Unusual spike in EC2 costs" },
+		{ token: "anomaly_456", feedback: "Unexpected S3 charges" },
 	],
 	links: {},
 };
@@ -61,6 +62,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 				endpoint: "/v2/anomaly_alerts",
 				params: {
 					...validArguments,
+					page: 1,
 					limit: DEFAULT_LIMIT,
 				},
 				method: "GET",

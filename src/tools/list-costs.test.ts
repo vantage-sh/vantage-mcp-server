@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+import type { GetCostsResponse } from "../../vantage-ts";
 import tool from "./list-costs";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import {
@@ -14,7 +15,7 @@ import {
 
 type Validators = ExtractValidators<typeof tool>;
 
-const DEFAULT_GROUPINGS = "provider,service,account_id";
+const DEFAULT_GROUPINGS = ["provider", "service", "account_id"];
 const DEFAULT_SETTINGS_API = {
 	"settings[aggregate_by]": "cost",
 	"settings[amortize]": true,
@@ -77,10 +78,10 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	poisonOneValue(validArguments, "end_date", dateValidatorPoisoner),
 ];
 
-const successData = {
+const successData: GetCostsResponse = {
 	costs: [
-		{ id: "cost_123", amount: 100.5, service: "AmazonEC2" },
-		{ id: "cost_456", amount: 75.25, service: "AmazonS3" },
+		{ tag: "cost_123", amount: "100.5", service: "AmazonEC2" },
+		{ tag: "cost_456", amount: "75.25", service: "AmazonS3" },
 	],
 	total_cost: 175.75,
 	links: {},

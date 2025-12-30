@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+import type { GetIntegrationsResponse } from "../../vantage-ts";
 import tool from "./list-cost-integrations";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import {
@@ -29,10 +30,10 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	},
 ];
 
-const successData = {
+const successData: GetIntegrationsResponse = {
 	integrations: [
-		{ id: "int_123", provider: "aws", status: "connected" },
-		{ id: "int_456", provider: "azure", status: "connected" },
+		{ token: "int_123", provider: "aws", status: "connected" },
+		{ token: "int_456", provider: "azure", status: "connected" },
 	],
 	links: {},
 };

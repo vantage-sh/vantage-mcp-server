@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+import { type GetResourceResponse, pathEncode } from "../../vantage-ts";
 import tool from "./get-provider-resource";
 import {
 	type ExecutionTestTableItem,
@@ -55,22 +56,14 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	},
 ];
 
-const successData = {
+const successData: GetResourceResponse = {
 	token: "prvdr_rsrc_123",
-	resource_id: "i-1234567890abcdef0",
-	resource_type: "EC2Instance",
+	label: "i-1234567890abcdef0",
 	provider: "aws",
-	provider_account_id: "123456789012",
 	billing_account_id: "123456789012",
 	region: "us-east-1",
 	created_at: "2023-01-15T10:30:00Z",
-	metadata: {
-		instance_type: "t3.medium",
-		state: "running",
-		vpc_id: "vpc-12345678",
-		subnet_id: "subnet-87654321",
-		security_groups: ["sg-12345678"],
-	},
+	metadata: "t3.medium",
 };
 
 const executionTests: ExecutionTestTableItem<Validators>[] = [
@@ -80,7 +73,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 		name: "successful call",
 		apiCallHandler: requestsInOrder([
 			{
-				endpoint: "/v2/resources/prvdr_rsrc_123",
+				endpoint: `/v2/resources/${pathEncode(validArguments.resource_token)}`,
 				params: {
 					include_cost: false,
 				},
@@ -103,7 +96,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 		name: "unsuccessful call",
 		apiCallHandler: requestsInOrder([
 			{
-				endpoint: "/v2/resources/invalid_token",
+				endpoint: `/v2/resources/${pathEncode("invalid_token")}`,
 				params: {
 					include_cost: false,
 				},
