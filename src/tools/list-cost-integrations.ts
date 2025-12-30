@@ -28,7 +28,7 @@ export default registerTool({
 	args,
 	async execute(args, ctx) {
 		const requestParams = { ...args, limit: DEFAULT_LIMIT };
-		const response = await ctx.callVantageApi("/integrations", requestParams, "GET");
+		const response = await ctx.callVantageApi("/v2/integrations", requestParams, "GET");
 		if (!response.ok) {
 			throw new MCPUserError({ errors: response.errors });
 		}

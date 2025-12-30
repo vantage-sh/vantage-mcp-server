@@ -111,7 +111,7 @@ export default registerTool({
 			.describe("Include cost information broken down by category for each resource"),
 	},
 	async execute(args, ctx) {
-		const response = await ctx.callVantageApi("/resources", args, "GET");
+		const response = await ctx.callVantageApi("/v2/resources", args, "GET");
 		if (!response.ok) {
 			throw new MCPUserError({ errors: response.errors });
 		}

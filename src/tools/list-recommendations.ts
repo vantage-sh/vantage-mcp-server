@@ -72,7 +72,7 @@ export default registerTool({
 			provider: args.provider as any,
 			category: args.category as any,
 		};
-		const response = await ctx.callVantageApi("/recommendations", requestParams, "GET");
+		const response = await ctx.callVantageApi("/v2/recommendations", requestParams, "GET");
 		if (!response.ok) {
 			throw new MCPUserError({ errors: response.errors });
 		}

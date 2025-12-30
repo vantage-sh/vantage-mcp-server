@@ -23,7 +23,7 @@ export default registerTool({
 	},
 	async execute(args, ctx) {
 		const response = await ctx.callVantageApi(
-			"/cost_provider_accounts",
+			"/v2/cost_provider_accounts",
 			{
 				...args,
 				// @ts-expect-error: This is a workaround so we don't have to keep patching the type here

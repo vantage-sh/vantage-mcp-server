@@ -26,7 +26,7 @@ export default registerTool({
 	async execute(args, ctx) {
 		const requestParams = { ...args, limit: DEFAULT_LIMIT };
 		const response = await ctx.callVantageApi(
-			`/tags/${pathEncode(args.key)}/values`,
+			`/v2/tags/${pathEncode(args.key)}/values`,
 			requestParams,
 			"GET"
 		);

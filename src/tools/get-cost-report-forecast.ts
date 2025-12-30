@@ -41,7 +41,7 @@ export default registerTool({
 	async execute(args, ctx) {
 		const requestParams = { ...args, limit: DEFAULT_LIMIT, provider: args.provider as any };
 		const response = await ctx.callVantageApi(
-			`/cost_reports/${pathEncode(args.cost_report_token)}/forecasted_costs`,
+			`/v2/cost_reports/${pathEncode(args.cost_report_token)}/forecasted_costs`,
 			requestParams,
 			"GET"
 		);
