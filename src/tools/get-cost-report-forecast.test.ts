@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+import { pathEncode } from "../../vantage-ts";
 import tool from "./get-cost-report-forecast";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import {
@@ -11,7 +12,6 @@ import {
 	type SchemaTestTableItem,
 	testTool,
 } from "./utils/testing";
-import { pathEncode } from "../../vantage-ts";
 
 type Validators = ExtractValidators<typeof tool>;
 

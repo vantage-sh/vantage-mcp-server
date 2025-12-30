@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+import type { GetUnitCostsResponse } from "../../vantage-ts";
 import tool from "./list-unit-costs";
 import {
 	dateValidatorPoisoner,
@@ -10,7 +11,6 @@ import {
 	type SchemaTestTableItem,
 	testTool,
 } from "./utils/testing";
-import type { GetUnitCostsResponse } from "../../vantage-ts";
 
 type Validators = ExtractValidators<typeof tool>;
 

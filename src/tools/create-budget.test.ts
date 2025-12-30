@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+import type { CreateBudgetResponse } from "../../vantage-ts";
 import tool from "./create-budget";
 import {
 	type ExecutionTestTableItem,
@@ -8,7 +9,6 @@ import {
 	type SchemaTestTableItem,
 	testTool,
 } from "./utils/testing";
-import type { CreateBudgetResponse } from "../../vantage-ts";
 
 type Validators = ExtractValidators<typeof tool>;
 
