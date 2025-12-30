@@ -1,4 +1,5 @@
 import z from "zod";
+import { pathEncode } from "../../vantage-ts";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 
@@ -20,11 +21,7 @@ export default registerTool({
 	},
 	args,
 	async execute(args, ctx) {
-		const response = await ctx.callVantageApi(
-			`/v2/teams/${encodeURIComponent(args.token)}`,
-			{},
-			"GET"
-		);
+		const response = await ctx.callVantageApi(`/v2/teams/${pathEncode(args.token)}`, {}, "GET");
 		if (!response.ok) {
 			throw new MCPUserError({ errors: response.errors });
 		}

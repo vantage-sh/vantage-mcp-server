@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+import { pathEncode } from "../../vantage-ts";
 import tool from "./get-recommendation-resource-details";
 import {
 	type ExecutionTestTableItem,
@@ -76,7 +77,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 		name: "successful call",
 		apiCallHandler: requestsInOrder([
 			{
-				endpoint: "/v2/recommendations/rec_123/resources/res_456",
+				endpoint: `/v2/recommendations/${pathEncode("rec_123")}/resources/${pathEncode("res_456")}`,
 				params: {},
 				method: "GET",
 				result: {
@@ -94,7 +95,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 		name: "unsuccessful call",
 		apiCallHandler: requestsInOrder([
 			{
-				endpoint: "/v2/recommendations/rec_123/resources/res_456",
+				endpoint: `/v2/recommendations/${pathEncode("rec_123")}/resources/${pathEncode("res_456")}`,
 				params: {},
 				method: "GET",
 				result: {

@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+import { pathEncode } from "../../vantage-ts";
 import tool from "./get-team";
 import { requestsInOrder, testTool } from "./utils/testing";
 
@@ -26,7 +27,7 @@ testTool(
 			name: "successful call",
 			apiCallHandler: requestsInOrder([
 				{
-					endpoint: "/v2/teams/team_123",
+					endpoint: `/v2/teams/${pathEncode("team_123")}`,
 					params: {},
 					method: "GET",
 					result: {
@@ -44,7 +45,7 @@ testTool(
 			name: "unsuccessful call",
 			apiCallHandler: requestsInOrder([
 				{
-					endpoint: "/v2/teams/team_456",
+					endpoint: `/v2/teams/${pathEncode("team_456")}`,
 					params: {},
 					method: "GET",
 					result: {

@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+import { pathEncode } from "../../vantage-ts";
 import tool from "./get-cost-report-forecast";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import {
@@ -39,16 +40,24 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 		name: "successful call",
 		apiCallHandler: requestsInOrder([
 			{
-				endpoint: "/v2/cost_reports/crt_123/forecasted_costs",
+				endpoint: `/v2/cost_reports/${pathEncode("crt_123")}/forecasted_costs`,
 				params: {
 					...validArguments,
 					limit: DEFAULT_LIMIT,
+					provider: validArguments.provider as any,
 				},
 				method: "GET",
 				result: {
 					ok: true,
 					data: {
-						forecasted_costs: "hello",
+						forecasted_costs: [
+							{
+								amount: "10.0",
+								date: "2023-01-01",
+								provider: "aws" as "aws",
+								service: "AmazonEC2",
+							},
+						],
 						links: {},
 					},
 				},
@@ -57,7 +66,14 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 		handler: async ({ callExpectingSuccess }) => {
 			const res = await callExpectingSuccess(validArguments);
 			expect(res).toEqual({
-				forecasted_costs: "hello",
+				forecasted_costs: [
+					{
+						amount: "10.0",
+						date: "2023-01-01",
+						provider: "aws" as "aws",
+						service: "AmazonEC2",
+					},
+				],
 				pagination: {
 					hasNextPage: false,
 					nextPage: 0,
@@ -72,10 +88,11 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 		name: "unsuccessful call",
 		apiCallHandler: requestsInOrder([
 			{
-				endpoint: "/v2/cost_reports/crt_123/forecasted_costs",
+				endpoint: `/v2/cost_reports/${pathEncode("crt_123")}/forecasted_costs`,
 				params: {
 					...validArguments,
 					limit: DEFAULT_LIMIT,
+					provider: validArguments.provider as any,
 				},
 				method: "GET",
 				result: {

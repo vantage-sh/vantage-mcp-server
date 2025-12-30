@@ -1,4 +1,5 @@
 import z from "zod";
+import { pathEncode } from "../../vantage-ts";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
@@ -38,9 +39,9 @@ export default registerTool({
 	},
 	args,
 	async execute(args, ctx) {
-		const requestParams = { ...args, limit: DEFAULT_LIMIT };
+		const requestParams = { ...args, limit: DEFAULT_LIMIT, provider: args.provider as any };
 		const response = await ctx.callVantageApi(
-			`/v2/cost_reports/${args.cost_report_token}/forecasted_costs`,
+			`/v2/cost_reports/${pathEncode(args.cost_report_token)}/forecasted_costs`,
 			requestParams,
 			"GET"
 		);

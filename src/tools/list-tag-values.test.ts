@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+import { pathEncode } from "../../vantage-ts";
 import tool from "./list-tag-values";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import {
@@ -46,9 +47,9 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 		name: "successful call",
 		apiCallHandler: requestsInOrder([
 			{
-				endpoint: "/v2/tags/environment/values",
+				endpoint: `/v2/tags/${pathEncode(validArguments.key)}/values`,
 				params: {
-					key: "environment",
+					...validArguments,
 					page: 1,
 					limit: DEFAULT_LIMIT,
 				},
@@ -74,9 +75,9 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 		name: "unsuccessful call",
 		apiCallHandler: requestsInOrder([
 			{
-				endpoint: "/v2/tags/environment/values",
+				endpoint: `/v2/tags/${pathEncode(validArguments.key)}/values`,
 				params: {
-					key: "environment",
+					...validArguments,
 					page: 1,
 					limit: DEFAULT_LIMIT,
 				},

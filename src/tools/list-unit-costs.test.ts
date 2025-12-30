@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+import type { GetUnitCostsResponse } from "../../vantage-ts";
 import tool from "./list-unit-costs";
 import {
 	dateValidatorPoisoner,
@@ -26,7 +27,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	{
 		name: "minimal valid arguments",
 		data: {
-			cost_report_token: undefined,
+			cost_report_token: "crt_123",
 			page: 1,
 			start_date: undefined,
 			end_date: undefined,
@@ -63,11 +64,8 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	poisonOneValue(validArguments, "end_date", dateValidatorPoisoner),
 ];
 
-const successData = {
-	unit_costs: [
-		{ id: "unit_123", cost_per_unit: 0.05, service: "AmazonEC2" },
-		{ id: "unit_456", cost_per_unit: 0.023, service: "AmazonS3" },
-	],
+const successData: GetUnitCostsResponse = {
+	unit_costs: [{ business_metric_token: "unit_123" }, { business_metric_token: "unit_456" }],
 	links: {},
 };
 
@@ -77,11 +75,11 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 		apiCallHandler: requestsInOrder([
 			{
 				endpoint: "/v2/unit_costs",
+				method: "GET",
 				params: {
 					...validArguments,
 					limit: 64,
 				},
-				method: "GET",
 				result: {
 					ok: true,
 					data: {
@@ -110,7 +108,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 			{
 				endpoint: "/v2/unit_costs",
 				params: {
-					cost_report_token: undefined,
+					cost_report_token: "crt_123",
 					page: 1,
 					start_date: undefined,
 					end_date: undefined,
@@ -127,7 +125,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 		]),
 		handler: async ({ callExpectingMCPUserError }) => {
 			const err = await callExpectingMCPUserError({
-				cost_report_token: undefined,
+				cost_report_token: "crt_123",
 				page: 1,
 				start_date: undefined,
 				end_date: undefined,

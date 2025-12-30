@@ -1,4 +1,5 @@
 import z from "zod";
+import { pathEncode } from "../../vantage-ts";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 
@@ -45,7 +46,7 @@ export default registerTool({
 	args,
 	async execute(args, ctx) {
 		const response = await ctx.callVantageApi(
-			`/v2/recommendations/${args.recommendation_token}/resources/${args.resource_token}`,
+			`/v2/recommendations/${pathEncode(args.recommendation_token)}/resources/${pathEncode(args.resource_token)}`,
 			{},
 			"GET"
 		);
