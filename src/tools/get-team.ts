@@ -21,7 +21,7 @@ export default registerTool({
 	},
 	args,
 	async execute(args, ctx) {
-		const response = await ctx.callVantageApi(`/teams/${pathEncode(args.token)}`, {}, "GET");
+		const response = await ctx.callVantageApi(`/v2/teams/${pathEncode(args.token)}`, {}, "GET");
 		if (!response.ok) {
 			throw new MCPUserError({ errors: response.errors });
 		}

@@ -7,6 +7,7 @@ import {
 	type SchemaTestTableItem,
 	testTool,
 } from "./utils/testing";
+import type { GetCostProviderAccountsResponse } from "../../vantage-ts";
 
 type Validators = ExtractValidators<typeof tool>;
 
@@ -45,10 +46,10 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	},
 ];
 
-const successData = {
+const successData: GetCostProviderAccountsResponse = {
 	cost_provider_accounts: [
-		{ id: "cpa_123", name: "Account 1" },
-		{ id: "cpa_456", name: "Account 2" },
+		{ account_id: "cpa_123", title: "Account 1" },
+		{ account_id: "cpa_456", title: "Account 2" },
 	],
 };
 

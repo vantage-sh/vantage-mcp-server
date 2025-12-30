@@ -80,6 +80,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 				params: {
 					...validArguments,
 					limit: DEFAULT_LIMIT,
+					category: validArguments.category as any,
 				},
 				method: "GET",
 				result: {
@@ -111,7 +112,6 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 				endpoint: "/v2/recommendations",
 				params: {
 					page: 1,
-					filter: undefined,
 					provider: undefined,
 					workspace_token: undefined,
 					provider_account_id: undefined,

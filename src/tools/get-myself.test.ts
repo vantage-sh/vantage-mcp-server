@@ -20,13 +20,23 @@ testTool(
 					method: "GET",
 					result: {
 						ok: true,
-						data: { id: "user_123", workspaces: [{ id: "ws_123" }] },
+						data: {
+							bearer_token: {
+								description: "test",
+							},
+							workspaces: [{ token: "ws_123" }],
+						},
 					},
 				},
 			]),
 			handler: async ({ callExpectingSuccess }) => {
 				const res = await callExpectingSuccess({});
-				expect(res).toEqual({ id: "user_123", workspaces: [{ id: "ws_123" }] });
+				expect(res).toEqual({
+					bearer_token: {
+						description: "test",
+					},
+					workspaces: [{ token: "ws_123" }],
+				});
 			},
 		},
 		{

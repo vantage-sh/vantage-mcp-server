@@ -20,7 +20,7 @@ export default registerTool({
 	},
 	args,
 	async execute(_, ctx) {
-		const response = await ctx.callVantageApi("/me", {}, "GET");
+		const response = await ctx.callVantageApi("/v2/me", {}, "GET");
 		if (!response.ok) {
 			throw new MCPUserError({ errors: response.errors });
 		}

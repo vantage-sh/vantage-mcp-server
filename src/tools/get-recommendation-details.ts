@@ -40,7 +40,7 @@ export default registerTool({
 	args,
 	async execute(args, ctx) {
 		const response = await ctx.callVantageApi(
-			`/recommendations/${pathEncode(args.recommendation_token)}`,
+			`/v2/recommendations/${pathEncode(args.recommendation_token)}`,
 			{},
 			"GET"
 		);

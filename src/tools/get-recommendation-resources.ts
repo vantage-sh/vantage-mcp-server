@@ -46,7 +46,7 @@ export default registerTool({
 	async execute(args, ctx) {
 		const requestParams = { page: args.page, limit: DEFAULT_LIMIT };
 		const response = await ctx.callVantageApi(
-			`/recommendations/${pathEncode(args.recommendation_token)}/resources`,
+			`/v2/recommendations/${pathEncode(args.recommendation_token)}/resources`,
 			requestParams,
 			"GET"
 		);

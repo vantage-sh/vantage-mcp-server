@@ -25,7 +25,7 @@ export async function callApi<
 ): Promise<{ data: Response; ok: true } | { errors: unknown[]; ok: false }> {
 	headers["User-Agent"] = `vantage-mcp-server/${serverMeta.version}`;
 
-	const url = new URL(`/v2${endpoint}`, baseUrl);
+	const url = new URL(endpoint, baseUrl);
 
 	if (method === "GET") {
 		Object.entries(params as Record<string, unknown>).forEach(([key, value]) => {
