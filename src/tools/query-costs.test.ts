@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+import type { GetCostsResponse } from "../../vantage-ts";
 import tool from "./query-costs";
 import {
 	dateValidatorPoisoner,
@@ -89,10 +90,10 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	poisonOneValue(validInputArguments, "end_date", dateValidatorPoisoner),
 ];
 
-const successData = {
+const successData: GetCostsResponse = {
 	costs: [
-		{ id: "cost_123", amount: 100.5, service: "AmazonEC2", provider: "aws" },
-		{ id: "cost_456", amount: 75.25, service: "AmazonS3", provider: "aws" },
+		{ tag: "cost_123", amount: "100.5", service: "AmazonEC2", provider: "aws" },
+		{ tag: "cost_456", amount: "75.25", service: "AmazonS3", provider: "aws" },
 	],
 	total_cost: 175.75,
 	links: {},
@@ -111,7 +112,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 					end_date: undefined,
 					workspace_token: "wt_123",
 					date_bin: "month",
-					groupings: "provider,service,region",
+					groupings: ["provider", "service", "region"],
 					"settings[include_credits]": false,
 					"settings[include_refunds]": false,
 					"settings[include_discounts]": true,
@@ -170,7 +171,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 					end_date: "2023-01-31",
 					workspace_token: "wt_123",
 					date_bin: "month",
-					groupings: "provider,service,region",
+					groupings: ["provider", "service", "region"],
 					"settings[include_credits]": false,
 					"settings[include_refunds]": false,
 					"settings[include_discounts]": true,
@@ -218,7 +219,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 					end_date: "2023-01-31",
 					workspace_token: "wt_123",
 					date_bin: "day",
-					groupings: "provider,service,region",
+					groupings: ["provider", "service", "region"],
 					"settings[include_credits]": false,
 					"settings[include_refunds]": false,
 					"settings[include_discounts]": true,
@@ -264,7 +265,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 					end_date: undefined,
 					workspace_token: "wt_123",
 					date_bin: "month",
-					groupings: "provider,service,region",
+					groupings: ["provider", "service", "region"],
 					"settings[include_credits]": false,
 					"settings[include_refunds]": false,
 					"settings[include_discounts]": true,
