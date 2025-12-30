@@ -30,7 +30,10 @@ export async function callApi<
 	if (method === "GET") {
 		Object.entries(params as Record<string, unknown>).forEach(([key, value]) => {
 			if (value !== undefined && value !== null) {
-				url.searchParams.append(key, Array.isArray(value) ? value.join(",") : String(value));
+				url.searchParams.append(
+					key,
+					Array.isArray(value) ? value.join(",") : String(value)
+				);
 			}
 		});
 	} else {
