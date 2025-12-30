@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+import type { GetCostProviderAccountsResponse } from "../../vantage-ts";
 import tool from "./get-cost-provider-accounts";
 import {
 	type ExecutionTestTableItem,
@@ -7,7 +8,6 @@ import {
 	type SchemaTestTableItem,
 	testTool,
 } from "./utils/testing";
-import type { GetCostProviderAccountsResponse } from "../../vantage-ts";
 
 type Validators = ExtractValidators<typeof tool>;
 
