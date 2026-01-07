@@ -83,7 +83,10 @@ const successData: GetCostsResponse = {
 		{ tag: "cost_123", amount: "100.5", service: "AmazonEC2" },
 		{ tag: "cost_456", amount: "75.25", service: "AmazonS3" },
 	],
-	total_cost: 175.75,
+	total_cost: {
+		amount: "175.75",
+		currency: "USD",
+	},
 	links: {},
 };
 

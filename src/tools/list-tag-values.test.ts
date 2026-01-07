@@ -50,7 +50,6 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 				endpoint: `/v2/tags/${pathEncode(validArguments.key)}/values`,
 				params: {
 					...validArguments,
-					page: 1,
 					limit: DEFAULT_LIMIT,
 				},
 				method: "GET",
