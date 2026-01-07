@@ -2,6 +2,8 @@
 
 import "./create-budget";
 import "./create-cost-report";
+import "./create-dashboard";
+import "./create-virtual-tag-config";
 import "./get-cost-provider-accounts";
 import "./get-cost-report-forecast";
 import "./get-myself";
