@@ -283,15 +283,15 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 				endpoint: "/v2/cost_reports",
 				params: {
 					title: "Minimal Report",
+					previous_period_end_date: "2025-01-31",
+					end_date: "2025-02-01",
 				},
 				method: "POST",
 				result: {
 					ok: true,
 					data: {
-						cost_report: {
-							token: "crt_456",
-							title: "Minimal Report",
-						},
+						token: "crt_456",
+						title: "Minimal Report",
 					},
 				},
 			},
@@ -300,12 +300,12 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 			const res = await callExpectingSuccess({
 				...undefineds,
 				title: "Minimal Report",
+				end_date: "2025-02-01",
+				previous_period_end_date: "2025-01-31",
 			});
 			expect(res).toEqual({
-				cost_report: {
-					token: "crt_456",
-					title: "Minimal Report",
-				},
+				token: "crt_456",
+				title: "Minimal Report",
 			});
 		},
 	},
@@ -317,6 +317,8 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 				params: {
 					title: "Invalid Filter Report",
 					filter: "invalid vql",
+					end_date: "2025-01-01",
+					previous_period_end_date: "2025-01-31",
 				},
 				method: "POST",
 				result: {
@@ -330,6 +332,8 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 				...undefineds,
 				title: "Invalid Filter Report",
 				filter: "invalid vql",
+				end_date: "2025-01-01",
+				previous_period_end_date: "2025-01-31",
 			});
 			expect(err.exception).toEqual({
 				errors: [{ message: "Invalid VQL filter syntax" }],

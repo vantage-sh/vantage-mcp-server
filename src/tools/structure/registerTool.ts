@@ -92,6 +92,10 @@ export default function registerTool<Validators extends z.ZodRawShape>(
 		);
 	};
 
+	if (toolSetups.has(toolProps.name)) {
+		throw new Error(`Tool ${toolProps.name} is already registered`);
+	}
+
 	toolSetups.set(toolProps.name, serverSetup);
 
 	return toolProps;

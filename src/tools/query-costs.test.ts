@@ -99,6 +99,7 @@ const successData: GetCostsResponse = {
 		amount: "175.75",
 		currency: "USD",
 	},
+	total_usage: {},
 	links: {},
 };
 

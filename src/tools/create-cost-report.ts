@@ -167,7 +167,15 @@ export default registerTool({
 		chart_settings: chartSettings.optional().describe("Report chart settings."),
 	},
 	async execute(args, ctx) {
-		const res = await ctx.callVantageApi("/v2/cost_reports", args, "POST");
+		const res = await ctx.callVantageApi(
+			"/v2/cost_reports",
+			{
+				...args,
+				previous_period_end_date: args.previous_period_end_date as any,
+				end_date: args.end_date as any,
+			},
+			"POST"
+		);
 		if (!res.ok) {
 			throw new MCPUserError({ errors: res.errors });
 		}
