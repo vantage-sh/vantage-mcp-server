@@ -45,7 +45,7 @@ export default registerTool({
 	name: "create-virtual-tag-config",
 	description,
 	args: {
-		key: z.string().describe("The key of the VirtualTagConfig"),
+		key: z.string().min(1).describe("The key of the VirtualTagConfig"),
 		overridable: z
 			.boolean()
 			.describe(

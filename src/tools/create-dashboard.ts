@@ -54,8 +54,8 @@ export default registerTool({
 	name: "create-dashboard",
 	description,
 	args: {
-		title: z.string().describe("The title of the dashboard"),
-		workspace_token: z.string().describe("The token of the Workspace to add the Dashboard to."),
+		title: z.string().min(1).describe("The title of the dashboard"),
+		workspace_token: z.string().min(1).describe("The token of the Workspace to add the Dashboard to."),
 		widgets: z.array(widgetSchema).describe("The widgets to add to the dashboard").optional(),
 		saved_filter_tokens: z
 			.array(z.string())
