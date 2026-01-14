@@ -13,6 +13,14 @@ their widgetable_token) and saved filters, and you can control the time range us
 
 Note: start_date/end_date are incompatible with date_interval.
 
+The list of supported widgets is:
+- cost reports
+- usage reports
+- resource reports
+- kubernetes efficiency reports
+- financial commitment reports
+- recommendation saved views
+
 The token returned in the response can be used to link to the Dashboard in the Vantage Web UI:
 https://console.vantage.sh/go/<token>
 `.trim();
