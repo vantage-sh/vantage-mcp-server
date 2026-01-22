@@ -74,7 +74,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 				} as any,
 			],
 		},
-		expectedIssues: ["Required"],
+		expectedIssues: ["Invalid input: expected string, received undefined"],
 	},
 ];
 

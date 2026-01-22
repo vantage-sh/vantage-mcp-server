@@ -1,4 +1,4 @@
-import z from "zod";
+import z from "zod/v4";
 
 const ERR_BAD_DATE = "Invalid date input, must be YYYY-MM-DD format and a reasonable date.";
 
@@ -24,5 +24,5 @@ function validDateInput(input: string): boolean {
 }
 
 export default function dateValidator(description: string) {
-	return z.string().refine(validDateInput, { message: ERR_BAD_DATE }).describe(description);
+	return z.string().refine(validDateInput, { error: ERR_BAD_DATE }).describe(description);
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it, test, vi } from "vitest";
-import z from "zod";
+import z from "zod/v4";
 import MCPUserError from "../structure/MCPUserError";
 import {
 	type AllowedMethods,
@@ -35,7 +35,7 @@ export type ExecutionTestTableItem<Validators extends z.ZodRawShape> = {
 export function makeTestHandlerContext<Validators extends z.ZodRawShape>(
 	validators: Validators,
 	execute: (
-		args: InferValidators<Validators>,
+		args: z.core.$InferObjectOutput<{ -readonly [P in keyof Validators]: Validators[P] }, {}>,
 		context: ToolCallContext
 	) => Promise<Record<string, unknown>>,
 	apiCallHandler?: ExecutionTestTableItem<Validators>["apiCallHandler"]
@@ -53,12 +53,14 @@ export function makeTestHandlerContext<Validators extends z.ZodRawShape>(
 
 	const toolHandlerContext: TestHandlerContext<Validators> = {
 		callExpectingSuccess: async (args) => {
-			const result = await execute(zodSchema.parse(args), mcpFunctionContext);
+			const parsed = zodSchema.parse(args);
+			const result = await execute(parsed, mcpFunctionContext);
 			return result;
 		},
 		callExpectingError: async (args) => {
 			try {
-				await execute(zodSchema.parse(args), mcpFunctionContext);
+				const parsed = zodSchema.parse(args);
+				await execute(parsed, mcpFunctionContext);
 				throw new Error("Expected error, but got success");
 			} catch (e) {
 				if (e instanceof MCPUserError) {
@@ -72,7 +74,8 @@ export function makeTestHandlerContext<Validators extends z.ZodRawShape>(
 		},
 		callExpectingMCPUserError: async (args) => {
 			try {
-				await execute(zodSchema.parse(args), mcpFunctionContext);
+				const parsed = zodSchema.parse(args);
+				await execute(parsed, mcpFunctionContext);
 				throw new Error("Expected MCPUserError, but got success");
 			} catch (e) {
 				if (e instanceof MCPUserError) {

@@ -55,7 +55,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 			...validInputArguments,
 			name: "",
 		},
-		expectedIssues: ["String must contain at least 1 character(s)"],
+		expectedIssues: ["Too small: expected string to have >=1 characters"],
 	},
 	{
 		name: "budget with workspace token only",
@@ -132,7 +132,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 				},
 			],
 		},
-		expectedIssues: ["Number must be greater than or equal to 0"],
+		expectedIssues: ["Too small: expected number to be >=0"],
 	},
 	{
 		name: "empty child budget tokens array",

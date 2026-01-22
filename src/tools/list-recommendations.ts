@@ -1,4 +1,4 @@
-import z from "zod";
+import z from "zod/v4";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";

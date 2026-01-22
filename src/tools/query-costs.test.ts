@@ -58,7 +58,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 			...validInputArguments,
 			workspace_token: "",
 		},
-		expectedIssues: ["String must contain at least 1 character(s)"],
+		expectedIssues: ["Too small: expected string to have >=1 characters"],
 	},
 	{
 		name: "all valid arguments",
