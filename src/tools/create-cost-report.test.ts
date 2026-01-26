@@ -83,7 +83,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 			...validInputArguments,
 			title: "",
 		},
-		expectedIssues: ["String must contain at least 1 character(s)"],
+		expectedIssues: ["Too small: expected string to have >=1 characters"],
 	},
 	{
 		name: "valid date_interval options",
@@ -132,9 +132,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 			title: "Test Report",
 			chart_type: "invalid" as any,
 		},
-		expectedIssues: [
-			"Invalid enum value. Expected 'area' | 'line' | 'bar' | 'multi_bar' | 'pie', received 'invalid'",
-		],
+		expectedIssues: ['Invalid option: expected one of "area"|"line"|"bar"|"multi_bar"|"pie"'],
 	},
 	{
 		name: "aggregate by usage",
@@ -155,7 +153,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 				aggregate_by: "invalid" as any,
 			},
 		},
-		expectedIssues: ["Invalid enum value. Expected 'cost' | 'usage', received 'invalid'"],
+		expectedIssues: ['Invalid option: expected one of "cost"|"usage"'],
 	},
 	{
 		name: "business metric with per_thousand scale",
@@ -208,7 +206,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 				},
 			],
 		},
-		expectedIssues: ["String must contain at least 1 character(s)"],
+		expectedIssues: ["Too small: expected string to have >=1 characters"],
 	},
 	{
 		name: "invalid unit_scale",
@@ -223,7 +221,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 			],
 		},
 		expectedIssues: [
-			"Invalid enum value. Expected 'per_unit' | 'per_hundred' | 'per_thousand' | 'per_million' | 'per_billion', received 'invalid'",
+			'Invalid option: expected one of "per_unit"|"per_hundred"|"per_thousand"|"per_million"|"per_billion"',
 		],
 	},
 	{
@@ -258,7 +256,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 			date_interval: "invalid" as any,
 		},
 		expectedIssues: [
-			"Invalid enum value. Expected 'this_month' | 'last_7_days' | 'last_30_days' | 'last_month' | 'last_3_months' | 'last_6_months' | 'custom' | 'last_12_months' | 'last_24_months' | 'last_36_months' | 'next_month' | 'next_3_months' | 'next_6_months' | 'next_12_months' | 'year_to_date' | 'last_3_days' | 'last_14_days', received 'invalid'",
+			'Invalid option: expected one of "this_month"|"last_7_days"|"last_30_days"|"last_month"|"last_3_months"|"last_6_months"|"custom"|"last_12_months"|"last_24_months"|"last_36_months"|"next_month"|"next_3_months"|"next_6_months"|"next_12_months"|"year_to_date"|"last_3_days"|"last_14_days"',
 		],
 	},
 	{

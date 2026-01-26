@@ -16,7 +16,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 		data: {
 			recommendation_token: "",
 		},
-		expectedIssues: ["String must contain at least 1 character(s)"],
+		expectedIssues: ["Too small: expected string to have >=1 characters"],
 	},
 	{
 		name: "valid recommendation_token",

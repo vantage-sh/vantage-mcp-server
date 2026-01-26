@@ -1,6 +1,6 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import type z from "zod";
+import type z from "zod/v4";
 import MCPUserError from "./MCPUserError";
 
 export type AllowedMethods = "GET" | "POST" | "PUT";
@@ -23,9 +23,7 @@ export type ToolProperties<Validators extends z.ZodRawShape> = {
 	};
 	args: Validators;
 	execute: (
-		args: {
-			[K in keyof Validators]: z.infer<Validators[K]>;
-		},
+		args: z.core.$InferObjectOutput<{ -readonly [P in keyof Validators]: Validators[P] }, {}>,
 		context: ToolCallContext
 	) => Promise<Record<string, unknown>>;
 };

@@ -51,7 +51,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 			resource_token: "",
 			include_cost: false,
 		},
-		expectedIssues: ["String must contain at least 1 character(s)"],
+		expectedIssues: ["Too small: expected string to have >=1 characters"],
 	},
 ];
 

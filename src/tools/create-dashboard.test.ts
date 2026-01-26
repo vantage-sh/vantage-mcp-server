@@ -76,7 +76,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 				},
 			],
 		},
-		expectedIssues: ["Invalid enum value. Expected 'table' | 'chart', received 'graph'"],
+		expectedIssues: ['Invalid option: expected one of "table"|"chart"'],
 	},
 ];
 

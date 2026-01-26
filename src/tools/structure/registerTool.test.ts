@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, test, vi } from "vitest";
-import z from "zod";
+import z from "zod/v4";
 import MCPUserError from "./MCPUserError";
 import registerTool, { clearRegisteredToolsForTesting, setupRegisteredTools } from "./registerTool";
 
