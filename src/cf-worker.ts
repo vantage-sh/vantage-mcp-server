@@ -15,6 +15,7 @@ import { HeaderAuthProvider } from "./header-auth-provider";
 import homepage from "./homepage";
 import { callApi, serverMeta } from "./shared";
 import { type AllowedMethods, setupRegisteredTools } from "./tools/structure/registerTool";
+import setupRegisteredResources from "./resources";
 
 // Side effect import to register all tools
 import "./tools";
@@ -82,6 +83,7 @@ export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> 
 
 	async init() {
 		setupRegisteredTools(this.server, () => this);
+		setupRegisteredResources(this.server);
 	}
 }
 

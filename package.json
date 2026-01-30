@@ -13,6 +13,7 @@
 		"type-check": "tsc --noEmit",
 		"test": "vitest",
 		"generate-tools-index": "tsx src/tools/bin/generate-tools-index.ts",
+		"generate-resources-index": "tsx src/resources/bootstrapping/bin/generate-resources-index.ts",
 		"prepare": "husky",
 		"local": "tsx src/local.ts",
 		"local:dist": "tsx build/npm.ts"

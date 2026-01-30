@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { callApi, serverMeta } from "./shared";
 import { setupRegisteredTools, type ToolCallContext } from "./tools/structure/registerTool";
+import setupRegisteredResources from "./resources";
 
 // Side effect import to register all tools
 import "./tools";
@@ -30,6 +31,7 @@ async function main() {
 	const stdio = new StdioServerTransport();
 	const server = new McpServer(serverMeta);
 	setupRegisteredTools(server, () => ctx);
+	setupRegisteredResources(server);
 
 	await server.connect(stdio);
 }
