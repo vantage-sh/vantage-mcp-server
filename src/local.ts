@@ -1,8 +1,8 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import setupRegisteredResources from "./resources";
 import { callApi, serverMeta } from "./shared";
 import { setupRegisteredTools, type ToolCallContext } from "./tools/structure/registerTool";
-import setupRegisteredResources from "./resources";
 
 // Side effect import to register all tools
 import "./tools";

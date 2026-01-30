@@ -13,9 +13,9 @@ import {
 } from "./auth";
 import { HeaderAuthProvider } from "./header-auth-provider";
 import homepage from "./homepage";
+import setupRegisteredResources from "./resources";
 import { callApi, serverMeta } from "./shared";
 import { type AllowedMethods, setupRegisteredTools } from "./tools/structure/registerTool";
-import setupRegisteredResources from "./resources";
 
 // Side effect import to register all tools
 import "./tools";

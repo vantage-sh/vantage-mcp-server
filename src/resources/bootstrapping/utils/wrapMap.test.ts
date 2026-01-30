@@ -1,5 +1,5 @@
-import { describe, expect, it, test, vi } from "vitest";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { describe, expect, it, test, vi } from "vitest";
 import wrapMap from "./wrapMap";
 
 test("wrapMap creates a registration function", () => {
