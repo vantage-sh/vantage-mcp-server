@@ -1,5 +1,5 @@
+import { type GetResourceResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import { type GetResourceResponse, pathEncode } from "../../vantage-ts";
 import tool from "./get-provider-resource";
 import {
 	type ExecutionTestTableItem,
@@ -58,8 +58,11 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 
 const successData: GetResourceResponse = {
 	token: "prvdr_rsrc_123",
+	uuid: "i-1234567890abcdef0",
+	type: "aws_instance",
 	label: "i-1234567890abcdef0",
 	provider: "aws",
+	account_id: "123456789012",
 	billing_account_id: "123456789012",
 	region: "us-east-1",
 	created_at: "2023-01-15T10:30:00Z",

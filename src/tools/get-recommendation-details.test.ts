@@ -1,5 +1,5 @@
+import { type GetRecommendationResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import { pathEncode } from "../../vantage-ts";
 import tool from "./get-recommendation-details";
 import {
 	type ExecutionTestTableItem,
@@ -27,6 +27,19 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	},
 ];
 
+const successData: GetRecommendationResponse = {
+	token: "rec_123",
+	description: "This is a test recommendation",
+	category: "ec2_rightsizing_recommender",
+	created_at: "2023-01-01T00:00:00Z",
+	potential_savings: null,
+	provider: "aws",
+	provider_account_id: "123456789",
+	service: "EC2",
+	resources_affected_count: "10",
+	workspace_token: "wt_123",
+};
+
 const executionTests: ExecutionTestTableItem<Validators>[] = [
 	{
 		name: "successful call",
@@ -37,9 +50,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 				method: "GET",
 				result: {
 					ok: true,
-					data: {
-						token: "123456789012",
-					},
+					data: successData,
 				},
 			},
 		]),
@@ -47,9 +58,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 			const res = await callExpectingSuccess({
 				recommendation_token: "rec_123",
 			});
-			expect(res).toEqual({
-				token: "123456789012",
-			});
+			expect(res).toEqual(successData);
 		},
 	},
 	{

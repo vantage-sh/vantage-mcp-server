@@ -1,5 +1,5 @@
+import { type GetTagValuesResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import { pathEncode } from "../../vantage-ts";
 import tool from "./list-tag-values";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import {
@@ -33,11 +33,11 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	},
 ];
 
-const successData = {
+const successData: GetTagValuesResponse = {
 	tag_values: [
-		{ value: "production", providers: ["aws", "azure"] },
-		{ value: "staging", providers: ["aws"] },
-		{ value: "development", providers: ["aws", "gcp"] },
+		{ tag_value: "production", providers: ["aws", "azure"] },
+		{ tag_value: "staging", providers: ["aws"] },
+		{ tag_value: "development", providers: ["aws", "gcp"] },
 	],
 	links: {},
 };

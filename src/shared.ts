@@ -3,7 +3,7 @@ import type {
 	RequestBodyForPathAndMethod,
 	ResponseBodyForPathAndMethod,
 	SupportedMethods,
-} from "../vantage-ts";
+} from "@vantage-sh/vantage-client";
 import { SERVER_VERSION } from "./tools/structure/constants";
 
 export const serverMeta = {

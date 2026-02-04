@@ -1,3 +1,4 @@
+import type { GetTagsResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "./list-tags";
 import { DEFAULT_LIMIT } from "./structure/constants";
@@ -29,11 +30,11 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	},
 ];
 
-const successData = {
+const successData: GetTagsResponse = {
 	tags: [
-		{ key: "environment", providers: ["aws", "azure"] },
-		{ key: "project", providers: ["aws", "gcp"] },
-		{ key: "team", providers: ["aws"] },
+		{ tag_key: "environment", hidden: false, providers: ["aws", "azure"] },
+		{ tag_key: "project", hidden: false, providers: ["aws", "gcp"] },
+		{ tag_key: "team", hidden: false, providers: ["aws"] },
 	],
 	links: {},
 };

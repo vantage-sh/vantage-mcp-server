@@ -275,6 +275,22 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	poisonOneValue(validInputArguments, "previous_period_end_date", dateValidatorPoisoner),
 ];
 
+const minSuccess = {
+	token: "crt_456",
+	title: "Minimal Report",
+	business_metric_tokens_with_metadata: [],
+	chart_settings: {
+		y_axis_dimension: "cost",
+		x_axis_dimension: ["date"],
+	},
+	chart_type: "line",
+	created_at: "2023-01-01T00:00:00Z",
+	date_bin: "month",
+	date_interval: "this_month",
+	filter: "(costs.provider = 'aws')",
+	workspace_token: "wt_123",
+};
+
 const executionTests: ExecutionTestTableItem<Validators>[] = [
 	{
 		name: "successful call",
@@ -289,10 +305,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 				method: "POST",
 				result: {
 					ok: true,
-					data: {
-						token: "crt_456",
-						title: "Minimal Report",
-					},
+					data: minSuccess,
 				},
 			},
 		]),
@@ -303,10 +316,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 				end_date: "2025-02-01",
 				previous_period_end_date: "2025-01-31",
 			});
-			expect(res).toEqual({
-				token: "crt_456",
-				title: "Minimal Report",
-			});
+			expect(res).toEqual(minSuccess);
 		},
 	},
 	{

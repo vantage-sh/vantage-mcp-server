@@ -7,8 +7,7 @@ import type {
 	RequestBodyForPathAndMethod,
 	ResponseBodyForPathAndMethod,
 	SupportedMethods,
-} from "../../../vantage-ts";
-
+} from "@vantage-sh/vantage-client";
 export type ToolCallContext = {
 	callVantageApi: <
 		P extends Path,

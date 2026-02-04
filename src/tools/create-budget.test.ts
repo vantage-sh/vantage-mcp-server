@@ -1,5 +1,5 @@
+import type { CreateBudgetResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import type { CreateBudgetResponse } from "../../vantage-ts";
 import tool from "./create-budget";
 import {
 	type ExecutionTestTableItem,
@@ -184,6 +184,9 @@ const successData: CreateBudgetResponse = {
 	name: "Test Budget",
 	workspace_token: "wt_123",
 	cost_report_token: "crt_456",
+	budget_alert_tokens: [],
+	child_budget_tokens: [],
+	created_at: "2023-01-01T00:00:00Z",
 	periods: [
 		{
 			start_at: "2024-01-01",

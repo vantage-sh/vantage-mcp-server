@@ -1,3 +1,4 @@
+import type { GetReportResourcesResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "./list-provider-resources";
 import {
@@ -66,38 +67,31 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	},
 ];
 
-const successData = {
+const successData: GetReportResourcesResponse = {
 	resources: [
 		{
 			token: "prvdr_rsrc_123",
-			resource_id: "i-1234567890abcdef0",
-			resource_type: "EC2Instance",
-			provider: "aws",
-			provider_account_id: "123456789012",
+			uuid: "i-1234567890abcdef0",
+			type: "aws_instance",
+			label: "i-1234567890abcdef0",
+			metadata: null,
+			account_id: "123456789012",
 			billing_account_id: "123456789012",
+			provider: "aws",
 			region: "us-east-1",
 			created_at: "2023-01-15T10:30:00Z",
-			metadata: {
-				instance_type: "t3.medium",
-				state: "running",
-				vpc_id: "vpc-12345678",
-			},
 		},
 		{
 			token: "prvdr_rsrc_456",
-			resource_id: "vol-0987654321fedcba0",
-			resource_type: "EBSVolume",
-			provider: "aws",
-			provider_account_id: "123456789012",
+			uuid: "vol-0987654321fedcba0",
+			type: "aws_volume",
+			label: "vol-0987654321fedcba0",
+			metadata: null,
+			account_id: "123456789012",
 			billing_account_id: "123456789012",
+			provider: "aws",
 			region: "us-east-1",
-			created_at: "2023-01-10T08:15:00Z",
-			metadata: {
-				volume_type: "gp3",
-				size: 100,
-				state: "in-use",
-				encrypted: true,
-			},
+			created_at: "2023-01-15T10:30:00Z",
 		},
 	],
 	links: {},

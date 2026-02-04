@@ -1,5 +1,5 @@
+import type { GetCostsResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import type { GetCostsResponse } from "../../vantage-ts";
 import tool from "./list-costs";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import {
@@ -80,8 +80,20 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 
 const successData: GetCostsResponse = {
 	costs: [
-		{ tag: "cost_123", amount: "100.5", service: "AmazonEC2" },
-		{ tag: "cost_456", amount: "75.25", service: "AmazonS3" },
+		{
+			tag: "cost_123",
+			amount: "100.5",
+			service: "AmazonEC2",
+			accrued_at: "2023-01-01",
+			currency: "USD",
+		},
+		{
+			tag: "cost_456",
+			amount: "75.25",
+			service: "AmazonS3",
+			accrued_at: "2023-01-01",
+			currency: "USD",
+		},
 	],
 	total_cost: {
 		amount: "175.75",

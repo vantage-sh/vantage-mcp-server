@@ -1,3 +1,4 @@
+import type { GetRecommendationsResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "./list-recommendations";
 import { DEFAULT_LIMIT } from "./structure/constants";
@@ -53,19 +54,35 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	},
 ];
 
-const successData = {
+const successData: GetRecommendationsResponse = {
 	recommendations: [
 		{
 			token: "rec_123",
 			category: "ec2_rightsizing_recommender",
 			description: "Rightsize EC2 instances",
-			savings_amount: 150.75,
+			created_at: "2023-01-01T00:00:00Z",
+			potential_savings: null,
+			provider: "aws",
+			provider_account_id: "123456789",
+			service: "EC2",
+			resources_affected_count: "10",
+			currency_code: "USD",
+			currency_symbol: "$",
+			workspace_token: "wt_123",
 		},
 		{
 			token: "rec_456",
 			category: "unused_financial_commitments",
 			description: "Remove unused Reserved Instances",
-			savings_amount: 300.5,
+			created_at: "2023-01-01T00:00:00Z",
+			potential_savings: null,
+			provider: "aws",
+			provider_account_id: "123456789",
+			service: "EC2",
+			resources_affected_count: "10",
+			currency_code: "USD",
+			currency_symbol: "$",
+			workspace_token: "wt_123",
 		},
 	],
 	links: {},
@@ -81,6 +98,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 					...validArguments,
 					limit: DEFAULT_LIMIT,
 					category: validArguments.category as any,
+					provider: validArguments.provider as any,
 				},
 				method: "GET",
 				result: {

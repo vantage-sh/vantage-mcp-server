@@ -1,5 +1,5 @@
 import z from "zod/v4";
-import { pathEncode } from "../../vantage-ts";
+import { pathEncode } from "@vantage-sh/vantage-client";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";

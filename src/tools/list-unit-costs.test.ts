@@ -1,5 +1,5 @@
+import type { GetUnitCostsResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import type { GetUnitCostsResponse } from "../../vantage-ts";
 import tool from "./list-unit-costs";
 import {
 	dateValidatorPoisoner,
@@ -64,8 +64,19 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	poisonOneValue(validArguments, "end_date", dateValidatorPoisoner),
 ];
 
+function makeUnitCost(token: string) {
+	return {
+		business_metric_token: token,
+		business_metric_title: `Unit ${token}`,
+		unit_cost_amount: "100.5",
+		business_metric_amount: "100.5",
+		scale: 1,
+		date: "2023-01-01",
+	};
+}
+
 const successData: GetUnitCostsResponse = {
-	unit_costs: [{ business_metric_token: "unit_123" }, { business_metric_token: "unit_456" }],
+	unit_costs: [makeUnitCost("unit_123"), makeUnitCost("unit_456")],
 	links: {},
 };
 

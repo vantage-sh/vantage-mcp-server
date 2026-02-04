@@ -1,5 +1,5 @@
+import { pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import { pathEncode } from "../../vantage-ts";
 import tool from "./get-recommendation-resources";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import {

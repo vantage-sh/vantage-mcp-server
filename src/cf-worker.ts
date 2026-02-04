@@ -1,14 +1,14 @@
 import OAuthProvider, { type OAuthHelpers } from "@cloudflare/workers-oauth-provider";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import * as Sentry from "@sentry/cloudflare";
-import { McpAgent } from "agents/mcp";
-import { Hono } from "hono";
 import type {
 	Path,
 	RequestBodyForPathAndMethod,
 	ResponseBodyForPathAndMethod,
 	SupportedMethods,
-} from "../vantage-ts";
+} from "@vantage-sh/vantage-client";
+import { McpAgent } from "agents/mcp";
+import { Hono } from "hono";
 import {
 	authorize,
 	callback,

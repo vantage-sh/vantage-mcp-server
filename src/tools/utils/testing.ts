@@ -1,17 +1,17 @@
 import { describe, expect, it, test, vi } from "vitest";
 import z from "zod/v4";
+import type {
+	Path,
+	RequestBodyForPathAndMethod,
+	ResponseBodyForPathAndMethod,
+	SupportedMethods,
+} from "@vantage-sh/vantage-client";
 import MCPUserError from "../structure/MCPUserError";
 import {
 	setupRegisteredTools,
 	type ToolCallContext,
 	type ToolProperties,
 } from "../structure/registerTool";
-import type {
-	Path,
-	RequestBodyForPathAndMethod,
-	ResponseBodyForPathAndMethod,
-	SupportedMethods,
-} from "../../../vantage-ts";
 
 export type ExtractValidators<T> = T extends ToolProperties<infer V> ? V : never;
 

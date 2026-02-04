@@ -30,8 +30,28 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 
 const successData = {
 	dashboards: [
-		{ token: "dash_123", title: "AWS Cost Dashboard" },
-		{ token: "dash_456", title: "Azure Monitoring Dashboard" },
+		{
+			token: "dash_123",
+			title: "AWS Cost Dashboard",
+			widgets: [],
+			saved_filter_tokens: [],
+			date_bin: "day" as const,
+			date_interval: "this_month" as const,
+			created_at: "2023-01-15T10:30:00Z",
+			updated_at: "2023-01-15T10:30:00Z",
+			workspace_token: "wrkspc_123",
+		},
+		{
+			token: "dash_456",
+			title: "Azure Monitoring Dashboard",
+			widgets: [],
+			saved_filter_tokens: [],
+			date_bin: "day" as const,
+			date_interval: "this_month" as const,
+			created_at: "2023-01-15T10:30:00Z",
+			updated_at: "2023-01-15T10:30:00Z",
+			workspace_token: "wrkspc_123",
+		},
 	],
 	links: {},
 };
