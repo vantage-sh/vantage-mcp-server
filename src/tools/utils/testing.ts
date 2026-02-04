@@ -1,11 +1,11 @@
-import { describe, expect, it, test, vi } from "vitest";
-import z from "zod/v4";
 import type {
 	Path,
 	RequestBodyForPathAndMethod,
 	ResponseBodyForPathAndMethod,
 	SupportedMethods,
 } from "@vantage-sh/vantage-client";
+import { describe, expect, it, test, vi } from "vitest";
+import z from "zod/v4";
 import MCPUserError from "../structure/MCPUserError";
 import {
 	setupRegisteredTools,

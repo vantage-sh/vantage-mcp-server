@@ -1,13 +1,13 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import type z from "zod/v4";
-import MCPUserError from "./MCPUserError";
 import type {
 	Path,
 	RequestBodyForPathAndMethod,
 	ResponseBodyForPathAndMethod,
 	SupportedMethods,
 } from "@vantage-sh/vantage-client";
+import type z from "zod/v4";
+import MCPUserError from "./MCPUserError";
 export type ToolCallContext = {
 	callVantageApi: <
 		P extends Path,
