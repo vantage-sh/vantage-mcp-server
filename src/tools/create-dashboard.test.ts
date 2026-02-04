@@ -84,6 +84,12 @@ const successData = {
 	token: "dshbrd_123",
 	title: "New Dashboard",
 	workspace_token: "wrkspc_123",
+	widgets: [],
+	saved_filter_tokens: [],
+	date_bin: "day" as const,
+	date_interval: "this_month" as const,
+	created_at: "2023-01-15T10:30:00Z",
+	updated_at: "2023-01-15T10:30:00Z",
 };
 
 const executionTests: ExecutionTestTableItem<Validators>[] = [

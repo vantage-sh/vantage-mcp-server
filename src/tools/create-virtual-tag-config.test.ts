@@ -80,8 +80,11 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 
 const successData = {
 	token: "vtag_1234",
+	created_by_token: null,
 	key: "cost_center",
 	overridable: true,
+	backfill_until: "2024-01-01",
+	values: [],
 };
 
 const executionTests: ExecutionTestTableItem<Validators>[] = [
