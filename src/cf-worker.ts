@@ -1,6 +1,12 @@
 import OAuthProvider, { type OAuthHelpers } from "@cloudflare/workers-oauth-provider";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import * as Sentry from "@sentry/cloudflare";
+import type {
+	Path,
+	RequestBodyForPathAndMethod,
+	ResponseBodyForPathAndMethod,
+	SupportedMethods,
+} from "@vantage-sh/vantage-client";
 import { McpAgent } from "agents/mcp";
 import { Hono } from "hono";
 import {
@@ -14,7 +20,7 @@ import {
 import { HeaderAuthProvider } from "./header-auth-provider";
 import homepage from "./homepage";
 import { callApi, serverMeta } from "./shared";
-import { type AllowedMethods, setupRegisteredTools } from "./tools/structure/registerTool";
+import { setupRegisteredTools } from "./tools/structure/registerTool";
 
 // Side effect import to register all tools
 import "./tools";
@@ -41,11 +47,16 @@ export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> 
 		this.env = env;
 	}
 
-	async callVantageApi(
-		endpoint: string,
-		params: Record<string, unknown>,
-		method: AllowedMethods
-	): Promise<{ data: unknown; ok: true } | { errors: unknown[]; ok: false }> {
+	async callVantageApi<
+		P extends Path,
+		M extends SupportedMethods<P>,
+		Request extends RequestBodyForPathAndMethod<P, M>,
+		Response extends ResponseBodyForPathAndMethod<P, M>,
+	>(
+		endpoint: P,
+		params: Request,
+		method: M
+	): Promise<{ data: Response; ok: true } | { errors: unknown[]; ok: false }> {
 		const vantageHeaders =
 			(this.props as UserProps & { vantageHeaders?: Record<string, string> })
 				?.vantageHeaders || {};

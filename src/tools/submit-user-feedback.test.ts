@@ -23,8 +23,9 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 ];
 
 const successData = {
-	id: "feedback_123",
-	status: "submitted",
+	token: "feedback_123",
+	created_at: "2023-01-01T00:00:00Z",
+	created_by_token: "usr_123",
 	message: "Thank you for your feedback!",
 };
 

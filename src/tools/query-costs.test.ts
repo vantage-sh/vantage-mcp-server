@@ -1,3 +1,4 @@
+import type { GetCostsResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "./query-costs";
 import {
@@ -89,12 +90,30 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	poisonOneValue(validInputArguments, "end_date", dateValidatorPoisoner),
 ];
 
-const successData = {
+const successData: GetCostsResponse = {
 	costs: [
-		{ id: "cost_123", amount: 100.5, service: "AmazonEC2", provider: "aws" },
-		{ id: "cost_456", amount: 75.25, service: "AmazonS3", provider: "aws" },
+		{
+			accrued_at: "2023-01-01",
+			currency: "USD",
+			tag: "cost_123",
+			amount: "100.5",
+			service: "AmazonEC2",
+			provider: "aws",
+		},
+		{
+			accrued_at: "2023-01-01",
+			currency: "USD",
+			tag: "cost_456",
+			amount: "75.25",
+			service: "AmazonS3",
+			provider: "aws",
+		},
 	],
-	total_cost: 175.75,
+	total_cost: {
+		amount: "175.75",
+		currency: "USD",
+	},
+	total_usage: {},
 	links: {},
 };
 
@@ -111,7 +130,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 					end_date: undefined,
 					workspace_token: "wt_123",
 					date_bin: "month",
-					groupings: "provider,service,region",
+					groupings: ["provider", "service", "region"],
 					"settings[include_credits]": false,
 					"settings[include_refunds]": false,
 					"settings[include_discounts]": true,
@@ -170,7 +189,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 					end_date: "2023-01-31",
 					workspace_token: "wt_123",
 					date_bin: "month",
-					groupings: "provider,service,region",
+					groupings: ["provider", "service", "region"],
 					"settings[include_credits]": false,
 					"settings[include_refunds]": false,
 					"settings[include_discounts]": true,
@@ -218,7 +237,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 					end_date: "2023-01-31",
 					workspace_token: "wt_123",
 					date_bin: "day",
-					groupings: "provider,service,region",
+					groupings: ["provider", "service", "region"],
 					"settings[include_credits]": false,
 					"settings[include_refunds]": false,
 					"settings[include_discounts]": true,
@@ -264,7 +283,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 					end_date: undefined,
 					workspace_token: "wt_123",
 					date_bin: "month",
-					groupings: "provider,service,region",
+					groupings: ["provider", "service", "region"],
 					"settings[include_credits]": false,
 					"settings[include_refunds]": false,
 					"settings[include_discounts]": true,

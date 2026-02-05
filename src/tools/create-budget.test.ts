@@ -1,3 +1,4 @@
+import type { CreateBudgetResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "./create-budget";
 import {
@@ -178,20 +179,21 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	},
 ];
 
-const successData = {
-	budget: {
-		token: "bt_123",
-		name: "Test Budget",
-		workspace_token: "wt_123",
-		cost_report_token: "crt_456",
-		periods: [
-			{
-				start_at: "2024-01-01",
-				end_at: "2024-01-31",
-				amount: 1000,
-			},
-		],
-	},
+const successData: CreateBudgetResponse = {
+	token: "bt_123",
+	name: "Test Budget",
+	workspace_token: "wt_123",
+	cost_report_token: "crt_456",
+	budget_alert_tokens: [],
+	child_budget_tokens: [],
+	created_at: "2023-01-01T00:00:00Z",
+	periods: [
+		{
+			start_at: "2024-01-01",
+			end_at: "2024-01-31",
+			amount: "1000.0",
+		},
+	],
 };
 
 const executionTests: ExecutionTestTableItem<Validators>[] = [

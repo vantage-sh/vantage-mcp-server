@@ -1,3 +1,4 @@
+import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod/v4";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
@@ -45,7 +46,7 @@ export default registerTool({
 	async execute(args, ctx) {
 		const requestParams = { page: args.page, limit: DEFAULT_LIMIT };
 		const response = await ctx.callVantageApi(
-			`/v2/recommendations/${args.recommendation_token}/resources`,
+			`/v2/recommendations/${pathEncode(args.recommendation_token)}/resources`,
 			requestParams,
 			"GET"
 		);

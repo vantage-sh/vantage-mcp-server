@@ -1,3 +1,4 @@
+import type { GetIntegrationsResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "./list-cost-integrations";
 import { DEFAULT_LIMIT } from "./structure/constants";
@@ -29,10 +30,24 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	},
 ];
 
-const successData = {
+const successData: GetIntegrationsResponse = {
 	integrations: [
-		{ id: "int_123", provider: "aws", status: "connected" },
-		{ id: "int_456", provider: "azure", status: "connected" },
+		{
+			token: "int_123",
+			provider: "aws",
+			status: "connected",
+			account_identifier: "123456789012",
+			workspace_tokens: ["wrkspc_123"],
+			created_at: "2023-01-15T10:30:00Z",
+		},
+		{
+			token: "int_456",
+			provider: "azure",
+			status: "connected",
+			account_identifier: "sub-456",
+			workspace_tokens: ["wrkspc_123"],
+			created_at: "2023-01-15T10:30:00Z",
+		},
 	],
 	links: {},
 };

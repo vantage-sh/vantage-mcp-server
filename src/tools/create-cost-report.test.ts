@@ -275,6 +275,22 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	poisonOneValue(validInputArguments, "previous_period_end_date", dateValidatorPoisoner),
 ];
 
+const minSuccess = {
+	token: "crt_456",
+	title: "Minimal Report",
+	business_metric_tokens_with_metadata: [],
+	chart_settings: {
+		y_axis_dimension: "cost",
+		x_axis_dimension: ["date"],
+	},
+	chart_type: "line",
+	created_at: "2023-01-01T00:00:00Z",
+	date_bin: "month",
+	date_interval: "this_month",
+	filter: "(costs.provider = 'aws')",
+	workspace_token: "wt_123",
+};
+
 const executionTests: ExecutionTestTableItem<Validators>[] = [
 	{
 		name: "successful call",
@@ -283,16 +299,13 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 				endpoint: "/v2/cost_reports",
 				params: {
 					title: "Minimal Report",
+					previous_period_end_date: "2025-01-31",
+					end_date: "2025-02-01",
 				},
 				method: "POST",
 				result: {
 					ok: true,
-					data: {
-						cost_report: {
-							token: "crt_456",
-							title: "Minimal Report",
-						},
-					},
+					data: minSuccess,
 				},
 			},
 		]),
@@ -300,13 +313,10 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 			const res = await callExpectingSuccess({
 				...undefineds,
 				title: "Minimal Report",
+				end_date: "2025-02-01",
+				previous_period_end_date: "2025-01-31",
 			});
-			expect(res).toEqual({
-				cost_report: {
-					token: "crt_456",
-					title: "Minimal Report",
-				},
-			});
+			expect(res).toEqual(minSuccess);
 		},
 	},
 	{
@@ -317,6 +327,8 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 				params: {
 					title: "Invalid Filter Report",
 					filter: "invalid vql",
+					end_date: "2025-01-01",
+					previous_period_end_date: "2025-01-31",
 				},
 				method: "POST",
 				result: {
@@ -330,6 +342,8 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 				...undefineds,
 				title: "Invalid Filter Report",
 				filter: "invalid vql",
+				end_date: "2025-01-01",
+				previous_period_end_date: "2025-01-31",
 			});
 			expect(err.exception).toEqual({
 				errors: [{ message: "Invalid VQL filter syntax" }],

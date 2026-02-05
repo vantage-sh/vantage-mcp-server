@@ -1,3 +1,4 @@
+import type { GetCostProviderAccountsResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "./get-cost-provider-accounts";
 import {
@@ -45,10 +46,20 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	},
 ];
 
-const successData = {
+const successData: GetCostProviderAccountsResponse = {
 	cost_provider_accounts: [
-		{ id: "cpa_123", name: "Account 1" },
-		{ id: "cpa_456", name: "Account 2" },
+		{
+			account_id: "cpa_123",
+			title: "Account 1",
+			provider_uuid: "provider_uuid_1",
+			provider: "aws",
+		},
+		{
+			account_id: "cpa_456",
+			title: "Account 2",
+			provider_uuid: "provider_uuid_2",
+			provider: "aws",
+		},
 	],
 };
 

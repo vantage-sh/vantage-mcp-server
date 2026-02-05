@@ -24,8 +24,8 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 
 const successData = {
 	cost_services: [
-		{ id: "cs_123", name: "AmazonEC2" },
-		{ id: "cs_456", name: "AmazonS3" },
+		{ name: "AmazonEC2", provider: "aws" },
+		{ name: "AmazonS3", provider: "aws" },
 	],
 };
 

@@ -1,8 +1,13 @@
+import type {
+	Path,
+	RequestBodyForPathAndMethod,
+	ResponseBodyForPathAndMethod,
+	SupportedMethods,
+} from "@vantage-sh/vantage-client";
 import { describe, expect, it, test, vi } from "vitest";
 import z from "zod/v4";
 import MCPUserError from "../structure/MCPUserError";
 import {
-	type AllowedMethods,
 	setupRegisteredTools,
 	type ToolCallContext,
 	type ToolProperties,
@@ -162,20 +167,36 @@ export function testTool<Validators extends z.ZodRawShape>(
 	});
 }
 
-export function requestsInOrder(
-	reqs: {
-		endpoint: string;
-		params: Record<string, unknown>;
-		method: AllowedMethods;
-		result: { data: any; ok: true } | { errors: unknown[]; ok: false };
-	}[]
-): ToolCallContext["callVantageApi"] {
+type ExpectedApiCall<
+	P extends Path,
+	M extends SupportedMethods<P>,
+	Request = RequestBodyForPathAndMethod<P, M>,
+	Response = ResponseBodyForPathAndMethod<P, M>,
+> = {
+	endpoint: P;
+	params: Request;
+	method: M;
+	result: { data: Response; ok: true } | { errors: unknown[]; ok: false };
+};
+
+type AnyExpectedApiCall = {
+	[P in Path]: {
+		[M in SupportedMethods<P>]: ExpectedApiCall<P, M>;
+	}[SupportedMethods<P>];
+}[Path];
+
+export function requestsInOrder(reqs: AnyExpectedApiCall[]): ToolCallContext["callVantageApi"] {
 	let callIndex = 0;
-	return async (
-		endpoint: string,
-		params: Record<string, unknown>,
-		method: AllowedMethods
-	): Promise<{ data: any; ok: true } | { errors: unknown[]; ok: false }> => {
+	return async <
+		P extends Path,
+		M extends SupportedMethods<P>,
+		Request extends RequestBodyForPathAndMethod<P, M>,
+		Response extends ResponseBodyForPathAndMethod<P, M>,
+	>(
+		endpoint: P,
+		params: Request,
+		method: M
+	): Promise<{ data: Response; ok: true } | { errors: unknown[]; ok: false }> => {
 		if (callIndex >= reqs.length) {
 			throw new Error(
 				`Unexpected API call to ${endpoint} with params ${JSON.stringify(params)}`
@@ -191,7 +212,7 @@ export function requestsInOrder(
 			expected.params
 		);
 		callIndex++;
-		return expected.result;
+		return expected.result as { data: Response; ok: true } | { errors: unknown[]; ok: false };
 	};
 }
 

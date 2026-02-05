@@ -31,8 +31,26 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 
 const successData = {
 	budgets: [
-		{ id: "budget_123", name: "Monthly AWS Budget", cost_report_token: "crt_123" },
-		{ id: "budget_456", name: "Quarterly Azure Budget", cost_report_token: "crt_456" },
+		{
+			token: "budget_123",
+			name: "Monthly AWS Budget",
+			workspace_token: "wrkspc_123",
+			created_at: "2023-01-15T10:30:00Z",
+			budget_alert_tokens: [],
+			child_budget_tokens: [],
+			periods: [],
+			cost_report_token: "crt_123",
+		},
+		{
+			token: "budget_456",
+			name: "Quarterly Azure Budget",
+			workspace_token: "wrkspc_123",
+			created_at: "2023-01-15T10:30:00Z",
+			budget_alert_tokens: [],
+			child_budget_tokens: [],
+			periods: [],
+			cost_report_token: "crt_456",
+		},
 	],
 	links: {},
 };

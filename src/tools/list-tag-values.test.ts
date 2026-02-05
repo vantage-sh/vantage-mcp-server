@@ -1,3 +1,4 @@
+import { type GetTagValuesResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "./list-tag-values";
 import { DEFAULT_LIMIT } from "./structure/constants";
@@ -32,11 +33,11 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	},
 ];
 
-const successData = {
+const successData: GetTagValuesResponse = {
 	tag_values: [
-		{ value: "production", providers: ["aws", "azure"] },
-		{ value: "staging", providers: ["aws"] },
-		{ value: "development", providers: ["aws", "gcp"] },
+		{ tag_value: "production", providers: ["aws", "azure"] },
+		{ tag_value: "staging", providers: ["aws"] },
+		{ tag_value: "development", providers: ["aws", "gcp"] },
 	],
 	links: {},
 };
@@ -46,10 +47,9 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 		name: "successful call",
 		apiCallHandler: requestsInOrder([
 			{
-				endpoint: "/v2/tags/environment/values",
+				endpoint: `/v2/tags/${pathEncode(validArguments.key)}/values`,
 				params: {
-					key: "environment",
-					page: 1,
+					...validArguments,
 					limit: DEFAULT_LIMIT,
 				},
 				method: "GET",
@@ -74,9 +74,9 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 		name: "unsuccessful call",
 		apiCallHandler: requestsInOrder([
 			{
-				endpoint: "/v2/tags/environment/values",
+				endpoint: `/v2/tags/${pathEncode(validArguments.key)}/values`,
 				params: {
-					key: "environment",
+					...validArguments,
 					page: 1,
 					limit: DEFAULT_LIMIT,
 				},

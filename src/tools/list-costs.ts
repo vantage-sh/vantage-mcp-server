@@ -70,7 +70,6 @@ const args = {
 	groupings: z
 		.array(z.string())
 		.default(["provider", "service", "account_id"])
-		.transform((v) => v.join(","))
 		.describe(
 			"Group the results by specific field(s). Defaults to provider, service, account_id. Valid groupings: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, tag:<tag_value>. Let Groupings default unless explicitly asked for."
 		),

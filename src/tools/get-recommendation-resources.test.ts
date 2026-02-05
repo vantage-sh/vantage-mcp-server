@@ -1,3 +1,4 @@
+import { pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "./get-recommendation-resources";
 import { DEFAULT_LIMIT } from "./structure/constants";
@@ -55,7 +56,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 		name: "successful call",
 		apiCallHandler: requestsInOrder([
 			{
-				endpoint: "/v2/recommendations/rec_123/resources",
+				endpoint: `/v2/recommendations/${pathEncode("rec_123")}/resources`,
 				params: {
 					page: 1,
 					limit: DEFAULT_LIMIT,
@@ -82,7 +83,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 		name: "unsuccessful call",
 		apiCallHandler: requestsInOrder([
 			{
-				endpoint: "/v2/recommendations/rec_123/resources",
+				endpoint: `/v2/recommendations/${pathEncode("rec_123")}/resources`,
 				params: {
 					page: 1,
 					limit: DEFAULT_LIMIT,

@@ -31,11 +31,35 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 
 const successData = {
 	cost_reports: [
-		{ token: "crt_123", title: "Monthly AWS Costs", filter: "provider = aws" },
+		{
+			token: "crt_123",
+			title: "Monthly AWS Costs",
+			filter: "provider = aws",
+			business_metric_tokens_with_metadata: [],
+			created_at: "2023-01-15T10:30:00Z",
+			workspace_token: "wrkspc_123",
+			date_interval: "this_month",
+			date_bin: "day",
+			chart_type: "line",
+			chart_settings: {
+				y_axis_dimension: "cost",
+				x_axis_dimension: ["date"],
+			},
+		},
 		{
 			token: "crt_456",
 			title: "Azure EC2 Costs",
 			filter: "provider = azure AND service = EC2",
+			business_metric_tokens_with_metadata: [],
+			created_at: "2023-01-15T10:30:00Z",
+			workspace_token: "wrkspc_123",
+			date_interval: "this_month",
+			date_bin: "day",
+			chart_type: "line",
+			chart_settings: {
+				y_axis_dimension: "cost",
+				x_axis_dimension: ["date"],
+			},
 		},
 	],
 	links: {},

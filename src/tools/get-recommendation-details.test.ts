@@ -1,3 +1,4 @@
+import { type GetRecommendationResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "./get-recommendation-details";
 import {
@@ -26,19 +27,30 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	},
 ];
 
+const successData: GetRecommendationResponse = {
+	token: "rec_123",
+	description: "This is a test recommendation",
+	category: "ec2_rightsizing_recommender",
+	created_at: "2023-01-01T00:00:00Z",
+	potential_savings: null,
+	provider: "aws",
+	provider_account_id: "123456789",
+	service: "EC2",
+	resources_affected_count: "10",
+	workspace_token: "wt_123",
+};
+
 const executionTests: ExecutionTestTableItem<Validators>[] = [
 	{
 		name: "successful call",
 		apiCallHandler: requestsInOrder([
 			{
-				endpoint: "/v2/recommendations/rec_123",
+				endpoint: `/v2/recommendations/${pathEncode("rec_123")}`,
 				params: {},
 				method: "GET",
 				result: {
 					ok: true,
-					data: {
-						hello: "world",
-					},
+					data: successData,
 				},
 			},
 		]),
@@ -46,16 +58,14 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 			const res = await callExpectingSuccess({
 				recommendation_token: "rec_123",
 			});
-			expect(res).toEqual({
-				hello: "world",
-			});
+			expect(res).toEqual(successData);
 		},
 	},
 	{
 		name: "unsuccessful call",
 		apiCallHandler: requestsInOrder([
 			{
-				endpoint: "/v2/recommendations/rec_123",
+				endpoint: `/v2/recommendations/${pathEncode("rec_123")}`,
 				params: {},
 				method: "GET",
 				result: {

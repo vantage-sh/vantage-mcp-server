@@ -1,3 +1,4 @@
+import type { GetAnomalyAlertsResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "./list-anomalies";
 import { DEFAULT_LIMIT } from "./structure/constants";
@@ -45,11 +46,24 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	poisonOneValue(validArguments, "end_date", dateValidatorPoisoner),
 ];
 
-const successData = {
-	anomaly_alerts: [
-		{ id: "anomaly_123", description: "Unusual spike in EC2 costs" },
-		{ id: "anomaly_456", description: "Unexpected S3 charges" },
-	],
+function makeAnomalyAlert(token: string) {
+	return {
+		token,
+		created_at: "2023-01-01T00:00:00Z",
+		category: "compute",
+		service: "AmazonEC2",
+		provider: "aws",
+		amount: "100.5",
+		previous_amount: "100.5",
+		seven_day_average: "100.5",
+		status: "open",
+		resources: ["resource_123", "resource_456"],
+		cost_report_token: "crt_123",
+	};
+}
+
+const successData: GetAnomalyAlertsResponse = {
+	anomaly_alerts: [makeAnomalyAlert("anomaly_123"), makeAnomalyAlert("anomaly_456")],
 	links: {},
 };
 
@@ -61,6 +75,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 				endpoint: "/v2/anomaly_alerts",
 				params: {
 					...validArguments,
+					page: 1,
 					limit: DEFAULT_LIMIT,
 				},
 				method: "GET",
