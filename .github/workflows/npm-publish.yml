@@ -1,28 +1,47 @@
-name: Publish Package
-
+name: Publish Package and Auto Tag
 on:
   push:
-    tags:
-      - 'v*'
-
-permissions:
-  id-token: write # Required for OIDC
-  contents: read
+    branches:
+      - main
 
 jobs:
   publish:
+    name: Publish Package and Auto Tag
     runs-on: ubuntu-22.04
+    permissions:
+      id-token: write # Required for OIDC
+      contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org'
 
-      # Ensure npm 11.5.1 or later is installed
       - name: Update npm
         run: npm install -g npm@latest
-      - run: npm ci
-      - run: npm run local:dist
-      - run: cd local-package && npm publish
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Get the version and create a tag/publish if it doesn't exist
+        run: |
+          VERSION=$(npm run --silent print-version)
+          if git tag -l "v$VERSION" | grep -q .; then
+            echo "Tag v$VERSION already exists"
+          else
+            echo "Tag v$VERSION does not exist"
+
+            # Build the package and publish it
+            npm run local:dist
+            cd local-package && npm publish
+
+            # Push the tag to the remote repository
+            git tag "v$VERSION"
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git push origin "v$VERSION"
+          fi
