@@ -12,31 +12,38 @@ import { setupRegisteredTools } from "../structure/registerTool";
 // Side affect import for the tools in this branch
 import "..";
 
-function runCommand(command: string, args: string[]) {
+function runCommandAndPipeToUser(command: string, args: string[]) {
 	const result = spawnSync(command, args, {
 		encoding: "utf8",
-		stdio: ["ignore", "pipe", "pipe"],
+		stdio: "inherit",
 	});
 	if (result.error) {
 		console.error(`Command failed: ${command} ${args.join(" ")}`);
-		console.error(result.error);
 		process.exit(1);
 	}
-	if (result.stderr) {
-		console.error(`stderr: ${result.stderr}`);
+}
+
+function runCommandAndGetOutput(command: string, args: string[]) {
+	const result = spawnSync(command, args, {
+		encoding: "utf8",
+		stdio: "pipe",
+	});
+	if (result.error) {
+		console.error(`Command failed: ${command} ${args.join(" ")}`);
+		process.exit(1);
 	}
-	return result.stdout ?? "";
+	return result.stdout?.toString() ?? "";
 }
 
 // Check if the current version is a git tag
 const versionTagExists =
-	runCommand("git", ["tag", "-l", "--points-at", "HEAD", `v${serverMeta.version}`]).trim()
+	runCommandAndGetOutput("git", ["tag", "-l", "--points-at", "HEAD", `v${serverMeta.version}`]).trim()
 		.length > 0;
 if (!versionTagExists) {
 	console.log(
 		`Version tag v${serverMeta.version} does not exist - not going to try and version bump and deleting automated-bump branch if it exists`
 	);
-	runCommand("git", ["branch", "-D", "automated-bump"]);
+	runCommandAndPipeToUser("git", ["branch", "-D", "automated-bump"]);
 	process.exit(0);
 }
 
@@ -49,7 +56,7 @@ setupRegisteredTools(mainServer, () => ({
 }));
 
 // Change to this version branch
-runCommand("git", ["checkout", `v${serverMeta.version}`]);
+runCommandAndPipeToUser("git", ["checkout", `v${serverMeta.version}`]);
 
 // Here comes the fun bit! We want to get a server within the tag context, BUT we do not want to change this context.
 // To do this, we build a script that does the same init above then bundle it. This way, it has its own context.
@@ -98,7 +105,7 @@ try {
 }
 
 // Switch back to main
-runCommand("git", ["checkout", "main"]);
+runCommandAndPipeToUser("git", ["checkout", "main"]);
 
 function zodStringify(schema: any): string {
 	if (!schema) {
@@ -152,13 +159,13 @@ const constantsPath = join(__dirname, "..", "structure", "constants.ts");
 
 async function doPr(description: string, newVersion: string) {
 	// Delete the branch if it exists
-	runCommand("git", ["branch", "-D", "automated-bump"]);
+	runCommandAndPipeToUser("git", ["branch", "-D", "automated-bump"]);
 
 	// Push the branch deletion to the remote repository so that the PR is closed if it exists
-	runCommand("git", ["push", "origin", "--delete", "automated-bump"]);
+	runCommandAndPipeToUser("git", ["push", "origin", "--delete", "automated-bump"]);
 
 	// Create and switch to the new branch
-	runCommand("git", ["checkout", "-b", "automated-bump"]);
+	runCommandAndPipeToUser("git", ["checkout", "-b", "automated-bump"]);
 
 	// Change the version in the constants file
 	const constants = readFileSync(constantsPath, "utf8");
@@ -167,12 +174,12 @@ async function doPr(description: string, newVersion: string) {
 
 	// Commit the changes
 	const title = `chore: Bump version to ${newVersion}.`;
-	runCommand("git", ["add", constantsPath]);
-	runCommand("git", ["commit", "-m", title, "-m", description]);
+	runCommandAndPipeToUser("git", ["add", constantsPath]);
+	runCommandAndPipeToUser("git", ["commit", "-m", title, "-m", description]);
 
 	// Push the branch
 	if (process.env.DRY_RUN !== "true") {
-		runCommand("git", ["push", "origin", "--force", "automated-bump"]);
+		runCommandAndPipeToUser("git", ["push", "origin", "--force", "automated-bump"]);
 	}
 
 	// Create or update the PR
@@ -180,7 +187,7 @@ async function doPr(description: string, newVersion: string) {
 		console.log("Dry run, skipping PR creation");
 		return;
 	}
-	runCommand("gh", [
+	runCommandAndPipeToUser("gh", [
 		"pr",
 		"create",
 		"--repo",
