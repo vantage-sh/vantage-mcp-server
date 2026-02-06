@@ -142,15 +142,19 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 ];
 
 const successData = {
-	cost_alert: {
-		token: "cstm_alrt_rl_123",
-		title: "Daily AWS Alert",
-		interval: "day",
-		threshold: 100,
-		unit_type: "currency",
-		workspace_token: "wrkspc_123",
-		report_tokens: ["rprt_123"],
-	},
+	created_at: "2023-01-01T00:00:00Z",
+	updated_at: "2023-01-01T00:00:00Z",
+	token: "cstm_alrt_rl_123",
+	title: "Daily AWS Alert",
+	interval: "day",
+	threshold: 100,
+	unit_type: "currency",
+	workspace_token: "wrkspc_123",
+	report_tokens: ["rprt_123"],
+	email_recipients: ["user@example.com"],
+	slack_channels: ["#alerts"],
+	teams_channels: ["General"],
+	minimum_threshold: 50,
 };
 
 const executionTests: ExecutionTestTableItem<Validators>[] = [
