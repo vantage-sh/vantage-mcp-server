@@ -26,10 +26,7 @@ function runCommandAndPipeToUser(command: string, args: string[], allowError: bo
 }
 
 function runCommandAndGetOutput(command: string, args: string[]) {
-	const result = spawnSync(command, args, {
-		encoding: "utf8",
-		stdio: "pipe",
-	});
+	const result = spawnSync(command, args, { encoding: "utf8", stdio: "pipe" });
 	if (result.error) {
 		console.error(`Command failed: ${command} ${args.join(" ")}`);
 		process.exit(1);
@@ -42,8 +39,6 @@ const versionTagExists =
 	runCommandAndGetOutput("git", [
 		"tag",
 		"-l",
-		"--points-at",
-		"HEAD",
 		`v${serverMeta.version}`,
 	]).trim().length > 0;
 if (!versionTagExists) {
@@ -194,20 +189,24 @@ async function doPr(description: string, newVersion: string) {
 		console.log("Dry run, skipping PR creation");
 		return;
 	}
-	runCommandAndPipeToUser("gh", [
-		"pr",
-		"create",
-		"--repo",
-		"vantage-sh/vantage-mcp-server",
-		"--title",
-		title,
-		"--body",
-		description,
-		"--base",
-		"main",
-		"--head",
-		"automated-bump",
-	], false);
+	runCommandAndPipeToUser(
+		"gh",
+		[
+			"pr",
+			"create",
+			"--repo",
+			"vantage-sh/vantage-mcp-server",
+			"--title",
+			title,
+			"--body",
+			description,
+			"--base",
+			"main",
+			"--head",
+			"automated-bump",
+		],
+		false
+	);
 	console.log("PR created successfully");
 }
 
