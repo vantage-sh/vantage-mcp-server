@@ -13,8 +13,8 @@ import { setupRegisteredTools } from "../structure/registerTool";
 import "..";
 
 function runCommand(command: string, args: string[]) {
-	const result = spawnSync(command, args, { stdio: "ignore" });
-	return result.toString();
+	const result = spawnSync(command, args, { stdio: "pipe" });
+	return result.stdout?.toString() ?? "";
 }
 
 // Check if the current version is a git tag
@@ -189,7 +189,7 @@ async function doPr(description: string, newVersion: string) {
 (async () => {
 	// Get the current branch's tools
 	const [clientTagTransport, serverTagTransport] = InMemoryTransport.createLinkedPair();
-	tagServer.connect(serverTagTransport);
+	await tagServer.connect(serverTagTransport);
 	const tagClient = new Client(serverMeta);
 	await tagClient.connect(clientTagTransport);
 	const tagTools = await tagClient.listTools();
@@ -200,7 +200,7 @@ async function doPr(description: string, newVersion: string) {
 
 	// Now do the same for the main branch
 	const [clientMainTransport, serverMainTransport] = InMemoryTransport.createLinkedPair();
-	mainServer.connect(serverMainTransport);
+	await mainServer.connect(serverMainTransport);
 	const mainClient = new Client(serverMeta);
 	await mainClient.connect(clientMainTransport);
 	const mainTools = await mainClient.listTools();
