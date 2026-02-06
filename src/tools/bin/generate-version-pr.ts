@@ -238,7 +238,7 @@ async function doPr(description: string, newVersion: string) {
 		// Patch version bump
 		parts[2] = (parseInt(parts[2]) + 1).toString();
 		const newVersion = parts.join(".");
-		await doPr("No tool changes, bumping minor version", newVersion);
+		await doPr("No tool changes, bumping patch version", newVersion);
 		return;
 	}
 
