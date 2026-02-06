@@ -22,6 +22,13 @@ function runCommand(command: string, args: string[]) {
 		console.error(result.error);
 		process.exit(1);
 	}
+	if (result.status !== 0) {
+		console.error(`Command failed with exit code ${result.status}: ${command} ${args.join(" ")}`);
+		if (result.stderr) {
+			console.error(`stderr: ${result.stderr}`);
+		}
+		process.exit(1);
+	}
 	if (result.stderr) {
 		console.error(`stderr: ${result.stderr}`);
 	}
@@ -69,7 +76,7 @@ export default server;
 `;
 const root = join(__dirname, "..", "..", "..");
 const tmpFile = join(root, "node_modules", "tag-out.mjs");
-const outTmpFile = join(root, "node_modules", "tag-out-bundle.mjs");
+const outTmpFile = join(root, "node_modules", "tag-out-bundle.cjs");
 writeFileSync(tmpFile, exportScript);
 
 try {
@@ -227,7 +234,7 @@ async function doPr(description: string, newVersion: string) {
 		// Patch version bump
 		parts[2] = (parseInt(parts[2]) + 1).toString();
 		const newVersion = parts.join(".");
-		await doPr("No tool changes, bumping minor version", newVersion);
+		await doPr("No tool changes, bumping patch version", newVersion);
 		return;
 	}
 
