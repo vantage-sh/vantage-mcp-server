@@ -17,7 +17,7 @@ function runCommandAndPipeToUser(command: string, args: string[], allowError: bo
 		encoding: "utf8",
 		stdio: "inherit",
 	});
-	if (result.error) {
+	if (result.error || result.status !== 0) {
 		console.error(`Command failed: ${command} ${args.join(" ")}`);
 		if (!allowError) {
 			process.exit(1);
@@ -27,7 +27,7 @@ function runCommandAndPipeToUser(command: string, args: string[], allowError: bo
 
 function runCommandAndGetOutput(command: string, args: string[]) {
 	const result = spawnSync(command, args, { encoding: "utf8", stdio: "pipe" });
-	if (result.error) {
+	if (result.error || result.status !== 0) {
 		console.error(`Command failed: ${command} ${args.join(" ")}`);
 		process.exit(1);
 	}

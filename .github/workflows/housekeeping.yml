@@ -74,3 +74,5 @@ jobs:
 
       - name: Generate Version PR
         run: npx -y tsx src/tools/bin/generate-version-pr.ts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
