@@ -89,6 +89,7 @@ try {
 	});
 } catch {
 	// If esbuild fails, it logs out, so just exit with error.
+	unlinkSync(tmpFile);
 	process.exit(1);
 } finally {
 	unlinkSync(tmpFile);
@@ -234,6 +235,10 @@ async function doPr(description: string, newVersion: string) {
 	// Compare the tools
 	const toolChanges = getToolStructureChanges(tagTools.tools, mainTools.tools);
 	const parts = serverMeta.version.split(".");
+	if (parts.length !== 3 || parts.some((part) => isNaN(parseInt(part)))) {
+		console.error(`Invalid version format: ${serverMeta.version}. Expected 3-part semver (e.g., "2.3.0")`);
+		process.exit(1);
+	}
 	if (toolChanges.length === 0) {
 		// Patch version bump
 		parts[2] = (parseInt(parts[2]) + 1).toString();
