@@ -155,20 +155,27 @@ async function doPr(description: string, newVersion: string) {
 	writeFileSync(constantsPath, newConstants);
 
 	// Commit the changes
+	const title = `chore: Bump version to ${newVersion}.`;
 	runCommand("git", ["add", constantsPath]);
-	runCommand("git", ["commit", "-m", `chore: Bump version to ${newVersion}.`, "-m", description]);
+	runCommand("git", ["commit", "-m", title, "-m", description]);
 
 	// Push the branch
-	runCommand("git", ["push", "origin", "--force", "automated-bump"]);
+	if (process.env.DRY_RUN !== "true") {
+		runCommand("git", ["push", "origin", "--force", "automated-bump"]);
+	}
 
 	// Create or update the PR
+	if (process.env.DRY_RUN === "true") {
+		console.log("Dry run, skipping PR creation");
+		return;
+	}
 	runCommand("gh", [
 		"pr",
 		"create",
 		"--repo",
 		"vantage-sh/vantage-mcp-server",
 		"--title",
-		`chore: Bump version to ${newVersion}.`,
+		title,
 		"--body",
 		description,
 		"--base",
@@ -176,6 +183,7 @@ async function doPr(description: string, newVersion: string) {
 		"--head",
 		"automated-bump",
 	]);
+	console.log("PR created successfully");
 }
 
 (async () => {
