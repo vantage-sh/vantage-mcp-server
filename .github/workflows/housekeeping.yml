@@ -5,9 +5,40 @@ on:
       - main
 
 jobs:
+  generate-version-pr:
+    name: Generate Version PR
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Generate Version PR
+        run: npx -y tsx src/tools/bin/generate-version-pr.ts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   publish:
     name: Publish Package and Auto Tag
     runs-on: ubuntu-22.04
+    needs: generate-version-pr
     permissions:
       id-token: write # Required for OIDC
       contents: write
@@ -45,34 +76,3 @@ jobs:
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git push origin "v$VERSION"
           fi
-
-  generate-version-pr:
-    name: Generate Version PR
-    runs-on: ubuntu-22.04
-    needs: publish
-    permissions:
-      contents: write
-      pull-requests: write
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          registry-url: 'https://registry.npmjs.org'
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Generate Version PR
-        run: npx -y tsx src/tools/bin/generate-version-pr.ts
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
