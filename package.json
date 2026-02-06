@@ -15,7 +15,8 @@
 		"generate-tools-index": "tsx src/tools/bin/generate-tools-index.ts",
 		"prepare": "husky",
 		"local": "tsx src/local.ts",
-		"local:dist": "tsx build/npm.ts"
+		"local:dist": "tsx build/npm.ts",
+		"print-version": "tsx src/tools/bin/print-version.ts"
 	},
 	"dependencies": {
 		"@cloudflare/workers-oauth-provider": "^0.0.11",

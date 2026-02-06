@@ -1,0 +1,34 @@
+name: Auto Tag Release
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  autotag:
+    runs-on: ubuntu-24.04
+    permissions:
+        contents: write
+        actions: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Get the version and create a tag if it doesn't exist
+        run: |
+          VERSION=$(npm run --silent print-version)
+          if git tag -l "v$VERSION"; then
+            echo "Tag v$VERSION already exists"
+            exit 0
+          else
+            echo "Tag v$VERSION does not exist"
+            git tag "v$VERSION"
+            git push origin "v$VERSION"
+          fi
