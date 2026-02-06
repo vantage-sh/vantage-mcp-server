@@ -13,8 +13,19 @@ import { setupRegisteredTools } from "../structure/registerTool";
 import "..";
 
 function runCommand(command: string, args: string[]) {
-	const result = spawnSync(command, args, { stdio: "pipe" });
-	return result.stdout?.toString() ?? "";
+	const result = spawnSync(command, args, {
+		encoding: "utf8",
+		stdio: ["ignore", "pipe", "pipe"],
+	});
+	if (result.error) {
+		console.error(`Command failed: ${command} ${args.join(" ")}`);
+		console.error(result.error);
+		process.exit(1);
+	}
+	if (result.stderr) {
+		console.error(`stderr: ${result.stderr}`);
+	}
+	return result.stdout ?? "";
 }
 
 // Check if the current version is a git tag
