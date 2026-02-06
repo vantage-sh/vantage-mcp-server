@@ -8,7 +8,7 @@ jobs:
   autotag:
     runs-on: ubuntu-22.04
     permissions:
-        contents: write
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -23,11 +23,12 @@ jobs:
       - name: Get the version and create a tag if it doesn't exist
         run: |
           VERSION=$(npm run --silent print-version)
-          if git tag -l "v$VERSION"; then
+          if git tag -l "v$VERSION" | grep -q .; then
             echo "Tag v$VERSION already exists"
-            exit 0
           else
             echo "Tag v$VERSION does not exist"
             git tag "v$VERSION"
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
             git push origin "v$VERSION"
           fi
