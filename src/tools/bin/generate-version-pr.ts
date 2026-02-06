@@ -1,4 +1,4 @@
-import { Client } from "@modelcontextprotocol/sdk/client";
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
@@ -159,8 +159,10 @@ async function doPr(description: string, newVersion: string) {
 	// Delete the branch if it exists
 	runCommandAndPipeToUser("git", ["branch", "-D", "automated-bump"], true);
 
-	// Push the branch deletion to the remote repository so that the PR is closed if it exists
-	runCommandAndPipeToUser("git", ["push", "origin", "--delete", "automated-bump"], true);
+	if (process.env.DRY_RUN !== "true") {
+		// Push the branch deletion to the remote repository so that the PR is closed if it exists
+		runCommandAndPipeToUser("git", ["push", "origin", "--delete", "automated-bump"], true);
+	}
 
 	// Create and switch to the new branch
 	runCommandAndPipeToUser("git", ["checkout", "-b", "automated-bump"], false);
