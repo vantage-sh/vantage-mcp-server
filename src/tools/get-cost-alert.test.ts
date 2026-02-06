@@ -1,8 +1,9 @@
+import { type GetCostAlertResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "./get-cost-alert";
 import { requestsInOrder, testTool } from "./utils/testing";
 
-export const success = {
+export const success: GetCostAlertResponse = {
 	token: "cstm_alrt_rl_123",
 	title: "Daily AWS Alert",
 	interval: "day",
@@ -10,6 +11,12 @@ export const success = {
 	unit_type: "currency",
 	workspace_token: "wrkspc_123",
 	report_tokens: ["rprt_123"],
+	created_at: "2023-01-01T00:00:00Z",
+	updated_at: "2023-01-01T00:00:00Z",
+	email_recipients: ["user@example.com"],
+	slack_channels: ["#alerts"],
+	teams_channels: ["General"],
+	minimum_threshold: 50,
 };
 
 testTool(
@@ -27,7 +34,7 @@ testTool(
 			name: "successful call",
 			apiCallHandler: requestsInOrder([
 				{
-					endpoint: "/v2/cost_alerts/cstm_alrt_rl_123",
+					endpoint: `/v2/cost_alerts/${pathEncode("cstm_alrt_rl_123")}`,
 					params: {},
 					method: "GET",
 					result: {
@@ -45,7 +52,7 @@ testTool(
 			name: "unsuccessful call",
 			apiCallHandler: requestsInOrder([
 				{
-					endpoint: "/v2/cost_alerts/cstm_alrt_rl_456",
+					endpoint: `/v2/cost_alerts/${pathEncode("cstm_alrt_rl_456")}`,
 					params: {},
 					method: "GET",
 					result: {

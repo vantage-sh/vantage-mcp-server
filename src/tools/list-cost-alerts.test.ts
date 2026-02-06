@@ -1,3 +1,4 @@
+import type { GetCostAlertsResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "./list-cost-alerts";
 import { DEFAULT_LIMIT } from "./structure/constants";
@@ -29,11 +30,26 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	},
 ];
 
-const successData = {
-	cost_alerts: [
-		{ token: "cstm_alrt_rl_123", title: "Daily AWS Alert", threshold: 100 },
-		{ token: "cstm_alrt_rl_456", title: "Monthly GCP Alert", threshold: 5000 },
-	],
+function makeCostAlert(token: string) {
+	return {
+		token,
+		title: `Cost Alert ${token}`,
+		threshold: 100,
+		created_at: "2023-01-01T00:00:00Z",
+		updated_at: "2023-01-01T00:00:00Z",
+		email_recipients: ["user@example.com"],
+		slack_channels: ["#alerts"],
+		teams_channels: ["General"],
+		minimum_threshold: 50,
+		workspace_token: "wrkspc_123",
+		interval: "day",
+		unit_type: "currency",
+		report_tokens: ["rprt_123"],
+	};
+}
+
+const successData: GetCostAlertsResponse = {
+	cost_alerts: [makeCostAlert("cstm_alrt_rl_123"), makeCostAlert("cstm_alrt_rl_456")],
 	links: {},
 };
 
