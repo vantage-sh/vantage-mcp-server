@@ -36,11 +36,7 @@ function runCommandAndGetOutput(command: string, args: string[]) {
 
 // Check if the current version is a git tag
 const versionTagExists =
-	runCommandAndGetOutput("git", [
-		"tag",
-		"-l",
-		`v${serverMeta.version}`,
-	]).trim().length > 0;
+	runCommandAndGetOutput("git", ["tag", "-l", `v${serverMeta.version}`]).trim().length > 0;
 if (!versionTagExists) {
 	console.log(
 		`Version tag v${serverMeta.version} does not exist - not going to try and version bump and deleting automated-bump branch if it exists`
