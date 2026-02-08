@@ -185,7 +185,10 @@ async function doPr(description: string, newVersion: string) {
 
 	// Change the version in the constants file
 	const constants = readFileSync(constantsPath, "utf8");
-	const newConstants = constants.replace(serverMeta.version, newVersion);
+	const newConstants = constants.replace(
+		/SERVER_VERSION = ".*?"/,
+		`SERVER_VERSION = "${newVersion}"`
+	);
 	writeFileSync(constantsPath, newConstants);
 
 	// Commit the changes
