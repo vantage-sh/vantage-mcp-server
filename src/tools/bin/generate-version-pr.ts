@@ -42,6 +42,7 @@ if (!versionTagExists) {
 		`Version tag v${serverMeta.version} does not exist - not going to try and version bump and deleting automated-bump branch if it exists`
 	);
 	runCommandAndPipeToUser("git", ["branch", "-D", "automated-bump"], true);
+	runCommandAndPipeToUser("git", ["push", "origin", "--delete", "automated-bump"], true);
 	process.exit(0);
 }
 
@@ -87,11 +88,11 @@ try {
 		target: "node20",
 		outfile: outTmpFile,
 	});
+	unlinkSync(tmpFile);
 } catch {
 	// If esbuild fails, it logs out, so just exit with error.
-	process.exit(1);
-} finally {
 	unlinkSync(tmpFile);
+	process.exit(1);
 }
 
 // Load this bundle here
@@ -156,6 +157,19 @@ function getToolStructureChanges(tagTools: Tool[], mainTools: Tool[]): string[] 
 const constantsPath = join(__dirname, "..", "structure", "constants.ts");
 
 async function doPr(description: string, newVersion: string) {
+	// If the branch exists, check if the diff is the same as the version bump
+	const title = `chore: Bump version to ${newVersion}.`;
+	const lastCommitToAutomated = runCommandAndGetOutput("git", [
+		"log",
+		"-1",
+		"--pretty=%B",
+		"automated-bump",
+	]);
+	if (lastCommitToAutomated.includes(title)) {
+		console.log("Last commit to automated-bump is the same as the version bump, skipping PR");
+		return;
+	}
+
 	// Delete the branch if it exists
 	runCommandAndPipeToUser("git", ["branch", "-D", "automated-bump"], true);
 
@@ -173,7 +187,6 @@ async function doPr(description: string, newVersion: string) {
 	writeFileSync(constantsPath, newConstants);
 
 	// Commit the changes
-	const title = `chore: Bump version to ${newVersion}.`;
 	runCommandAndPipeToUser("git", ["add", constantsPath], false);
 	runCommandAndPipeToUser("git", ["commit", "-m", title, "-m", description], false);
 
