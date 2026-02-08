@@ -162,12 +162,11 @@ const constantsPath = join(__dirname, "..", "structure", "constants.ts");
 async function doPr(description: string, newVersion: string) {
 	// If the branch exists, check if the diff is the same as the version bump
 	const title = `chore: Bump version to ${newVersion}.`;
-	const lastCommitToAutomated = runCommandAndGetOutput("git", [
-		"log",
-		"-1",
-		"--pretty=%B",
-		"automated-bump",
-	], false);
+	const lastCommitToAutomated = runCommandAndGetOutput(
+		"git",
+		["log", "-1", "--pretty=%B", "automated-bump"],
+		false
+	);
 	if (lastCommitToAutomated.includes(title)) {
 		console.log("Last commit to automated-bump is the same as the version bump, skipping PR");
 		return;
