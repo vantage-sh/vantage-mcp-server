@@ -25,18 +25,21 @@ function runCommandAndPipeToUser(command: string, args: string[], allowError: bo
 	}
 }
 
-function runCommandAndGetOutput(command: string, args: string[]) {
+function runCommandAndGetOutput(command: string, args: string[], exitOnError: boolean) {
 	const result = spawnSync(command, args, { encoding: "utf8", stdio: "pipe" });
 	if (result.error || result.status !== 0) {
 		console.error(`Command failed: ${command} ${args.join(" ")}`);
-		process.exit(1);
+		if (exitOnError) {
+			process.exit(1);
+		}
+		return "";
 	}
 	return result.stdout?.toString() ?? "";
 }
 
 // Check if the current version is a git tag
 const versionTagExists =
-	runCommandAndGetOutput("git", ["tag", "-l", `v${serverMeta.version}`]).trim().length > 0;
+	runCommandAndGetOutput("git", ["tag", "-l", `v${serverMeta.version}`], true).trim().length > 0;
 if (!versionTagExists) {
 	console.log(
 		`Version tag v${serverMeta.version} does not exist - not going to try and version bump and deleting automated-bump branch if it exists`
@@ -164,7 +167,7 @@ async function doPr(description: string, newVersion: string) {
 		"-1",
 		"--pretty=%B",
 		"automated-bump",
-	]);
+	], false);
 	if (lastCommitToAutomated.includes(title)) {
 		console.log("Last commit to automated-bump is the same as the version bump, skipping PR");
 		return;
