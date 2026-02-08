@@ -167,7 +167,7 @@ async function doPr(description: string, newVersion: string) {
 		["log", "-1", "--pretty=%B", "automated-bump"],
 		false
 	);
-	if (lastCommitToAutomated.includes(title)) {
+	if (lastCommitToAutomated.includes(title) && lastCommitToAutomated.includes(description)) {
 		console.log("Last commit to automated-bump is the same as the version bump, skipping PR");
 		return;
 	}
