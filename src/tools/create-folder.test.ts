@@ -54,6 +54,8 @@ const successData = {
 	parent_folder_token: "fldr_123",
 	saved_filter_tokens: ["svd_fltr_abc", "svd_fltr_def"],
 	workspace_token: "wrkspc_123",
+	created_at: "2024-01-01T00:00:00Z",
+	updated_at: "2024-01-01T00:00:00Z",
 };
 
 const executionTests: ExecutionTestTableItem<Validators>[] = [
