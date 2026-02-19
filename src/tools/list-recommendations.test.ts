@@ -20,6 +20,7 @@ const validArguments: InferValidators<Validators> = {
 	workspace_token: "wt_123",
 	provider_account_id: "123456789",
 	category: "ec2_rightsizing_recommender",
+	type: "aws",
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
@@ -32,6 +33,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 			workspace_token: undefined,
 			provider_account_id: undefined,
 			category: undefined,
+			type: undefined,
 		},
 	},
 	{
@@ -50,6 +52,21 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 		data: {
 			...validArguments,
 			filter: "dismissed",
+		},
+	},
+	{
+		name: "type over 255 chars is invalid",
+		data: {
+			...validArguments,
+			type: "a".repeat(256),
+		},
+		expectedIssues: ["String must contain at most 255 character(s)"],
+	},
+	{
+		name: "type with fuzzy value",
+		data: {
+			...validArguments,
+			type: "aws:ec2:rightsizing",
 		},
 	},
 ];
@@ -136,6 +153,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 					workspace_token: undefined,
 					provider_account_id: undefined,
 					category: undefined,
+					type: undefined,
 					limit: DEFAULT_LIMIT,
 				},
 				method: "GET",
@@ -153,9 +171,51 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 				workspace_token: undefined,
 				provider_account_id: undefined,
 				category: undefined,
+				type: undefined,
 			});
 			expect(err.exception).toEqual({
 				errors: [{ message: "Access denied" }],
+			});
+		},
+	},
+	{
+		name: "successful call with type filter",
+		apiCallHandler: requestsInOrder([
+			{
+				endpoint: "/v2/recommendations",
+				params: {
+					page: 1,
+					filter: undefined,
+					provider: undefined,
+					workspace_token: undefined,
+					provider_account_id: undefined,
+					category: undefined,
+					type: "aws",
+					limit: DEFAULT_LIMIT,
+				},
+				method: "GET",
+				result: {
+					ok: true,
+					data: successData,
+				},
+			},
+		]),
+		handler: async ({ callExpectingSuccess }) => {
+			const res = await callExpectingSuccess({
+				page: 1,
+				filter: undefined,
+				provider: undefined,
+				workspace_token: undefined,
+				provider_account_id: undefined,
+				category: undefined,
+				type: "aws",
+			});
+			expect(res).toEqual({
+				recommendations: successData.recommendations,
+				pagination: {
+					hasNextPage: false,
+					nextPage: 0,
+				},
 			});
 		},
 	},

@@ -23,7 +23,7 @@ Each recommendation includes:
 - Number of resources affected
 - Current status (open, resolved, dismissed)
 
-Recommendations can be filtered by status (open shows active recommendations, resolved shows implemented ones, dismissed shows ignored ones), cloud provider (aws, azure, gcp), specific workspace, provider account ID, and recommendation category.
+Recommendations can be filtered by status (open shows active recommendations, resolved shows implemented ones, dismissed shows ignored ones), cloud provider (aws, azure, gcp), specific workspace, provider account ID, recommendation category, and recommendation type. Prefer the type parameter when users ask for broad families (e.g. "AWS recommendations" -> type=aws; "EC2 rightsizing" -> type=aws:ec2:rightsizing). The type filter uses case-insensitive fuzzy matching on the recommendation type. If both type and category are provided, the API uses type.
 
 The token of each recommendation can be used with other recommendation tools to get detailed information and see specific resources affected.
 
@@ -48,7 +48,14 @@ const args = {
 		.string()
 		.optional()
 		.describe(
-			"Filter recommendations by category (e.g., ec2_rightsizing_recommender, unused_financial_commitments)"
+			"Filter recommendations by category (e.g., ec2_rightsizing_recommender, unused_financial_commitments). Ignored when type is also provided."
+		),
+	type: z
+		.string()
+		.max(255)
+		.optional()
+		.describe(
+			"Filter recommendations by type with case-insensitive fuzzy matching (e.g., aws, aws:ec2, aws:ec2:rightsizing). Prefer this for broad queries like 'AWS recommendations'."
 		),
 	filter: z
 		.enum(["open", "resolved", "dismissed"])
