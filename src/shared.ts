@@ -74,8 +74,7 @@ export async function callApi<
 	}
 
 	if (response.status === 204) {
-		// No content response - return undefined
-		return { data: undefined as Response, ok: true };
+		return { data: {} as Response, ok: true };
 	}
 	const responseData = await response.json();
 	return { data: responseData as Response, ok: true };
