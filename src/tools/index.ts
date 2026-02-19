@@ -11,6 +11,7 @@ import "./delete-folder";
 import "./get-anomaly";
 import "./get-cost-alert";
 import "./get-cost-provider-accounts";
+import "./get-cost-report";
 import "./get-cost-report-forecast";
 import "./get-folder";
 import "./get-myself";
