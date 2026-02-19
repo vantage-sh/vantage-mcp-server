@@ -176,6 +176,7 @@ type ExpectedApiCall<
 	endpoint: P;
 	params: Request;
 	method: M;
+	// FIXME - Only allow undefined on deletes
 	result: { data: Response | undefined; ok: true } | { errors: unknown[]; ok: false };
 };
 
