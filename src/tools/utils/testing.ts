@@ -176,7 +176,7 @@ type ExpectedApiCall<
 	endpoint: P;
 	params: Request;
 	method: M;
-	result: { data: Response; ok: true } | { errors: unknown[]; ok: false };
+	result: { data: Response | undefined; ok: true } | { errors: unknown[]; ok: false };
 };
 
 type AnyExpectedApiCall = {

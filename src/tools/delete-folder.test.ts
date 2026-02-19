@@ -23,7 +23,7 @@ testTool(
 					method: "DELETE",
 					result: {
 						ok: true,
-						data: {},
+						data: undefined,
 					},
 				},
 			]),
