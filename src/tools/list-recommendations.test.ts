@@ -60,7 +60,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 			...validArguments,
 			type: "a".repeat(256),
 		},
-		expectedIssues: ["String must contain at most 255 character(s)"],
+		expectedIssues: ["Too big: expected string to have <=255 characters"],
 	},
 	{
 		name: "type with fuzzy value",
