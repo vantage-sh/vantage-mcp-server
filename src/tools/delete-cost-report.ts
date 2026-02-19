@@ -29,6 +29,6 @@ export default registerTool({
 		if (!response.ok) {
 			throw new MCPUserError({ errors: response.errors });
 		}
-		return response.data;
+		return { token: args.cost_report_token };
 	},
 });
