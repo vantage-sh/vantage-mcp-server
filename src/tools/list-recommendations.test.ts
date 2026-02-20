@@ -69,6 +69,20 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 			type: "aws:ec2:rightsizing",
 		},
 	},
+	{
+		name: "provider alias value",
+		data: {
+			...validArguments,
+			provider: "Amazon Web Services",
+		},
+	},
+	{
+		name: "natural language type value",
+		data: {
+			...validArguments,
+			type: "AWS recommendations",
+		},
+	},
 ];
 
 const successData: GetRecommendationsResponse = {
@@ -149,6 +163,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 				endpoint: "/v2/recommendations",
 				params: {
 					page: 1,
+					filter: undefined,
 					provider: undefined,
 					workspace_token: undefined,
 					provider_account_id: undefined,
@@ -209,6 +224,47 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 				provider_account_id: undefined,
 				category: undefined,
 				type: "aws",
+			});
+			expect(res).toEqual({
+				recommendations: successData.recommendations,
+				pagination: {
+					hasNextPage: false,
+					nextPage: 0,
+				},
+			});
+		},
+	},
+	{
+		name: "normalizes provider alias and natural language type",
+		apiCallHandler: requestsInOrder([
+			{
+				endpoint: "/v2/recommendations",
+				params: {
+					page: 1,
+					filter: undefined,
+					provider: "aws",
+					workspace_token: undefined,
+					provider_account_id: undefined,
+					category: undefined,
+					type: "aws",
+					limit: DEFAULT_LIMIT,
+				} as any,
+				method: "GET",
+				result: {
+					ok: true,
+					data: successData,
+				},
+			},
+		]),
+		handler: async ({ callExpectingSuccess }) => {
+			const res = await callExpectingSuccess({
+				page: 1,
+				filter: undefined,
+				provider: "Amazon Web Services",
+				workspace_token: undefined,
+				provider_account_id: undefined,
+				category: undefined,
+				type: "AWS recommendations",
 			});
 			expect(res).toEqual({
 				recommendations: successData.recommendations,
