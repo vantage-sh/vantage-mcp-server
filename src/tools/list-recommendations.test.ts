@@ -118,7 +118,6 @@ const successData = {
 			currency_code: "USD",
 			currency_symbol: "$",
 			workspace_token: "wt_123",
-			type: "suggestion",
 		},
 		{
 			token: "rec_456",
@@ -133,7 +132,6 @@ const successData = {
 			currency_code: "USD",
 			currency_symbol: "$",
 			workspace_token: "wt_123",
-			type: "suggestion",
 		},
 	],
 	links: {},
