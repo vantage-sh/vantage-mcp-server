@@ -58,6 +58,7 @@ function makeAnomalyAlert(token: string) {
 		seven_day_average: "100.5",
 		status: "open",
 		resources: ["resource_123", "resource_456"],
+		resource_tokens: ["resource_123", "resource_456"],
 		cost_report_token: "crt_123",
 	};
 }

@@ -36,8 +36,9 @@ const successData: GetRecommendationResponse = {
 	provider: "aws",
 	provider_account_id: "123456789",
 	service: "EC2",
-	resources_affected_count: "10",
+	resources_affected_count: 10,
 	workspace_token: "wt_123",
+	type: "suggestion",
 };
 
 const executionTests: ExecutionTestTableItem<Validators>[] = [
