@@ -42,9 +42,26 @@ const normalizeRecommendationType = (value: unknown) => {
 
 	const tokens = normalized.split(/\s+/).filter(Boolean);
 	if (!normalized.includes(":") && tokens.length > 1) {
-		const canonicalProvider = PROVIDER_ALIASES[tokens[0]];
-		if (canonicalProvider && tokens.slice(1).every((token) => /^[a-z0-9_-]+$/.test(token))) {
-			normalized = [canonicalProvider, ...tokens.slice(1)].join(":");
+		let matchedProvider: (typeof SUPPORTED_PROVIDERS)[number] | undefined;
+		let remainingTokens: string[] = tokens;
+
+		for (let i = tokens.length; i >= 1; i--) {
+			const candidate = tokens.slice(0, i).join(" ");
+			if (PROVIDER_ALIASES[candidate]) {
+				matchedProvider = PROVIDER_ALIASES[candidate];
+				remainingTokens = tokens.slice(i);
+				break;
+			}
+		}
+
+		if (
+			matchedProvider &&
+			remainingTokens.length > 0 &&
+			remainingTokens.every((token) => /^[a-z0-9_-]+$/.test(token))
+		) {
+			normalized = [matchedProvider, ...remainingTokens].join(":");
+		} else if (matchedProvider) {
+			normalized = matchedProvider;
 		} else {
 			const providerToken = tokens.find((token) => PROVIDER_ALIASES[token]);
 			if (providerToken) {
@@ -71,11 +88,11 @@ Recommendations include various types such as:
 Each recommendation includes:
 - Potential cost savings amount
 - Description of what can be optimized
-- Category and provider information
+- Provider information
 - Number of resources affected
 - Current status (open, resolved, dismissed)
 
-Recommendations can be filtered by status (open shows active recommendations, resolved shows implemented ones, dismissed shows ignored ones), cloud provider (aws, azure, gcp), specific workspace, provider account ID, recommendation category, and recommendation type. Prefer the type parameter when users ask for broad families (e.g. "AWS recommendations" -> type=aws; "EC2 rightsizing" -> type=aws:ec2:rightsizing). The type filter uses case-insensitive fuzzy matching on the recommendation type. If both type and category are provided, the API uses type.
+Recommendations can be filtered by status (open shows active recommendations, resolved shows implemented ones, dismissed shows ignored ones), cloud provider (aws, azure, gcp), specific workspace, provider account ID, and recommendation type. Prefer the type parameter when users ask for broad families (e.g. "AWS recommendations" -> type=aws; "EC2 rightsizing" -> type=aws:ec2:rightsizing). The type filter uses case-insensitive fuzzy matching on the recommendation type.
 
 The token of each recommendation can be used with other recommendation tools to get detailed information and see specific resources affected.
 
@@ -98,12 +115,6 @@ const args = {
 		.string()
 		.optional()
 		.describe("Filter recommendations by provider account ID"),
-	category: z
-		.string()
-		.optional()
-		.describe(
-			"Filter recommendations by category (e.g., ec2_rightsizing_recommender, unused_financial_commitments). Ignored when type is also provided."
-		),
 	type: z
 		.preprocess(normalizeRecommendationType, z.string().max(255).optional())
 		.optional()
@@ -130,7 +141,6 @@ export default registerTool({
 			...args,
 			limit: DEFAULT_LIMIT,
 			provider: args.provider as any,
-			category: args.category as any,
 		};
 		const response = await ctx.callVantageApi("/v2/recommendations", requestParams, "GET");
 		if (!response.ok) {

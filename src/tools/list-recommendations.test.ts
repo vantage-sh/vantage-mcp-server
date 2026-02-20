@@ -19,7 +19,6 @@ const validArguments: InferValidators<Validators> = {
 	provider: "aws",
 	workspace_token: "wt_123",
 	provider_account_id: "123456789",
-	category: "ec2_rightsizing_recommender",
 	type: "aws",
 };
 
@@ -32,7 +31,6 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 			provider: undefined,
 			workspace_token: undefined,
 			provider_account_id: undefined,
-			category: undefined,
 			type: undefined,
 		},
 	},
@@ -128,7 +126,6 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 				params: {
 					...validArguments,
 					limit: DEFAULT_LIMIT,
-					category: validArguments.category as any,
 					provider: validArguments.provider as any,
 				},
 				method: "GET",
@@ -165,7 +162,6 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 					provider: undefined,
 					workspace_token: undefined,
 					provider_account_id: undefined,
-					category: undefined,
 					type: undefined,
 					limit: DEFAULT_LIMIT,
 				},
@@ -183,7 +179,6 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 				provider: undefined,
 				workspace_token: undefined,
 				provider_account_id: undefined,
-				category: undefined,
 				type: undefined,
 			});
 			expect(err.exception).toEqual({
@@ -202,7 +197,6 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 					provider: undefined,
 					workspace_token: undefined,
 					provider_account_id: undefined,
-					category: undefined,
 					type: "aws",
 					limit: DEFAULT_LIMIT,
 				},
@@ -220,7 +214,6 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 				provider: undefined,
 				workspace_token: undefined,
 				provider_account_id: undefined,
-				category: undefined,
 				type: "aws",
 			});
 			expect(res).toEqual({
@@ -243,7 +236,6 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 					provider: "aws",
 					workspace_token: undefined,
 					provider_account_id: undefined,
-					category: undefined,
 					type: "aws",
 					limit: DEFAULT_LIMIT,
 				} as any,
@@ -261,7 +253,6 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 				provider: "Amazon Web Services",
 				workspace_token: undefined,
 				provider_account_id: undefined,
-				category: undefined,
 				type: "AWS recommendations",
 			});
 			expect(res).toEqual({
