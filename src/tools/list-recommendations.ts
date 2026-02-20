@@ -4,6 +4,58 @@ import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 import paginationData from "./utils/paginationData";
 
+const SUPPORTED_PROVIDERS = ["aws", "gcp", "azure", "kubernetes", "datadog"] as const;
+
+const PROVIDER_ALIASES: Record<string, (typeof SUPPORTED_PROVIDERS)[number]> = {
+	aws: "aws",
+	amazon: "aws",
+	"amazon web services": "aws",
+	gcp: "gcp",
+	google: "gcp",
+	"google cloud": "gcp",
+	azure: "azure",
+	"microsoft azure": "azure",
+	kubernetes: "kubernetes",
+	k8s: "kubernetes",
+	datadog: "datadog",
+};
+
+const normalizeProvider = (value: unknown) => {
+	if (typeof value !== "string") {
+		return value;
+	}
+
+	const normalized = value.trim().toLowerCase();
+	return PROVIDER_ALIASES[normalized] ?? normalized;
+};
+
+const normalizeRecommendationType = (value: unknown) => {
+	if (typeof value !== "string") {
+		return value;
+	}
+
+	let normalized = value.trim().toLowerCase();
+
+	// Common natural-language suffix that should not be sent as part of the API filter.
+	normalized = normalized.replace(/\brecommendations?\b/g, "").trim();
+	normalized = normalized.replace(/\s*:\s*/g, ":");
+
+	const tokens = normalized.split(/\s+/).filter(Boolean);
+	if (!normalized.includes(":") && tokens.length > 1) {
+		const canonicalProvider = PROVIDER_ALIASES[tokens[0]];
+		if (canonicalProvider && tokens.slice(1).every((token) => /^[a-z0-9_-]+$/.test(token))) {
+			normalized = [canonicalProvider, ...tokens.slice(1)].join(":");
+		} else {
+			const providerToken = tokens.find((token) => PROVIDER_ALIASES[token]);
+			if (providerToken) {
+				normalized = PROVIDER_ALIASES[providerToken];
+			}
+		}
+	}
+
+	return normalized || undefined;
+};
+
 const description = `
 List all cost optimization recommendations available in the Vantage account. Recommendations are AI-powered suggestions that help identify opportunities to reduce costs and optimize cloud spending across your infrastructure.
 
@@ -37,9 +89,11 @@ const args = {
 		.optional()
 		.describe("Filter recommendations to a specific workspace"),
 	provider: z
-		.string()
+		.preprocess(normalizeProvider, z.enum(SUPPORTED_PROVIDERS).optional())
 		.optional()
-		.describe("Filter recommendations by cloud provider (e.g., aws, azure, gcp)"),
+		.describe(
+			"Filter recommendations by cloud provider (aws, gcp, azure, kubernetes, datadog). Aliases like 'Amazon Web Services' and 'Google Cloud' are normalized."
+		),
 	provider_account_id: z
 		.string()
 		.optional()
@@ -51,11 +105,10 @@ const args = {
 			"Filter recommendations by category (e.g., ec2_rightsizing_recommender, unused_financial_commitments). Ignored when type is also provided."
 		),
 	type: z
-		.string()
-		.max(255)
+		.preprocess(normalizeRecommendationType, z.string().max(255).optional())
 		.optional()
 		.describe(
-			"Filter recommendations by type with case-insensitive fuzzy matching (e.g., aws, aws:ec2, aws:ec2:rightsizing). Prefer this for broad queries like 'AWS recommendations'."
+			"Filter recommendations by type with case-insensitive fuzzy matching (e.g., aws, aws:ec2, aws:ec2:rightsizing). Natural language values like 'AWS recommendations' are normalized."
 		),
 	filter: z
 		.enum(["open", "resolved", "dismissed"])
