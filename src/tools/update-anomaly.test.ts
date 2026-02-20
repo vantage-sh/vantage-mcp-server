@@ -32,6 +32,7 @@ const successData: UpdateAnomalyAlertResponse = {
 	feedback: "this stinks",
 	resources: [],
 	cost_report_token: "rprt_123",
+	resource_tokens: [],
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [

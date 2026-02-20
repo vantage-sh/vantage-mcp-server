@@ -39,6 +39,7 @@ const successData: GetIntegrationsResponse = {
 			account_identifier: "123456789012",
 			workspace_tokens: ["wrkspc_123"],
 			created_at: "2023-01-15T10:30:00Z",
+			managed_account_tokens: ["accnt_123", "accnt_456"],
 		},
 		{
 			token: "int_456",
@@ -47,6 +48,7 @@ const successData: GetIntegrationsResponse = {
 			account_identifier: "sub-456",
 			workspace_tokens: ["wrkspc_123"],
 			created_at: "2023-01-15T10:30:00Z",
+			managed_account_tokens: ["accnt_456", "accnt_789"],
 		},
 	],
 	links: {},

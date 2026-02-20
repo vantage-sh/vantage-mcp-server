@@ -66,7 +66,7 @@ const successData: GetResourceResponse = {
 	billing_account_id: "123456789012",
 	region: "us-east-1",
 	created_at: "2023-01-15T10:30:00Z",
-	metadata: "t3.medium",
+	metadata: null,
 };
 
 const executionTests: ExecutionTestTableItem<Validators>[] = [

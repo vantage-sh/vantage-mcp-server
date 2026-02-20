@@ -14,6 +14,7 @@ const success: GetAnomalyAlertResponse = {
 	seven_day_average: "10.0",
 	status: "active",
 	resources: ["resource_123", "resource_456"],
+	resource_tokens: ["resource_123", "resource_456"],
 	cost_report_token: "crt_123",
 };
 
