@@ -108,6 +108,7 @@ const successData = {
 		{
 			token: "rec_123",
 			type: "aws:ec2:rightsizing",
+			category: "ec2_rightsizing_recommender",
 			description: "Rightsize EC2 instances",
 			created_at: "2023-01-01T00:00:00Z",
 			potential_savings: null,
@@ -122,6 +123,7 @@ const successData = {
 		{
 			token: "rec_456",
 			type: "aws:ec2",
+			category: "unused_financial_commitments",
 			description: "Remove unused Reserved Instances",
 			created_at: "2023-01-01T00:00:00Z",
 			potential_savings: null,
@@ -147,6 +149,7 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 					...validArguments,
 					limit: DEFAULT_LIMIT,
 					provider: validArguments.provider as any,
+					type: validArguments.type as string | undefined,
 				},
 				method: "GET",
 				result: {
@@ -178,7 +181,6 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 				endpoint: "/v2/recommendations",
 				params: {
 					page: 1,
-					filter: undefined,
 					provider: undefined,
 					workspace_token: undefined,
 					provider_account_id: undefined,
@@ -213,7 +215,6 @@ const executionTests: ExecutionTestTableItem<Validators>[] = [
 				endpoint: "/v2/recommendations",
 				params: {
 					page: 1,
-					filter: undefined,
 					provider: undefined,
 					workspace_token: undefined,
 					provider_account_id: undefined,
