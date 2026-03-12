@@ -19,6 +19,7 @@ import "./get-provider-resource";
 import "./get-recommendation-details";
 import "./get-recommendation-resource-details";
 import "./get-recommendation-resources";
+import "./get-recommendation-type-resources";
 import "./get-team";
 import "./get-teams";
 import "./get-users";
