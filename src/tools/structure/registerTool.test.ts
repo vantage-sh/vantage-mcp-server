@@ -12,7 +12,11 @@ test("tool registration works properly", () => {
 		args: {
 			example_arg: z.string().describe("An example argument"),
 		},
-		annotations: {},
+		annotations: {
+			readOnly: false,
+			openWorld: false,
+			destructive: true,
+		},
 		async execute() {
 			return { message: "Hello, World!" };
 		},
@@ -46,7 +50,11 @@ describe("mcp server handler", () => {
 			name: "error-tool",
 			description: "A tool that throws an MCPUserError",
 			args: {},
-			annotations: {},
+			annotations: {
+				readOnly: false,
+				openWorld: false,
+				destructive: false,
+			},
 			async execute() {
 				throw new MCPUserError({ hello: "world" });
 			},
@@ -78,7 +86,11 @@ describe("mcp server handler", () => {
 			name: "throw-tool",
 			description: "A tool that throws a generic error",
 			args: {},
-			annotations: {},
+			annotations: {
+				readOnly: false,
+				openWorld: false,
+				destructive: false,
+			},
 			async execute() {
 				throw new Error("Generic error");
 			},
