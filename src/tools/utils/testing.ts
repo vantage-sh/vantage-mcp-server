@@ -146,9 +146,9 @@ export function testTool<Validators extends z.ZodRawShape>(
 		expect(toolHandler[1]).toBe(tool.description);
 		expect(toolHandler[2]).toBe(tool.args);
 		expect(toolHandler[3]).toEqual({
-			readOnlyHint: tool.annotations.readOnly ?? false,
-			openWorldHint: tool.annotations.openWorld ?? false,
-			destructiveHint: tool.annotations.destructive ?? true,
+			readOnlyHint: tool.annotations.readOnly,
+			openWorldHint: tool.annotations.openWorld,
+			destructiveHint: tool.annotations.destructive,
 		});
 		expect(typeof toolHandler[4]).toBe("function");
 	});

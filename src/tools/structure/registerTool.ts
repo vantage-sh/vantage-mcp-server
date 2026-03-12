@@ -25,9 +25,9 @@ export type ToolProperties<Validators extends z.ZodRawShape> = {
 	name: string;
 	description: string;
 	annotations: {
-		readOnly?: boolean;
-		openWorld?: boolean;
-		destructive?: boolean;
+		readOnly: boolean;
+		openWorld: boolean;
+		destructive: boolean;
 	};
 	args: Validators;
 	execute: (
@@ -57,9 +57,9 @@ export default function registerTool<Validators extends z.ZodRawShape>(
 			// and we type the tool anyway, so its not as bad as it could be.
 			toolProps.args as any,
 			{
-				readOnlyHint: toolProps.annotations.readOnly ?? false,
-				openWorldHint: toolProps.annotations.openWorld ?? false,
-				destructiveHint: toolProps.annotations.destructive ?? true,
+				readOnlyHint: toolProps.annotations.readOnly,
+				openWorldHint: toolProps.annotations.openWorld,
+				destructiveHint: toolProps.annotations.destructive,
 			},
 			async (args: any): Promise<CallToolResult> => {
 				try {
