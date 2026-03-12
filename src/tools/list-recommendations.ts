@@ -22,7 +22,7 @@ const PROVIDER_ALIASES: Record<string, (typeof SUPPORTED_PROVIDERS)[number]> = {
 
 const PROVIDER_ALIAS_KEYS = Object.keys(PROVIDER_ALIASES).sort((a, b) => b.length - a.length);
 
-export const RECOMMENDATION_CATEGORY_TO_TYPE_LOOKUP: Record<string, string> = {
+const RECOMMENDATION_CATEGORY_TO_TYPE_LOOKUP: Record<string, string> = {
 	az_compute_reserved_instances: "azure:compute:reserved-instances",
 	az_compute_reserved_instances_app_service: "azure:app-service:reserved-instances",
 	az_compute_reserved_instances_cosmos: "azure:cosmosdb:reserved-instances",
