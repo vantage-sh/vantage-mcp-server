@@ -36,12 +36,12 @@ VQL Representation of Resource Types:
 | AWS | aws_auto_scaling_group | Auto Scaling Group |
 | AWS | aws_cloudtrail | CloudTrail |
 | AWS | aws_cloudwatch_log_group | CloudWatch Log Group |
-| AWS | aws_db_instance | RDS Instance |
-| AWS | aws_db_snapshot | RDS Snapshot |
+| AWS | aws_db_instance | RDS Instance (NOT aws_rds_instance) |
+| AWS | aws_db_snapshot | RDS Snapshot (NOT aws_rds_snapshot) |
 | AWS | aws_docdb_cluster_instance | DocumentDB Cluster Instance |
 | AWS | aws_dynamodb_table | DynamoDB Table |
 | AWS | aws_ebs_volume | EBS Volume |
-| AWS | aws_ec2_instance | EC2 Instance |
+| AWS | aws_instance | EC2 Instance (NOT aws_ec2_instance) |
 | AWS | aws_ec2_managed_prefix_list | EC2 Managed Prefix List |
 | AWS | aws_ec2_reserved_instance | EC2 Reserved Instance |
 | AWS | aws_ecs_service | ECS Service |
@@ -52,7 +52,7 @@ VQL Representation of Resource Types:
 | AWS | aws_elasticsearch_domain | Elasticsearch Domain |
 | AWS | aws_flow_log | Flow Log |
 | AWS | aws_glacier_vault | Glacier Vault |
-| AWS | aws_instance_snapshot | EC2 Instance Snapshot |
+| AWS | aws_instance_snapshot | EC2 Instance Snapshot (NOT aws_ebs_snapshot) |
 | AWS | aws_internet_gateway | Internet Gateway |
 | AWS | aws_kms_key | KMS Key |
 | AWS | aws_lambda_function | Lambda Function |
@@ -70,7 +70,7 @@ VQL Representation of Resource Types:
 Example VQL queries:
 - Multi-provider: (resources.provider IN ('aws', 'gcp'))
 - Regional: (resources.provider = 'aws' AND resources.region = 'us-east-1')
-- Resource type: (resources.provider = 'aws' AND resources.type = 'aws_ec2_instance')
+- Resource type: (resources.provider = 'aws' AND resources.type = 'aws_instance')
 - Metadata: (resources.provider = 'aws' AND resources.metadata->>'architecture' = 'x86_64')
 - Tags: (resources.provider = 'aws' AND tags.name = 'environment' AND tags.value = 'production')
 - Untagged resources: (resources.provider = 'aws' AND tags.name = NULL)
@@ -81,6 +81,21 @@ Use the page parameter starting with 1 for pagination.
 Resources include metadata specific to their type (EC2 instances show instance type, EBS volumes show size, etc.).
 Each resource has a unique token that can be used to get more details or link to the Vantage Web UI.
 `.trim();
+
+// Common LLM hallucinations: Terraform-style names instead of correct VQL types
+const RESOURCE_TYPE_CORRECTIONS: Record<string, string> = {
+	aws_ec2_instance: "aws_instance",
+	aws_rds_instance: "aws_db_instance",
+	aws_rds_snapshot: "aws_db_snapshot",
+	aws_ebs_snapshot: "aws_instance_snapshot",
+};
+
+function correctResourceTypes(filter: string): string {
+	for (const [wrong, correct] of Object.entries(RESOURCE_TYPE_CORRECTIONS)) {
+		filter = filter.replaceAll(wrong, correct);
+	}
+	return filter;
+}
 
 export default registerTool({
 	name: "list-provider-resources",
@@ -111,6 +126,9 @@ export default registerTool({
 			.describe("Include cost information broken down by category for each resource"),
 	},
 	async execute(args, ctx) {
+		if (args.filter) {
+			args.filter = correctResourceTypes(args.filter);
+		}
 		const response = await ctx.callVantageApi("/v2/resources", args, "GET");
 		if (!response.ok) {
 			throw new MCPUserError({ errors: response.errors });
