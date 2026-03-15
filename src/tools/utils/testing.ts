@@ -63,7 +63,7 @@ export function makeTestHandlerContext<
 	) => Promise<
 		Output extends undefined
 			? Record<string, unknown>
-			: z.core.$InferObjectInput<{ -readonly [P in keyof Output]: Output[P] }, {}>
+			: z.core.$InferObjectOutput<{ -readonly [P in keyof Output]: Output[P] }, {}>
 	>,
 	apiCallHandler?: ExecutionTestTableItem<Input, Output>["apiCallHandler"]
 ) {
@@ -228,7 +228,7 @@ export function testTool<Input extends z.ZodRawShape, Output extends z.ZodRawSha
 			it(testCase.name, async () => {
 				const context = makeTestHandlerContext(
 					tool.args,
-					tool.outputSchema,
+					tool.outputSchema as Output,
 					tool.execute,
 					testCase.apiCallHandler
 				);
