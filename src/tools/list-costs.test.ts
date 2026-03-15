@@ -5,6 +5,7 @@ import { DEFAULT_LIMIT } from "./structure/constants";
 import {
 	dateValidatorPoisoner,
 	type ExecutionTestTableItem,
+	type ExtractOutputSchema,
 	type ExtractValidators,
 	type InferValidators,
 	poisonOneValue,
@@ -14,6 +15,7 @@ import {
 } from "./utils/testing";
 
 type Validators = ExtractValidators<typeof tool>;
+type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const DEFAULT_GROUPINGS = ["provider", "service", "account_id"];
 const DEFAULT_SETTINGS_API = {
@@ -103,7 +105,7 @@ const successData: GetCostsResponse = {
 	links: {},
 };
 
-const executionTests: ExecutionTestTableItem<Validators>[] = [
+const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 	{
 		name: "successful call with month date_bin",
 		apiCallHandler: requestsInOrder([

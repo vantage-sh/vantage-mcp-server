@@ -3,6 +3,7 @@ import { expect } from "vitest";
 import tool from "./get-provider-resource";
 import {
 	type ExecutionTestTableItem,
+	type ExtractOutputSchema,
 	type ExtractValidators,
 	type InferValidators,
 	requestsInOrder,
@@ -11,6 +12,7 @@ import {
 } from "./utils/testing";
 
 type Validators = ExtractValidators<typeof tool>;
+type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
 	resource_token: "prvdr_rsrc_123",
@@ -69,7 +71,7 @@ const successData: GetResourceResponse = {
 	metadata: null,
 };
 
-const executionTests: ExecutionTestTableItem<Validators>[] = [
+const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 	// Success cases
 
 	{

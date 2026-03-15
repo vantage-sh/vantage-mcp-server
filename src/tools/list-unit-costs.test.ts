@@ -4,6 +4,7 @@ import tool from "./list-unit-costs";
 import {
 	dateValidatorPoisoner,
 	type ExecutionTestTableItem,
+	type ExtractOutputSchema,
 	type ExtractValidators,
 	type InferValidators,
 	poisonOneValue,
@@ -13,6 +14,7 @@ import {
 } from "./utils/testing";
 
 type Validators = ExtractValidators<typeof tool>;
+type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
 	cost_report_token: "crt_123",
@@ -80,7 +82,7 @@ const successData: GetUnitCostsResponse = {
 	links: {},
 };
 
-const executionTests: ExecutionTestTableItem<Validators>[] = [
+const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 	{
 		name: "successful call with all arguments",
 		apiCallHandler: requestsInOrder([

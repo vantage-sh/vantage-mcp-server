@@ -3,6 +3,7 @@ import tool from "./create-dashboard";
 import {
 	dateValidatorPoisoner,
 	type ExecutionTestTableItem,
+	type ExtractOutputSchema,
 	type ExtractValidators,
 	type InferValidators,
 	poisonOneValue,
@@ -12,6 +13,7 @@ import {
 } from "./utils/testing";
 
 type Validators = ExtractValidators<typeof tool>;
+type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const undefineds = {
 	widgets: undefined,
@@ -92,7 +94,7 @@ const successData = {
 	updated_at: "2023-01-15T10:30:00Z",
 };
 
-const executionTests: ExecutionTestTableItem<Validators>[] = [
+const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 	{
 		name: "successful call",
 		apiCallHandler: requestsInOrder([

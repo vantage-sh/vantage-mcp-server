@@ -4,6 +4,7 @@ import tool from "./list-cost-alerts";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import {
 	type ExecutionTestTableItem,
+	type ExtractOutputSchema,
 	type ExtractValidators,
 	type InferValidators,
 	requestsInOrder,
@@ -12,6 +13,7 @@ import {
 } from "./utils/testing";
 
 type Validators = ExtractValidators<typeof tool>;
+type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
 	page: 1,
@@ -53,7 +55,7 @@ const successData: GetCostAlertsResponse = {
 	links: {},
 };
 
-const executionTests: ExecutionTestTableItem<Validators>[] = [
+const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 	{
 		name: "successful call",
 		apiCallHandler: requestsInOrder([

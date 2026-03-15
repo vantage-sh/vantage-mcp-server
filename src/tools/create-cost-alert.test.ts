@@ -2,6 +2,7 @@ import { expect } from "vitest";
 import tool from "./create-cost-alert";
 import {
 	type ExecutionTestTableItem,
+	type ExtractOutputSchema,
 	type ExtractValidators,
 	type InferValidators,
 	requestsInOrder,
@@ -10,6 +11,8 @@ import {
 } from "./utils/testing";
 
 type Validators = ExtractValidators<typeof tool>;
+
+type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const undefineds = {
 	email_recipients: undefined,
@@ -157,7 +160,7 @@ const successData = {
 	minimum_threshold: 50,
 };
 
-const executionTests: ExecutionTestTableItem<Validators>[] = [
+const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 	{
 		name: "successful call",
 		apiCallHandler: requestsInOrder([
