@@ -228,13 +228,12 @@ export function testTool<Input extends z.ZodRawShape, Output extends z.ZodRawSha
 			it(testCase.name, async () => {
 				const context = makeTestHandlerContext(
 					tool.args,
-					tool.outputSchema,
+					tool.outputSchema as Output,
 					tool.execute,
 					testCase.apiCallHandler
-				);
+				) as TestHandlerContext<Input, Output>;
 
-				// any is used here because we're handling 2 cases in this function.
-				await testCase.handler(context as any);
+				await testCase.handler(context);
 			});
 		}
 	});
