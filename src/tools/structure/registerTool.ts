@@ -41,7 +41,7 @@ export type ToolProperties<
 	) => Promise<
 		Output extends undefined
 			? Record<string, unknown>
-			: z.core.$InferObjectOutput<{ -readonly [P in keyof Output]: Output[P] }, {}>
+			: z.core.$InferObjectInput<{ -readonly [P in keyof Output]: Output[P] }, {}>
 	>;
 };
 
