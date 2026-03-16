@@ -16,6 +16,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Fetch automated-bump branch if it exists
+        run: git fetch origin automated-bump:automated-bump || true
+
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
