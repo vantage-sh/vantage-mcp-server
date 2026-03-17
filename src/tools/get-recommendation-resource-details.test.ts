@@ -3,6 +3,7 @@ import { expect } from "vitest";
 import tool from "./get-recommendation-resource-details";
 import {
 	type ExecutionTestTableItem,
+	type ExtractOutputSchema,
 	type ExtractValidators,
 	type InferValidators,
 	requestsInOrder,
@@ -11,6 +12,7 @@ import {
 } from "./utils/testing";
 
 type Validators = ExtractValidators<typeof tool>;
+type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
 	recommendation_token: "rec_123",
@@ -46,7 +48,7 @@ const successData = {
 	token: "res_456",
 };
 
-const executionTests: ExecutionTestTableItem<Validators>[] = [
+const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 	{
 		name: "successful call",
 		apiCallHandler: requestsInOrder([

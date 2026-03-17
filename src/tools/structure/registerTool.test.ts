@@ -25,20 +25,22 @@ test("tool registration works properly", () => {
 	expect(res).toBe(tool);
 
 	const mockServer = {
-		tool: vi.fn(),
+		registerTool: vi.fn(),
 	} as any;
 
 	const generateContext = vi.fn();
 
 	setupRegisteredTools(mockServer, generateContext);
-	expect(mockServer.tool).toHaveBeenCalledWith(
+	expect(mockServer.registerTool).toHaveBeenCalledWith(
 		tool.name,
-		tool.description,
-		tool.args,
 		expect.objectContaining({
-			readOnlyHint: false,
-			openWorldHint: false,
-			destructiveHint: true,
+			description: tool.description,
+			inputSchema: tool.args,
+			annotations: {
+				readOnlyHint: false,
+				openWorldHint: false,
+				destructiveHint: true,
+			},
 		}),
 		expect.any(Function)
 	);
@@ -60,14 +62,14 @@ describe("mcp server handler", () => {
 			},
 		});
 		const mockServer = {
-			tool: vi.fn(),
+			registerTool: vi.fn(),
 		} as any;
 		const generateContext = vi.fn();
 		setupRegisteredTools(mockServer, generateContext);
 
-		const toolHandler = (mockServer.tool as any).mock.calls.find(
+		const toolHandler = (mockServer.registerTool as any).mock.calls.find(
 			(call: any) => call[0] === "error-tool"
-		)[4];
+		)[2];
 
 		const result = await toolHandler({});
 		expect(result).toEqual({
@@ -96,14 +98,14 @@ describe("mcp server handler", () => {
 			},
 		});
 		const mockServer = {
-			tool: vi.fn(),
+			registerTool: vi.fn(),
 		} as any;
 		const generateContext = vi.fn();
 		setupRegisteredTools(mockServer, generateContext);
 
-		const toolHandler = (mockServer.tool as any).mock.calls.find(
+		const toolHandler = (mockServer.registerTool as any).mock.calls.find(
 			(call: any) => call[0] === "throw-tool"
-		)[4];
+		)[2];
 
 		await expect(toolHandler({})).rejects.toThrow("Generic error");
 	});
@@ -127,22 +129,22 @@ describe("mcp server handler", () => {
 			},
 		});
 		const mockServer = {
-			tool: vi.fn(),
+			registerTool: vi.fn(),
 		} as any;
 		const generateContext = vi.fn(() => context);
 		setupRegisteredTools(mockServer, generateContext);
 
-		const toolRaw = (mockServer.tool as any).mock.calls.find(
+		const toolRaw = (mockServer.registerTool as any).mock.calls.find(
 			(call: any) => call[0] === "arg-tool"
 		);
-		const annotations = toolRaw[3];
+		const annotations = toolRaw[1].annotations;
 		expect(annotations).toEqual({
 			readOnlyHint: true,
 			openWorldHint: true,
 			destructiveHint: true,
 		});
 
-		const toolHandler = toolRaw[4];
+		const toolHandler = toolRaw[2];
 		const result = await toolHandler(args);
 		expect(result).toEqual({
 			content: [
@@ -155,4 +157,60 @@ describe("mcp server handler", () => {
 		});
 		expect(generateContext).toHaveBeenCalledOnce();
 	});
+});
+
+test("tool output schema is typed and loaded properly", () => {
+	// @ts-expect-error: This should error because execute does not satisfy outputSchema.
+	registerTool({
+		name: "invalid-output-tool",
+		description: "A tool that returns an invalid output",
+		args: {
+			example_arg: z.string().describe("An example argument"),
+		},
+		outputSchema: {
+			example_output: z.string().describe("An example output"),
+		},
+		annotations: {
+			readOnly: false,
+			openWorld: false,
+			destructive: false,
+		},
+		async execute(receivedArgs) {
+			return receivedArgs;
+		},
+	});
+
+	clearRegisteredToolsForTesting();
+
+	const outputSchema = {
+		example_output: z.string().describe("An example output"),
+	};
+	registerTool({
+		name: "valid-output-tool",
+		description: "A tool that returns a valid output",
+		args: {
+			example_arg: z.string().describe("An example argument"),
+		},
+		outputSchema,
+		annotations: {
+			readOnly: false,
+			openWorld: false,
+			destructive: false,
+		},
+		async execute() {
+			return { example_output: "Hello, World!" };
+		},
+	});
+	const mockServer = {
+		registerTool: vi.fn(),
+	} as any;
+	const generateContext = vi.fn();
+	setupRegisteredTools(mockServer, generateContext);
+
+	const toolRaw = (mockServer.registerTool as any).mock.calls.find(
+		(call: any) => call[0] === "valid-output-tool"
+	);
+	const outputSchemaFromTool = toolRaw[1].outputSchema;
+	expect(outputSchemaFromTool).toBeDefined();
+	expect(outputSchemaFromTool).toBe(outputSchema);
 });

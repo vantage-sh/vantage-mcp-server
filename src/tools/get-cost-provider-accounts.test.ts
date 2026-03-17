@@ -3,6 +3,7 @@ import { expect } from "vitest";
 import tool from "./get-cost-provider-accounts";
 import {
 	type ExecutionTestTableItem,
+	type ExtractOutputSchema,
 	type ExtractValidators,
 	requestsInOrder,
 	type SchemaTestTableItem,
@@ -10,6 +11,7 @@ import {
 } from "./utils/testing";
 
 type Validators = ExtractValidators<typeof tool>;
+type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	{
@@ -63,7 +65,7 @@ const successData: GetCostProviderAccountsResponse = {
 	],
 };
 
-const executionTests: ExecutionTestTableItem<Validators>[] = [
+const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 	// Success cases
 
 	{

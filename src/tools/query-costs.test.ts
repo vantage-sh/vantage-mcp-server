@@ -4,6 +4,7 @@ import tool from "./query-costs";
 import {
 	dateValidatorPoisoner,
 	type ExecutionTestTableItem,
+	type ExtractOutputSchema,
 	type ExtractValidators,
 	poisonOneValue,
 	requestsInOrder,
@@ -12,6 +13,7 @@ import {
 } from "./utils/testing";
 
 type Validators = ExtractValidators<typeof tool>;
+type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 // Note: groupings becomes a string after transformation
 const validInputArguments = {
@@ -117,7 +119,7 @@ const successData: GetCostsResponse = {
 	links: {},
 };
 
-const executionTests: ExecutionTestTableItem<Validators>[] = [
+const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 	{
 		name: "successful call with minimal arguments",
 		apiCallHandler: requestsInOrder([

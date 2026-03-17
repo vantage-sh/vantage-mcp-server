@@ -3,6 +3,7 @@ import tool from "./create-virtual-tag-config";
 import {
 	dateValidatorPoisoner,
 	type ExecutionTestTableItem,
+	type ExtractOutputSchema,
 	type ExtractValidators,
 	type InferValidators,
 	poisonOneValue,
@@ -12,6 +13,7 @@ import {
 } from "./utils/testing";
 
 type Validators = ExtractValidators<typeof tool>;
+type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const undefineds = {
 	backfill_until: undefined,
@@ -87,7 +89,7 @@ const successData = {
 	values: [],
 };
 
-const executionTests: ExecutionTestTableItem<Validators>[] = [
+const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 	{
 		name: "successful call",
 		apiCallHandler: requestsInOrder([

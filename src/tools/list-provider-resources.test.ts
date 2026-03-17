@@ -3,6 +3,7 @@ import { expect } from "vitest";
 import tool from "./list-provider-resources";
 import {
 	type ExecutionTestTableItem,
+	type ExtractOutputSchema,
 	type ExtractValidators,
 	type InferValidators,
 	requestsInOrder,
@@ -11,6 +12,7 @@ import {
 } from "./utils/testing";
 
 type Validators = ExtractValidators<typeof tool>;
+type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
 	page: 1,
@@ -97,7 +99,7 @@ const successData: GetReportResourcesResponse = {
 	links: {},
 };
 
-const executionTests: ExecutionTestTableItem<Validators>[] = [
+const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 	{
 		name: "successful call",
 		apiCallHandler: requestsInOrder([

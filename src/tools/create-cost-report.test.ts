@@ -3,6 +3,7 @@ import tool from "./create-cost-report";
 import {
 	dateValidatorPoisoner,
 	type ExecutionTestTableItem,
+	type ExtractOutputSchema,
 	type ExtractValidators,
 	poisonOneValue,
 	requestsInOrder,
@@ -11,6 +12,8 @@ import {
 } from "./utils/testing";
 
 type Validators = ExtractValidators<typeof tool>;
+
+type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const undefineds = {
 	workspace_token: undefined,
@@ -291,7 +294,7 @@ const minSuccess = {
 	workspace_token: "wt_123",
 };
 
-const executionTests: ExecutionTestTableItem<Validators>[] = [
+const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 	{
 		name: "successful call",
 		apiCallHandler: requestsInOrder([

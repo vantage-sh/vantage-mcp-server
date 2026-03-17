@@ -3,6 +3,7 @@ import { expect } from "vitest";
 import tool from "./get-recommendation-details";
 import {
 	type ExecutionTestTableItem,
+	type ExtractOutputSchema,
 	type ExtractValidators,
 	requestsInOrder,
 	type SchemaTestTableItem,
@@ -10,6 +11,7 @@ import {
 } from "./utils/testing";
 
 type Validators = ExtractValidators<typeof tool>;
+type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	{
@@ -41,7 +43,7 @@ const successData: GetRecommendationResponse = {
 	type: "suggestion",
 };
 
-const executionTests: ExecutionTestTableItem<Validators>[] = [
+const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 	{
 		name: "successful call",
 		apiCallHandler: requestsInOrder([

@@ -2,6 +2,7 @@ import { expect } from "vitest";
 import tool from "./create-folder";
 import {
 	type ExecutionTestTableItem,
+	type ExtractOutputSchema,
 	type ExtractValidators,
 	type InferValidators,
 	requestsInOrder,
@@ -10,6 +11,7 @@ import {
 } from "./utils/testing";
 
 type Validators = ExtractValidators<typeof tool>;
+type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const undefineds = {
 	parent_folder_token: undefined,
@@ -58,7 +60,7 @@ const successData = {
 	updated_at: "2024-01-01T00:00:00Z",
 };
 
-const executionTests: ExecutionTestTableItem<Validators>[] = [
+const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 	{
 		name: "successful call",
 		apiCallHandler: requestsInOrder([

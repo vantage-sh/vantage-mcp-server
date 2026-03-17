@@ -5,6 +5,7 @@ import { DEFAULT_LIMIT } from "./structure/constants";
 import {
 	dateValidatorPoisoner,
 	type ExecutionTestTableItem,
+	type ExtractOutputSchema,
 	type ExtractValidators,
 	type InferValidators,
 	poisonOneValue,
@@ -14,6 +15,7 @@ import {
 } from "./utils/testing";
 
 type Validators = ExtractValidators<typeof tool>;
+type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
 	cost_report_token: "crt_123",
@@ -33,7 +35,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	poisonOneValue(validArguments, "end_date", dateValidatorPoisoner),
 ];
 
-const executionTests: ExecutionTestTableItem<Validators>[] = [
+const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 	// Success cases
 
 	{
