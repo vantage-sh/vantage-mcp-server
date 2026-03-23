@@ -13,6 +13,7 @@ async function main() {
 	}
 
 	const ctx: ToolCallContext = {
+		env: {},
 		callVantageApi: async (endpoint, params, method) => {
 			const headers: Record<string, string> = {
 				Authorization: `Bearer ${process.env.VANTAGE_TOKEN}`,

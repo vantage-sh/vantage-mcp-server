@@ -52,6 +52,7 @@ if (!versionTagExists) {
 // Make a MCP server for the current branch
 const mainServer = new McpServer(serverMeta);
 setupRegisteredTools(mainServer, () => ({
+	env: {},
 	callVantageApi() {
 		return Promise.reject(new Error("Not implemented"));
 	},
@@ -69,6 +70,7 @@ import { serverMeta } from "../src/shared";
 
 const server = new McpServer(serverMeta);
 setupRegisteredTools(server, () => ({
+    env: {},
     callVantageApi() {
         return Promise.reject(new Error("Not implemented"));
     }

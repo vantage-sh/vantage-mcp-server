@@ -67,6 +67,15 @@ export interface RequiredEnv {
 	SELF_CALLBACK_URL: string;
 	SENTRY_DSN: string;
 	CF_VERSION_METADATA: { id: string };
+	// Optional OTEL tracing — empty strings when unconfigured
+	OTEL_EXPORTER_OTLP_ENDPOINT?: string;
+	OTEL_EXPORTER_OTLP_TRACES_ENDPOINT?: string;
+	OTEL_EXPORTER_OTLP_HEADERS?: string;
+	OTEL_RESOURCE_ATTRIBUTES?: string;
+	OTEL_SERVICE_NAME?: string;
+	OTEL_TRACES_SAMPLE_RATE?: string;
+	SENTRY_RELEASE?: string;
+	ENVIRONMENT?: string;
 }
 
 /**

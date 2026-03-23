@@ -22,7 +22,6 @@ import homepage from "./homepage";
 import setupRegisteredResources from "./resources";
 import { callApi, serverMeta } from "./shared";
 import { setupRegisteredTools } from "./tools/structure/registerTool";
-
 // Side effect import to register all tools
 import "./tools";
 
@@ -88,12 +87,16 @@ export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> 
 			headers,
 			params,
 			method,
-			endpoint
+			endpoint,
+			this.env
 		);
 	}
 
 	async init() {
-		setupRegisteredTools(this.server, () => this);
+		setupRegisteredTools(this.server, () => ({
+			env: this.env,
+			callVantageApi: this.callVantageApi.bind(this),
+		}));
 		setupRegisteredResources(this.server);
 	}
 }
@@ -148,37 +151,39 @@ function createMcpServer(request: Request, sse: boolean): HeaderAuthProvider | O
 	}
 }
 
-export default {
-	async fetch(request: Request, env: RequiredEnv, ctx: ExecutionContext) {
-		const sse = new URL(request.url).pathname.startsWith("/sse");
-		if (env.VANTAGE_MCP_TOKEN) {
-			// Direct token mode - bypass OAuth and serve MCP directly
-			// Can be used for easy local development or for MCP clients without
-			// OAuth support or the ability to pass headers.
-			if (sse) {
-				return VantageMCP.mount("/sse").fetch(request, env, ctx);
-			}
-			return VantageMCP.serve("/mcp").fetch(request, env, ctx);
+async function handleFetch(request: Request, env: RequiredEnv, ctx: ExecutionContext) {
+	const sse = new URL(request.url).pathname.startsWith("/sse");
+	if (env.VANTAGE_MCP_TOKEN) {
+		// Direct token mode - bypass OAuth and serve MCP directly
+		// Can be used for easy local development or for MCP clients without
+		// OAuth support or the ability to pass headers.
+		if (sse) {
+			return VantageMCP.mount("/sse").fetch(request, env, ctx);
 		}
+		return VantageMCP.serve("/mcp").fetch(request, env, ctx);
+	}
 
-		const mcpServer = createMcpServer(request, sse);
+	const mcpServer = createMcpServer(request, sse);
 
-		const sentryHandler = Sentry.withSentry((env: RequiredEnv) => {
-			const { id: versionId } = env.CF_VERSION_METADATA;
-			return {
-				dsn: env.SENTRY_DSN,
-				release: versionId,
-				// Adds request headers and IP for users, for more info visit:
-				// https://docs.sentry.io/platforms/javascript/guides/cloudflare/configuration/options/#sendDefaultPii
-				sendDefaultPii: true,
+	const sentryHandler = Sentry.withSentry((env: RequiredEnv) => {
+		const { id: versionId } = env.CF_VERSION_METADATA;
+		return {
+			dsn: env.SENTRY_DSN,
+			release: versionId,
+			// Adds request headers and IP for users, for more info visit:
+			// https://docs.sentry.io/platforms/javascript/guides/cloudflare/configuration/options/#sendDefaultPii
+			sendDefaultPii: true,
 
-				// Set tracesSampleRate to 1.0 to capture 100% of spans for tracing.
-				// Learn more at
-				// https://docs.sentry.io/platforms/javascript/configuration/options/#traces-sample-rate
-				tracesSampleRate: 1.0,
-			};
-		}, mcpServer);
+			// Set tracesSampleRate to 1.0 to capture 100% of spans for tracing.
+			// Learn more at
+			// https://docs.sentry.io/platforms/javascript/configuration/options/#traces-sample-rate
+			tracesSampleRate: 1.0,
+		};
+	}, mcpServer);
 
-		return sentryHandler.fetch!(request as any, env, ctx);
-	},
+	return sentryHandler.fetch!(request as any, env, ctx);
+}
+
+export default {
+	fetch: handleFetch,
 };

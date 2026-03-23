@@ -67,7 +67,8 @@ export function makeTestHandlerContext<
 	>,
 	apiCallHandler?: ExecutionTestTableItem<Input, Output>["apiCallHandler"]
 ) {
-	const mcpFunctionContext = {
+	const mcpFunctionContext: ToolCallContext = {
+		env: {},
 		callVantageApi:
 			apiCallHandler ||
 			(async () => {

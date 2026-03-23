@@ -27,6 +27,10 @@
 		"AUTH0_CLIENT_SECRET": "local-dummy",
 		"AUTH0_DOMAIN": "local-dummy",
 		"AUTH0_AUDIENCE": "local-dummy"
+
+		// Optional: OTLP tracing — sends spans to an OTLP-compatible backend (e.g. Datadog)
+		// "OTEL_EXPORTER_OTLP_TRACES_ENDPOINT": "https://otlp-http-intake.logs.datadoghq.com/api/v2/otlp/v1/traces",
+		// "OTEL_EXPORTER_OTLP_HEADERS": "dd-api-key=<YOUR_DD_API_KEY>"
 	},
 	"kv_namespaces": [
 		{

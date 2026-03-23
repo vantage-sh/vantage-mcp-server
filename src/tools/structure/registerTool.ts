@@ -6,9 +6,12 @@ import type {
 	SupportedMethods,
 } from "@vantage-sh/vantage-client";
 import type z from "zod/v4";
+import { tracer } from "../../tracer";
+import type { OtelEnv } from "../../tracing";
 import MCPUserError from "./MCPUserError";
 
 export type ToolCallContext = {
+	env: OtelEnv;
 	callVantageApi: <
 		P extends Path,
 		M extends SupportedMethods<P>,
@@ -82,41 +85,60 @@ export default function registerTool<
 			},
 
 			// We use any here to handle the ambiguity of the output schema.
-			async (args: any): Promise<any> => {
-				try {
-					const res = await toolProps.execute(args, generateContext());
+			async (args: any, extra: any): Promise<any> => {
+				const ctx = generateContext();
+				const headers = extra?.requestInfo?.headers as Record<string, string> | undefined;
+				const parent = headers ? tracer.extractTraceContext(headers) : undefined;
+				const source = headers?.["x-trace-source"];
 
-					if (toolProps.outputSchema) {
-						// Since there's an output schema, we should return structured content.
-						return {
-							structuredContent: res,
-						};
-					}
+				return tracer.runWithSpan(
+					`tool/${toolProps.name}`,
+					{
+						env: ctx.env,
+						kind: "server",
+						parent,
+						attributes: {
+							"mcp.tool.name": toolProps.name,
+							...(source ? { source } : {}),
+						},
+					},
+					async () => {
+						try {
+							const res = await toolProps.execute(args, ctx);
 
-					// There's no output schema, so we should return text content.
-					return {
-						content: [
-							{
-								type: "text",
-								text: JSON.stringify(res, null, 2),
-							},
-						],
-						isError: false,
-					};
-				} catch (e) {
-					if (e instanceof MCPUserError) {
-						return {
-							content: [
-								{
-									type: "text",
-									text: JSON.stringify(e.exception, null, 2),
-								},
-							],
-							isError: true,
-						};
+							if (toolProps.outputSchema) {
+								// Since there's an output schema, we should return structured content.
+								return {
+									structuredContent: res,
+								};
+							}
+
+							// There's no output schema, so we should return text content.
+							return {
+								content: [
+									{
+										type: "text",
+										text: JSON.stringify(res, null, 2),
+									},
+								],
+								isError: false,
+							};
+						} catch (e) {
+							if (e instanceof MCPUserError) {
+								return {
+									content: [
+										{
+											type: "text",
+											text: JSON.stringify(e.exception, null, 2),
+										},
+									],
+									isError: true,
+								};
+							}
+							throw e;
+						}
 					}
-					throw e;
-				}
+				);
 			}
 		);
 	};

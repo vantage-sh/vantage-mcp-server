@@ -46,6 +46,8 @@ test("tool registration works properly", () => {
 	);
 });
 
+const mockContext = { env: {}, callVantageApi: vi.fn() };
+
 describe("mcp server handler", () => {
 	it("passes through MCPUserError correctly", async () => {
 		registerTool({
@@ -64,7 +66,7 @@ describe("mcp server handler", () => {
 		const mockServer = {
 			registerTool: vi.fn(),
 		} as any;
-		const generateContext = vi.fn();
+		const generateContext = vi.fn(() => mockContext);
 		setupRegisteredTools(mockServer, generateContext);
 
 		const toolHandler = (mockServer.registerTool as any).mock.calls.find(
@@ -100,7 +102,7 @@ describe("mcp server handler", () => {
 		const mockServer = {
 			registerTool: vi.fn(),
 		} as any;
-		const generateContext = vi.fn();
+		const generateContext = vi.fn(() => mockContext);
 		setupRegisteredTools(mockServer, generateContext);
 
 		const toolHandler = (mockServer.registerTool as any).mock.calls.find(

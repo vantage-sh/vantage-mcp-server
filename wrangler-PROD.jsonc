@@ -33,6 +33,10 @@
 		"AUTH0_SCOPE": "openid offline_access email",
 		"VANTAGE_MCP_TOKEN": "",
 		"VANTAGE_API_HOST": "https://api.vantage.sh"
+
+		// Optional: OTLP tracing — configure via wrangler secrets or Cloudflare dashboard
+		// "OTEL_EXPORTER_OTLP_TRACES_ENDPOINT": "https://otlp-http-intake.logs.datadoghq.com/api/v2/otlp/v1/traces",
+		// "OTEL_EXPORTER_OTLP_HEADERS": "dd-api-key=<YOUR_DD_API_KEY>"
 	},
 	"kv_namespaces": [
 		{
