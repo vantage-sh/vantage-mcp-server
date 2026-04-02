@@ -1,18 +1,12 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod/v4";
-import MCPUserError from "./structure/MCPUserError";
-import registerTool from "./structure/registerTool";
-import dateValidator from "./utils/dateValidator";
+import MCPUserError from "../structure/MCPUserError";
+import registerTool from "../structure/registerTool";
+import { budgetPeriod } from "./schemas";
 
 const description = `
 Updates an existing Budget. You can update the name, linked Cost Report, child Budget tokens for hierarchical budgets, or budget periods.
 `.trim();
-
-const period = z.object({
-	start_at: dateValidator("The start date of the period."),
-	end_at: dateValidator("The end date of the period.").optional(),
-	amount: z.number().min(0).describe("The amount of the period."),
-});
 
 export default registerTool({
 	name: "update-budget",
@@ -34,7 +28,7 @@ export default registerTool({
 			.optional()
 			.describe("The updated tokens of child Budgets for a hierarchical Budget."),
 		periods: z
-			.array(period)
+			.array(budgetPeriod)
 			.optional()
 			.describe(
 				"The updated periods for the Budget. The start_at and end_at must be iso8601 formatted e.g. YYYY-MM-DD. Ignored for hierarchical Budgets."

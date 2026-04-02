@@ -1,16 +1,14 @@
 // This file is auto-generated. Do not edit directly. Run npm run generate-tools-index to update.
 
-import "./create-budget";
+import "./budgets";
 import "./create-cost-alert";
 import "./create-cost-report";
 import "./create-dashboard";
 import "./create-folder";
 import "./create-virtual-tag-config";
-import "./delete-budget";
 import "./delete-cost-report";
 import "./delete-folder";
 import "./get-anomaly";
-import "./get-budget";
 import "./get-cost-alert";
 import "./get-cost-provider-accounts";
 import "./get-cost-report-forecast";
@@ -26,7 +24,6 @@ import "./get-teams";
 import "./get-users";
 import "./list-anomalies";
 import "./list-audit-logs";
-import "./list-budgets";
 import "./list-cost-alerts";
 import "./list-cost-integrations";
 import "./list-cost-providers";
@@ -43,5 +40,4 @@ import "./list-unit-costs";
 import "./query-costs";
 import "./submit-user-feedback";
 import "./update-anomaly";
-import "./update-budget";
 import "./update-folder";
