@@ -29,9 +29,12 @@ if [ "$CLIENT" = "codex" ]; then
     --env "VANTAGE_API_HOST=$VANTAGE_API_HOST" \
     -- npx tsx "$REPO_DIR/src/local.ts"
 
-  codex || true
+  trap "codex mcp remove '$SERVER_KEY'" EXIT
+
+  codex; CODEX_EXIT=$?
 
   codex mcp remove "$SERVER_KEY"
+  exit $CODEX_EXIT
 elif [ "$CLIENT" = "claude" ]; then
   claude --mcp-config "{\"mcpServers\":{\"$SERVER_KEY\":{\"command\":\"npx\",\"args\":[\"tsx\",\"$REPO_DIR/src/local.ts\"],\"env\":{\"VANTAGE_TOKEN\":\"$VANTAGE_TOKEN\",\"VANTAGE_API_HOST\":\"$VANTAGE_API_HOST\"}}}}"
 else
