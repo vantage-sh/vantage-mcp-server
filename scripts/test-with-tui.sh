@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 SERVER_KEY="vantage-local"
 CLIENT="claude"
 
