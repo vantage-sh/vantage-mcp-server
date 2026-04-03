@@ -12,6 +12,7 @@ import "./get-anomaly";
 import "./get-cost-alert";
 import "./get-cost-provider-accounts";
 import "./get-cost-report-forecast";
+import "./get-cost-report-graph";
 import "./get-cost-report";
 import "./get-folder";
 import "./get-myself";
