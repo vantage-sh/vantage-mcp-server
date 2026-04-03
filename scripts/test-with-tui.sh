@@ -31,10 +31,9 @@ if [ "$CLIENT" = "codex" ]; then
 
   trap "codex mcp remove '$SERVER_KEY'" EXIT
 
-  codex; CODEX_EXIT=$?
+  codex || CODEX_EXIT=$?
 
-  codex mcp remove "$SERVER_KEY"
-  exit $CODEX_EXIT
+  exit ${CODEX_EXIT:-0}
 elif [ "$CLIENT" = "claude" ]; then
   claude --mcp-config "{\"mcpServers\":{\"$SERVER_KEY\":{\"command\":\"npx\",\"args\":[\"tsx\",\"$REPO_DIR/src/local.ts\"],\"env\":{\"VANTAGE_TOKEN\":\"$VANTAGE_TOKEN\",\"VANTAGE_API_HOST\":\"$VANTAGE_API_HOST\"}}}}"
 else
