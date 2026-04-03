@@ -1,6 +1,6 @@
 // This file is auto-generated. Do not edit directly. Run npm run generate-tools-index to update.
 
-import "./create-budget";
+import "./budgets";
 import "./create-cost-alert";
 import "./create-cost-report";
 import "./create-dashboard";
@@ -24,7 +24,6 @@ import "./get-teams";
 import "./get-users";
 import "./list-anomalies";
 import "./list-audit-logs";
-import "./list-budgets";
 import "./list-cost-alerts";
 import "./list-cost-integrations";
 import "./list-cost-providers";

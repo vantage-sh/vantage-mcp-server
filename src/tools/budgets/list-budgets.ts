@@ -1,8 +1,8 @@
 import z from "zod/v4";
-import { DEFAULT_LIMIT } from "./structure/constants";
-import MCPUserError from "./structure/MCPUserError";
-import registerTool from "./structure/registerTool";
-import paginationData from "./utils/paginationData";
+import { DEFAULT_LIMIT } from "../structure/constants";
+import MCPUserError from "../structure/MCPUserError";
+import registerTool from "../structure/registerTool";
+import paginationData from "../utils/paginationData";
 
 const description = `
 List all budgets available in the Vantage account. Budgets help track spending against predefined limits.

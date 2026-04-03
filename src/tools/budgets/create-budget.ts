@@ -1,18 +1,12 @@
 import z from "zod/v4";
-import MCPUserError from "./structure/MCPUserError";
-import registerTool from "./structure/registerTool";
-import dateValidator from "./utils/dateValidator";
+import MCPUserError from "../structure/MCPUserError";
+import registerTool from "../structure/registerTool";
+import { budgetPeriod } from "./schemas";
 
 const description = `
 Creates a budget based on the parameters specified. This is useful if you have been tasked with managing budgets
 or you are building a cost report with budgets in mind.
 `.trim();
-
-const period = z.object({
-	start_at: dateValidator("The start date of the period."),
-	end_at: dateValidator("The end date of the period.").optional(),
-	amount: z.number().min(0).describe("The amount of the period."),
-});
 
 export default registerTool({
 	name: "create-budget",
@@ -37,7 +31,7 @@ export default registerTool({
 			.optional()
 			.describe("The tokens of any child Budgets when creating a hierarchical Budget."),
 		periods: z
-			.array(period)
+			.array(budgetPeriod)
 			.optional()
 			.describe(
 				"The periods for the Budget. The start_at and end_at must be iso8601 formatted e.g. YYYY-MM-DD. Ignored for hierarchical Budgets."
