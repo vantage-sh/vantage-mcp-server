@@ -17,6 +17,8 @@ export default function generateIndex(fp: string) {
 		return statSync(full).isDirectory() && readdirSync(full).includes("index.ts");
 	});
 
-	const imports = [...subdirs, ...files].map((f) => `import "./${f.replace(/\.ts$/, "")}";`);
+	const imports = [...subdirs, ...files]
+		.sort((a, b) => a.localeCompare(b))
+		.map((f) => `import "./${f.replace(/\.ts$/, "")}";`);
 	return `${topComment + imports.join("\n")}\n`;
 }
