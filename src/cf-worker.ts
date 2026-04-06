@@ -9,6 +9,7 @@ import type {
 } from "@vantage-sh/vantage-client";
 import { McpAgent } from "agents/mcp";
 import { Hono } from "hono";
+import { withLogTags } from "workers-tagged-logger";
 import {
 	authorize,
 	callback,
@@ -19,6 +20,7 @@ import {
 } from "./auth";
 import { HeaderAuthProvider } from "./header-auth-provider";
 import homepage from "./homepage";
+import { logger } from "./logger";
 import setupRegisteredResources from "./resources";
 import { callApi, serverMeta } from "./shared";
 import { setupRegisteredTools } from "./tools/structure/registerTool";
@@ -58,38 +60,58 @@ export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> 
 		params: Request,
 		method: M
 	): Promise<{ data: Response; ok: true } | { errors: unknown[]; ok: false }> {
-		const vantageHeaders =
-			(this.props as UserProps & { vantageHeaders?: Record<string, string> })
-				?.vantageHeaders || {};
-
-		// Try to get token, but don't fail if not available (when using vantage headers only)
-		let token: string | null = null;
-		try {
-			token = tokenFromProps(this.props!, this.env as RequiredEnv);
-		} catch (_error) {
-			// If no token is available, we'll rely on vantage headers for authentication
-			if (Object.keys(vantageHeaders).length === 0) {
-				throw new Error(
-					"No authentication method available - missing both token and vantage headers"
-				);
+		return withLogTags({}, async () => {
+			const clientVersion = (this.server as McpServer).server.getClientVersion();
+			if (clientVersion) {
+				logger.setTags({
+					mcp_client_name: clientVersion.name,
+					mcp_client_version: clientVersion.version,
+				});
 			}
-		}
 
-		const headers: Record<string, string> = {
-			...vantageHeaders,
-		};
+			logger.setTags({
+				endpoint: endpoint as string,
+				method: method as string,
+			});
 
-		if (token) {
-			headers.Authorization = `Bearer ${token}`;
-		}
+			const vantageHeaders =
+				(this.props as UserProps & { vantageHeaders?: Record<string, string> })
+					?.vantageHeaders || {};
 
-		return callApi(
-			(this.env as RequiredEnv).VANTAGE_API_HOST,
-			headers,
-			params,
-			method,
-			endpoint
-		);
+			// Try to get token, but don't fail if not available (when using vantage headers only)
+			let token: string | null = null;
+			try {
+				token = tokenFromProps(this.props!, this.env as RequiredEnv);
+			} catch (_error) {
+				// If no token is available, we'll rely on vantage headers for authentication
+				if (Object.keys(vantageHeaders).length === 0) {
+					throw new Error(
+						"No authentication method available - missing both token and vantage headers"
+					);
+				}
+			}
+
+			const headers: Record<string, string> = {
+				...vantageHeaders,
+			};
+
+			if (token) {
+				headers.Authorization = `Bearer ${token}`;
+			}
+
+			const result = await callApi<P, M, Request, Response>(
+				(this.env as RequiredEnv).VANTAGE_API_HOST,
+				headers,
+				params,
+				method,
+				endpoint
+			);
+
+			logger.setTags({ ok: result.ok });
+			logger.info("Vantage API request");
+
+			return result;
+		});
 	}
 
 	async init() {
