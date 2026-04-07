@@ -24,13 +24,20 @@
 		"@modelcontextprotocol/sdk": "1.27.1",
 		"@sentry/cloudflare": "10.30.0",
 		"@vantage-sh/vantage-client": "2.2.1",
-		"agents": "0.2.32",
+		"agents": "0.3.10",
 		"axios": "1.13.5",
-		"hono": "4.11.4",
+		"hono": "4.12.11",
 		"jose": "^6.0.11",
 		"oauth4webapi": "^3.5.5",
+		"react": "^19.2.4",
+		"react-dom": "^19.2.4",
 		"workers-tagged-logger": "^1.0.0",
 		"zod": "^3.25.61"
+	},
+	"overrides": {
+		"@modelcontextprotocol/sdk": "1.27.1",
+		"react": "^19.2.4",
+		"react-dom": "^19.2.4"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.2.2",
@@ -44,6 +51,6 @@
 		"tsx": "4.21.0",
 		"typescript": "^5.8.3",
 		"vitest": "4.0.15",
-		"wrangler": "^4.59.1"
+		"wrangler": "^4.80.0"
 	}
 }
