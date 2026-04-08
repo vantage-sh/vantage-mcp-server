@@ -25,10 +25,10 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '24'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
 
       - name: Install Dependencies
         run: npm ci
@@ -49,14 +49,17 @@ jobs:
       id-token: write # Required for OIDC
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: '22'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install npm 11
+        run: npm install -g npm@11.12.1
 
       - name: Install Dependencies
         run: npm ci
@@ -71,7 +74,7 @@ jobs:
 
             # Build the package and publish it
             npm run local:dist
-            cd local-package && npm publish
+            cd local-package && npm publish --provenance
 
             # Push the tag to the remote repository
             git tag "v$VERSION"
