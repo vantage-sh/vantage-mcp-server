@@ -1,11 +1,11 @@
+import { describe, expect, it, test, vi } from "vitest";
+import z from "zod/v4";
 import type {
 	Path,
 	RequestBodyForPathAndMethod,
 	ResponseBodyForPathAndMethod,
 	SupportedMethods,
-} from "@vantage-sh/vantage-client";
-import { describe, expect, it, test, vi } from "vitest";
-import z from "zod/v4";
+} from "../../vantage-api";
 import MCPUserError from "../structure/MCPUserError";
 import {
 	setupRegisteredTools,
@@ -17,9 +17,7 @@ export type ExtractValidators<T> = T extends ToolProperties<infer V, infer _> ? 
 
 export type ExtractOutputSchema<T> = T extends ToolProperties<infer _, infer O> ? O : undefined;
 
-export type InferValidators<T extends z.ZodRawShape> = {
-	[K in keyof T]: z.input<T[K]>;
-};
+export type InferValidators<T extends z.ZodRawShape> = z.input<z.ZodObject<T>>;
 
 export type SchemaTestTableItem<Validators extends z.ZodRawShape> = {
 	name: string;

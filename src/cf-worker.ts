@@ -1,12 +1,6 @@
 import OAuthProvider, { type OAuthHelpers } from "@cloudflare/workers-oauth-provider";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import * as Sentry from "@sentry/cloudflare";
-import type {
-	Path,
-	RequestBodyForPathAndMethod,
-	ResponseBodyForPathAndMethod,
-	SupportedMethods,
-} from "@vantage-sh/vantage-client";
 import { McpAgent } from "agents/mcp";
 import { Hono } from "hono";
 import {
@@ -22,6 +16,12 @@ import homepage from "./homepage";
 import setupRegisteredResources from "./resources";
 import { callApi, serverMeta } from "./shared";
 import { setupRegisteredTools } from "./tools/structure/registerTool";
+import type {
+	Path,
+	RequestBodyForPathAndMethod,
+	ResponseBodyForPathAndMethod,
+	SupportedMethods,
+} from "./vantage-api";
 
 // Side effect import to register all tools
 import "./tools";
