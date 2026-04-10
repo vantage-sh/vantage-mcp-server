@@ -1,11 +1,11 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type z from "zod/v4";
 import type {
 	Path,
 	RequestBodyForPathAndMethod,
 	ResponseBodyForPathAndMethod,
 	SupportedMethods,
-} from "@vantage-sh/vantage-client";
-import type z from "zod/v4";
+} from "../../vantage-api";
 import MCPUserError from "./MCPUserError";
 
 export type ToolCallContext = {

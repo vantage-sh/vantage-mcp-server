@@ -39,6 +39,17 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	poisonOneValue(validArguments, "end_date", dateValidatorPoisoner),
 ];
 
+const outputSchemaTests: SchemaTestTableItem<OutputSchema>[] = [
+	{
+		name: "valid graph response",
+		data: {
+			url: "https://s3.amazonaws.com/bucket/cost-report-graph-uuid.png?signature=abc",
+			report_token: "rprt_123",
+			title: "AWS Costs",
+		},
+	},
+];
+
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 	{
 		name: "successful call",
@@ -130,4 +141,4 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 	},
 ];
 
-testTool(tool, argumentSchemaTests, executionTests);
+testTool(tool, argumentSchemaTests, outputSchemaTests, executionTests);

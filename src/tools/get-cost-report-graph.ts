@@ -1,5 +1,6 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod/v4";
+import type { CostReportGraphPath, RequestBodyForPathAndMethod } from "../vantage-api";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 import dateValidator from "./utils/dateValidator";
@@ -38,13 +39,17 @@ const args = {
 	filter: z
 		.string()
 		.optional()
-		.describe(
-			"VQL filter expression to apply to the graph (e.g. \"costs.provider = 'aws'\")"
-		),
+		.describe("VQL filter expression to apply to the graph (e.g. \"costs.provider = 'aws'\")"),
 	saved_filter_tokens: z
 		.array(z.string())
 		.optional()
 		.describe("Tokens of SavedFilters to apply to the graph"),
+};
+
+const outputSchema = {
+	url: z.string().url().describe("Public URL to the generated cost report graph image"),
+	report_token: z.string().min(1).describe("Cost report token used to generate the graph"),
+	title: z.string().min(1).describe("Cost report title associated with the generated graph"),
 };
 
 export default registerTool({
@@ -56,8 +61,9 @@ export default registerTool({
 		readOnly: true,
 	},
 	args,
+	outputSchema,
 	async execute(args, ctx) {
-		const requestParams: Record<string, unknown> = {};
+		const requestParams: RequestBodyForPathAndMethod<CostReportGraphPath, "GET"> = {};
 		if (args.start_date) requestParams.start_date = args.start_date;
 		if (args.end_date) requestParams.end_date = args.end_date;
 		if (args.date_interval) requestParams.date_interval = args.date_interval;
@@ -66,14 +72,11 @@ export default registerTool({
 		if (args.groupings) requestParams.groupings = args.groupings;
 		if (args.filter) requestParams.filter = args.filter;
 		if (args.saved_filter_tokens) requestParams.saved_filter_tokens = args.saved_filter_tokens;
-		const response = await ctx.callVantageApi(
-			`/v2/cost_reports/${pathEncode(args.cost_report_token)}/graph` as any,
-			requestParams as any,
-			"GET" as any
-		);
+		const endpoint: CostReportGraphPath = `/v2/cost_reports/${pathEncode(args.cost_report_token)}/graph`;
+		const response = await ctx.callVantageApi(endpoint, requestParams, "GET");
 		if (!response.ok) {
 			throw new MCPUserError({ errors: response.errors });
 		}
-		return response.data as any;
+		return response.data;
 	},
 });

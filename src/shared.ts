@@ -1,10 +1,10 @@
+import { SERVER_VERSION } from "./tools/structure/constants";
 import type {
 	Path,
 	RequestBodyForPathAndMethod,
 	ResponseBodyForPathAndMethod,
 	SupportedMethods,
-} from "@vantage-sh/vantage-client";
-import { SERVER_VERSION } from "./tools/structure/constants";
+} from "./vantage-api";
 
 export const serverMeta = {
 	name: "Vantage Cloud Costs Helper",
