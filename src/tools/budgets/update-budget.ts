@@ -10,9 +10,10 @@ Updates an existing Budget. You can update the name, linked Cost Report, child B
 
 export default registerTool({
 	name: "update-budget",
+	title: "Update Budget",
 	description,
 	annotations: {
-		destructive: false,
+		destructive: true,
 		openWorld: false,
 		readOnly: false,
 	},

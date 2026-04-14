@@ -22,6 +22,7 @@ const args = {
 
 export default registerTool({
 	name: "list-anomalies",
+	title: "List Anomalies",
 	description,
 	annotations: {
 		destructive: false,

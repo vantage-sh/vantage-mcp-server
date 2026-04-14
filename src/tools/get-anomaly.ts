@@ -13,6 +13,7 @@ const args = {
 
 export default registerTool({
 	name: "get-anomaly",
+	title: "Get Anomaly",
 	description,
 	annotations: {
 		destructive: false,

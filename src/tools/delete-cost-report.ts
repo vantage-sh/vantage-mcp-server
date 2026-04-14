@@ -13,6 +13,7 @@ const args = {
 
 export default registerTool({
 	name: "delete-cost-report",
+	title: "Delete Cost Report",
 	description,
 	annotations: {
 		destructive: true,

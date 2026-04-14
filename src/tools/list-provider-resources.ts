@@ -99,6 +99,7 @@ function correctResourceTypes(filter: string): string {
 
 export default registerTool({
 	name: "list-provider-resources",
+	title: "List Provider Resources",
 	description,
 	annotations: {
 		destructive: false,

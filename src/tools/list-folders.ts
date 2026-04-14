@@ -18,6 +18,7 @@ const args = {
 
 export default registerTool({
 	name: "list-folders",
+	title: "List Folders",
 	description,
 	annotations: {
 		destructive: false,

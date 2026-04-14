@@ -183,6 +183,7 @@ const args = {
 
 export default registerTool({
 	name: "list-recommendations",
+	title: "List Recommendations",
 	description,
 	annotations: {
 		destructive: false,

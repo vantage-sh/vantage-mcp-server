@@ -9,9 +9,10 @@ SavedFilters can be applied to the Folder so that any Cost Report within it inhe
 
 export default registerTool({
 	name: "create-folder",
+	title: "Create Folder",
 	description,
 	annotations: {
-		destructive: false,
+		destructive: true,
 		openWorld: false,
 		readOnly: false,
 	},

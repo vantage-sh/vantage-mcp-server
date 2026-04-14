@@ -9,9 +9,10 @@ Updates an existing anomaly alert by its token. Use this to change the status of
 
 export default registerTool({
 	name: "update-anomaly",
+	title: "Update Anomaly",
 	description,
 	annotations: {
-		destructive: false,
+		destructive: true,
 		openWorld: false,
 		readOnly: false,
 	},

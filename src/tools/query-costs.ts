@@ -102,6 +102,7 @@ const args = {
 
 export default registerTool({
 	name: "query-costs",
+	title: "Query Costs",
 	description,
 	annotations: {
 		destructive: false,

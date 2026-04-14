@@ -10,6 +10,7 @@ ID of a Cost Provider Account to use in places. The account_id in this result ca
 
 export default registerTool({
 	name: "get-cost-provider-accounts",
+	title: "Get Cost Provider Accounts",
 	description,
 	args: {
 		workspace_token: z.string().describe("Workspace token to list cost provider accounts for"),

@@ -13,6 +13,7 @@ const args = {
 
 export default registerTool({
 	name: "get-cost-alert",
+	title: "Get Cost Alert",
 	description,
 	annotations: {
 		destructive: false,

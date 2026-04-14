@@ -14,6 +14,7 @@ const args = {
 
 export default registerTool({
 	name: "get-users",
+	title: "Get Users",
 	description,
 	annotations: {
 		destructive: false,
