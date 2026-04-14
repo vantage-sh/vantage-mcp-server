@@ -15,6 +15,7 @@ const args = {
 
 export default registerTool({
 	name: "list-dashboards",
+	title: "List Dashboards",
 	description,
 	annotations: {
 		destructive: false,

@@ -8,6 +8,7 @@ afterEach(() => clearRegisteredToolsForTesting());
 test("tool registration works properly", () => {
 	const tool = {
 		name: "test-tool",
+		title: "Test Tool",
 		description: "A test tool",
 		args: {
 			example_arg: z.string().describe("An example argument"),
@@ -34,6 +35,7 @@ test("tool registration works properly", () => {
 	expect(mockServer.registerTool).toHaveBeenCalledWith(
 		tool.name,
 		expect.objectContaining({
+			title: tool.title,
 			description: tool.description,
 			inputSchema: tool.args,
 			annotations: {
@@ -50,6 +52,7 @@ describe("mcp server handler", () => {
 	it("passes through MCPUserError correctly", async () => {
 		registerTool({
 			name: "error-tool",
+			title: "Error Tool",
 			description: "A tool that throws an MCPUserError",
 			args: {},
 			annotations: {
@@ -86,6 +89,7 @@ describe("mcp server handler", () => {
 	it("throws other errors", async () => {
 		registerTool({
 			name: "throw-tool",
+			title: "Throw Tool",
 			description: "A tool that throws a generic error",
 			args: {},
 			annotations: {
@@ -115,6 +119,7 @@ describe("mcp server handler", () => {
 		const context: any = { hello: "world" };
 		registerTool({
 			name: "arg-tool",
+			title: "Arg Tool",
 			description: "A tool that returns its arguments and context",
 			args: {
 				example_arg: z.string().describe("An example argument"),
@@ -163,6 +168,7 @@ test("tool output schema is typed and loaded properly", () => {
 	// @ts-expect-error: This should error because execute does not satisfy outputSchema.
 	registerTool({
 		name: "invalid-output-tool",
+		title: "Invalid Output Tool",
 		description: "A tool that returns an invalid output",
 		args: {
 			example_arg: z.string().describe("An example argument"),
@@ -187,6 +193,7 @@ test("tool output schema is typed and loaded properly", () => {
 	};
 	registerTool({
 		name: "valid-output-tool",
+		title: "Valid Output Tool",
 		description: "A tool that returns a valid output",
 		args: {
 			example_arg: z.string().describe("An example argument"),

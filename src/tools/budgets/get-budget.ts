@@ -10,6 +10,7 @@ The token of a budget can be used to link the user to the budget in the Vantage 
 
 export default registerTool({
 	name: "get-budget",
+	title: "Get Budget",
 	description,
 	annotations: {
 		destructive: false,

@@ -15,6 +15,7 @@ const args = {
 
 export default registerTool({
 	name: "list-cost-alerts",
+	title: "List Cost Alerts",
 	description,
 	annotations: {
 		destructive: false,

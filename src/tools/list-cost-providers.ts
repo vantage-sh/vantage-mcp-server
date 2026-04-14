@@ -13,6 +13,7 @@ const args = {
 
 export default registerTool({
 	name: "list-cost-providers",
+	title: "List Cost Providers",
 	description,
 	annotations: {
 		destructive: false,

@@ -9,9 +9,10 @@ Updates a Folder for organizing Cost Reports. You can update its title, move it 
 
 export default registerTool({
 	name: "update-folder",
+	title: "Update Folder",
 	description,
 	annotations: {
-		destructive: false,
+		destructive: true,
 		openWorld: false,
 		readOnly: false,
 	},

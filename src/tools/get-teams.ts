@@ -14,6 +14,7 @@ const args = {
 
 export default registerTool({
 	name: "get-teams",
+	title: "Get Teams",
 	description,
 	annotations: {
 		destructive: false,

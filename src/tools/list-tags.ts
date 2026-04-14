@@ -16,6 +16,7 @@ const args = {
 
 export default registerTool({
 	name: "list-tags",
+	title: "List Tags",
 	description,
 	annotations: {
 		destructive: false,

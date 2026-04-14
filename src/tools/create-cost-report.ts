@@ -101,9 +101,10 @@ const chartSettings = z.object({
 
 export default registerTool({
 	name: "create-cost-report",
+	title: "Create Cost Report",
 	description,
 	annotations: {
-		destructive: false,
+		destructive: true,
 		openWorld: false,
 		readOnly: false,
 	},

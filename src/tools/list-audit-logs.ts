@@ -86,6 +86,7 @@ const args = {
 
 export default registerTool({
 	name: "list-audit-logs",
+	title: "List Audit Logs",
 	description,
 	annotations: {
 		destructive: false,

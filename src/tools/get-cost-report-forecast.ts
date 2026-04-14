@@ -31,6 +31,7 @@ const args = {
 
 export default registerTool({
 	name: "get-cost-report-forecast",
+	title: "Get Cost Report Forecast",
 	description,
 	annotations: {
 		destructive: false,

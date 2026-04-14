@@ -9,6 +9,7 @@ Deletes a Budget by its token. This action is irreversible.
 
 export default registerTool({
 	name: "delete-budget",
+	title: "Delete Budget",
 	description,
 	annotations: {
 		destructive: true,

@@ -77,6 +77,7 @@ const args = {
 
 export default registerTool({
 	name: "list-costs",
+	title: "List Costs",
 	description,
 	annotations: {
 		destructive: false,

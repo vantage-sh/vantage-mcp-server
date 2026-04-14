@@ -9,6 +9,7 @@ Gets a specific Folder by its token.
 
 export default registerTool({
 	name: "get-folder",
+	title: "Get Folder",
 	description,
 	annotations: {
 		destructive: false,

@@ -212,6 +212,7 @@ export function testTool<Input extends z.ZodRawShape, Output extends z.ZodRawSha
 		);
 		expect(toolHandler).toBeDefined();
 		const toolRaw = toolHandler[1];
+		expect(toolRaw.title).toBe(tool.title);
 		expect(toolRaw.description).toBe(tool.description);
 		expect(toolRaw.inputSchema).toBe(tool.args);
 		expect(toolRaw.outputSchema).toBe(tool.outputSchema);

@@ -19,6 +19,7 @@ const args = {
 
 export default registerTool({
 	name: "list-cost-integrations",
+	title: "List Cost Integrations",
 	description,
 	annotations: {
 		destructive: false,
