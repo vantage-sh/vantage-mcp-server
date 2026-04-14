@@ -8,9 +8,10 @@ Creates a cost alert based on the parameters specified. Cost alerts notify you w
 
 export default registerTool({
 	name: "create-cost-alert",
+	title: "Create Cost Alert",
 	description,
 	annotations: {
-		destructive: false,
+		destructive: true,
 		openWorld: false,
 		readOnly: false,
 	},

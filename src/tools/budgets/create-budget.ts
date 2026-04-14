@@ -10,9 +10,10 @@ or you are building a cost report with budgets in mind.
 
 export default registerTool({
 	name: "create-budget",
+	title: "Create Budget",
 	description,
 	annotations: {
-		destructive: false,
+		destructive: true,
 		openWorld: false,
 		readOnly: false,
 	},

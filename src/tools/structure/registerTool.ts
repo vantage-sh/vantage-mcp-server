@@ -26,6 +26,7 @@ export type ToolProperties<
 	Output extends z.ZodRawShape | undefined = undefined,
 > = {
 	name: string;
+	title: string;
 	description: string;
 	annotations: {
 		readOnly: boolean;
@@ -68,6 +69,7 @@ export default function registerTool<
 		server.registerTool(
 			toolProps.name,
 			{
+				title: toolProps.title,
 				description: toolProps.description,
 
 				// I don't like this, but it is handled by the higher level type system.

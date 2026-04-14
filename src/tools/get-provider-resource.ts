@@ -19,6 +19,7 @@ Set include_cost to true to get cost information broken down by category.
 
 export default registerTool({
 	name: "get-provider-resource",
+	title: "Get Provider Resource",
 	description,
 	annotations: {
 		destructive: false,

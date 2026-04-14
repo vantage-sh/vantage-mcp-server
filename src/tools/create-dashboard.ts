@@ -60,6 +60,7 @@ const widgetSchema = z.object({
 
 export default registerTool({
 	name: "create-dashboard",
+	title: "Create Dashboard",
 	description,
 	args: {
 		title: z.string().min(1).describe("The title of the dashboard"),
@@ -90,7 +91,7 @@ export default registerTool({
 			),
 	},
 	annotations: {
-		destructive: false,
+		destructive: true,
 		openWorld: false,
 		readOnly: false,
 	},

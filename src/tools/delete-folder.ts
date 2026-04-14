@@ -9,6 +9,7 @@ Deletes a Folder. Cost Reports within the Folder will not be deleted.
 
 export default registerTool({
 	name: "delete-folder",
+	title: "Delete Folder",
 	description,
 	annotations: {
 		destructive: true,

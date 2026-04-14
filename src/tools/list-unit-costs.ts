@@ -28,6 +28,7 @@ const args = {
 
 export default registerTool({
 	name: "list-unit-costs",
+	title: "List Unit Costs",
 	description,
 	annotations: {
 		destructive: false,

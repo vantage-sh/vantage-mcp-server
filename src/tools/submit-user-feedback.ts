@@ -13,9 +13,10 @@ const args = {
 
 export default registerTool({
 	name: "submit-user-feedback",
+	title: "Submit User Feedback",
 	description,
 	annotations: {
-		destructive: false,
+		destructive: true,
 		openWorld: false,
 		readOnly: false,
 	},

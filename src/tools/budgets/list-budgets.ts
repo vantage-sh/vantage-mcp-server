@@ -18,6 +18,7 @@ const args = {
 
 export default registerTool({
 	name: "list-budgets",
+	title: "List Budgets",
 	description,
 	annotations: {
 		destructive: false,

@@ -12,6 +12,7 @@ const args = {};
 
 export default registerTool({
 	name: "get-myself",
+	title: "Get Current User",
 	description,
 	annotations: {
 		destructive: false,

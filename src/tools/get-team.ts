@@ -13,6 +13,7 @@ const args = {
 
 export default registerTool({
 	name: "get-team",
+	title: "Get Team",
 	description,
 	annotations: {
 		destructive: false,

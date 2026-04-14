@@ -43,6 +43,7 @@ const valueSchema = z.object({
 
 export default registerTool({
 	name: "create-virtual-tag-config",
+	title: "Create Virtual Tag Config",
 	description,
 	args: {
 		key: z.string().min(1).describe("The key of the VirtualTagConfig"),
@@ -58,7 +59,7 @@ export default registerTool({
 		values: z.array(valueSchema).optional(),
 	},
 	annotations: {
-		destructive: false,
+		destructive: true,
 		openWorld: false,
 		readOnly: false,
 	},

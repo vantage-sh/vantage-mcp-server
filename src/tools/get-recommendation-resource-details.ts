@@ -37,6 +37,7 @@ const args = {
 
 export default registerTool({
 	name: "get-recommendation-resource-details",
+	title: "Get Recommendation Resource Details",
 	description,
 	annotations: {
 		destructive: false,
