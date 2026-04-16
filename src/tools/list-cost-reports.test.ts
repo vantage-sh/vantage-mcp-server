@@ -78,6 +78,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 				params: {
 					page: 1,
 					limit: DEFAULT_LIMIT,
+					folder_token: "fldr_123",
 				},
 				method: "GET",
 				result: {
@@ -105,6 +106,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 				params: {
 					page: 1,
 					limit: DEFAULT_LIMIT,
+					folder_token: "fldr_123",
 				},
 				method: "GET",
 				result: {
