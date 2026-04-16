@@ -16,6 +16,7 @@ type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
 	page: 1,
+	folder_token: "fldr_123",
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
@@ -23,6 +24,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 		name: "default page",
 		data: {
 			page: undefined,
+			folder_token: undefined,
 		},
 	},
 	{
@@ -76,6 +78,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 				params: {
 					page: 1,
 					limit: DEFAULT_LIMIT,
+					folder_token: "fldr_123",
 				},
 				method: "GET",
 				result: {
@@ -103,6 +106,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 				params: {
 					page: 1,
 					limit: DEFAULT_LIMIT,
+					folder_token: "fldr_123",
 				},
 				method: "GET",
 				result: {

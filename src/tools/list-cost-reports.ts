@@ -15,6 +15,12 @@ Vantage offers data related to a cost report: Forecasts. The same report token c
 
 const args = {
 	page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
+	folder_token: z
+		.string()
+		.optional()
+		.describe(
+			"The token of a folder to filter cost reports by. Only reports within that folder will be returned."
+		),
 };
 
 export default registerTool({
