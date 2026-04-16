@@ -16,6 +16,7 @@ type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
 	page: 1,
+	folder_token: "fldr_123",
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
@@ -23,6 +24,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 		name: "default page",
 		data: {
 			page: undefined,
+			folder_token: undefined,
 		},
 	},
 	{
