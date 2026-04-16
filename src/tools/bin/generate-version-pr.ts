@@ -221,6 +221,21 @@ async function doPr(description: string, newVersion: string) {
 		false
 	);
 	console.log("PR created successfully");
+
+	runCommandAndPipeToUser(
+		"gh",
+		[
+			"pr",
+			"merge",
+			"--auto",
+			"--squash",
+			"--repo",
+			"vantage-sh/vantage-mcp-server",
+			"automated-bump",
+		],
+		false
+	);
+	console.log("Auto-merge enabled");
 }
 
 (async () => {
