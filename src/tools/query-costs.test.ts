@@ -15,7 +15,9 @@ import {
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
-// Note: groupings becomes a string after transformation
+// groupings is pre-joined to a CSV string for /v2/costs (coerce_with: CSV::parse_line)
+const GROUPINGS_API = "provider,service,region" as unknown as string[];
+
 const validInputArguments = {
 	page: 1,
 	filter: "(costs.provider = 'aws')",
@@ -132,7 +134,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 					end_date: undefined,
 					workspace_token: "wt_123",
 					date_bin: "month",
-					groupings: "provider,service,region",
+					groupings: GROUPINGS_API,
 					"settings[include_credits]": false,
 					"settings[include_refunds]": false,
 					"settings[include_discounts]": true,
@@ -191,7 +193,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 					end_date: "2023-01-31",
 					workspace_token: "wt_123",
 					date_bin: "month",
-					groupings: "provider,service,region",
+					groupings: GROUPINGS_API,
 					"settings[include_credits]": false,
 					"settings[include_refunds]": false,
 					"settings[include_discounts]": true,
@@ -239,7 +241,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 					end_date: "2023-01-31",
 					workspace_token: "wt_123",
 					date_bin: "day",
-					groupings: "provider,service,region",
+					groupings: GROUPINGS_API,
 					"settings[include_credits]": false,
 					"settings[include_refunds]": false,
 					"settings[include_discounts]": true,
@@ -285,7 +287,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 					end_date: undefined,
 					workspace_token: "wt_123",
 					date_bin: "month",
-					groupings: "provider,service,region",
+					groupings: GROUPINGS_API,
 					"settings[include_credits]": false,
 					"settings[include_refunds]": false,
 					"settings[include_discounts]": true,
