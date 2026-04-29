@@ -269,22 +269,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 			},
 		]),
 		handler: async ({ callExpectingMCPUserError }) => {
-			const err = await callExpectingMCPUserError({
-				page: 1,
-				filter: undefined,
-				provider: undefined,
-				workspace_token: undefined,
-				provider_account_id: undefined,
-				type: undefined,
-				tag_key: undefined,
-				tag_value: undefined,
-				regions: undefined,
-				provider_ids: undefined,
-				account_ids: undefined,
-				billing_account_ids: undefined,
-				start_date: undefined,
-				end_date: undefined,
-			});
+			const err = await callExpectingMCPUserError(minimalArgs);
 			expect(err.exception).toEqual({
 				errors: [{ message: "Access denied" }],
 			});
@@ -311,22 +296,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 			},
 		]),
 		handler: async ({ callExpectingSuccess }) => {
-			const res = await callExpectingSuccess({
-				page: 1,
-				filter: undefined,
-				provider: undefined,
-				workspace_token: undefined,
-				provider_account_id: undefined,
-				type: "aws",
-				tag_key: undefined,
-				tag_value: undefined,
-				regions: undefined,
-				provider_ids: undefined,
-				account_ids: undefined,
-				billing_account_ids: undefined,
-				start_date: undefined,
-				end_date: undefined,
-			});
+			const res = await callExpectingSuccess({ ...minimalArgs, type: "aws" });
 			expect(res).toEqual({
 				recommendations: successData.recommendations,
 				pagination: {
@@ -359,20 +329,9 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 		]),
 		handler: async ({ callExpectingSuccess }) => {
 			const res = await callExpectingSuccess({
-				page: 1,
-				filter: undefined,
+				...minimalArgs,
 				provider: "Amazon Web Services",
-				workspace_token: undefined,
-				provider_account_id: undefined,
 				type: "AWS recommendations",
-				tag_key: undefined,
-				tag_value: undefined,
-				regions: undefined,
-				provider_ids: undefined,
-				account_ids: undefined,
-				billing_account_ids: undefined,
-				start_date: undefined,
-				end_date: undefined,
 			});
 			expect(res).toEqual({
 				recommendations: successData.recommendations,
@@ -406,20 +365,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 		]),
 		handler: async ({ callExpectingSuccess }) => {
 			const res = await callExpectingSuccess({
-				page: 1,
-				filter: undefined,
-				provider: undefined,
-				workspace_token: undefined,
-				provider_account_id: undefined,
+				...minimalArgs,
 				type: "Google Cloud Recommendations",
-				tag_key: undefined,
-				tag_value: undefined,
-				regions: undefined,
-				provider_ids: undefined,
-				account_ids: undefined,
-				billing_account_ids: undefined,
-				start_date: undefined,
-				end_date: undefined,
 			});
 			expect(res).toEqual({
 				recommendations: successData.recommendations,
@@ -453,20 +400,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 		]),
 		handler: async ({ callExpectingSuccess }) => {
 			const res = await callExpectingSuccess({
-				page: 1,
-				filter: undefined,
-				provider: undefined,
-				workspace_token: undefined,
-				provider_account_id: undefined,
+				...minimalArgs,
 				type: "Amazon Web Services Recommendations",
-				tag_key: undefined,
-				tag_value: undefined,
-				regions: undefined,
-				provider_ids: undefined,
-				account_ids: undefined,
-				billing_account_ids: undefined,
-				start_date: undefined,
-				end_date: undefined,
 			});
 			expect(res).toEqual({
 				recommendations: successData.recommendations,
@@ -500,20 +435,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 		]),
 		handler: async ({ callExpectingSuccess }) => {
 			const res = await callExpectingSuccess({
-				page: 1,
-				filter: undefined,
-				provider: undefined,
-				workspace_token: undefined,
-				provider_account_id: undefined,
+				...minimalArgs,
 				type: "ec2_rightsizing_recommender",
-				tag_key: undefined,
-				tag_value: undefined,
-				regions: undefined,
-				provider_ids: undefined,
-				account_ids: undefined,
-				billing_account_ids: undefined,
-				start_date: undefined,
-				end_date: undefined,
 			});
 			expect(res).toEqual({
 				recommendations: successData.recommendations,
@@ -547,20 +470,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 		]),
 		handler: async ({ callExpectingSuccess }) => {
 			const res = await callExpectingSuccess({
-				page: 1,
-				filter: undefined,
-				provider: undefined,
-				workspace_token: undefined,
-				provider_account_id: undefined,
+				...minimalArgs,
 				type: "Google Cloud Compute Rightsizing Recommendations",
-				tag_key: undefined,
-				tag_value: undefined,
-				regions: undefined,
-				provider_ids: undefined,
-				account_ids: undefined,
-				billing_account_ids: undefined,
-				start_date: undefined,
-				end_date: undefined,
 			});
 			expect(res).toEqual({
 				recommendations: successData.recommendations,
@@ -571,9 +482,6 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 			});
 		},
 	},
-];
-
-const newFilterTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 	{
 		name: "filters by tag_key and tag_value",
 		apiCallHandler: requestsInOrder([
@@ -620,7 +528,10 @@ const newFilterTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 		name: "throws MCPUserError when only tag_value is provided",
 		apiCallHandler: requestsInOrder([]),
 		handler: async ({ callExpectingMCPUserError }) => {
-			const err = await callExpectingMCPUserError({ ...minimalArgs, tag_value: "engineering" });
+			const err = await callExpectingMCPUserError({
+				...minimalArgs,
+				tag_value: "engineering",
+			});
 			expect(err.exception).toEqual({
 				errors: [{ message: "tag_key and tag_value must both be provided together" }],
 			});
@@ -808,4 +719,4 @@ const newFilterTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 	},
 ];
 
-testTool(tool, argumentSchemaTests, [...executionTests, ...newFilterTests]);
+testTool(tool, argumentSchemaTests, executionTests);
