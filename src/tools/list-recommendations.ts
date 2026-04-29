@@ -211,6 +211,7 @@ const args = {
 			(val) => (Array.isArray(val) ? val.map(normalizeProvider) : val),
 			z.array(z.enum(SUPPORTED_PROVIDERS)).optional()
 		)
+		.optional()
 		.describe(
 			"Filter by one or more cloud providers. Cannot be used together with provider. Requires workspace_token. Only use this when the user explicitly asks to filter by specific cloud providers — do not infer or default to passing all providers."
 		),
