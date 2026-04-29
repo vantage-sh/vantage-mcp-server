@@ -99,6 +99,11 @@ export default registerTool({
 				requestParams[key] = args[typedKey];
 			}
 		});
+		// /v2/costs expects groupings as a comma-joined string (coerce_with: CSV::parse_line),
+		// not the bracket-suffix array format used by other endpoints.
+		if (Array.isArray(requestParams.groupings)) {
+			requestParams.groupings = requestParams.groupings.join(",");
+		}
 		const response = await ctx.callVantageApi("/v2/costs", requestParams, "GET");
 		if (!response.ok) {
 			throw new MCPUserError({ errors: response.errors });

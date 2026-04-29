@@ -29,11 +29,13 @@ export async function callApi<
 
 	if (method === "GET") {
 		Object.entries(params as Record<string, unknown>).forEach(([key, value]) => {
-			if (value !== undefined && value !== null) {
-				url.searchParams.append(
-					key,
-					Array.isArray(value) ? value.join(",") : String(value)
-				);
+			if (value === undefined || value === null) return;
+			if (Array.isArray(value)) {
+				for (const item of value) {
+					url.searchParams.append(`${key}[]`, String(item));
+				}
+			} else {
+				url.searchParams.append(key, String(value));
 			}
 		});
 	} else {

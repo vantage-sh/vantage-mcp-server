@@ -146,7 +146,16 @@ Each recommendation includes:
 - Number of resources affected
 - Current status (open, resolved, dismissed)
 
-Recommendations can be filtered by status (open shows active recommendations, resolved shows implemented ones, dismissed shows ignored ones), cloud provider (aws, azure, gcp), specific workspace, provider account ID, and recommendation type. Prefer the type parameter when users ask for broad families (e.g. "AWS recommendations" -> type=aws; "EC2 rightsizing" -> type=aws:ec2:rightsizing). The type filter uses case-insensitive fuzzy matching on the recommendation type.
+Recommendations can be filtered by:
+- Status (open shows active recommendations, resolved shows implemented ones, dismissed shows ignored ones)
+- Cloud provider via provider (single) or provider_ids (multiple; requires workspace_token) — only use these when the user explicitly specifies cloud providers; do not infer or default to all providers
+- Specific workspace via workspace_token
+- Provider account ID via provider_account_id (single) or account_ids (multiple; requires workspace_token)
+- Billing account via billing_account_ids (requires workspace_token)
+- Region via regions (requires workspace_token)
+- Tag key/value pair via tag_key + tag_value (both required together; requires workspace_token) — use this when users ask about recommendations for a specific virtual tag, e.g. "recommendations for department=engineering"
+- Date range via start_date + end_date in YYYY-MM-DD format (both required together; requires workspace_token)
+- Recommendation type via type (case-insensitive fuzzy matching; e.g. "AWS recommendations" -> type=aws; "EC2 rightsizing" -> type=aws:ec2:rightsizing)
 
 The token of each recommendation can be used with other recommendation tools to get detailed information and see specific resources affected.
 
@@ -179,6 +188,57 @@ const args = {
 		.enum(["open", "resolved", "dismissed"])
 		.optional()
 		.describe("Filter recommendations by status: open (default), resolved, or dismissed"),
+	tag_key: z
+		.string()
+		.optional()
+		.describe(
+			"Filter by tag key. Must be provided together with tag_value. Requires workspace_token."
+		),
+	tag_value: z
+		.string()
+		.optional()
+		.describe(
+			"Filter by tag value. Must be provided together with tag_key. Requires workspace_token."
+		),
+	regions: z
+		.array(z.string())
+		.optional()
+		.describe(
+			"Filter by region slugs (e.g. us-east-1, eastus, asia-east1). Requires workspace_token."
+		),
+	provider_ids: z
+		.preprocess(
+			(val) => (Array.isArray(val) ? val.map(normalizeProvider) : val),
+			z.array(z.enum(SUPPORTED_PROVIDERS)).optional()
+		)
+		.optional()
+		.describe(
+			"Filter by one or more cloud providers. Cannot be used together with provider. Requires workspace_token. Only use this when the user explicitly asks to filter by specific cloud providers — do not infer or default to passing all providers."
+		),
+	account_ids: z
+		.array(z.string())
+		.optional()
+		.describe(
+			"Filter by cloud account identifiers (AWS account IDs, Azure subscription IDs, etc.). Cannot be used together with provider_account_id. Requires workspace_token."
+		),
+	billing_account_ids: z
+		.array(z.string())
+		.optional()
+		.describe("Filter by billing account identifiers. Requires workspace_token."),
+	start_date: z
+		.string()
+		.regex(/^\d{4}-\d{2}-\d{2}$/, "Must be in YYYY-MM-DD format")
+		.optional()
+		.describe(
+			"Filter recommendations created on or after this date (YYYY-MM-DD). Must be provided together with end_date. Requires workspace_token."
+		),
+	end_date: z
+		.string()
+		.regex(/^\d{4}-\d{2}-\d{2}$/, "Must be in YYYY-MM-DD format")
+		.optional()
+		.describe(
+			"Filter recommendations created on or before this date (YYYY-MM-DD). Must be provided together with start_date. Requires workspace_token."
+		),
 };
 
 export default registerTool({
@@ -192,6 +252,16 @@ export default registerTool({
 	},
 	args,
 	async execute(args, ctx) {
+		if (!!args.tag_key !== !!args.tag_value) {
+			throw new MCPUserError({
+				errors: [{ message: "tag_key and tag_value must both be provided together" }],
+			});
+		}
+		if (!!args.start_date !== !!args.end_date) {
+			throw new MCPUserError({
+				errors: [{ message: "start_date and end_date must both be provided together" }],
+			});
+		}
 		const requestParams = {
 			...args,
 			limit: DEFAULT_LIMIT,
