@@ -191,18 +191,26 @@ const args = {
 	tag_key: z
 		.string()
 		.optional()
-		.describe("Filter by tag key. Must be provided together with tag_value. Requires workspace_token."),
+		.describe(
+			"Filter by tag key. Must be provided together with tag_value. Requires workspace_token."
+		),
 	tag_value: z
 		.string()
 		.optional()
-		.describe("Filter by tag value. Must be provided together with tag_key. Requires workspace_token."),
+		.describe(
+			"Filter by tag value. Must be provided together with tag_key. Requires workspace_token."
+		),
 	regions: z
 		.array(z.string())
 		.optional()
-		.describe("Filter by region slugs (e.g. us-east-1, eastus, asia-east1). Requires workspace_token."),
+		.describe(
+			"Filter by region slugs (e.g. us-east-1, eastus, asia-east1). Requires workspace_token."
+		),
 	provider_ids: z
-		.array(z.preprocess(normalizeProvider, z.enum(SUPPORTED_PROVIDERS)))
-		.optional()
+		.preprocess(
+			(val) => (Array.isArray(val) ? val.map(normalizeProvider) : val),
+			z.array(z.enum(SUPPORTED_PROVIDERS)).optional()
+		)
 		.describe(
 			"Filter by one or more cloud providers. Cannot be used together with provider. Requires workspace_token."
 		),
@@ -244,7 +252,9 @@ export default registerTool({
 	args,
 	async execute(args, ctx) {
 		if (!!args.tag_key !== !!args.tag_value) {
-			throw new MCPUserError({ errors: [{ message: "tag_key and tag_value must both be provided together" }] });
+			throw new MCPUserError({
+				errors: [{ message: "tag_key and tag_value must both be provided together" }],
+			});
 		}
 		if (!!args.start_date !== !!args.end_date) {
 			throw new MCPUserError({

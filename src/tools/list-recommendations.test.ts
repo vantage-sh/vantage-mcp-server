@@ -21,19 +21,37 @@ const validArguments: InferValidators<Validators> = {
 	workspace_token: "wt_123",
 	provider_account_id: "123456789",
 	type: "aws",
+	tag_key: undefined,
+	tag_value: undefined,
+	regions: undefined,
+	provider_ids: undefined,
+	account_ids: undefined,
+	billing_account_ids: undefined,
+	start_date: undefined,
+	end_date: undefined,
+};
+
+const minimalArgs: InferValidators<Validators> = {
+	page: 1,
+	filter: undefined,
+	provider: undefined,
+	workspace_token: undefined,
+	provider_account_id: undefined,
+	type: undefined,
+	tag_key: undefined,
+	tag_value: undefined,
+	regions: undefined,
+	provider_ids: undefined,
+	account_ids: undefined,
+	billing_account_ids: undefined,
+	start_date: undefined,
+	end_date: undefined,
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 	{
 		name: "minimal valid arguments",
-		data: {
-			page: 1,
-			filter: undefined,
-			provider: undefined,
-			workspace_token: undefined,
-			provider_account_id: undefined,
-			type: undefined,
-		},
+		data: minimalArgs,
 	},
 	{
 		name: "all valid arguments",
@@ -205,6 +223,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 					limit: DEFAULT_LIMIT,
 					provider: validArguments.provider as any,
 					type: validArguments.type as string | undefined,
+					provider_ids: validArguments.provider_ids as any,
 				},
 				method: "GET",
 				result: {
@@ -257,6 +276,14 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 				workspace_token: undefined,
 				provider_account_id: undefined,
 				type: undefined,
+				tag_key: undefined,
+				tag_value: undefined,
+				regions: undefined,
+				provider_ids: undefined,
+				account_ids: undefined,
+				billing_account_ids: undefined,
+				start_date: undefined,
+				end_date: undefined,
 			});
 			expect(err.exception).toEqual({
 				errors: [{ message: "Access denied" }],
@@ -291,6 +318,14 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 				workspace_token: undefined,
 				provider_account_id: undefined,
 				type: "aws",
+				tag_key: undefined,
+				tag_value: undefined,
+				regions: undefined,
+				provider_ids: undefined,
+				account_ids: undefined,
+				billing_account_ids: undefined,
+				start_date: undefined,
+				end_date: undefined,
 			});
 			expect(res).toEqual({
 				recommendations: successData.recommendations,
@@ -330,6 +365,14 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 				workspace_token: undefined,
 				provider_account_id: undefined,
 				type: "AWS recommendations",
+				tag_key: undefined,
+				tag_value: undefined,
+				regions: undefined,
+				provider_ids: undefined,
+				account_ids: undefined,
+				billing_account_ids: undefined,
+				start_date: undefined,
+				end_date: undefined,
 			});
 			expect(res).toEqual({
 				recommendations: successData.recommendations,
@@ -369,6 +412,14 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 				workspace_token: undefined,
 				provider_account_id: undefined,
 				type: "Google Cloud Recommendations",
+				tag_key: undefined,
+				tag_value: undefined,
+				regions: undefined,
+				provider_ids: undefined,
+				account_ids: undefined,
+				billing_account_ids: undefined,
+				start_date: undefined,
+				end_date: undefined,
 			});
 			expect(res).toEqual({
 				recommendations: successData.recommendations,
@@ -408,6 +459,14 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 				workspace_token: undefined,
 				provider_account_id: undefined,
 				type: "Amazon Web Services Recommendations",
+				tag_key: undefined,
+				tag_value: undefined,
+				regions: undefined,
+				provider_ids: undefined,
+				account_ids: undefined,
+				billing_account_ids: undefined,
+				start_date: undefined,
+				end_date: undefined,
 			});
 			expect(res).toEqual({
 				recommendations: successData.recommendations,
@@ -447,6 +506,14 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 				workspace_token: undefined,
 				provider_account_id: undefined,
 				type: "ec2_rightsizing_recommender",
+				tag_key: undefined,
+				tag_value: undefined,
+				regions: undefined,
+				provider_ids: undefined,
+				account_ids: undefined,
+				billing_account_ids: undefined,
+				start_date: undefined,
+				end_date: undefined,
 			});
 			expect(res).toEqual({
 				recommendations: successData.recommendations,
@@ -486,6 +553,14 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 				workspace_token: undefined,
 				provider_account_id: undefined,
 				type: "Google Cloud Compute Rightsizing Recommendations",
+				tag_key: undefined,
+				tag_value: undefined,
+				regions: undefined,
+				provider_ids: undefined,
+				account_ids: undefined,
+				billing_account_ids: undefined,
+				start_date: undefined,
+				end_date: undefined,
 			});
 			expect(res).toEqual({
 				recommendations: successData.recommendations,
@@ -520,7 +595,7 @@ const newFilterTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 		]),
 		handler: async ({ callExpectingSuccess }) => {
 			const res = await callExpectingSuccess({
-				page: 1,
+				...minimalArgs,
 				workspace_token: "wt_123",
 				tag_key: "department",
 				tag_value: "engineering",
@@ -535,10 +610,7 @@ const newFilterTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 		name: "throws MCPUserError when only tag_key is provided",
 		apiCallHandler: requestsInOrder([]),
 		handler: async ({ callExpectingMCPUserError }) => {
-			const err = await callExpectingMCPUserError({
-				page: 1,
-				tag_key: "department",
-			});
+			const err = await callExpectingMCPUserError({ ...minimalArgs, tag_key: "department" });
 			expect(err.exception).toEqual({
 				errors: [{ message: "tag_key and tag_value must both be provided together" }],
 			});
@@ -548,10 +620,7 @@ const newFilterTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 		name: "throws MCPUserError when only tag_value is provided",
 		apiCallHandler: requestsInOrder([]),
 		handler: async ({ callExpectingMCPUserError }) => {
-			const err = await callExpectingMCPUserError({
-				page: 1,
-				tag_value: "engineering",
-			});
+			const err = await callExpectingMCPUserError({ ...minimalArgs, tag_value: "engineering" });
 			expect(err.exception).toEqual({
 				errors: [{ message: "tag_key and tag_value must both be provided together" }],
 			});
@@ -577,7 +646,7 @@ const newFilterTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 		]),
 		handler: async ({ callExpectingSuccess }) => {
 			const res = await callExpectingSuccess({
-				page: 1,
+				...minimalArgs,
 				workspace_token: "wt_123",
 				regions: ["us-east-1", "us-west-2"],
 			});
@@ -607,7 +676,7 @@ const newFilterTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 		]),
 		handler: async ({ callExpectingSuccess }) => {
 			const res = await callExpectingSuccess({
-				page: 1,
+				...minimalArgs,
 				workspace_token: "wt_123",
 				provider_ids: ["Amazon Web Services", "Google Cloud"],
 			});
@@ -637,7 +706,7 @@ const newFilterTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 		]),
 		handler: async ({ callExpectingSuccess }) => {
 			const res = await callExpectingSuccess({
-				page: 1,
+				...minimalArgs,
 				workspace_token: "wt_123",
 				account_ids: ["123456789", "987654321"],
 			});
@@ -667,7 +736,7 @@ const newFilterTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 		]),
 		handler: async ({ callExpectingSuccess }) => {
 			const res = await callExpectingSuccess({
-				page: 1,
+				...minimalArgs,
 				workspace_token: "wt_123",
 				billing_account_ids: ["ba_abc123"],
 			});
@@ -698,7 +767,7 @@ const newFilterTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 		]),
 		handler: async ({ callExpectingSuccess }) => {
 			const res = await callExpectingSuccess({
-				page: 1,
+				...minimalArgs,
 				workspace_token: "wt_123",
 				start_date: "2024-01-01",
 				end_date: "2024-12-31",
@@ -714,7 +783,7 @@ const newFilterTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 		apiCallHandler: requestsInOrder([]),
 		handler: async ({ callExpectingMCPUserError }) => {
 			const err = await callExpectingMCPUserError({
-				page: 1,
+				...minimalArgs,
 				workspace_token: "wt_123",
 				start_date: "2024-01-01",
 			});
@@ -728,7 +797,7 @@ const newFilterTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 		apiCallHandler: requestsInOrder([]),
 		handler: async ({ callExpectingMCPUserError }) => {
 			const err = await callExpectingMCPUserError({
-				page: 1,
+				...minimalArgs,
 				workspace_token: "wt_123",
 				end_date: "2024-12-31",
 			});
