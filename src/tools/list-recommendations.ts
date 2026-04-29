@@ -148,7 +148,7 @@ Each recommendation includes:
 
 Recommendations can be filtered by:
 - Status (open shows active recommendations, resolved shows implemented ones, dismissed shows ignored ones)
-- Cloud provider via provider (single) or provider_ids (multiple; requires workspace_token)
+- Cloud provider via provider (single) or provider_ids (multiple; requires workspace_token) — only use these when the user explicitly specifies cloud providers; do not infer or default to all providers
 - Specific workspace via workspace_token
 - Provider account ID via provider_account_id (single) or account_ids (multiple; requires workspace_token)
 - Billing account via billing_account_ids (requires workspace_token)
@@ -212,7 +212,7 @@ const args = {
 			z.array(z.enum(SUPPORTED_PROVIDERS)).optional()
 		)
 		.describe(
-			"Filter by one or more cloud providers. Cannot be used together with provider. Requires workspace_token."
+			"Filter by one or more cloud providers. Cannot be used together with provider. Requires workspace_token. Only use this when the user explicitly asks to filter by specific cloud providers — do not infer or default to passing all providers."
 		),
 	account_ids: z
 		.array(z.string())
