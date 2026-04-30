@@ -11,28 +11,28 @@ Tags can be edited in the Vantage Web UI, or have further details displayed ther
 `.trim();
 
 const args = {
-	page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
+  page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
 };
 
 export default registerTool({
-	name: "list-tags",
-	title: "List Tags",
-	description,
-	annotations: {
-		destructive: false,
-		openWorld: false,
-		readOnly: true,
-	},
-	args,
-	async execute(args, ctx) {
-		const requestParams = { ...args, limit: DEFAULT_LIMIT };
-		const response = await ctx.callVantageApi("/v2/tags", requestParams, "GET");
-		if (!response.ok) {
-			throw new MCPUserError({ errors: response.errors });
-		}
-		return {
-			tags: response.data.tags,
-			pagination: paginationData(response.data),
-		};
-	},
+  name: "list-tags",
+  title: "List Tags",
+  description,
+  annotations: {
+    destructive: false,
+    openWorld: false,
+    readOnly: true,
+  },
+  args,
+  async execute(args, ctx) {
+    const requestParams = { ...args, limit: DEFAULT_LIMIT };
+    const response = await ctx.callVantageApi("/v2/tags", requestParams, "GET");
+    if (!response.ok) {
+      throw new MCPUserError({ errors: response.errors });
+    }
+    return {
+      tags: response.data.tags,
+      pagination: paginationData(response.data),
+    };
+  },
 });

@@ -10,28 +10,28 @@ Use the page value of 1 to start.
 `.trim();
 
 const args = {
-	page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
+  page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
 };
 
 export default registerTool({
-	name: "list-cost-alerts",
-	title: "List Cost Alerts",
-	description,
-	annotations: {
-		destructive: false,
-		openWorld: false,
-		readOnly: true,
-	},
-	args,
-	async execute(args, ctx) {
-		const requestParams = { ...args, limit: DEFAULT_LIMIT };
-		const response = await ctx.callVantageApi("/v2/cost_alerts", requestParams, "GET");
-		if (!response.ok) {
-			throw new MCPUserError({ errors: response.errors });
-		}
-		return {
-			cost_alerts: response.data.cost_alerts,
-			pagination: paginationData(response.data),
-		};
-	},
+  name: "list-cost-alerts",
+  title: "List Cost Alerts",
+  description,
+  annotations: {
+    destructive: false,
+    openWorld: false,
+    readOnly: true,
+  },
+  args,
+  async execute(args, ctx) {
+    const requestParams = { ...args, limit: DEFAULT_LIMIT };
+    const response = await ctx.callVantageApi("/v2/cost_alerts", requestParams, "GET");
+    if (!response.ok) {
+      throw new MCPUserError({ errors: response.errors });
+    }
+    return {
+      cost_alerts: response.data.cost_alerts,
+      pagination: paginationData(response.data),
+    };
+  },
 });

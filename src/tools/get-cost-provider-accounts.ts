@@ -9,34 +9,34 @@ ID of a Cost Provider Account to use in places. The account_id in this result ca
 `.trim();
 
 export default registerTool({
-	name: "get-cost-provider-accounts",
-	title: "Get Cost Provider Accounts",
-	description,
-	args: {
-		workspace_token: z.string().describe("Workspace token to list cost provider accounts for"),
-		account_id: z.string().optional().describe("Filter by a specific account ID"),
-		provider: z.string().optional().describe("Provider to filter provider accounts to"),
-	},
-	annotations: {
-		destructive: false,
-		openWorld: false,
-		readOnly: true,
-	},
-	async execute(args, ctx) {
-		const response = await ctx.callVantageApi(
-			"/v2/cost_provider_accounts",
-			{
-				...args,
-				// @ts-expect-error: This is a workaround so we don't have to keep patching the type here
-				provider: args.provider,
-			},
-			"GET"
-		);
-		if (!response.ok) {
-			throw new MCPUserError({ errors: response.errors });
-		}
-		return {
-			cost_provider_accounts: response.data.cost_provider_accounts,
-		};
-	},
+  name: "get-cost-provider-accounts",
+  title: "Get Cost Provider Accounts",
+  description,
+  args: {
+    workspace_token: z.string().describe("Workspace token to list cost provider accounts for"),
+    account_id: z.string().optional().describe("Filter by a specific account ID"),
+    provider: z.string().optional().describe("Provider to filter provider accounts to"),
+  },
+  annotations: {
+    destructive: false,
+    openWorld: false,
+    readOnly: true,
+  },
+  async execute(args, ctx) {
+    const response = await ctx.callVantageApi(
+      "/v2/cost_provider_accounts",
+      {
+        ...args,
+        // @ts-expect-error: This is a workaround so we don't have to keep patching the type here
+        provider: args.provider,
+      },
+      "GET"
+    );
+    if (!response.ok) {
+      throw new MCPUserError({ errors: response.errors });
+    }
+    return {
+      cost_provider_accounts: response.data.cost_provider_accounts,
+    };
+  },
 });

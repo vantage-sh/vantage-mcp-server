@@ -28,32 +28,29 @@ You must have both the recommendation token (from list-recommendations) and the 
 `.trim();
 
 const args = {
-	recommendation_token: z.string().min(1).describe("The token of the recommendation"),
-	resource_token: z
-		.string()
-		.min(1)
-		.describe("The token of the specific resource to get details for"),
+  recommendation_token: z.string().min(1).describe("The token of the recommendation"),
+  resource_token: z.string().min(1).describe("The token of the specific resource to get details for"),
 };
 
 export default registerTool({
-	name: "get-recommendation-resource-details",
-	title: "Get Recommendation Resource Details",
-	description,
-	annotations: {
-		destructive: false,
-		openWorld: false,
-		readOnly: true,
-	},
-	args,
-	async execute(args, ctx) {
-		const response = await ctx.callVantageApi(
-			`/v2/recommendations/${pathEncode(args.recommendation_token)}/resources/${pathEncode(args.resource_token)}`,
-			{},
-			"GET"
-		);
-		if (!response.ok) {
-			throw new MCPUserError({ errors: response.errors });
-		}
-		return response.data;
-	},
+  name: "get-recommendation-resource-details",
+  title: "Get Recommendation Resource Details",
+  description,
+  annotations: {
+    destructive: false,
+    openWorld: false,
+    readOnly: true,
+  },
+  args,
+  async execute(args, ctx) {
+    const response = await ctx.callVantageApi(
+      `/v2/recommendations/${pathEncode(args.recommendation_token)}/resources/${pathEncode(args.resource_token)}`,
+      {},
+      "GET"
+    );
+    if (!response.ok) {
+      throw new MCPUserError({ errors: response.errors });
+    }
+    return response.data;
+  },
 });

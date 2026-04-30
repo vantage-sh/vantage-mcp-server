@@ -13,28 +13,28 @@ The token of a budget can be used to link the user to the budget in the Vantage 
 `.trim();
 
 const args = {
-	page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
+  page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
 };
 
 export default registerTool({
-	name: "list-budgets",
-	title: "List Budgets",
-	description,
-	annotations: {
-		destructive: false,
-		openWorld: false,
-		readOnly: true,
-	},
-	args,
-	async execute(args, ctx) {
-		const requestParams = { ...args, limit: DEFAULT_LIMIT };
-		const response = await ctx.callVantageApi("/v2/budgets", requestParams, "GET");
-		if (!response.ok) {
-			throw new MCPUserError({ errors: response.errors });
-		}
-		return {
-			budgets: response.data.budgets,
-			pagination: paginationData(response.data),
-		};
-	},
+  name: "list-budgets",
+  title: "List Budgets",
+  description,
+  annotations: {
+    destructive: false,
+    openWorld: false,
+    readOnly: true,
+  },
+  args,
+  async execute(args, ctx) {
+    const requestParams = { ...args, limit: DEFAULT_LIMIT };
+    const response = await ctx.callVantageApi("/v2/budgets", requestParams, "GET");
+    if (!response.ok) {
+      throw new MCPUserError({ errors: response.errors });
+    }
+    return {
+      budgets: response.data.budgets,
+      pagination: paginationData(response.data),
+    };
+  },
 });

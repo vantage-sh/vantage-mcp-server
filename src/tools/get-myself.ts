@@ -11,20 +11,20 @@ default_workspace_token: The token of the workspace that is set as the default w
 const args = {};
 
 export default registerTool({
-	name: "get-myself",
-	title: "Get Current User",
-	description,
-	annotations: {
-		destructive: false,
-		openWorld: false,
-		readOnly: true,
-	},
-	args,
-	async execute(_, ctx) {
-		const response = await ctx.callVantageApi("/v2/me", {}, "GET");
-		if (!response.ok) {
-			throw new MCPUserError({ errors: response.errors });
-		}
-		return response.data;
-	},
+  name: "get-myself",
+  title: "Get Current User",
+  description,
+  annotations: {
+    destructive: false,
+    openWorld: false,
+    readOnly: true,
+  },
+  args,
+  async execute(_, ctx) {
+    const response = await ctx.callVantageApi("/v2/me", {}, "GET");
+    if (!response.ok) {
+      throw new MCPUserError({ errors: response.errors });
+    }
+    return response.data;
+  },
 });

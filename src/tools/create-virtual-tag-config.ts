@@ -17,57 +17,49 @@ You can optionally:
 `.trim();
 
 const collapsedTagKeySchema = z.object({
-	key: z.string().describe("The tag key to collapse values for."),
-	providers: z
-		.array(z.string())
-		.describe("The providers this collapsed tag key applies to.")
-		.optional(),
+  key: z.string().describe("The tag key to collapse values for."),
+  providers: z.array(z.string()).describe("The providers this collapsed tag key applies to.").optional(),
 });
 
 const valueSchema = z.object({
-	filter: z.string().describe("The filter VQL for the Value."),
-	name: z.string().describe("The name of the Value.").optional(),
-	business_metric_token: z
-		.string()
-		.describe("The token of the associated BusinessMetric.")
-		.optional(),
-	cost_metric: z
-		.object({
-			filter: z.string().describe("The filter VQL for the cost metric."),
-			aggregation: z.object({
-				tag: z.string().describe("The tag to aggregate on."),
-			}),
-		})
-		.optional(),
+  filter: z.string().describe("The filter VQL for the Value."),
+  name: z.string().describe("The name of the Value.").optional(),
+  business_metric_token: z.string().describe("The token of the associated BusinessMetric.").optional(),
+  cost_metric: z
+    .object({
+      filter: z.string().describe("The filter VQL for the cost metric."),
+      aggregation: z.object({
+        tag: z.string().describe("The tag to aggregate on."),
+      }),
+    })
+    .optional(),
 });
 
 export default registerTool({
-	name: "create-virtual-tag-config",
-	title: "Create Virtual Tag Config",
-	description,
-	args: {
-		key: z.string().min(1).describe("The key of the VirtualTagConfig"),
-		overridable: z
-			.boolean()
-			.describe(
-				"Whether the VirtualTagConfig can override a provider-supplied tag on a matching Cost."
-			),
-		backfill_until: dateValidator(
-			"The earliest month the VirtualTagConfig should be backfilled to. ISO 8601 Formatted."
-		).optional(),
-		collapsed_tag_keys: z.array(collapsedTagKeySchema).optional(),
-		values: z.array(valueSchema).optional(),
-	},
-	annotations: {
-		destructive: true,
-		openWorld: false,
-		readOnly: false,
-	},
-	async execute(args, ctx) {
-		const response = await ctx.callVantageApi("/v2/virtual_tag_configs", args, "POST");
-		if (!response.ok) {
-			throw new MCPUserError({ errors: response.errors });
-		}
-		return response.data;
-	},
+  name: "create-virtual-tag-config",
+  title: "Create Virtual Tag Config",
+  description,
+  args: {
+    key: z.string().min(1).describe("The key of the VirtualTagConfig"),
+    overridable: z
+      .boolean()
+      .describe("Whether the VirtualTagConfig can override a provider-supplied tag on a matching Cost."),
+    backfill_until: dateValidator(
+      "The earliest month the VirtualTagConfig should be backfilled to. ISO 8601 Formatted."
+    ).optional(),
+    collapsed_tag_keys: z.array(collapsedTagKeySchema).optional(),
+    values: z.array(valueSchema).optional(),
+  },
+  annotations: {
+    destructive: true,
+    openWorld: false,
+    readOnly: false,
+  },
+  async execute(args, ctx) {
+    const response = await ctx.callVantageApi("/v2/virtual_tag_configs", args, "POST");
+    if (!response.ok) {
+      throw new MCPUserError({ errors: response.errors });
+    }
+    return response.data;
+  },
 });

@@ -27,36 +27,33 @@ Use pagination (page parameter) to navigate through large numbers of affected re
 `.trim();
 
 const args = {
-	recommendation_token: z
-		.string()
-		.min(1)
-		.describe("The token of the recommendation to get resources for"),
-	page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
+  recommendation_token: z.string().min(1).describe("The token of the recommendation to get resources for"),
+  page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
 };
 
 export default registerTool({
-	name: "get-recommendation-resources",
-	title: "Get Recommendation Resources",
-	description,
-	annotations: {
-		destructive: false,
-		openWorld: false,
-		readOnly: true,
-	},
-	args,
-	async execute(args, ctx) {
-		const requestParams = { page: args.page, limit: DEFAULT_LIMIT };
-		const response = await ctx.callVantageApi(
-			`/v2/recommendations/${pathEncode(args.recommendation_token)}/resources`,
-			requestParams,
-			"GET"
-		);
-		if (!response.ok) {
-			throw new MCPUserError({ errors: response.errors });
-		}
-		return {
-			resources: response.data.resources,
-			pagination: paginationData(response.data),
-		};
-	},
+  name: "get-recommendation-resources",
+  title: "Get Recommendation Resources",
+  description,
+  annotations: {
+    destructive: false,
+    openWorld: false,
+    readOnly: true,
+  },
+  args,
+  async execute(args, ctx) {
+    const requestParams = { page: args.page, limit: DEFAULT_LIMIT };
+    const response = await ctx.callVantageApi(
+      `/v2/recommendations/${pathEncode(args.recommendation_token)}/resources`,
+      requestParams,
+      "GET"
+    );
+    if (!response.ok) {
+      throw new MCPUserError({ errors: response.errors });
+    }
+    return {
+      resources: response.data.resources,
+      pagination: paginationData(response.data),
+    };
+  },
 });

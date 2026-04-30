@@ -8,24 +8,24 @@ Gets a specific team with its token.
 `.trim();
 
 const args = {
-	token: z.string().describe("The team token to retrieve"),
+  token: z.string().describe("The team token to retrieve"),
 };
 
 export default registerTool({
-	name: "get-team",
-	title: "Get Team",
-	description,
-	annotations: {
-		destructive: false,
-		openWorld: false,
-		readOnly: true,
-	},
-	args,
-	async execute(args, ctx) {
-		const response = await ctx.callVantageApi(`/v2/teams/${pathEncode(args.token)}`, {}, "GET");
-		if (!response.ok) {
-			throw new MCPUserError({ errors: response.errors });
-		}
-		return response.data;
-	},
+  name: "get-team",
+  title: "Get Team",
+  description,
+  annotations: {
+    destructive: false,
+    openWorld: false,
+    readOnly: true,
+  },
+  args,
+  async execute(args, ctx) {
+    const response = await ctx.callVantageApi(`/v2/teams/${pathEncode(args.token)}`, {}, "GET");
+    if (!response.ok) {
+      throw new MCPUserError({ errors: response.errors });
+    }
+    return response.data;
+  },
 });

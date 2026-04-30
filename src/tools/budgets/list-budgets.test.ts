@@ -1,13 +1,13 @@
 import { expect } from "vitest";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import {
-	type ExecutionTestTableItem,
-	type ExtractOutputSchema,
-	type ExtractValidators,
-	type InferValidators,
-	requestsInOrder,
-	type SchemaTestTableItem,
-	testTool,
+  type ExecutionTestTableItem,
+  type ExtractOutputSchema,
+  type ExtractValidators,
+  type InferValidators,
+  requestsInOrder,
+  type SchemaTestTableItem,
+  testTool,
 } from "../utils/testing";
 import tool from "./list-budgets";
 
@@ -15,99 +15,99 @@ type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
-	page: 1,
+  page: 1,
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
-	{
-		name: "default page",
-		data: {
-			page: undefined,
-		},
-	},
-	{
-		name: "valid page number",
-		data: validArguments,
-	},
+  {
+    name: "default page",
+    data: {
+      page: undefined,
+    },
+  },
+  {
+    name: "valid page number",
+    data: validArguments,
+  },
 ];
 
 const successData = {
-	budgets: [
-		{
-			token: "budget_123",
-			name: "Monthly AWS Budget",
-			workspace_token: "wrkspc_123",
-			created_at: "2023-01-15T10:30:00Z",
-			budget_alert_tokens: [],
-			child_budget_tokens: [],
-			periods: [],
-			cost_report_token: "crt_123",
-		},
-		{
-			token: "budget_456",
-			name: "Quarterly Azure Budget",
-			workspace_token: "wrkspc_123",
-			created_at: "2023-01-15T10:30:00Z",
-			budget_alert_tokens: [],
-			child_budget_tokens: [],
-			periods: [],
-			cost_report_token: "crt_456",
-		},
-	],
-	links: {},
+  budgets: [
+    {
+      token: "budget_123",
+      name: "Monthly AWS Budget",
+      workspace_token: "wrkspc_123",
+      created_at: "2023-01-15T10:30:00Z",
+      budget_alert_tokens: [],
+      child_budget_tokens: [],
+      periods: [],
+      cost_report_token: "crt_123",
+    },
+    {
+      token: "budget_456",
+      name: "Quarterly Azure Budget",
+      workspace_token: "wrkspc_123",
+      created_at: "2023-01-15T10:30:00Z",
+      budget_alert_tokens: [],
+      child_budget_tokens: [],
+      periods: [],
+      cost_report_token: "crt_456",
+    },
+  ],
+  links: {},
 };
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
-	{
-		name: "successful call",
-		apiCallHandler: requestsInOrder([
-			{
-				endpoint: "/v2/budgets",
-				params: {
-					page: 1,
-					limit: DEFAULT_LIMIT,
-				},
-				method: "GET",
-				result: {
-					ok: true,
-					data: successData,
-				},
-			},
-		]),
-		handler: async ({ callExpectingSuccess }) => {
-			const res = await callExpectingSuccess(validArguments);
-			expect(res).toEqual({
-				budgets: successData.budgets,
-				pagination: {
-					hasNextPage: false,
-					nextPage: 0,
-				},
-			});
-		},
-	},
-	{
-		name: "unsuccessful call",
-		apiCallHandler: requestsInOrder([
-			{
-				endpoint: "/v2/budgets",
-				params: {
-					page: 1,
-					limit: DEFAULT_LIMIT,
-				},
-				method: "GET",
-				result: {
-					ok: false,
-					errors: [{ message: "Access denied" }],
-				},
-			},
-		]),
-		handler: async ({ callExpectingMCPUserError }) => {
-			const err = await callExpectingMCPUserError(validArguments);
-			expect(err.exception).toEqual({
-				errors: [{ message: "Access denied" }],
-			});
-		},
-	},
+  {
+    name: "successful call",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/budgets",
+        params: {
+          page: 1,
+          limit: DEFAULT_LIMIT,
+        },
+        method: "GET",
+        result: {
+          ok: true,
+          data: successData,
+        },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const res = await callExpectingSuccess(validArguments);
+      expect(res).toEqual({
+        budgets: successData.budgets,
+        pagination: {
+          hasNextPage: false,
+          nextPage: 0,
+        },
+      });
+    },
+  },
+  {
+    name: "unsuccessful call",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/budgets",
+        params: {
+          page: 1,
+          limit: DEFAULT_LIMIT,
+        },
+        method: "GET",
+        result: {
+          ok: false,
+          errors: [{ message: "Access denied" }],
+        },
+      },
+    ]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError(validArguments);
+      expect(err.exception).toEqual({
+        errors: [{ message: "Access denied" }],
+      });
+    },
+  },
 ];
 
 testTool(tool, argumentSchemaTests, executionTests);

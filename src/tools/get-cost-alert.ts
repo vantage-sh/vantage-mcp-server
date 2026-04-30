@@ -8,28 +8,24 @@ Gets a specific cost alert by its token.
 `.trim();
 
 const args = {
-	cost_alert_token: z.string().describe("The cost alert token to retrieve"),
+  cost_alert_token: z.string().describe("The cost alert token to retrieve"),
 };
 
 export default registerTool({
-	name: "get-cost-alert",
-	title: "Get Cost Alert",
-	description,
-	annotations: {
-		destructive: false,
-		openWorld: false,
-		readOnly: true,
-	},
-	args,
-	async execute(args, ctx) {
-		const response = await ctx.callVantageApi(
-			`/v2/cost_alerts/${pathEncode(args.cost_alert_token)}`,
-			{},
-			"GET"
-		);
-		if (!response.ok) {
-			throw new MCPUserError({ errors: response.errors });
-		}
-		return response.data;
-	},
+  name: "get-cost-alert",
+  title: "Get Cost Alert",
+  description,
+  annotations: {
+    destructive: false,
+    openWorld: false,
+    readOnly: true,
+  },
+  args,
+  async execute(args, ctx) {
+    const response = await ctx.callVantageApi(`/v2/cost_alerts/${pathEncode(args.cost_alert_token)}`, {}, "GET");
+    if (!response.ok) {
+      throw new MCPUserError({ errors: response.errors });
+    }
+    return response.data;
+  },
 });

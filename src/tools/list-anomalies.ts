@@ -11,34 +11,34 @@ The report token can be used to link the user to the report in the Vantage Web U
 `.trim();
 
 const args = {
-	page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
-	cost_report_token: z.string().optional().describe("Cost report to filter anomalies by"),
-	service: z.string().optional().describe("Service to filter anomalies to"),
-	provider: z.string().optional().describe("Provider to filter anomalies to"),
-	cost_category: z.string().optional().describe("Cost category to filter anomalies to"),
-	start_date: dateValidator("Start date to filter anomalies to").optional(),
-	end_date: dateValidator("End date to filter anomalies to").optional(),
+  page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
+  cost_report_token: z.string().optional().describe("Cost report to filter anomalies by"),
+  service: z.string().optional().describe("Service to filter anomalies to"),
+  provider: z.string().optional().describe("Provider to filter anomalies to"),
+  cost_category: z.string().optional().describe("Cost category to filter anomalies to"),
+  start_date: dateValidator("Start date to filter anomalies to").optional(),
+  end_date: dateValidator("End date to filter anomalies to").optional(),
 };
 
 export default registerTool({
-	name: "list-anomalies",
-	title: "List Anomalies",
-	description,
-	annotations: {
-		destructive: false,
-		openWorld: false,
-		readOnly: true,
-	},
-	args,
-	async execute(args, ctx) {
-		const requestParams = { ...args, limit: DEFAULT_LIMIT };
-		const response = await ctx.callVantageApi("/v2/anomaly_alerts", requestParams, "GET");
-		if (!response.ok) {
-			throw new MCPUserError({ errors: response.errors });
-		}
-		return {
-			anomaly_alerts: response.data.anomaly_alerts,
-			pagination: paginationData(response.data),
-		};
-	},
+  name: "list-anomalies",
+  title: "List Anomalies",
+  description,
+  annotations: {
+    destructive: false,
+    openWorld: false,
+    readOnly: true,
+  },
+  args,
+  async execute(args, ctx) {
+    const requestParams = { ...args, limit: DEFAULT_LIMIT };
+    const response = await ctx.callVantageApi("/v2/anomaly_alerts", requestParams, "GET");
+    if (!response.ok) {
+      throw new MCPUserError({ errors: response.errors });
+    }
+    return {
+      anomaly_alerts: response.data.anomaly_alerts,
+      pagination: paginationData(response.data),
+    };
+  },
 });

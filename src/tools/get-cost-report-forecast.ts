@@ -13,45 +13,42 @@ The report token can be used to link the user to the report in the Vantage Web U
 `.trim();
 
 const args = {
-	cost_report_token: z.string().min(1).describe("Cost report to limit costs to"),
-	page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
-	start_date: dateValidator("Start date to filter costs by, format=YYYY-MM-DD").optional(),
-	end_date: dateValidator("End date to filter costs by, format=YYYY-MM-DD").optional(),
-	provider: z
-		.string()
-		.optional()
-		.describe("Provider to filter costs by, refer to the list-cost-providers tool"),
-	service: z
-		.string()
-		.optional()
-		.describe(
-			"Service to filter costs by, refer to the list-cost-services tool, must pass a provider when you pass a service"
-		),
+  cost_report_token: z.string().min(1).describe("Cost report to limit costs to"),
+  page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
+  start_date: dateValidator("Start date to filter costs by, format=YYYY-MM-DD").optional(),
+  end_date: dateValidator("End date to filter costs by, format=YYYY-MM-DD").optional(),
+  provider: z.string().optional().describe("Provider to filter costs by, refer to the list-cost-providers tool"),
+  service: z
+    .string()
+    .optional()
+    .describe(
+      "Service to filter costs by, refer to the list-cost-services tool, must pass a provider when you pass a service"
+    ),
 };
 
 export default registerTool({
-	name: "get-cost-report-forecast",
-	title: "Get Cost Report Forecast",
-	description,
-	annotations: {
-		destructive: false,
-		openWorld: false,
-		readOnly: true,
-	},
-	args,
-	async execute(args, ctx) {
-		const requestParams = { ...args, limit: DEFAULT_LIMIT, provider: args.provider as any };
-		const response = await ctx.callVantageApi(
-			`/v2/cost_reports/${pathEncode(args.cost_report_token)}/forecasted_costs`,
-			requestParams,
-			"GET"
-		);
-		if (!response.ok) {
-			throw new MCPUserError({ errors: response.errors });
-		}
-		return {
-			forecasted_costs: response.data.forecasted_costs,
-			pagination: paginationData(response.data),
-		};
-	},
+  name: "get-cost-report-forecast",
+  title: "Get Cost Report Forecast",
+  description,
+  annotations: {
+    destructive: false,
+    openWorld: false,
+    readOnly: true,
+  },
+  args,
+  async execute(args, ctx) {
+    const requestParams = { ...args, limit: DEFAULT_LIMIT, provider: args.provider as any };
+    const response = await ctx.callVantageApi(
+      `/v2/cost_reports/${pathEncode(args.cost_report_token)}/forecasted_costs`,
+      requestParams,
+      "GET"
+    );
+    if (!response.ok) {
+      throw new MCPUserError({ errors: response.errors });
+    }
+    return {
+      forecasted_costs: response.data.forecasted_costs,
+      pagination: paginationData(response.data),
+    };
+  },
 });
