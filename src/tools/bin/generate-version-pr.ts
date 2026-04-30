@@ -1,11 +1,11 @@
+import { spawnSync } from "node:child_process";
+import { readFileSync, unlinkSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
-import { spawnSync } from "child_process";
 import { buildSync } from "esbuild";
-import { readFileSync, unlinkSync, writeFileSync } from "fs";
-import { join } from "path";
 import { serverMeta } from "../../shared";
 import { setupRegisteredTools } from "../structure/registerTool";
 
@@ -253,14 +253,14 @@ async function doPr(description: string, newVersion: string) {
   const parts = serverMeta.version.split(".");
   if (toolChanges.length === 0) {
     // Patch version bump
-    parts[2] = (parseInt(parts[2]) + 1).toString();
+    parts[2] = (parseInt(parts[2], 10) + 1).toString();
     const newVersion = parts.join(".");
     await doPr("No tool changes, bumping patch version", newVersion);
     return;
   }
 
   // Minor version bump
-  parts[1] = (parseInt(parts[1]) + 1).toString();
+  parts[1] = (parseInt(parts[1], 10) + 1).toString();
   parts[2] = "0";
   const newVersion = parts.join(".");
   await doPr(`Tool changes:\n${toolChanges.join("\n")}`, newVersion);

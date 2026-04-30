@@ -29,7 +29,7 @@ export type TestHandlerContext<Input extends z.ZodRawShape, Output extends z.Zod
   ) => Promise<
     Output extends undefined
       ? Record<string, unknown>
-      : z.core.$InferObjectOutput<{ -readonly [P in keyof Output]: Output[P] }, {}>
+      : z.core.$InferObjectOutput<{ -readonly [P in keyof Output]: Output[P] }, Record<string, unknown>>
   >;
   callExpectingError: (args: InferValidators<Input>) => Promise<Error>;
   callExpectingMCPUserError: (args: InferValidators<Input>) => Promise<MCPUserError>;
@@ -45,12 +45,12 @@ export function makeTestHandlerContext<Input extends z.ZodRawShape, Output exten
   inputSchema: Input,
   outputSchema: Output,
   execute: (
-    args: z.core.$InferObjectOutput<{ -readonly [P in keyof Input]: Input[P] }, {}>,
+    args: z.core.$InferObjectOutput<{ -readonly [P in keyof Input]: Input[P] }, Record<string, unknown>>,
     context: ToolCallContext
   ) => Promise<
     Output extends undefined
       ? Record<string, unknown>
-      : z.core.$InferObjectInput<{ -readonly [P in keyof Output]: Output[P] }, {}>
+      : z.core.$InferObjectInput<{ -readonly [P in keyof Output]: Output[P] }, Record<string, unknown>>
   >,
   apiCallHandler?: ExecutionTestTableItem<Input, Output>["apiCallHandler"]
 ) {
@@ -120,7 +120,7 @@ export function testTool<Input extends z.ZodRawShape, Output extends z.ZodRawSha
   outputSchemaTests: SchemaTestTableItem<Output>[],
   executionTests: ExecutionTestTableItem<Input, Output>[]
 ): void;
-export function testTool<Input extends z.ZodRawShape, Output extends undefined>(
+export function testTool<Input extends z.ZodRawShape, _Output extends undefined>(
   tool: ToolProperties<Input, undefined>,
   argumentSchemaTests: SchemaTestTableItem<Input>[],
   executionTests: ExecutionTestTableItem<Input, undefined>[]

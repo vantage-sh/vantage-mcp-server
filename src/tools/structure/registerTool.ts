@@ -34,12 +34,12 @@ export type ToolProperties<Input extends z.ZodRawShape, Output extends z.ZodRawS
   outputSchema?: Output;
 
   execute: (
-    args: z.core.$InferObjectOutput<{ -readonly [P in keyof Input]: Input[P] }, {}>,
+    args: z.core.$InferObjectOutput<{ -readonly [P in keyof Input]: Input[P] }, Record<string, unknown>>,
     context: ToolCallContext
   ) => Promise<
     Output extends undefined
       ? Record<string, unknown>
-      : z.core.$InferObjectInput<{ -readonly [P in keyof Output]: Output[P] }, {}>
+      : z.core.$InferObjectInput<{ -readonly [P in keyof Output]: Output[P] }, Record<string, unknown>>
   >;
 };
 

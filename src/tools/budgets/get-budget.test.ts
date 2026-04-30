@@ -4,7 +4,6 @@ import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
   type ExtractValidators,
-  type InferValidators,
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
