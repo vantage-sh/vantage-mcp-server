@@ -16,6 +16,7 @@ import "./financial-commitment-reports";
 import "./get-anomaly";
 import "./get-cost-alert";
 import "./get-cost-provider-accounts";
+import "./get-dashboard";
 import "./get-financial-commitment-report";
 import "./get-folder";
 import "./get-provider-resource";
