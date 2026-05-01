@@ -4,10 +4,10 @@ https://github.com/cloudflare/ai/tree/0150b265a4510123b545b4f988511bf0b63c6641/d
 */
 import { env } from "cloudflare:workers";
 import type {
-	AuthRequest,
-	OAuthHelpers,
-	TokenExchangeCallbackOptions,
-	TokenExchangeCallbackResult,
+  AuthRequest,
+  OAuthHelpers,
+  TokenExchangeCallbackOptions,
+  TokenExchangeCallbackResult,
 } from "@cloudflare/workers-oauth-provider";
 import axios from "axios";
 import type { Context } from "hono";
@@ -17,56 +17,56 @@ import type { JWTPayload } from "jose";
 import * as oauth from "oauth4webapi";
 
 export type UserProps = {
-	claims: JWTPayload;
-	tokenSet: {
-		accessToken: string;
-		idToken: string;
-		refreshToken: string;
-	};
+  claims: JWTPayload;
+  tokenSet: {
+    accessToken: string;
+    idToken: string;
+    refreshToken: string;
+  };
 };
 
 type Auth0AuthRequest = {
-	mcpAuthRequest: AuthRequest;
-	codeVerifier: string;
-	codeChallenge: string;
-	nonce: string;
-	transactionState: string;
-	consentToken: string;
+  mcpAuthRequest: AuthRequest;
+  codeVerifier: string;
+  codeChallenge: string;
+  nonce: string;
+  transactionState: string;
+  consentToken: string;
 };
 
 // TODO pull from env
 const APP_ENV: "development" | "production" = "development";
 
 export async function getOidcConfig({
-	issuer,
-	client_id,
-	client_secret,
+  issuer,
+  client_id,
+  client_secret,
 }: {
-	issuer: string;
-	client_id: string;
-	client_secret: string;
+  issuer: string;
+  client_id: string;
+  client_secret: string;
 }) {
-	const as = await oauth
-		.discoveryRequest(new URL(issuer), { algorithm: "oidc" })
-		.then((response) => oauth.processDiscoveryResponse(new URL(issuer), response));
+  const as = await oauth
+    .discoveryRequest(new URL(issuer), { algorithm: "oidc" })
+    .then((response) => oauth.processDiscoveryResponse(new URL(issuer), response));
 
-	const client: oauth.Client = { client_id };
-	const clientAuth = oauth.ClientSecretPost(client_secret);
+  const client: oauth.Client = { client_id };
+  const clientAuth = oauth.ClientSecretPost(client_secret);
 
-	return { as, client, clientAuth };
+  return { as, client, clientAuth };
 }
 
 export interface RequiredEnv {
-	VANTAGE_API_HOST: string;
-	VANTAGE_MCP_TOKEN: string;
-	AUTH0_CLIENT_ID: string;
-	AUTH0_CLIENT_SECRET: string;
-	AUTH0_DOMAIN: string;
-	AUTH0_SCOPE: string;
-	AUTH0_AUDIENCE: string;
-	SELF_CALLBACK_URL: string;
-	SENTRY_DSN: string;
-	CF_VERSION_METADATA: { id: string };
+  VANTAGE_API_HOST: string;
+  VANTAGE_MCP_TOKEN: string;
+  AUTH0_CLIENT_ID: string;
+  AUTH0_CLIENT_SECRET: string;
+  AUTH0_DOMAIN: string;
+  AUTH0_SCOPE: string;
+  AUTH0_AUDIENCE: string;
+  SELF_CALLBACK_URL: string;
+  SENTRY_DSN: string;
+  CF_VERSION_METADATA: { id: string };
 }
 
 /**
@@ -77,62 +77,60 @@ export interface RequiredEnv {
  * original request information in a state-specific cookie for later retrieval.
  * Then it shows a consent screen before redirecting to Auth0.
  */
-export async function authorize(
-	c: Context<{ Bindings: RequiredEnv & { OAUTH_PROVIDER: OAuthHelpers } }>
-) {
-	const mcpClientAuthRequest = await c.env.OAUTH_PROVIDER.parseAuthRequest(c.req.raw);
-	if (!mcpClientAuthRequest.clientId) {
-		return c.text("Invalid request", 400);
-	}
+export async function authorize(c: Context<{ Bindings: RequiredEnv & { OAUTH_PROVIDER: OAuthHelpers } }>) {
+  const mcpClientAuthRequest = await c.env.OAUTH_PROVIDER.parseAuthRequest(c.req.raw);
+  if (!mcpClientAuthRequest.clientId) {
+    return c.text("Invalid request", 400);
+  }
 
-	const client = await c.env.OAUTH_PROVIDER.lookupClient(mcpClientAuthRequest.clientId);
-	if (!client) {
-		return c.text("Invalid client", 400);
-	}
+  const client = await c.env.OAUTH_PROVIDER.lookupClient(mcpClientAuthRequest.clientId);
+  if (!client) {
+    return c.text("Invalid client", 400);
+  }
 
-	// Generate all that is needed for the Auth0 auth request
-	const codeVerifier = oauth.generateRandomCodeVerifier();
-	const transactionState = oauth.generateRandomState();
-	const consentToken = oauth.generateRandomState(); // For CSRF protection on consent form
+  // Generate all that is needed for the Auth0 auth request
+  const codeVerifier = oauth.generateRandomCodeVerifier();
+  const transactionState = oauth.generateRandomState();
+  const consentToken = oauth.generateRandomState(); // For CSRF protection on consent form
 
-	// We will persist everything in a cookie.
-	const auth0AuthRequest: Auth0AuthRequest = {
-		codeChallenge: await oauth.calculatePKCECodeChallenge(codeVerifier),
-		codeVerifier,
-		consentToken,
-		mcpAuthRequest: mcpClientAuthRequest,
-		nonce: oauth.generateRandomNonce(),
-		transactionState,
-	};
+  // We will persist everything in a cookie.
+  const auth0AuthRequest: Auth0AuthRequest = {
+    codeChallenge: await oauth.calculatePKCECodeChallenge(codeVerifier),
+    codeVerifier,
+    consentToken,
+    mcpAuthRequest: mcpClientAuthRequest,
+    nonce: oauth.generateRandomNonce(),
+    transactionState,
+  };
 
-	// Store the auth request in a transaction-specific cookie
-	const cookieName = `auth0_req_${transactionState}`;
-	setCookie(c, cookieName, btoa(JSON.stringify(auth0AuthRequest)), {
-		httpOnly: true,
-		maxAge: 60 * 60 * 1,
-		path: "/",
-		sameSite: APP_ENV === "production" ? "none" : "lax",
-		secure: APP_ENV === "production", // 1 hour
-	});
+  // Store the auth request in a transaction-specific cookie
+  const cookieName = `auth0_req_${transactionState}`;
+  setCookie(c, cookieName, btoa(JSON.stringify(auth0AuthRequest)), {
+    httpOnly: true,
+    maxAge: 60 * 60 * 1,
+    path: "/",
+    sameSite: APP_ENV === "production" ? "none" : "lax",
+    secure: APP_ENV === "production", // 1 hour
+  });
 
-	// Extract client information for the consent screen
-	const clientName = client.clientName || client.clientId;
-	const clientLogo = client.logoUri || ""; // No default logo
-	const clientUri = client.clientUri || "#";
-	const requestedScopes = (c.env.AUTH0_SCOPE || "").split(" ");
+  // Extract client information for the consent screen
+  const clientName = client.clientName || client.clientId;
+  const clientLogo = client.logoUri || ""; // No default logo
+  const clientUri = client.clientUri || "#";
+  const requestedScopes = (c.env.AUTH0_SCOPE || "").split(" ");
 
-	// Render the consent screen with CSRF protection
-	return c.html(
-		renderConsentScreen({
-			clientLogo,
-			clientName,
-			clientUri,
-			consentToken,
-			redirectUri: mcpClientAuthRequest.redirectUri,
-			requestedScopes,
-			transactionState,
-		})
-	);
+  // Render the consent screen with CSRF protection
+  return c.html(
+    renderConsentScreen({
+      clientLogo,
+      clientName,
+      clientUri,
+      consentToken,
+      redirectUri: mcpClientAuthRequest.redirectUri,
+      requestedScopes,
+      transactionState,
+    })
+  );
 }
 
 /**
@@ -140,106 +138,104 @@ export async function authorize(
  *
  * This route handles the consent confirmation before redirecting to Auth0
  */
-export async function confirmConsent(
-	c: Context<{ Bindings: RequiredEnv & { OAUTH_PROVIDER: OAuthHelpers } }>
-) {
-	// Get form data
-	const formData = await c.req.formData();
-	const transactionState = formData.get("transaction_state") as string;
-	const consentToken = formData.get("consent_token") as string;
-	const consentAction = formData.get("consent_action") as string;
+export async function confirmConsent(c: Context<{ Bindings: RequiredEnv & { OAUTH_PROVIDER: OAuthHelpers } }>) {
+  // Get form data
+  const formData = await c.req.formData();
+  const transactionState = formData.get("transaction_state") as string;
+  const consentToken = formData.get("consent_token") as string;
+  const consentAction = formData.get("consent_action") as string;
 
-	// Validate the transaction state
-	if (!transactionState) {
-		return c.text("Invalid transaction state", 400);
-	}
+  // Validate the transaction state
+  if (!transactionState) {
+    return c.text("Invalid transaction state", 400);
+  }
 
-	// Get the transaction-specific cookie
-	const cookieName = `auth0_req_${transactionState}`;
-	const auth0AuthRequestCookie = getCookie(c, cookieName);
-	if (!auth0AuthRequestCookie) {
-		return c.text("Invalid or expired transaction", 400);
-	}
+  // Get the transaction-specific cookie
+  const cookieName = `auth0_req_${transactionState}`;
+  const auth0AuthRequestCookie = getCookie(c, cookieName);
+  if (!auth0AuthRequestCookie) {
+    return c.text("Invalid or expired transaction", 400);
+  }
 
-	// Parse the Auth0 auth request from the cookie
-	const auth0AuthRequest = JSON.parse(atob(auth0AuthRequestCookie)) as Auth0AuthRequest;
+  // Parse the Auth0 auth request from the cookie
+  const auth0AuthRequest = JSON.parse(atob(auth0AuthRequestCookie)) as Auth0AuthRequest;
 
-	// Validate the CSRF token
-	if (auth0AuthRequest.consentToken !== consentToken) {
-		return c.text("Invalid consent token", 403);
-	}
+  // Validate the CSRF token
+  if (auth0AuthRequest.consentToken !== consentToken) {
+    return c.text("Invalid consent token", 403);
+  }
 
-	const formGivesConsent = consentAction === "approve" || consentAction === "approve-sso";
+  const formGivesConsent = consentAction === "approve" || consentAction === "approve-sso";
 
-	// Handle user denial
-	if (!formGivesConsent) {
-		// Parse the MCP client auth request to get the original redirect URI
-		const redirectUri = new URL(auth0AuthRequest.mcpAuthRequest.redirectUri);
+  // Handle user denial
+  if (!formGivesConsent) {
+    // Parse the MCP client auth request to get the original redirect URI
+    const redirectUri = new URL(auth0AuthRequest.mcpAuthRequest.redirectUri);
 
-		// Add error parameters to the redirect URI
-		redirectUri.searchParams.set("error", "access_denied");
-		redirectUri.searchParams.set("error_description", "User denied the request");
-		if (auth0AuthRequest.mcpAuthRequest.state) {
-			redirectUri.searchParams.set("state", auth0AuthRequest.mcpAuthRequest.state);
-		}
+    // Add error parameters to the redirect URI
+    redirectUri.searchParams.set("error", "access_denied");
+    redirectUri.searchParams.set("error_description", "User denied the request");
+    if (auth0AuthRequest.mcpAuthRequest.state) {
+      redirectUri.searchParams.set("state", auth0AuthRequest.mcpAuthRequest.state);
+    }
 
-		// Clear the transaction cookie
-		setCookie(c, cookieName, "", {
-			maxAge: 0,
-			path: "/",
-		});
+    // Clear the transaction cookie
+    setCookie(c, cookieName, "", {
+      maxAge: 0,
+      path: "/",
+    });
 
-		return c.redirect(redirectUri.toString());
-	}
+    return c.redirect(redirectUri.toString());
+  }
 
-	const { as } = await getOidcConfig({
-		client_id: c.env.AUTH0_CLIENT_ID,
-		client_secret: c.env.AUTH0_CLIENT_SECRET,
-		issuer: `https://${c.env.AUTH0_DOMAIN}/`,
-	});
+  const { as } = await getOidcConfig({
+    client_id: c.env.AUTH0_CLIENT_ID,
+    client_secret: c.env.AUTH0_CLIENT_SECRET,
+    issuer: `https://${c.env.AUTH0_DOMAIN}/`,
+  });
 
-	// Redirect to Auth0's authorization endpoint
-	const authorizationLoginEndpoint =
-		consentAction === "approve-sso"
-			? await getSSOLoginUrl(formData.get("sso_email") as string, c.env)
-			: as.authorization_endpoint!;
-	const authorizationUrl = new URL(authorizationLoginEndpoint);
-	if (consentAction === "approve-sso") {
-		authorizationUrl.host = c.env.AUTH0_DOMAIN;
-	}
-	authorizationUrl.searchParams.set("client_id", c.env.AUTH0_CLIENT_ID);
-	authorizationUrl.searchParams.set("redirect_uri", c.env.SELF_CALLBACK_URL);
-	authorizationUrl.searchParams.set("response_type", "code");
-	authorizationUrl.searchParams.set("audience", c.env.AUTH0_AUDIENCE);
-	authorizationUrl.searchParams.set("scope", c.env.AUTH0_SCOPE);
-	authorizationUrl.searchParams.set("code_challenge", auth0AuthRequest.codeChallenge);
-	authorizationUrl.searchParams.set("code_challenge_method", "S256");
-	authorizationUrl.searchParams.set("nonce", auth0AuthRequest.nonce);
-	authorizationUrl.searchParams.set("state", transactionState);
-	return c.redirect(authorizationUrl.href);
+  // Redirect to Auth0's authorization endpoint
+  const authorizationLoginEndpoint =
+    consentAction === "approve-sso"
+      ? await getSSOLoginUrl(formData.get("sso_email") as string, c.env)
+      : as.authorization_endpoint!;
+  const authorizationUrl = new URL(authorizationLoginEndpoint);
+  if (consentAction === "approve-sso") {
+    authorizationUrl.host = c.env.AUTH0_DOMAIN;
+  }
+  authorizationUrl.searchParams.set("client_id", c.env.AUTH0_CLIENT_ID);
+  authorizationUrl.searchParams.set("redirect_uri", c.env.SELF_CALLBACK_URL);
+  authorizationUrl.searchParams.set("response_type", "code");
+  authorizationUrl.searchParams.set("audience", c.env.AUTH0_AUDIENCE);
+  authorizationUrl.searchParams.set("scope", c.env.AUTH0_SCOPE);
+  authorizationUrl.searchParams.set("code_challenge", auth0AuthRequest.codeChallenge);
+  authorizationUrl.searchParams.set("code_challenge_method", "S256");
+  authorizationUrl.searchParams.set("nonce", auth0AuthRequest.nonce);
+  authorizationUrl.searchParams.set("state", transactionState);
+  return c.redirect(authorizationUrl.href);
 }
 
 async function getSSOLoginUrl(ssoEmail: string, env: RequiredEnv): Promise<string> {
-	const requestOptions = {
-		url: `${env.VANTAGE_API_HOST}/internal/email_identity_provider`,
-		method: "GET",
-		params: {
-			email: ssoEmail,
-			callback_url: env.SELF_CALLBACK_URL,
-			scope: env.AUTH0_SCOPE,
-		},
-	};
+  const requestOptions = {
+    url: `${env.VANTAGE_API_HOST}/internal/email_identity_provider`,
+    method: "GET",
+    params: {
+      email: ssoEmail,
+      callback_url: env.SELF_CALLBACK_URL,
+      scope: env.AUTH0_SCOPE,
+    },
+  };
 
-	const apiResult = await axios(requestOptions);
+  const apiResult = await axios(requestOptions);
 
-	if (apiResult.status !== 200) {
-		throw new Error(`Failed to get Auth0 connection for ${ssoEmail}: ${apiResult.statusText}`);
-	}
-	const location = apiResult.data?.location;
-	if (!location) {
-		throw new Error(`No location found in Auth0 connection response for ${ssoEmail}`);
-	}
-	return location;
+  if (apiResult.status !== 200) {
+    throw new Error(`Failed to get Auth0 connection for ${ssoEmail}: ${apiResult.statusText}`);
+  }
+  const location = apiResult.data?.location;
+  if (!location) {
+    throw new Error(`No location found in Auth0 connection response for ${ssoEmail}`);
+  }
+  return location;
 }
 
 /**
@@ -249,84 +245,77 @@ async function getSSOLoginUrl(ssoEmail: string, env: RequiredEnv): Promise<strin
  * It exchanges the authorization code for tokens and completes the
  * authorization process.
  */
-export async function callback(
-	c: Context<{ Bindings: RequiredEnv & { OAUTH_PROVIDER: OAuthHelpers } }>
-) {
-	// Parse the state parameter to extract transaction state and Auth0 state
-	const stateParam = c.req.query("state") as string;
-	if (!stateParam) {
-		return c.text("Invalid state parameter", 400);
-	}
+export async function callback(c: Context<{ Bindings: RequiredEnv & { OAUTH_PROVIDER: OAuthHelpers } }>) {
+  // Parse the state parameter to extract transaction state and Auth0 state
+  const stateParam = c.req.query("state") as string;
+  if (!stateParam) {
+    return c.text("Invalid state parameter", 400);
+  }
 
-	// Parse the Auth0 auth request from the transaction-specific cookie
-	const cookieName = `auth0_req_${stateParam}`;
-	const auth0AuthRequestCookie = getCookie(c, cookieName);
-	if (!auth0AuthRequestCookie) {
-		return c.text("Invalid transaction state or session expired", 400);
-	}
+  // Parse the Auth0 auth request from the transaction-specific cookie
+  const cookieName = `auth0_req_${stateParam}`;
+  const auth0AuthRequestCookie = getCookie(c, cookieName);
+  if (!auth0AuthRequestCookie) {
+    return c.text("Invalid transaction state or session expired", 400);
+  }
 
-	const auth0AuthRequest = JSON.parse(atob(auth0AuthRequestCookie)) as Auth0AuthRequest;
+  const auth0AuthRequest = JSON.parse(atob(auth0AuthRequestCookie)) as Auth0AuthRequest;
 
-	// Clear the transaction cookie as it's no longer needed
-	setCookie(c, cookieName, "", {
-		maxAge: 0,
-		path: "/",
-	});
+  // Clear the transaction cookie as it's no longer needed
+  setCookie(c, cookieName, "", {
+    maxAge: 0,
+    path: "/",
+  });
 
-	const { as, client, clientAuth } = await getOidcConfig({
-		client_id: c.env.AUTH0_CLIENT_ID,
-		client_secret: c.env.AUTH0_CLIENT_SECRET,
-		issuer: `https://${c.env.AUTH0_DOMAIN}/`,
-	});
+  const { as, client, clientAuth } = await getOidcConfig({
+    client_id: c.env.AUTH0_CLIENT_ID,
+    client_secret: c.env.AUTH0_CLIENT_SECRET,
+    issuer: `https://${c.env.AUTH0_DOMAIN}/`,
+  });
 
-	// Perform the Code Exchange
-	const params = oauth.validateAuthResponse(
-		as,
-		client,
-		new URL(c.req.url),
-		auth0AuthRequest.transactionState
-	);
-	const response = await oauth.authorizationCodeGrantRequest(
-		as,
-		client,
-		clientAuth,
-		params,
-		new URL("/callback", c.req.url).href,
-		auth0AuthRequest.codeVerifier
-	);
+  // Perform the Code Exchange
+  const params = oauth.validateAuthResponse(as, client, new URL(c.req.url), auth0AuthRequest.transactionState);
+  const response = await oauth.authorizationCodeGrantRequest(
+    as,
+    client,
+    clientAuth,
+    params,
+    new URL("/callback", c.req.url).href,
+    auth0AuthRequest.codeVerifier
+  );
 
-	// Process the response
-	const result = await oauth.processAuthorizationCodeResponse(as, client, response, {
-		expectedNonce: auth0AuthRequest.nonce,
-		requireIdToken: true,
-	});
+  // Process the response
+  const result = await oauth.processAuthorizationCodeResponse(as, client, response, {
+    expectedNonce: auth0AuthRequest.nonce,
+    requireIdToken: true,
+  });
 
-	// Get the claims from the id_token
-	const claims = oauth.getValidatedIdTokenClaims(result);
-	if (!claims) {
-		return c.text("Received invalid id_token from Auth0", 400);
-	}
+  // Get the claims from the id_token
+  const claims = oauth.getValidatedIdTokenClaims(result);
+  if (!claims) {
+    return c.text("Received invalid id_token from Auth0", 400);
+  }
 
-	// Complete the authorization
-	const { redirectTo } = await c.env.OAUTH_PROVIDER.completeAuthorization({
-		metadata: {
-			label: claims.name || claims.email || claims.sub,
-		},
-		props: {
-			claims: claims,
-			tokenSet: {
-				accessToken: result.access_token,
-				accessTokenTTL: result.expires_in,
-				idToken: result.id_token,
-				refreshToken: result.refresh_token,
-			},
-		} as UserProps,
-		request: auth0AuthRequest.mcpAuthRequest,
-		scope: auth0AuthRequest.mcpAuthRequest.scope,
-		userId: claims.sub!,
-	});
+  // Complete the authorization
+  const { redirectTo } = await c.env.OAUTH_PROVIDER.completeAuthorization({
+    metadata: {
+      label: claims.name || claims.email || claims.sub,
+    },
+    props: {
+      claims: claims,
+      tokenSet: {
+        accessToken: result.access_token,
+        accessTokenTTL: result.expires_in,
+        idToken: result.id_token,
+        refreshToken: result.refresh_token,
+      },
+    } as UserProps,
+    request: auth0AuthRequest.mcpAuthRequest,
+    scope: auth0AuthRequest.mcpAuthRequest.scope,
+    userId: claims.sub!,
+  });
 
-	return Response.redirect(redirectTo);
+  return Response.redirect(redirectTo);
 }
 
 /**
@@ -335,84 +324,79 @@ export async function callback(
  * This function handles the token exchange callback for the CloudflareOAuth Provider and allows us to then interact with the Upstream IdP (your Auth0 tenant)
  */
 export async function tokenExchangeCallback(
-	options: TokenExchangeCallbackOptions
+  options: TokenExchangeCallbackOptions
 ): Promise<TokenExchangeCallbackResult | undefined> {
-	// During the Authorization Code Exchange, we want to make sure that the Access Token issued
-	// by the MCP Server has the same TTL as the one issued by Auth0.
-	if (options.grantType === "authorization_code") {
-		return {
-			accessTokenTTL: options.props.tokenSet.accessTokenTTL,
-			newProps: {
-				...options.props,
-			},
-		};
-	}
+  // During the Authorization Code Exchange, we want to make sure that the Access Token issued
+  // by the MCP Server has the same TTL as the one issued by Auth0.
+  if (options.grantType === "authorization_code") {
+    return {
+      accessTokenTTL: options.props.tokenSet.accessTokenTTL,
+      newProps: {
+        ...options.props,
+      },
+    };
+  }
 
-	if (options.grantType === "refresh_token") {
-		const auth0RefreshToken = options.props.tokenSet.refreshToken;
-		if (!auth0RefreshToken) {
-			throw new Error("No Auth0 refresh token found");
-		}
+  if (options.grantType === "refresh_token") {
+    const auth0RefreshToken = options.props.tokenSet.refreshToken;
+    if (!auth0RefreshToken) {
+      throw new Error("No Auth0 refresh token found");
+    }
 
-		const { as, client, clientAuth } = await getOidcConfig({
-			client_id: (env as RequiredEnv).AUTH0_CLIENT_ID,
-			client_secret: (env as RequiredEnv).AUTH0_CLIENT_SECRET,
-			issuer: `https://${(env as RequiredEnv).AUTH0_DOMAIN}/`,
-		});
+    const { as, client, clientAuth } = await getOidcConfig({
+      client_id: (env as RequiredEnv).AUTH0_CLIENT_ID,
+      client_secret: (env as RequiredEnv).AUTH0_CLIENT_SECRET,
+      issuer: `https://${(env as RequiredEnv).AUTH0_DOMAIN}/`,
+    });
 
-		// Perform the refresh token exchange with Auth0.
-		const response = await oauth.refreshTokenGrantRequest(
-			as,
-			client,
-			clientAuth,
-			auth0RefreshToken
-		);
-		const refreshTokenResponse = await oauth.processRefreshTokenResponse(as, client, response);
+    // Perform the refresh token exchange with Auth0.
+    const response = await oauth.refreshTokenGrantRequest(as, client, clientAuth, auth0RefreshToken);
+    const refreshTokenResponse = await oauth.processRefreshTokenResponse(as, client, response);
 
-		// Get the claims from the id_token
-		const claims = oauth.getValidatedIdTokenClaims(refreshTokenResponse);
-		if (!claims) {
-			throw new Error("Received invalid id_token from Auth0");
-		}
+    // Get the claims from the id_token
+    const claims = oauth.getValidatedIdTokenClaims(refreshTokenResponse);
+    if (!claims) {
+      throw new Error("Received invalid id_token from Auth0");
+    }
 
-		// Store the new token set and claims.
-		return {
-			accessTokenTTL: refreshTokenResponse.expires_in,
-			newProps: {
-				...options.props,
-				claims: claims,
-				tokenSet: {
-					accessToken: refreshTokenResponse.access_token,
-					accessTokenTTL: refreshTokenResponse.expires_in,
-					idToken: refreshTokenResponse.id_token,
-					refreshToken: refreshTokenResponse.refresh_token || auth0RefreshToken,
-				},
-			},
-		};
-	}
+    // Store the new token set and claims.
+    return {
+      accessTokenTTL: refreshTokenResponse.expires_in,
+      newProps: {
+        ...options.props,
+        claims: claims,
+        tokenSet: {
+          accessToken: refreshTokenResponse.access_token,
+          accessTokenTTL: refreshTokenResponse.expires_in,
+          idToken: refreshTokenResponse.id_token,
+          refreshToken: refreshTokenResponse.refresh_token || auth0RefreshToken,
+        },
+      },
+    };
+  }
 }
 
 /**
  * Renders the consent screen HTML
  */
 export function renderConsentScreen({
-	clientName,
-	// clientLogo, // TODO: Implement logo display
-	// clientUri, // TODO: Implement client URI display
-	redirectUri,
-	requestedScopes,
-	transactionState,
-	consentToken,
+  clientName,
+  // clientLogo, // TODO: Implement logo display
+  // clientUri, // TODO: Implement client URI display
+  redirectUri,
+  requestedScopes,
+  transactionState,
+  consentToken,
 }: {
-	clientName: string;
-	clientLogo: string;
-	clientUri: string;
-	redirectUri: string;
-	requestedScopes: string[];
-	transactionState: string;
-	consentToken: string;
+  clientName: string;
+  clientLogo: string;
+  clientUri: string;
+  redirectUri: string;
+  requestedScopes: string[];
+  transactionState: string;
+  consentToken: string;
 }) {
-	return html`
+  return html`
         <!DOCTYPE html>
         <html lang="en">
             <head>

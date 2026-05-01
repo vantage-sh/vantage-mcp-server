@@ -14,34 +14,32 @@ Vantage offers data related to a cost report: Forecasts. The same report token c
 `.trim();
 
 const args = {
-	page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
-	folder_token: z
-		.string()
-		.optional()
-		.describe(
-			"The token of a folder to filter cost reports by. Only reports within that folder will be returned."
-		),
+  page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
+  folder_token: z
+    .string()
+    .optional()
+    .describe("The token of a folder to filter cost reports by. Only reports within that folder will be returned."),
 };
 
 export default registerTool({
-	name: "list-cost-reports",
-	title: "List Cost Reports",
-	description,
-	annotations: {
-		destructive: false,
-		openWorld: false,
-		readOnly: true,
-	},
-	args,
-	async execute(args, ctx) {
-		const requestParams = { ...args, limit: DEFAULT_LIMIT };
-		const response = await ctx.callVantageApi("/v2/cost_reports", requestParams, "GET");
-		if (!response.ok) {
-			throw new MCPUserError({ errors: response.errors });
-		}
-		return {
-			cost_reports: response.data.cost_reports,
-			pagination: paginationData(response.data),
-		};
-	},
+  name: "list-cost-reports",
+  title: "List Cost Reports",
+  description,
+  annotations: {
+    destructive: false,
+    openWorld: false,
+    readOnly: true,
+  },
+  args,
+  async execute(args, ctx) {
+    const requestParams = { ...args, limit: DEFAULT_LIMIT };
+    const response = await ctx.callVantageApi("/v2/cost_reports", requestParams, "GET");
+    if (!response.ok) {
+      throw new MCPUserError({ errors: response.errors });
+    }
+    return {
+      cost_reports: response.data.cost_reports,
+      pagination: paginationData(response.data),
+    };
+  },
 });

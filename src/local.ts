@@ -8,35 +8,29 @@ import { setupRegisteredTools, type ToolCallContext } from "./tools/structure/re
 import "./tools";
 
 async function main() {
-	if (!process.env.VANTAGE_TOKEN) {
-		throw new Error("VANTAGE_TOKEN environment variable is required.");
-	}
+  if (!process.env.VANTAGE_TOKEN) {
+    throw new Error("VANTAGE_TOKEN environment variable is required.");
+  }
 
-	const ctx: ToolCallContext = {
-		callVantageApi: async (endpoint, params, method) => {
-			const headers: Record<string, string> = {
-				Authorization: `Bearer ${process.env.VANTAGE_TOKEN}`,
-			};
+  const ctx: ToolCallContext = {
+    callVantageApi: async (endpoint, params, method) => {
+      const headers: Record<string, string> = {
+        Authorization: `Bearer ${process.env.VANTAGE_TOKEN}`,
+      };
 
-			return callApi(
-				process.env.VANTAGE_API_HOST || "https://api.vantage.sh",
-				headers,
-				params,
-				method,
-				endpoint
-			);
-		},
-	};
+      return callApi(process.env.VANTAGE_API_HOST || "https://api.vantage.sh", headers, params, method, endpoint);
+    },
+  };
 
-	const stdio = new StdioServerTransport();
-	const server = new McpServer(serverMeta);
-	setupRegisteredTools(server, () => ctx);
-	setupRegisteredResources(server);
+  const stdio = new StdioServerTransport();
+  const server = new McpServer(serverMeta);
+  setupRegisteredTools(server, () => ctx);
+  setupRegisteredResources(server);
 
-	await server.connect(stdio);
+  await server.connect(stdio);
 }
 
 main().catch((e) => {
-	console.error(e);
-	process.exit(1);
+  console.error(e);
+  process.exit(1);
 });

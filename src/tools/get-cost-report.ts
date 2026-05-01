@@ -9,28 +9,24 @@ The same token can be used with the get-cost-report-forecast tool to retrieve fo
 `.trim();
 
 const args = {
-	cost_report_token: z.string().describe("The cost report token to retrieve"),
+  cost_report_token: z.string().describe("The cost report token to retrieve"),
 };
 
 export default registerTool({
-	name: "get-cost-report",
-	title: "Get Cost Report",
-	description,
-	annotations: {
-		destructive: false,
-		openWorld: false,
-		readOnly: true,
-	},
-	args,
-	async execute(args, ctx) {
-		const response = await ctx.callVantageApi(
-			`/v2/cost_reports/${pathEncode(args.cost_report_token)}`,
-			{},
-			"GET"
-		);
-		if (!response.ok) {
-			throw new MCPUserError({ errors: response.errors });
-		}
-		return response.data;
-	},
+  name: "get-cost-report",
+  title: "Get Cost Report",
+  description,
+  annotations: {
+    destructive: false,
+    openWorld: false,
+    readOnly: true,
+  },
+  args,
+  async execute(args, ctx) {
+    const response = await ctx.callVantageApi(`/v2/cost_reports/${pathEncode(args.cost_report_token)}`, {}, "GET");
+    if (!response.ok) {
+      throw new MCPUserError({ errors: response.errors });
+    }
+    return response.data;
+  },
 });

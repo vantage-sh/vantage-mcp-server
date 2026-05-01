@@ -13,28 +13,28 @@ The 'token' of a Folder can be used to generate a link in the Vantage Web UI: ht
 `.trim();
 
 const args = {
-	page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
+  page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
 };
 
 export default registerTool({
-	name: "list-folders",
-	title: "List Folders",
-	description,
-	annotations: {
-		destructive: false,
-		openWorld: false,
-		readOnly: true,
-	},
-	args,
-	async execute(args, ctx) {
-		const requestParams = { ...args, limit: DEFAULT_LIMIT };
-		const response = await ctx.callVantageApi("/v2/folders", requestParams, "GET");
-		if (!response.ok) {
-			throw new MCPUserError({ errors: response.errors });
-		}
-		return {
-			folders: response.data.folders,
-			pagination: paginationData(response.data),
-		};
-	},
+  name: "list-folders",
+  title: "List Folders",
+  description,
+  annotations: {
+    destructive: false,
+    openWorld: false,
+    readOnly: true,
+  },
+  args,
+  async execute(args, ctx) {
+    const requestParams = { ...args, limit: DEFAULT_LIMIT };
+    const response = await ctx.callVantageApi("/v2/folders", requestParams, "GET");
+    if (!response.ok) {
+      throw new MCPUserError({ errors: response.errors });
+    }
+    return {
+      folders: response.data.folders,
+      pagination: paginationData(response.data),
+    };
+  },
 });

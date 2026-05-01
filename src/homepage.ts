@@ -1,9 +1,9 @@
 import { html } from "hono/html";
 
 export default function homepage() {
-	const docsUrl = "https://docs.vantage.sh/vantage_mcp/";
+  const docsUrl = "https://docs.vantage.sh/vantage_mcp/";
 
-	return html`
+  return html`
             <!DOCTYPE html>
             <html lang="en">
                 <head>

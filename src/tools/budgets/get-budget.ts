@@ -9,33 +9,27 @@ The token of a budget can be used to link the user to the budget in the Vantage 
 `.trim();
 
 export default registerTool({
-	name: "get-budget",
-	title: "Get Budget",
-	description,
-	annotations: {
-		destructive: false,
-		openWorld: false,
-		readOnly: true,
-	},
-	args: {
-		budget_token: z.string().describe("The token of the Budget to retrieve."),
-		include_performance: z
-			.boolean()
-			.optional()
-			.describe(
-				"If true, includes performance data showing actual spend vs. budget amounts by period."
-			),
-	},
-	async execute(args, ctx) {
-		const { budget_token, ...params } = args;
-		const response = await ctx.callVantageApi(
-			`/v2/budgets/${pathEncode(budget_token)}`,
-			params,
-			"GET"
-		);
-		if (!response.ok) {
-			throw new MCPUserError({ errors: response.errors });
-		}
-		return response.data;
-	},
+  name: "get-budget",
+  title: "Get Budget",
+  description,
+  annotations: {
+    destructive: false,
+    openWorld: false,
+    readOnly: true,
+  },
+  args: {
+    budget_token: z.string().describe("The token of the Budget to retrieve."),
+    include_performance: z
+      .boolean()
+      .optional()
+      .describe("If true, includes performance data showing actual spend vs. budget amounts by period."),
+  },
+  async execute(args, ctx) {
+    const { budget_token, ...params } = args;
+    const response = await ctx.callVantageApi(`/v2/budgets/${pathEncode(budget_token)}`, params, "GET");
+    if (!response.ok) {
+      throw new MCPUserError({ errors: response.errors });
+    }
+    return response.data;
+  },
 });

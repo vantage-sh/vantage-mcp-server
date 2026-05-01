@@ -84,59 +84,53 @@ Each resource has a unique token that can be used to get more details or link to
 
 // Common LLM hallucinations: Terraform-style names instead of correct VQL types
 const RESOURCE_TYPE_CORRECTIONS: Record<string, string> = {
-	aws_ec2_instance: "aws_instance",
-	aws_rds_instance: "aws_db_instance",
-	aws_rds_snapshot: "aws_db_snapshot",
-	aws_ebs_snapshot: "aws_instance_snapshot",
+  aws_ec2_instance: "aws_instance",
+  aws_rds_instance: "aws_db_instance",
+  aws_rds_snapshot: "aws_db_snapshot",
+  aws_ebs_snapshot: "aws_instance_snapshot",
 };
 
 function correctResourceTypes(filter: string): string {
-	for (const [wrong, correct] of Object.entries(RESOURCE_TYPE_CORRECTIONS)) {
-		filter = filter.replaceAll(wrong, correct);
-	}
-	return filter;
+  for (const [wrong, correct] of Object.entries(RESOURCE_TYPE_CORRECTIONS)) {
+    filter = filter.replaceAll(wrong, correct);
+  }
+  return filter;
 }
 
 export default registerTool({
-	name: "list-provider-resources",
-	title: "List Provider Resources",
-	description,
-	annotations: {
-		destructive: false,
-		openWorld: false,
-		readOnly: true,
-	},
-	args: {
-		page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
-		resource_report_token: z
-			.string()
-			.optional()
-			.describe("The ResourceReport token to get resources from"),
-		filter: z
-			.string()
-			.optional()
-			.describe("VQL query to filter resources (requires workspace_token)"),
-		workspace_token: z
-			.string()
-			.optional()
-			.describe("The Workspace token to scope the query to (required when using filter)"),
-		include_cost: z
-			.boolean()
-			.optional()
-			.default(false)
-			.describe("Include cost information broken down by category for each resource"),
-	},
-	async execute(args, ctx) {
-		if (args.filter) {
-			args.filter = correctResourceTypes(args.filter);
-		}
-		const response = await ctx.callVantageApi("/v2/resources", args, "GET");
-		if (!response.ok) {
-			throw new MCPUserError({ errors: response.errors });
-		}
-		return {
-			resources: response.data.resources,
-			pagination: paginationData(response.data),
-		};
-	},
+  name: "list-provider-resources",
+  title: "List Provider Resources",
+  description,
+  annotations: {
+    destructive: false,
+    openWorld: false,
+    readOnly: true,
+  },
+  args: {
+    page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
+    resource_report_token: z.string().optional().describe("The ResourceReport token to get resources from"),
+    filter: z.string().optional().describe("VQL query to filter resources (requires workspace_token)"),
+    workspace_token: z
+      .string()
+      .optional()
+      .describe("The Workspace token to scope the query to (required when using filter)"),
+    include_cost: z
+      .boolean()
+      .optional()
+      .default(false)
+      .describe("Include cost information broken down by category for each resource"),
+  },
+  async execute(args, ctx) {
+    if (args.filter) {
+      args.filter = correctResourceTypes(args.filter);
+    }
+    const response = await ctx.callVantageApi("/v2/resources", args, "GET");
+    if (!response.ok) {
+      throw new MCPUserError({ errors: response.errors });
+    }
+    return {
+      resources: response.data.resources,
+      pagination: paginationData(response.data),
+    };
+  },
 });

@@ -8,34 +8,28 @@ Updates an existing anomaly alert by its token. Use this to change the status of
 `.trim();
 
 export default registerTool({
-	name: "update-anomaly",
-	title: "Update Anomaly",
-	description,
-	annotations: {
-		destructive: true,
-		openWorld: false,
-		readOnly: false,
-	},
-	args: {
-		anomaly_alert_token: z.string().describe("The token of the anomaly alert to update."),
-		status: z
-			.enum(["active", "archived", "ignored"])
-			.describe("The new status of the anomaly alert."),
-		feedback: z
-			.string()
-			.optional()
-			.describe("Optional comments explaining why the alert is being ignored or archived."),
-	},
-	async execute(args, ctx) {
-		const { anomaly_alert_token, ...body } = args;
-		const res = await ctx.callVantageApi(
-			`/v2/anomaly_alerts/${pathEncode(anomaly_alert_token)}`,
-			body,
-			"PUT"
-		);
-		if (!res.ok) {
-			throw new MCPUserError({ errors: res.errors });
-		}
-		return res.data;
-	},
+  name: "update-anomaly",
+  title: "Update Anomaly",
+  description,
+  annotations: {
+    destructive: true,
+    openWorld: false,
+    readOnly: false,
+  },
+  args: {
+    anomaly_alert_token: z.string().describe("The token of the anomaly alert to update."),
+    status: z.enum(["active", "archived", "ignored"]).describe("The new status of the anomaly alert."),
+    feedback: z
+      .string()
+      .optional()
+      .describe("Optional comments explaining why the alert is being ignored or archived."),
+  },
+  async execute(args, ctx) {
+    const { anomaly_alert_token, ...body } = args;
+    const res = await ctx.callVantageApi(`/v2/anomaly_alerts/${pathEncode(anomaly_alert_token)}`, body, "PUT");
+    if (!res.ok) {
+      throw new MCPUserError({ errors: res.errors });
+    }
+    return res.data;
+  },
 });

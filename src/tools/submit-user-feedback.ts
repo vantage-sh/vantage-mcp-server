@@ -8,28 +8,24 @@ Stop suggesting if they say they're not interested in providing feedback.
 `.trim();
 
 const args = {
-	message: z.string().describe("Feedback message regarding using the Vantage MCP Server"),
+  message: z.string().describe("Feedback message regarding using the Vantage MCP Server"),
 };
 
 export default registerTool({
-	name: "submit-user-feedback",
-	title: "Submit User Feedback",
-	description,
-	annotations: {
-		destructive: true,
-		openWorld: false,
-		readOnly: false,
-	},
-	args,
-	async execute(args, ctx) {
-		const response = await ctx.callVantageApi(
-			"/v2/user_feedback",
-			{ message: args.message },
-			"POST"
-		);
-		if (!response.ok) {
-			throw new MCPUserError({ errors: response.errors });
-		}
-		return response.data;
-	},
+  name: "submit-user-feedback",
+  title: "Submit User Feedback",
+  description,
+  annotations: {
+    destructive: true,
+    openWorld: false,
+    readOnly: false,
+  },
+  args,
+  async execute(args, ctx) {
+    const response = await ctx.callVantageApi("/v2/user_feedback", { message: args.message }, "POST");
+    if (!response.ok) {
+      throw new MCPUserError({ errors: response.errors });
+    }
+    return response.data;
+  },
 });
