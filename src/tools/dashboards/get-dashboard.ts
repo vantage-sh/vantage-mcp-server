@@ -1,7 +1,7 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod/v4";
-import MCPUserError from "./structure/MCPUserError";
-import registerTool from "./structure/registerTool";
+import MCPUserError from "../structure/MCPUserError";
+import registerTool from "../structure/registerTool";
 
 const description = `
 Gets a specific dashboard by its token. The token of a dashboard can be used to generate a link to the dashboard in the Vantage Web UI: https://console.vantage.sh/go/<token>
