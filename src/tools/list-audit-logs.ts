@@ -5,42 +5,45 @@ import registerTool from "./structure/registerTool";
 import paginationData from "./utils/paginationData";
 
 const description = `
-List audit logs for actions taken within the Vantage workspace. Audit logs are a chronological record of all changes and activities that occur in your workspace, providing a complete history of who did what, when, and what changed.
+List audit logs visible to the authenticated Vantage access token. Audit logs provide a chronological history of supported changes to user-facing resources in Vantage, such as cost reports, virtual tags, segments, recommendation commitments, and other workspace-related objects.
 
-Audit logs track various types of actions including:
+Results are returned in reverse chronological order (newest first).
+
+Each audit log entry can include:
+- The audit log token
+- The affected object's token, type, and title
+- The event (\`record_created\`, \`record_updated\`, or \`record_destroyed\`)
+- The source of the action (\`console\`, \`api\`, or \`finops_agent\`)
+- The user display name, when available
+- The workspace title and workspace token, when available
+- The timestamp when the audit log was created
+- Field-level change data in \`changed_values\` and \`unchanged_values\`
+
+Audit logs commonly include actions such as:
 - Creating, updating, or deleting cost reports
-- Modifying report settings, filters, or configurations
+- Modifying report filters or related configuration
 - Creating, updating, or deleting virtual tags
-- Commitment actions taken manually or autonomously by the Finops Agent (autonomous cost optimization actions)
+- Updating recommendation commitments
+- Creating, updating, or deleting segments
 
-Each audit log entry contains:
-- The user or service token (Team) that performed the action
-- The action type (record_created, record_updated, record_destroyed)
-- The object that was affected (cost report, virtual tag, commitment, etc.)
-- The timestamp when the action occurred
-- What values changed (before and after states)
-- The source of the action (console, api, developer, finops_agent)
-- A agentAction boolean field that indicates if the action was taken by the Vantage Finops Agent, which is particularly relevant for commitment actions to distinguish agent-driven actions from human actions
-- The workspace where the action took place
-
-Use pagination via the "page" parameter starting with 1. The default limit is 100 results per page, which can be adjusted up to 1000.
+Use pagination with the \`page\` parameter starting at 1. You can also pass \`limit\`; if omitted, the API defaults to 100 results per page.
 
 Audit logs can be filtered by:
-- User ID (to see actions by a specific person or service token (Team))
-- Workspace token (to scope to a specific workspace)
-- Action type (create, update, delete)
-- Object type (cost_report, virtual_tag, recommendation_commitment)
-- Object name or token (to track changes to a specific resource)
-- Source (console, api, developer, finops_agent) - use "finops_agent" to filter for actions specifically taken by the Finops Agent
-- Date range (start_date and end_date in ISO 8601 format)
-- Audit log token (to retrieve a specific log entry)
+- \`user\`: numeric user ID associated with the action
+- \`workspace_token\`: workspace token
+- \`action\`: \`create\`, \`update\`, or \`delete\`
+- \`object_type\`: \`cost_report\`, \`virtual_tag\`, \`recommendation_commitment\`, or \`segment\`
+- \`object_name\`: exact object title
+- \`object_token\`: audited object token
+- \`source\`: \`console\`, \`api\`, or \`finops_agent\`
+- \`start_date\` and \`end_date\`: ISO 8601 dates such as \`2024-06-01\`
+- \`token\`: audit log token
 
-Common use cases for audit logs include:
-- Compliance and security auditing (tracking who made changes)
-- Debugging issues (seeing what changed before a problem occurred)
-- Change management (reviewing modifications to reports or configurations)
-- Activity monitoring (understanding workspace usage patterns)
-- Distinguishing between human actions and autonomous agent actions (via agentAction field and finops_agent source filter)
+Use cases for audit logs include:
+- Compliance and security review
+- Debugging change history
+- Change management for reports and configuration
+- Monitoring actions taken through the API or the Finops Agent
 `.trim();
 
 const args = {
