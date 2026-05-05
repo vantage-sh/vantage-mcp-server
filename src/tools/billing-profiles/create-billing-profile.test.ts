@@ -119,11 +119,24 @@ const successData = {
   created_at: "2023-01-01T00:00:00Z",
   updated_at: "2023-01-01T00:00:00Z",
   billing_information_attributes: {
+    token: "blng_inf_123",
     company_name: "Acme Corp",
     country_code: "US",
+    address_line_1: "123 Main St",
+    address_line_2: null,
+    city: "New York",
+    state: "NY",
+    postal_code: "10001",
+    billing_email: ["billing@acme.com"],
   },
-  business_information_attributes: {},
-  invoice_adjustment_attributes: {},
+  business_information_attributes: {
+    token: "biz_inf_123",
+    metadata: { custom_fields: [] },
+  },
+  invoice_adjustment_attributes: {
+    token: "inv_adj_123",
+    adjustment_items: [],
+  },
   managed_accounts_count: "0",
 };
 

@@ -102,11 +102,24 @@ const successData = {
   created_at: "2023-01-01T00:00:00Z",
   updated_at: "2023-06-01T00:00:00Z",
   billing_information_attributes: {
+    token: "blng_inf_123",
     company_name: "Updated Corp",
     country_code: "US",
+    address_line_1: "456 Oak Ave",
+    address_line_2: null,
+    city: "San Francisco",
+    state: "CA",
+    postal_code: "94102",
+    billing_email: null,
   },
-  business_information_attributes: {},
-  invoice_adjustment_attributes: {},
+  business_information_attributes: {
+    token: "biz_inf_123",
+    metadata: { custom_fields: [{ name: "team", value: "platform" }] },
+  },
+  invoice_adjustment_attributes: {
+    token: "inv_adj_123",
+    adjustment_items: [],
+  },
   managed_accounts_count: "2",
 };
 

@@ -31,6 +31,28 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   },
 ];
 
+const fullBillingInfo = {
+  token: "blng_inf_123",
+  company_name: "Acme Corp",
+  country_code: "US",
+  address_line_1: "123 Main St",
+  address_line_2: null,
+  city: "New York",
+  state: "NY",
+  postal_code: "10001",
+  billing_email: ["billing@acme.com"],
+};
+
+const fullBusinessInfo = {
+  token: "biz_inf_123",
+  metadata: { custom_fields: [] },
+};
+
+const fullInvoiceAdjustment = {
+  token: "inv_adj_123",
+  adjustment_items: [],
+};
+
 const successData = {
   billing_profiles: [
     {
@@ -38,9 +60,9 @@ const successData = {
       nickname: "Primary Profile",
       created_at: "2023-01-15T10:30:00Z",
       updated_at: "2023-06-01T08:00:00Z",
-      billing_information_attributes: {},
-      business_information_attributes: {},
-      invoice_adjustment_attributes: {},
+      billing_information_attributes: fullBillingInfo,
+      business_information_attributes: fullBusinessInfo,
+      invoice_adjustment_attributes: fullInvoiceAdjustment,
       managed_accounts_count: "3",
     },
     {
@@ -48,9 +70,9 @@ const successData = {
       nickname: "Secondary Profile",
       created_at: "2023-02-20T14:00:00Z",
       updated_at: "2023-07-15T12:00:00Z",
-      billing_information_attributes: {},
-      business_information_attributes: {},
-      invoice_adjustment_attributes: {},
+      billing_information_attributes: { ...fullBillingInfo, token: "blng_inf_456" },
+      business_information_attributes: { ...fullBusinessInfo, token: "biz_inf_456" },
+      invoice_adjustment_attributes: { ...fullInvoiceAdjustment, token: "inv_adj_456" },
       managed_accounts_count: "1",
     },
   ],
