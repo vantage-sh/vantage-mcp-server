@@ -20,7 +20,7 @@ Each audit log entry contains:
 - The timestamp when the action occurred
 - What values changed (before and after states)
 - The source of the action (console, api, developer, finops_agent)
-- A scoutAction boolean field that indicates if the action was taken by the Finops Agent (Scout), which is particularly relevant for commitment actions to distinguish agent-driven actions from human actions
+- A agentAction boolean field that indicates if the action was taken by the Vantage Finops Agent, which is particularly relevant for commitment actions to distinguish agent-driven actions from human actions
 - The workspace where the action took place
 
 Use pagination via the "page" parameter starting with 1. The default limit is 100 results per page, which can be adjusted up to 1000.
@@ -40,7 +40,7 @@ Common use cases for audit logs include:
 - Debugging issues (seeing what changed before a problem occurred)
 - Change management (reviewing modifications to reports or configurations)
 - Activity monitoring (understanding workspace usage patterns)
-- Distinguishing between human actions and autonomous agent actions (via scoutAction field and finops_agent source filter)
+- Distinguishing between human actions and autonomous agent actions (via agentAction field and finops_agent source filter)
 `.trim();
 
 const args = {
