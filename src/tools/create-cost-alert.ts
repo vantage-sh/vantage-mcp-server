@@ -3,7 +3,7 @@ import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 
 const description = `
-Creates a cost alert based on the parameters specified. Cost alerts notify you when spending on one or more cost reports exceeds a specified threshold over a given interval.
+Creates a Vantage Cost Alert: a threshold-based spending alert for one or more Cost Reports. Use this tool when a user asks to create or add a cost alert, spending alert, threshold alert, or budget alert.
 `.trim();
 
 export default registerTool({
