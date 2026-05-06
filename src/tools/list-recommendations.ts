@@ -155,6 +155,7 @@ Recommendations can be filtered by:
 - Region via regions (requires workspace_token)
 - Tag key/value pair via tag_key + tag_value (both required together; requires workspace_token) — use this when users ask about recommendations for a specific virtual tag, e.g. "recommendations for department=engineering"
 - Date range via start_date + end_date in YYYY-MM-DD format (both required together; requires workspace_token)
+- Minimum monthly potential savings via min_savings
 - Recommendation type via type (case-insensitive fuzzy matching; e.g. "AWS recommendations" -> type=aws; "EC2 rightsizing" -> type=aws:ec2:rightsizing)
 
 The token of each recommendation can be used with other recommendation tools to get detailed information and see specific resources affected.
@@ -182,6 +183,13 @@ const args = {
     .enum(["open", "resolved", "dismissed"])
     .optional()
     .describe("Filter recommendations by status: open (default), resolved, or dismissed"),
+  min_savings: z
+    .number()
+    .nonnegative()
+    .optional()
+    .describe(
+      "Filter to recommendations with monthly potential savings greater than or equal to this amount, in the workspace currency."
+    ),
   tag_key: z
     .string()
     .optional()

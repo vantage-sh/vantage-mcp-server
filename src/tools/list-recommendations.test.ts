@@ -21,6 +21,7 @@ const validArguments: InferValidators<Validators> = {
   workspace_token: "wt_123",
   provider_account_id: "123456789",
   type: "aws",
+  min_savings: 100,
   tag_key: undefined,
   tag_value: undefined,
   regions: undefined,
@@ -38,6 +39,7 @@ const minimalArgs: InferValidators<Validators> = {
   workspace_token: undefined,
   provider_account_id: undefined,
   type: undefined,
+  min_savings: undefined,
   tag_key: undefined,
   tag_value: undefined,
   regions: undefined,
@@ -135,6 +137,13 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       ...validArguments,
       start_date: "2024-01-01",
       end_date: "2024-12-31",
+    },
+  },
+  {
+    name: "min_savings is valid",
+    data: {
+      ...validArguments,
+      min_savings: 250.5,
     },
   },
   {
