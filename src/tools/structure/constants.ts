@@ -1,2 +1,2 @@
 export const DEFAULT_LIMIT = 128;
-export const SERVER_VERSION = "2.9.1";
+export const SERVER_VERSION = "2.10.0";
