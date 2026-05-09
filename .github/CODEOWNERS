@@ -1,8 +1,3 @@
 # Dependabot dependency manifests — @vantage-sh/engineering-platform
-# Tailored from .github/dependabot.yml + repo manifests (ecosystems: github-actions, npm).
+# Tailored from .github/dependabot.yml (ecosystems: github-actions).
 /.github/workflows/**/* @vantage-sh/engineering-platform
-/npm-shrinkwrap.json @vantage-sh/engineering-platform
-/package-lock.json @vantage-sh/engineering-platform
-/package.json @vantage-sh/engineering-platform
-/pnpm-lock.yaml @vantage-sh/engineering-platform
-/yarn.lock @vantage-sh/engineering-platform
