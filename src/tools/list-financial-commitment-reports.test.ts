@@ -1,6 +1,7 @@
 import type { GetFinancialCommitmentReportsResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "./list-financial-commitment-reports";
+import { DEFAULT_LIMIT } from "./structure/constants";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
@@ -21,7 +22,7 @@ const validArguments: InferValidators<Validators> = {
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
-    name: "valid empty arguments",
+    name: "default pagination arguments",
     data: {
       page: undefined,
       limit: undefined,
@@ -30,6 +31,38 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "valid pagination arguments",
     data: validArguments,
+  },
+  {
+    name: "invalid page below minimum",
+    data: {
+      page: 0,
+      limit: undefined,
+    },
+    expectedIssues: ["Too small: expected number to be >=1"],
+  },
+  {
+    name: "invalid fractional page",
+    data: {
+      page: 1.5,
+      limit: undefined,
+    },
+    expectedIssues: ["Invalid input: expected int, received number"],
+  },
+  {
+    name: "invalid limit below minimum",
+    data: {
+      page: undefined,
+      limit: 0,
+    },
+    expectedIssues: ["Too small: expected number to be >=1"],
+  },
+  {
+    name: "invalid limit above maximum",
+    data: {
+      page: undefined,
+      limit: 1001,
+    },
+    expectedIssues: ["Too big: expected number to be <=1000"],
   },
 ];
 
@@ -59,9 +92,46 @@ const successData: GetFinancialCommitmentReportsResponse = {
   links: {},
 };
 
+const successDataWithNextPage: GetFinancialCommitmentReportsResponse = {
+  ...successData,
+  links: {
+    next: "https://api.vantage.sh/v2/financial_commitment_reports?page=3&limit=25",
+  },
+};
+
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   {
-    name: "successful call",
+    name: "successful call with default pagination",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/financial_commitment_reports",
+        params: {
+          page: 1,
+          limit: DEFAULT_LIMIT,
+        },
+        method: "GET",
+        result: {
+          ok: true,
+          data: successData,
+        },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const res = await callExpectingSuccess({
+        page: undefined,
+        limit: undefined,
+      });
+      expect(res).toEqual({
+        financial_commitment_reports: successData.financial_commitment_reports,
+        pagination: {
+          hasNextPage: false,
+          nextPage: 0,
+        },
+      });
+    },
+  },
+  {
+    name: "successful call with custom pagination",
     apiCallHandler: requestsInOrder([
       {
         endpoint: "/v2/financial_commitment_reports",
@@ -83,6 +153,36 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         pagination: {
           hasNextPage: false,
           nextPage: 0,
+        },
+      });
+    },
+  },
+  {
+    name: "successful call with next page",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/financial_commitment_reports",
+        params: {
+          page: 2,
+          limit: 25,
+        },
+        method: "GET",
+        result: {
+          ok: true,
+          data: successDataWithNextPage,
+        },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const res = await callExpectingSuccess({
+        page: 2,
+        limit: 25,
+      });
+      expect(res).toEqual({
+        financial_commitment_reports: successData.financial_commitment_reports,
+        pagination: {
+          hasNextPage: true,
+          nextPage: 3,
         },
       });
     },
