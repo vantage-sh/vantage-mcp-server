@@ -46,12 +46,8 @@ const validInputArguments: InferValidators<Validators> = {
   groupings: ["provider_account_id", "service"],
 };
 
-const expectedValidInputArguments = {
-  ...validInputArguments,
-  groupings: "provider_account_id,service",
-} as unknown as CreateFinancialCommitmentReportRequest;
-const expectedMinimalValidInputArguments =
-  minimalValidInputArguments as unknown as CreateFinancialCommitmentReportRequest;
+const expectedValidInputArguments = validInputArguments as CreateFinancialCommitmentReportRequest;
+const expectedMinimalValidInputArguments = minimalValidInputArguments as CreateFinancialCommitmentReportRequest;
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
