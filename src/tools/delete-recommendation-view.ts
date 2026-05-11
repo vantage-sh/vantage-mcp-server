@@ -30,6 +30,6 @@ export default registerTool({
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }
-    return response.data;
+    return response.data as unknown as Record<string, unknown>;
   },
 });

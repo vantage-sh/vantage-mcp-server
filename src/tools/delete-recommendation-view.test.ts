@@ -3,11 +3,6 @@ import { expect } from "vitest";
 import tool from "./delete-recommendation-view";
 import { requestsInOrder, testTool } from "./utils/testing";
 
-const recommendationView = {
-  token: "rcmvw_123",
-  title: "Delete Me",
-};
-
 testTool(
   tool,
   [
@@ -28,7 +23,7 @@ testTool(
           method: "DELETE",
           result: {
             ok: true,
-            data: recommendationView,
+            data: undefined,
           },
         },
       ]),
@@ -36,7 +31,7 @@ testTool(
         const res = await callExpectingSuccess({
           recommendation_view_token: "rcmvw_123",
         });
-        expect(res).toEqual(recommendationView);
+        expect(res).toBeUndefined();
       },
     },
     {
