@@ -2,10 +2,12 @@ import type { RequestBodyForPathAndMethod } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "./create-financial-commitment-report";
 import {
+  dateValidatorPoisoner,
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
   type ExtractValidators,
   type InferValidators,
+  poisonOneValue,
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
@@ -35,7 +37,7 @@ const validInputArguments: InferValidators<Validators> = {
   ...undefineds,
   workspace_token: "wrkspc_123",
   title: "AWS Commitments",
-  filter: "financial_commitments.provider = 'aws'",
+  filter: "(financial_commitments.provider = 'aws')",
   start_date: "2024-01-01",
   end_date: "2024-03-31",
   date_interval: "custom",
@@ -57,6 +59,50 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     data: validInputArguments,
   },
   {
+    name: "empty workspace token",
+    data: {
+      ...validInputArguments,
+      workspace_token: "",
+    },
+    expectedIssues: ["Too small: expected string to have >=1 characters"],
+  },
+  {
+    name: "empty title",
+    data: {
+      ...validInputArguments,
+      title: "",
+    },
+    expectedIssues: ["Too small: expected string to have >=1 characters"],
+  },
+  {
+    name: "valid date interval option",
+    data: {
+      ...undefineds,
+      workspace_token: "wrkspc_123",
+      title: "Current Month Commitments",
+      date_interval: "this_month",
+    },
+  },
+  {
+    name: "tag grouping",
+    data: {
+      ...undefineds,
+      workspace_token: "wrkspc_123",
+      title: "Commitments by Environment",
+      groupings: ["tag:environment"],
+    },
+  },
+  {
+    name: "invalid date interval",
+    data: {
+      ...validInputArguments,
+      date_interval: "invalid" as any,
+    },
+    expectedIssues: [
+      'Invalid option: expected one of "this_month"|"last_7_days"|"last_30_days"|"last_month"|"last_3_months"|"last_6_months"|"custom"|"last_12_months"|"last_24_months"|"last_36_months"|"next_month"|"next_3_months"|"next_6_months"|"next_12_months"|"year_to_date"|"last_3_days"|"last_14_days"',
+    ],
+  },
+  {
     name: "invalid date bucket",
     data: {
       ...validInputArguments,
@@ -72,6 +118,26 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     },
     expectedIssues: ['Invalid option: expected one of "discountable"|"all"'],
   },
+  {
+    name: "invalid grouping",
+    data: {
+      ...validInputArguments,
+      groupings: ["unsupported_grouping"],
+    },
+    expectedIssues: [
+      "Grouping dimensions for aggregating financial commitments on the report. Valid groupings: provider, service, resource_account_id, provider_account_id, commitment_type, commitment_id, cost_type, cost_category, cost_sub_category, instance_type, region, and tag:<tag_key>.",
+    ],
+  },
+  {
+    name: "empty grouping",
+    data: {
+      ...validInputArguments,
+      groupings: [""],
+    },
+    expectedIssues: ["Too small: expected string to have >=1 characters"],
+  },
+  poisonOneValue(validInputArguments, "start_date", dateValidatorPoisoner),
+  poisonOneValue(validInputArguments, "end_date", dateValidatorPoisoner),
 ];
 
 const successData = {
@@ -87,7 +153,7 @@ const successData = {
   date_bucket: "month",
   groupings: "provider_account_id,service",
   on_demand_costs_scope: "discountable",
-  filter: "financial_commitments.provider = 'aws'",
+  filter: "(financial_commitments.provider = 'aws')",
 };
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
