@@ -31,6 +31,7 @@ import "./list-cost-reports";
 import "./list-cost-services";
 import "./list-costs";
 import "./list-dashboards";
+import "./list-financial-commitment-reports";
 import "./list-folders";
 import "./list-provider-resources";
 import "./list-recommendations";
