@@ -70,7 +70,6 @@ const groupingSchema = z
   .min(1)
   .refine(
     (value) =>
-      value === "" ||
       financialCommitmentGroupings.includes(value as (typeof financialCommitmentGroupings)[number]) ||
       value.startsWith("tag:"),
     {
