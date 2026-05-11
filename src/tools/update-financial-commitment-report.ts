@@ -1,4 +1,4 @@
-import { pathEncode } from "@vantage-sh/vantage-client";
+import { pathEncode, type UpdateFinancialCommitmentReportRequest } from "@vantage-sh/vantage-client";
 import z from "zod/v4";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
@@ -28,7 +28,11 @@ export default registerTool({
     groupings: z.array(z.string()).optional().describe("Updated grouping dimensions."),
   },
   async execute(args, ctx) {
-    const { financial_commitment_report_token, ...body } = args;
+    const { financial_commitment_report_token, ...requestBody } = args;
+    const body: UpdateFinancialCommitmentReportRequest = {
+      ...requestBody,
+      date_interval: requestBody.date_interval as UpdateFinancialCommitmentReportRequest["date_interval"],
+    };
     const response = await ctx.callVantageApi(
       `/v2/financial_commitment_reports/${pathEncode(financial_commitment_report_token)}`,
       body,
