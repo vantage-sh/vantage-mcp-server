@@ -8,6 +8,7 @@ import "./create-folder";
 import "./create-virtual-tag-config";
 import "./delete-cost-report";
 import "./delete-folder";
+import "./delete-recommendation-view";
 import "./get-anomaly";
 import "./get-cost-alert";
 import "./get-cost-provider-accounts";
