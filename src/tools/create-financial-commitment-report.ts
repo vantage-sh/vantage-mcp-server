@@ -88,7 +88,10 @@ export default registerTool({
     readOnly: false,
   },
   args: {
-    workspace_token: z.string().min(1).describe("The token of the Workspace to add the Financial Commitment Report to."),
+    workspace_token: z
+      .string()
+      .min(1)
+      .describe("The token of the Workspace to add the Financial Commitment Report to."),
     title: z.string().min(1).describe("Title for the new Financial Commitment Report"),
     filter: z.string().optional().describe("VQL filter to apply to the Financial Commitment Report"),
     start_date: dateValidator(
