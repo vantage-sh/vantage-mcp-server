@@ -33,6 +33,7 @@ import "./list-costs";
 import "./list-dashboards";
 import "./list-folders";
 import "./list-provider-resources";
+import "./list-recommendation-views";
 import "./list-recommendations";
 import "./list-tag-values";
 import "./list-tags";
