@@ -85,6 +85,7 @@ const successData = {
   end_date: "2024-03-31",
   date_interval: "custom",
   date_bucket: "month",
+  groupings: "provider_account_id,service",
   on_demand_costs_scope: "discountable",
   filter: "financial_commitments.provider = 'aws'",
 };
