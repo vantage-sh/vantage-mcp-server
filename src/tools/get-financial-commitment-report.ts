@@ -5,10 +5,14 @@ import registerTool from "./structure/registerTool";
 
 const description = `
 Gets a specific financial commitment report by its token.
+
+Use this tool when you already have a financial commitment report token, such as one returned by
+Vantage or referenced in the Vantage console. The response includes the report's title, workspace,
+date range, grouping, cost scope, and filter configuration.
 `.trim();
 
 const args = {
-  financial_commitment_report_token: z.string().describe("The financial commitment report token to retrieve"),
+  financial_commitment_report_token: z.string().min(1).describe("The financial commitment report token to retrieve"),
 };
 
 export default registerTool({

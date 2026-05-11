@@ -28,6 +28,13 @@ testTool(
         financial_commitment_report_token: "fncl_cmnt_rprt_86a93126175f91ed",
       },
     },
+    {
+      name: "rejects empty financial_commitment_report_token",
+      data: {
+        financial_commitment_report_token: "",
+      },
+      expectedIssues: ["Too small: expected string to have >=1 characters"],
+    },
   ],
   [
     {
@@ -46,6 +53,26 @@ testTool(
       handler: async ({ callExpectingSuccess }) => {
         const res = await callExpectingSuccess({
           financial_commitment_report_token: "fncl_cmnt_rprt_86a93126175f91ed",
+        });
+        expect(res).toEqual(success);
+      },
+    },
+    {
+      name: "encodes financial_commitment_report_token in endpoint",
+      apiCallHandler: requestsInOrder([
+        {
+          endpoint: `/v2/financial_commitment_reports/${pathEncode("fncl_cmnt_rprt_86a93126175f91ed/with space")}`,
+          params: {},
+          method: "GET",
+          result: {
+            ok: true,
+            data: success,
+          },
+        },
+      ]),
+      handler: async ({ callExpectingSuccess }) => {
+        const res = await callExpectingSuccess({
+          financial_commitment_report_token: "fncl_cmnt_rprt_86a93126175f91ed/with space",
         });
         expect(res).toEqual(success);
       },
