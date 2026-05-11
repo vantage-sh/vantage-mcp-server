@@ -110,7 +110,11 @@ export default registerTool({
       ),
     date_bucket: z.enum(["hour", "day", "week", "month", "quarter"]).optional().describe("Date aggregation bucket"),
     on_demand_costs_scope: z.enum(["discountable", "all"]).optional().describe("Scope for on-demand costs"),
-    groupings: z.array(groupingSchema).optional().describe(groupingDescription),
+    groupings: z
+      .array(groupingSchema)
+      .optional()
+      .transform((v) => v?.join(","))
+      .describe(groupingDescription),
   },
   async execute(args, ctx) {
     const response = await ctx.callVantageApi(
