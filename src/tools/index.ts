@@ -7,6 +7,7 @@ import "./create-dashboard";
 import "./create-folder";
 import "./create-virtual-tag-config";
 import "./delete-cost-report";
+import "./delete-financial-commitment-report";
 import "./delete-folder";
 import "./get-anomaly";
 import "./get-cost-alert";
