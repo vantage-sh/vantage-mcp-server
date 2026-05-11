@@ -65,17 +65,19 @@ const financialCommitmentGroupings = [
 const groupingDescription =
   "Grouping dimensions for aggregating financial commitments on the report. Valid groupings: provider, service, resource_account_id, provider_account_id, commitment_type, commitment_id, cost_type, cost_category, cost_sub_category, instance_type, region, and tag:<tag_key>.";
 
-const groupingSchema = z
-  .string()
-  .min(1)
-  .refine(
-    (value) =>
-      financialCommitmentGroupings.includes(value as (typeof financialCommitmentGroupings)[number]) ||
-      value.startsWith("tag:"),
-    {
-      error: groupingDescription,
-    }
-  );
+const groupingSchemaBase = z.string().min(1);
+
+const groupingSchema = groupingSchemaBase.refine(
+  (value) =>
+    financialCommitmentGroupings.includes(value as (typeof financialCommitmentGroupings)[number]) ||
+    value.startsWith("tag:"),
+  {
+    error: groupingDescription,
+    when(payload) {
+      return groupingSchemaBase.safeParse(payload.value).success;
+    },
+  }
+);
 
 export default registerTool({
   name: "create-financial-commitment-report",
