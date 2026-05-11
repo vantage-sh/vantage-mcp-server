@@ -22,7 +22,10 @@ const validArguments: InferValidators<Validators> = {
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "valid empty arguments",
-    data: {},
+    data: {
+      page: undefined,
+      limit: undefined,
+    },
   },
   {
     name: "valid pagination arguments",
