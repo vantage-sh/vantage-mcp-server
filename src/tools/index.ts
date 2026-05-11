@@ -4,6 +4,7 @@ import "./budgets";
 import "./create-cost-alert";
 import "./create-cost-report";
 import "./create-dashboard";
+import "./create-financial-commitment-report";
 import "./create-folder";
 import "./create-virtual-tag-config";
 import "./delete-cost-report";
