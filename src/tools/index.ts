@@ -40,4 +40,5 @@ import "./list-unit-costs";
 import "./query-costs";
 import "./submit-user-feedback";
 import "./update-anomaly";
+import "./update-financial-commitment-report";
 import "./update-folder";
