@@ -67,6 +67,48 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     },
     expectedIssues: ['Invalid option: expected one of "discountable"|"all"'],
   },
+  {
+    name: "invalid date interval",
+    data: {
+      ...validInputArguments,
+      date_interval: "invalid" as any,
+    },
+    expectedIssues: [
+      'Invalid option: expected one of "this_month"|"last_7_days"|"last_30_days"|"last_month"|"last_3_months"|"last_6_months"|"custom"|"last_12_months"|"last_24_months"|"last_36_months"|"year_to_date"|"last_3_days"|"last_14_days"',
+    ],
+  },
+  {
+    name: "invalid start date",
+    data: {
+      ...validInputArguments,
+      start_date: "not-a-date",
+    },
+    expectedIssues: ["Invalid date input, must be YYYY-MM-DD format and a reasonable date."],
+  },
+  {
+    name: "invalid end date",
+    data: {
+      ...validInputArguments,
+      end_date: "not-a-date",
+    },
+    expectedIssues: ["Invalid date input, must be YYYY-MM-DD format and a reasonable date."],
+  },
+  {
+    name: "empty financial commitment report token",
+    data: {
+      ...validInputArguments,
+      financial_commitment_report_token: "",
+    },
+    expectedIssues: ["Too small: expected string to have >=1 characters"],
+  },
+  {
+    name: "empty title",
+    data: {
+      ...validInputArguments,
+      title: "",
+    },
+    expectedIssues: ["Too small: expected string to have >=1 characters"],
+  },
 ];
 
 const successData: UpdateFinancialCommitmentReportResponse = {
