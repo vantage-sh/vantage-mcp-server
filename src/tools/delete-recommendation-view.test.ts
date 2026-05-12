@@ -31,7 +31,7 @@ testTool(
         const res = await callExpectingSuccess({
           recommendation_view_token: "rcmvw_123",
         });
-        expect(res).toBeUndefined();
+        expect(res).toEqual({ token: "rcmvw_123" });
       },
     },
     {
