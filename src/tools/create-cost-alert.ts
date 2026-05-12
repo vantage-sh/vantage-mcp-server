@@ -3,7 +3,11 @@ import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 
 const description = `
-Creates a cost alert based on the parameters specified. Cost alerts notify you when spending on one or more cost reports exceeds a specified threshold over a given interval.
+Create a new Cost Alert in Vantage. Cost Alerts are threshold-based spending alerts for one or more Cost Reports.
+
+Use this tool when a user asks to create, add, or set up a cost alert, spending alert, budget alert, threshold alert, or spend-limit notification.
+
+Do not use this for Report Notifications, scheduled report summaries, or recurring Cost Report delivery.
 `.trim();
 
 export default registerTool({
