@@ -15,6 +15,7 @@ import "./get-cost-alert";
 import "./get-cost-provider-accounts";
 import "./get-cost-report-forecast";
 import "./get-cost-report";
+import "./get-financial-commitment-report";
 import "./get-folder";
 import "./get-myself";
 import "./get-provider-resource";
