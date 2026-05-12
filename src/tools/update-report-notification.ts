@@ -4,7 +4,11 @@ import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 
 const description = `
-Updates a Vantage report_notifications API resource by its report notification token. Use this tool when a user asks to update or change a report notification. You can update its title, Cost Report, recipients, cadence, or tracked change type.
+Updates an existing Report Notification in Vantage.
+
+Use this tool to change a scheduled Cost Report notification's title, Cost Report, recipients, Slack or Microsoft Teams channels, delivery frequency, or tracked change type. Report Notifications deliver recurring Cost Report summaries on a daily, weekly, or monthly cadence.
+
+Do not use this for Cost Alerts, budget alerts, threshold alerts, or spend-limit notifications. Cost Alerts manage spend thresholds; Report Notifications manage scheduled report delivery.
 `.trim();
 
 export default registerTool({
