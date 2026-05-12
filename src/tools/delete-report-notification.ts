@@ -4,7 +4,9 @@ import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 
 const description = `
-Deletes a Vantage report_notifications API resource by its report notification token. Use this tool when a user asks to delete or remove a report notification. This action is irreversible and stops the scheduled report summary.
+Deletes a Report Notification by its token. This action is irreversible and stops the scheduled Cost Report summary from being delivered.
+
+Use this tool when a user asks to delete, remove, disable, or stop a scheduled report notification. Do not use this for deleting Cost Alerts, budget alerts, threshold alerts, or spend-limit notifications.
 `.trim();
 
 const args = {
