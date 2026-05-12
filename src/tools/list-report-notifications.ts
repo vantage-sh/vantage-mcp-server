@@ -5,11 +5,11 @@ import registerTool from "./structure/registerTool";
 import paginationData from "./utils/paginationData";
 
 const description = `
-List Cost Alerts available in the Vantage account. Cost Alerts are threshold-based spending alerts for Cost Reports.
+List Report Notifications available in the Vantage account. Report Notifications are scheduled deliveries of Cost Report summaries to users, Slack channels, or Microsoft Teams channels.
 
-Use this tool when a user asks to list, show, view, or find cost alerts, spending alerts, budget alerts, threshold alerts, or spend-limit notifications. Use the page value of 1 to start.
+Use this tool when a user asks to list, show, view, or find scheduled report notifications or recurring Cost Report summaries. Use the page value of 1 to start.
 
-Do not use this for Report Notifications, scheduled report summaries, or recurring Cost Report delivery.
+Do not use this for Cost Alerts, budget alerts, threshold alerts, or spend-limit notifications. Cost Alerts are threshold-based spending alerts; Report Notifications are scheduled report deliveries.
 `.trim();
 
 const args = {
@@ -17,8 +17,8 @@ const args = {
 };
 
 export default registerTool({
-  name: "list-cost-alerts",
-  title: "List Cost Alerts",
+  name: "list-report-notifications",
+  title: "List Report Notifications",
   description,
   annotations: {
     destructive: false,
@@ -28,12 +28,12 @@ export default registerTool({
   args,
   async execute(args, ctx) {
     const requestParams = { ...args, limit: DEFAULT_LIMIT };
-    const response = await ctx.callVantageApi("/v2/cost_alerts", requestParams, "GET");
+    const response = await ctx.callVantageApi("/v2/report_notifications", requestParams, "GET");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }
     return {
-      cost_alerts: response.data.cost_alerts,
+      report_notifications: response.data.report_notifications,
       pagination: paginationData(response.data),
     };
   },
