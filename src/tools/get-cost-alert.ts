@@ -4,9 +4,9 @@ import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 
 const description = `
-Gets a specific Vantage Cost Alert by its cost alert token.
+Gets a specific Cost Alert by its token.
 
-Use this tool when a user asks to get, show, or retrieve one threshold-based spending alert.
+Use this tool when you already have a cost alert token, such as one returned by list-cost-alerts or referenced in Vantage. Cost Alerts are threshold-based spending alerts for Cost Reports.
 
 Do not use this for Report Notifications, scheduled report summaries, or recurring Cost Report delivery.
 `.trim();
