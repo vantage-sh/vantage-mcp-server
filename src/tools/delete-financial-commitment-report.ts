@@ -24,12 +24,12 @@ export default registerTool({
   async execute(args, ctx) {
     const response = await ctx.callVantageApi(
       `/v2/financial_commitment_reports/${pathEncode(args.financial_commitment_report_token)}`,
-      args,
+      {},
       "DELETE"
     );
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }
-    return response.data as unknown as Record<string, unknown>;
+    return { token: args.financial_commitment_report_token };
   },
 });
