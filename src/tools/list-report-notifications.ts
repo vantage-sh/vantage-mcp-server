@@ -5,8 +5,11 @@ import registerTool from "./structure/registerTool";
 import paginationData from "./utils/paginationData";
 
 const description = `
-List the Vantage report_notifications API resource: scheduled Report Notifications for Cost Reports. Use this tool when a user asks to get, list, show, or view report notifications. Report notifications send scheduled daily, weekly, or monthly Cost Report summaries to users via email, Slack, or Microsoft Teams.
-Use the page value of 1 to start.
+List Report Notifications available in the Vantage account. Report Notifications are scheduled deliveries of Cost Report summaries to users, Slack channels, or Microsoft Teams channels.
+
+Use this tool when a user asks to list, show, view, or find scheduled report notifications or recurring Cost Report summaries. Use the page value of 1 to start.
+
+Do not use this for Cost Alerts, budget alerts, threshold alerts, or spend-limit notifications. Cost Alerts are threshold-based spending alerts; Report Notifications are scheduled report deliveries.
 `.trim();
 
 const args = {
