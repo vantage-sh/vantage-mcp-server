@@ -61,6 +61,62 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     },
     expectedIssues: ["Invalid input: expected array, received string"],
   },
+  {
+    name: "invalid billing account ids",
+    data: {
+      ...minimalValidInputArguments,
+      billing_account_ids: "123456789012" as unknown as string[],
+    },
+    expectedIssues: ["Invalid input: expected array, received string"],
+  },
+  {
+    name: "invalid account ids",
+    data: {
+      ...minimalValidInputArguments,
+      account_ids: "acct_123" as unknown as string[],
+    },
+    expectedIssues: ["Invalid input: expected array, received string"],
+  },
+  {
+    name: "invalid regions",
+    data: {
+      ...minimalValidInputArguments,
+      regions: "us-east-1" as unknown as string[],
+    },
+    expectedIssues: ["Invalid input: expected array, received string"],
+  },
+  {
+    name: "empty recommendation view token",
+    data: {
+      ...minimalValidInputArguments,
+      recommendation_view_token: "",
+    },
+    expectedIssues: ["Too small: expected string to have >=1 characters"],
+  },
+  {
+    name: "empty title",
+    data: {
+      ...minimalValidInputArguments,
+      title: "",
+    },
+    expectedIssues: ["Too small: expected string to have >=1 characters"],
+  },
+  {
+    name: "invalid start date",
+    data: {
+      ...minimalValidInputArguments,
+      start_date: "not-a-date",
+    },
+    expectedIssues: ["Invalid date input, must be YYYY-MM-DD format and a reasonable date."],
+  },
+  {
+    name: "invalid end date",
+    data: {
+      ...minimalValidInputArguments,
+      end_date: "not-a-date",
+    },
+    expectedIssues: ["Invalid date input, must be YYYY-MM-DD format and a reasonable date."],
+  },
 ];
 
 const successData: UpdateRecommendationViewResponse = {
