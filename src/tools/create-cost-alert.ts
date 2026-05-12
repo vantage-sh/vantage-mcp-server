@@ -2,8 +2,13 @@ import z from "zod/v4";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 
-const description =
-  ` Create a new Cost Alert in Vantage. Cost Alerts are threshold-based spending alerts for one or more Cost Reports. Use this tool when a user asks to create, add, or set up a cost alert, spending alert, budget alert, threshold alert, or spend-limit notification. Do not use this for Report Notifications, scheduled report summaries, or recurring Cost Report delivery. `.trim();
+const description = `
+Create a new Cost Alert in Vantage. Cost Alerts are threshold-based spending alerts for one or more Cost Reports.
+
+Use this tool when a user asks to create, add, or set up a cost alert, spending alert, budget alert, threshold alert, or spend-limit notification.
+
+Do not use this for Report Notifications, scheduled report summaries, or recurring Cost Report delivery.
+`.trim();
 
 export default registerTool({
   name: "create-cost-alert",

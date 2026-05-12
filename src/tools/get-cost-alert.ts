@@ -4,7 +4,11 @@ import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 
 const description = `
-Gets a specific Vantage Cost Alert by its cost alert token. Use this tool when a user asks to get, show, or retrieve one threshold-based spending alert.
+Gets a specific Vantage Cost Alert by its cost alert token.
+
+Use this tool when a user asks to get, show, or retrieve one threshold-based spending alert.
+
+Do not use this for Report Notifications, scheduled report summaries, or recurring Cost Report delivery.
 `.trim();
 
 const args = {

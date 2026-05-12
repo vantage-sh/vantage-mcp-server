@@ -5,8 +5,11 @@ import registerTool from "./structure/registerTool";
 import paginationData from "./utils/paginationData";
 
 const description = `
-List Vantage Cost Alerts: threshold-based spending alerts for Cost Reports. Use this tool when a user asks to get, list, show, or view cost alerts, spending alerts, threshold alerts, or budget alerts.
-Use the page value of 1 to start.
+List Vantage Cost Alerts: threshold-based spending alerts for Cost Reports.
+
+Use this tool when a user asks to get, list, show, or view cost alerts, spending alerts, threshold alerts, or budget alerts. Use the page value of 1 to start.
+
+Do not use this for Report Notifications, scheduled report summaries, or recurring Cost Report delivery.
 `.trim();
 
 const args = {
