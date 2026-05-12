@@ -56,6 +56,12 @@ export default registerTool({
       .describe("Filter recommendations with at least this amount of potential savings."),
   },
   async execute(args, ctx) {
+    if (!!args.tag_key !== !!args.tag_value) {
+      throw new MCPUserError({
+        errors: [{ message: "tag_key and tag_value must both be provided together" }],
+      });
+    }
+
     const response = await ctx.callVantageApi(
       "/v2/recommendation_views",
       args as CreateRecommendationViewRequest,

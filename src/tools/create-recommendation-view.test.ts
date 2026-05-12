@@ -165,6 +165,32 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       });
     },
   },
+  {
+    name: "throws MCPUserError when only tag_key is provided",
+    apiCallHandler: requestsInOrder([]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError({
+        ...minimalValidInputArguments,
+        tag_key: "environment",
+      });
+      expect(err.exception).toEqual({
+        errors: [{ message: "tag_key and tag_value must both be provided together" }],
+      });
+    },
+  },
+  {
+    name: "throws MCPUserError when only tag_value is provided",
+    apiCallHandler: requestsInOrder([]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError({
+        ...minimalValidInputArguments,
+        tag_value: "production",
+      });
+      expect(err.exception).toEqual({
+        errors: [{ message: "tag_key and tag_value must both be provided together" }],
+      });
+    },
+  },
 ];
 
 testTool(tool, argumentSchemaTests, executionTests);
