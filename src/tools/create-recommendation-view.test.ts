@@ -191,6 +191,32 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       });
     },
   },
+  {
+    name: "throws MCPUserError when only start_date is provided",
+    apiCallHandler: requestsInOrder([]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError({
+        ...minimalValidInputArguments,
+        start_date: "2024-01-01",
+      });
+      expect(err.exception).toEqual({
+        errors: [{ message: "start_date and end_date must both be provided together" }],
+      });
+    },
+  },
+  {
+    name: "throws MCPUserError when only end_date is provided",
+    apiCallHandler: requestsInOrder([]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError({
+        ...minimalValidInputArguments,
+        end_date: "2024-06-30",
+      });
+      expect(err.exception).toEqual({
+        errors: [{ message: "start_date and end_date must both be provided together" }],
+      });
+    },
+  },
 ];
 
 testTool(tool, argumentSchemaTests, executionTests);

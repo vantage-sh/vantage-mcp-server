@@ -61,6 +61,11 @@ export default registerTool({
         errors: [{ message: "tag_key and tag_value must both be provided together" }],
       });
     }
+    if (!!args.start_date !== !!args.end_date) {
+      throw new MCPUserError({
+        errors: [{ message: "start_date and end_date must both be provided together" }],
+      });
+    }
 
     const response = await ctx.callVantageApi(
       "/v2/recommendation_views",
