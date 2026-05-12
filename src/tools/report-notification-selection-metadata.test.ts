@@ -11,8 +11,9 @@ import updateReportNotification from "./update-report-notification";
 test("report notification metadata targets natural-language report notification requests", () => {
   expect(listReportNotifications.name).toBe("list-report-notifications");
   expect(listReportNotifications.title).toBe("List Report Notifications");
-  expect(listReportNotifications.description).toContain("report_notifications API resource");
-  expect(listReportNotifications.description).toContain("get, list, show, or view report notifications");
+  expect(listReportNotifications.description).toContain("List Report Notifications available in the Vantage account.");
+  expect(listReportNotifications.description.toLowerCase()).toContain("scheduled report notifications");
+  expect(listReportNotifications.description).toContain("Use the page value of 1 to start.");
 
   for (const tool of [
     createReportNotification,
@@ -20,8 +21,8 @@ test("report notification metadata targets natural-language report notification 
     updateReportNotification,
     deleteReportNotification,
   ]) {
-    expect(tool.description).toContain("report_notifications API resource");
     expect(tool.description.toLowerCase()).toContain("report notification");
+    expect(tool.description.toLowerCase()).toContain("cost alerts");
   }
 });
 
