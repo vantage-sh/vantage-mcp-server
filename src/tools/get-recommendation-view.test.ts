@@ -28,6 +28,13 @@ testTool(
         recommendation_view_token: "rec_vw_be3f24eb1b5aabf6",
       },
     },
+    {
+      name: "rejects empty recommendation_view_token",
+      data: {
+        recommendation_view_token: "",
+      },
+      expectedIssues: ["Too small: expected string to have >=1 characters"],
+    },
   ],
   [
     {
@@ -46,6 +53,26 @@ testTool(
       handler: async ({ callExpectingSuccess }) => {
         const res = await callExpectingSuccess({
           recommendation_view_token: "rec_vw_be3f24eb1b5aabf6",
+        });
+        expect(res).toEqual(success);
+      },
+    },
+    {
+      name: "encodes recommendation_view_token in endpoint",
+      apiCallHandler: requestsInOrder([
+        {
+          endpoint: `/v2/recommendation_views/${pathEncode("rec_vw_be3f24eb1b5aabf6/with space")}`,
+          params: {},
+          method: "GET",
+          result: {
+            ok: true,
+            data: success,
+          },
+        },
+      ]),
+      handler: async ({ callExpectingSuccess }) => {
+        const res = await callExpectingSuccess({
+          recommendation_view_token: "rec_vw_be3f24eb1b5aabf6/with space",
         });
         expect(res).toEqual(success);
       },

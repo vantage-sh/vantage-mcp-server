@@ -5,10 +5,14 @@ import registerTool from "./structure/registerTool";
 
 const description = `
 Gets a specific recommendation view by its token.
+
+Use this tool when you already have a recommendation view token, such as one returned by Vantage or
+referenced in the Vantage console. The response includes the view's title, workspace, date range,
+provider and account scopes, regions, tags, creation timestamp, and creator.
 `.trim();
 
 const args = {
-  recommendation_view_token: z.string().describe("The token of the recommendation view to retrieve"),
+  recommendation_view_token: z.string().min(1).describe("The recommendation view token to retrieve"),
 };
 
 export default registerTool({
