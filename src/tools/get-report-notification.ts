@@ -4,7 +4,11 @@ import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 
 const description = `
-Gets a specific Vantage report_notifications API resource by its report notification token. Use this tool when a user asks to get, show, or retrieve one report notification. Report notifications send scheduled Cost Report summaries to users via email, Slack, or Microsoft Teams.
+Gets a specific Report Notification by its token.
+
+Use this tool when you already have a report notification token, such as one returned by list-report-notifications or referenced in Vantage. The response includes the notification title, Cost Report token, recipients, delivery channels, frequency, and tracked change type.
+
+Do not use this for Cost Alerts, budget alerts, threshold alerts, or spend-limit notifications.
 `.trim();
 
 const args = {
