@@ -3,7 +3,11 @@ import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 
 const description = `
-Create a new Vantage report_notifications API resource: a scheduled Report Notification for a Cost Report. Use this tool when a user asks to create or add a report notification. Report notifications send scheduled daily, weekly, or monthly Cost Report summaries to users via email, Slack, or Microsoft Teams.
+Create a new Report Notification in Vantage.
+
+Report Notifications send scheduled Cost Report summaries to configured users, Slack channels, or Microsoft Teams channels on a daily, weekly, or monthly cadence. Use this tool when a user asks to create, add, or set up scheduled report delivery for an existing Cost Report.
+
+Do not use this for Cost Alerts, budget alerts, threshold alerts, or spend-limit notifications. Cost Alerts notify users when spend crosses a configured threshold; Report Notifications deliver scheduled report summaries.
 `.trim();
 
 export default registerTool({
