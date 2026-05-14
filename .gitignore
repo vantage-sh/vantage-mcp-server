@@ -180,3 +180,5 @@ wrangler-SLACK.jsonc
 
 # Our build for CLI
 local-package
+
+tmp/*
