@@ -28,7 +28,7 @@
     "axios": "1.13.5",
     "hono": "4.12.12",
     "jose": "^6.0.11",
-    "oauth4webapi": "^3.5.5",
+    "oauth4webapi": "^3.8.5",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "workers-tagged-logger": "^1.0.0",
