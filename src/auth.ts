@@ -1,6 +1,6 @@
 /*
-Note that this code started from the examples at 
-https://github.com/cloudflare/ai/tree/0150b265a4510123b545b4f988511bf0b63c6641/demos/remote-mcp-auth0 
+Note that this code started from the examples at
+https://github.com/cloudflare/ai/tree/0150b265a4510123b545b4f988511bf0b63c6641/demos/remote-mcp-auth0
 */
 import { env } from "cloudflare:workers";
 import type {
@@ -15,6 +15,7 @@ import { getCookie, setCookie } from "hono/cookie";
 import { html, raw } from "hono/html";
 import type { JWTPayload } from "jose";
 import * as oauth from "oauth4webapi";
+import type { AppEnv } from "./env";
 
 export type UserProps = {
   claims: JWTPayload;
@@ -33,9 +34,6 @@ type Auth0AuthRequest = {
   transactionState: string;
   consentToken: string;
 };
-
-// TODO pull from env
-const APP_ENV: "development" | "production" = "development";
 
 export async function getOidcConfig({
   issuer,
@@ -56,19 +54,6 @@ export async function getOidcConfig({
   return { as, client, clientAuth };
 }
 
-export interface RequiredEnv {
-  VANTAGE_API_HOST: string;
-  VANTAGE_MCP_TOKEN: string;
-  AUTH0_CLIENT_ID: string;
-  AUTH0_CLIENT_SECRET: string;
-  AUTH0_DOMAIN: string;
-  AUTH0_SCOPE: string;
-  AUTH0_AUDIENCE: string;
-  SELF_CALLBACK_URL: string;
-  SENTRY_DSN: string;
-  CF_VERSION_METADATA: { id: string };
-}
-
 /**
  * OAuth Authorization Endpoint
  *
@@ -77,7 +62,7 @@ export interface RequiredEnv {
  * original request information in a state-specific cookie for later retrieval.
  * Then it shows a consent screen before redirecting to Auth0.
  */
-export async function authorize(c: Context<{ Bindings: RequiredEnv & { OAUTH_PROVIDER: OAuthHelpers } }>) {
+export async function authorize(c: Context<{ Bindings: AppEnv & { OAUTH_PROVIDER: OAuthHelpers } }>) {
   const mcpClientAuthRequest = await c.env.OAUTH_PROVIDER.parseAuthRequest(c.req.raw);
   if (!mcpClientAuthRequest.clientId) {
     return c.text("Invalid request", 400);
@@ -109,8 +94,8 @@ export async function authorize(c: Context<{ Bindings: RequiredEnv & { OAUTH_PRO
     httpOnly: true,
     maxAge: 60 * 60 * 1,
     path: "/",
-    sameSite: APP_ENV === "production" ? "none" : "lax",
-    secure: APP_ENV === "production", // 1 hour
+    sameSite: c.env.ENVIRONMENT === "production" ? "none" : "lax",
+    secure: c.env.ENVIRONMENT === "production", // 1 hour
   });
 
   // Extract client information for the consent screen
@@ -138,7 +123,7 @@ export async function authorize(c: Context<{ Bindings: RequiredEnv & { OAUTH_PRO
  *
  * This route handles the consent confirmation before redirecting to Auth0
  */
-export async function confirmConsent(c: Context<{ Bindings: RequiredEnv & { OAUTH_PROVIDER: OAuthHelpers } }>) {
+export async function confirmConsent(c: Context<{ Bindings: AppEnv & { OAUTH_PROVIDER: OAuthHelpers } }>) {
   // Get form data
   const formData = await c.req.formData();
   const transactionState = formData.get("transaction_state") as string;
@@ -215,7 +200,7 @@ export async function confirmConsent(c: Context<{ Bindings: RequiredEnv & { OAUT
   return c.redirect(authorizationUrl.href);
 }
 
-async function getSSOLoginUrl(ssoEmail: string, env: RequiredEnv): Promise<string> {
+async function getSSOLoginUrl(ssoEmail: string, env: AppEnv): Promise<string> {
   const requestOptions = {
     url: `${env.VANTAGE_API_HOST}/internal/email_identity_provider`,
     method: "GET",
@@ -245,7 +230,7 @@ async function getSSOLoginUrl(ssoEmail: string, env: RequiredEnv): Promise<strin
  * It exchanges the authorization code for tokens and completes the
  * authorization process.
  */
-export async function callback(c: Context<{ Bindings: RequiredEnv & { OAUTH_PROVIDER: OAuthHelpers } }>) {
+export async function callback(c: Context<{ Bindings: AppEnv & { OAUTH_PROVIDER: OAuthHelpers } }>) {
   // Parse the state parameter to extract transaction state and Auth0 state
   const stateParam = c.req.query("state") as string;
   if (!stateParam) {
@@ -344,9 +329,9 @@ export async function tokenExchangeCallback(
     }
 
     const { as, client, clientAuth } = await getOidcConfig({
-      client_id: (env as RequiredEnv).AUTH0_CLIENT_ID,
-      client_secret: (env as RequiredEnv).AUTH0_CLIENT_SECRET,
-      issuer: `https://${(env as RequiredEnv).AUTH0_DOMAIN}/`,
+      client_id: env.AUTH0_CLIENT_ID,
+      client_secret: env.AUTH0_CLIENT_SECRET,
+      issuer: `https://${env.AUTH0_DOMAIN}/`,
     });
 
     // Perform the refresh token exchange with Auth0.
@@ -397,254 +382,309 @@ export function renderConsentScreen({
   consentToken: string;
 }) {
   return html`
-        <!DOCTYPE html>
-        <html lang="en">
-            <head>
-                <meta charset="UTF-8" />
-                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                <title>Authorization Request</title>
-                <link rel="icon" type="image/png" href="/favicon.png" />
-                <style>
-                    :root {
-                        --primary-color: #872EE1;
-                        --text-color: #333;
-                        --background-color: #f7f7f7;
-                        --card-background: #ffffff;
-                        --border-color: #e0e0e0;
-                        --danger-color: #ef233c;
-                        --success-color: #2a9d8f;
-                        --font-family:
-                            -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
-                            sans-serif;
-                    }
+    <!doctype html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Authorization Request</title>
+        <link rel="icon" type="image/png" href="/favicon.png" />
+        <style>
+          :root {
+            --primary-color: #872ee1;
+            --text-color: #333;
+            --background-color: #f7f7f7;
+            --card-background: #ffffff;
+            --border-color: #e0e0e0;
+            --danger-color: #ef233c;
+            --success-color: #2a9d8f;
+            --font-family:
+              -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+              Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+          }
 
-                    body {
-                        font-family: var(--font-family);
-                        background-color: var(--background-color);
-                        color: var(--text-color);
-                        margin: 0;
-                        padding: 0;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        min-height: 100vh;
-                    }
+          body {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+          }
 
-                    .container {
-                        width: 100%;
-                        max-width: 480px;
-                        padding: 20px;
-                    }
+          .container {
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+          }
 
-                    .card {
-                        background-color: var(--card-background);
-                        border-radius: 12px;
-                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-                        padding: 32px;
-                        overflow: hidden;
-                    }
+          .card {
+            background-color: var(--card-background);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 32px;
+            overflow: hidden;
+          }
 
-                    .header {
-                        text-align: center;
-                        margin-bottom: 24px;
-                    }
+          .header {
+            text-align: center;
+            margin-bottom: 24px;
+          }
 
-                    h1 {
-                        font-size: 20px; 
-                    }
+          h1 {
+            font-size: 20px;
+          }
 
-                    .app-link {
-                        color: var(--primary-color);
-                        text-decoration: none;
-                        font-size: 14px;
-                    }
+          .app-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 14px;
+          }
 
-                    .app-link:hover {
-                        text-decoration: underline;
-                    }
+          .app-link:hover {
+            text-decoration: underline;
+          }
 
-                    .description {
-                        margin: 24px 0;
-                        font-size: 16px;
-                        line-height: 1.5;
-                    }
-                    .description:first-of-type {
-                        margin: 0 0 24px 0;
-                    }
+          .description {
+            margin: 24px 0;
+            font-size: 16px;
+            line-height: 1.5;
+          }
+          .description:first-of-type {
+            margin: 0 0 24px 0;
+          }
 
-                    .scopes {
-                        background-color: var(--background-color);
-                        border-radius: 8px;
-                        padding: 16px;
-                        margin: 24px 0;
-                    }
+          .scopes {
+            background-color: var(--background-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 24px 0;
+          }
 
-                    .scope-title {
-                        font-weight: 600;
-                        margin-bottom: 8px;
-                        font-size: 15px;
-                    }
+          .scope-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 15px;
+          }
 
-                    .scope-list {
-                        font-size: 16px;
-                        margin: 0;
-                        padding-left: 20px;
-                    }
+          .scope-list {
+            font-size: 16px;
+            margin: 0;
+            padding-left: 20px;
+          }
 
-                    .actions {
-                        display: flex;
-                        gap: 12px;
-                        margin-top: 24px;
-                    }
+          .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+          }
 
-                    .btn {
-                        flex: 1;
-                        padding: 12px 20px;
-                        font-size: 16px;
-                        font-weight: 500;
-                        border-radius: 8px;
-                        cursor: pointer;
-                        border: none;
-                        transition: all 0.2s ease;
-                    }
+          .btn {
+            flex: 1;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+          }
 
-                    input[type="text"].btn {
-                        cursor: auto;
-                        border-radius: 0px;
-                    }
+          input[type="text"].btn {
+            cursor: auto;
+            border-radius: 0px;
+          }
 
-                    .btn-cancel {
-                        background-color: transparent;
-                        border: 1px solid var(--border-color);
-                        color: var(--text-color);
-                    }
+          .btn-cancel {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+          }
 
-                    .btn-cancel:hover {
-                        background-color: rgba(0, 0, 0, 0.05);
-                    }
+          .btn-cancel:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+          }
 
-                    .btn-approve {
-                        color:  var(--background-color);
-                        border-radius: 6px;
-                        border: 0px solid var(--primary-color);
-                        background: var(--primary-color);
-                    }
+          .btn-approve {
+            color: var(--background-color);
+            border-radius: 6px;
+            border: 0px solid var(--primary-color);
+            background: var(--primary-color);
+          }
 
-                    .btn-approve:hover {
-                        background: var(--primary-color);
-                    }
+          .btn-approve:hover {
+            background: var(--primary-color);
+          }
 
-                    .security-note {
-                        margin-top: 24px;
-                        font-size: 12px;
-                        color: #777;
-                        text-align: center;
-                    }
+          .security-note {
+            margin-top: 24px;
+            font-size: 12px;
+            color: #777;
+            text-align: center;
+          }
 
-                    @media (max-width: 520px) {
-                        .container {
-                            padding: 10px;
-                        }
+          @media (max-width: 520px) {
+            .container {
+              padding: 10px;
+            }
 
-                        .card {
-                            padding: 24px;
-                            border-radius: 8px;
-                        }
-                    }
+            .card {
+              padding: 24px;
+              border-radius: 8px;
+            }
+          }
 
-                    .app-logo {
-                        width: 40px;
-                        height: 40px;
-                        object-fit: contain;
-                        border-radius: 8px;
-                        
-                    }
-                    .app-logo-mcp {
-                        width: 24px;
-                        height: 24px;
-                        object-fit: contain;
-                        border-radius: 8px;
-                        padding: 8px;
-                    }
-                    .app-logo.shadow, .app-logo-mcp.shadow {
-                        border-radius: 80px;
-                        background: var(--background-color, #FFF);
-                        box-shadow: 0px 5px 12px 0px rgba(0, 0, 0, 0.10);
-                    }
-                    .img-container {
-                        display: inline-block;
-                        margin: 0 8px;
-                    }
-                    .mb-8 {
-                        margin-bottom: 8px;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div class="card">
-                        <div class="header">
-                            <h1>Vantage Hosted MCP Server<br>Authorization Request</h1>
-                        </div>
-                        <div class="header">
-                            <span class="img-container">
-                                <img src="/vantage-logo.svg" alt="Vantage logo" class="shadow app-logo" />
-                            </span>
-                            <img src="/line.svg" alt="line" class="app-logo" />
-                            <span class="img-container">
-                                <img src="/mcp-logo.png" alt="Model Context Protocol logo" class="shadow app-logo-mcp" />
-                            </span>
-                        </div>
+          .app-logo {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            border-radius: 8px;
+          }
+          .app-logo-mcp {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            border-radius: 8px;
+            padding: 8px;
+          }
+          .app-logo.shadow,
+          .app-logo-mcp.shadow {
+            border-radius: 80px;
+            background: var(--background-color, #fff);
+            box-shadow: 0px 5px 12px 0px rgba(0, 0, 0, 0.1);
+          }
+          .img-container {
+            display: inline-block;
+            margin: 0 8px;
+          }
+          .mb-8 {
+            margin-bottom: 8px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="card">
+            <div class="header">
+              <h1>Vantage Hosted MCP Server<br />Authorization Request</h1>
+            </div>
+            <div class="header">
+              <span class="img-container">
+                <img
+                  src="/vantage-logo.svg"
+                  alt="Vantage logo"
+                  class="shadow app-logo"
+                />
+              </span>
+              <img src="/line.svg" alt="line" class="app-logo" />
+              <span class="img-container">
+                <img
+                  src="/mcp-logo.png"
+                  alt="Model Context Protocol logo"
+                  class="shadow app-logo-mcp"
+                />
+              </span>
+            </div>
 
-                        <p class="description">
-                            <strong>${clientName}</strong> is requesting permission to access the <strong>Vantage API</strong> using your
-                            account. Please review the permissions before proceeding.
-                        </p>
+            <p class="description">
+              <strong>${clientName}</strong> is requesting permission to access the
+              <strong>Vantage API</strong> using your account. Please review the
+              permissions before proceeding.
+            </p>
 
-                        <p class="description mb-8">
-                            By clicking "Allow Access", you authorize <strong>${clientName}</strong> to access the following resources:
-                        </p>
+            <p class="description mb-8">
+              By clicking "Allow Access", you authorize
+              <strong>${clientName}</strong> to access the following resources:
+            </p>
 
-                        <ul class="scope-list">
-                            ${raw(requestedScopes.map((scope) => `<li>${scope}</li>`).join("\n"))}
-                        </ul>
+            <ul class="scope-list">
+              ${raw(
+                requestedScopes
+                  .map(
+                    (scope) => `
+              <li>${scope}</li>
+              `
+                  )
+                  .join("\n")
+              )}
+            </ul>
 
-                        <p class="description">
-                            If you did not initiate the request coming from <strong>${clientName}</strong> (<i>${redirectUri}</i>) or you do
-                            not trust this application, you should deny access.
-                        </p>
+            <p class="description">
+              If you did not initiate the request coming from
+              <strong>${clientName}</strong> (<i>${redirectUri}</i>) or you do not
+              trust this application, you should deny access.
+            </p>
 
-                        <form method="POST" action="/authorize/consent">
-                            <input type="hidden" name="transaction_state" value="${transactionState}" />
-                            <input type="hidden" name="consent_token" value="${consentToken}" />
+            <form method="POST" action="/authorize/consent">
+              <input
+                type="hidden"
+                name="transaction_state"
+                value="${transactionState}"
+              />
+              <input type="hidden" name="consent_token" value="${consentToken}" />
 
-                            <div class="actions">
-                                <button type="submit" name="consent_action" value="deny" class="btn btn-cancel">Deny Access</button>
-                                <button type="submit" name="consent_action" value="approve" class="btn btn-approve">Allow Access</button>
-                            </div>
-                        </form>
+              <div class="actions">
+                <button
+                  type="submit"
+                  name="consent_action"
+                  value="deny"
+                  class="btn btn-cancel"
+                >
+                  Deny Access
+                </button>
+                <button
+                  type="submit"
+                  name="consent_action"
+                  value="approve"
+                  class="btn btn-approve"
+                >
+                  Allow Access
+                </button>
+              </div>
+            </form>
 
-                        <p class="description">
-                            Users that access Vantage through their SSO provider, please provide your email address below:
-                        </p>
+            <p class="description">
+              Users that access Vantage through their SSO provider, please provide
+              your email address below:
+            </p>
 
-                        <form method="POST" action="/authorize/consent">
-                            <input type="hidden" name="transaction_state" value="${transactionState}" />
-                            <input type="hidden" name="consent_token" value="${consentToken}" />
-                            
-                            <div class="actions">
-                                <input type="text" name="sso_email" placeholder="SSO Login Email" class="btn btn-cancel" required>
-                                <button type="submit" name="consent_action" value="approve-sso" class="btn btn-approve">Allow SSO</button>
-                            </div>
-                        </form>
+            <form method="POST" action="/authorize/consent">
+              <input
+                type="hidden"
+                name="transaction_state"
+                value="${transactionState}"
+              />
+              <input type="hidden" name="consent_token" value="${consentToken}" />
 
-                        <p class="security-note">
-                            You're signing in to a third-party application. Your account information is never shared without your
-                            permission.
-                        </p>
-                    </div>
-                </div>
-            </body>
-        </html>
+              <div class="actions">
+                <input
+                  type="text"
+                  name="sso_email"
+                  placeholder="SSO Login Email"
+                  class="btn btn-cancel"
+                  required
+                />
+                <button
+                  type="submit"
+                  name="consent_action"
+                  value="approve-sso"
+                  class="btn btn-approve"
+                >
+                  Allow SSO
+                </button>
+              </div>
+            </form>
+
+            <p class="security-note">
+              You're signing in to a third-party application. Your account
+              information is never shared without your permission.
+            </p>
+          </div>
+        </div>
+      </body>
+    </html>
     `;
 }

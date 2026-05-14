@@ -10,7 +10,8 @@ import type {
 import { McpAgent } from "agents/mcp";
 import { Hono } from "hono";
 import { withLogTags } from "workers-tagged-logger";
-import { authorize, callback, confirmConsent, type RequiredEnv, tokenExchangeCallback, type UserProps } from "./auth";
+import { authorize, callback, confirmConsent, tokenExchangeCallback, type UserProps } from "./auth";
+import type { AppEnv } from "./env";
 import { HeaderAuthProvider } from "./header-auth-provider";
 import homepage from "./homepage";
 import { logger } from "./logger";
@@ -21,7 +22,7 @@ import { setupRegisteredTools } from "./tools/structure/registerTool";
 // Side effect import to register all tools
 import "./tools";
 
-function tokenFromProps(props: UserProps, env?: RequiredEnv): string {
+function tokenFromProps(props: UserProps, env?: AppEnv): string {
   // Check if VANTAGE_MCP_TOKEN is provided in environment
   if (env?.VANTAGE_MCP_TOKEN) {
     return env.VANTAGE_MCP_TOKEN;
@@ -69,7 +70,7 @@ export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> 
       // Try to get token, but don't fail if not available (when using vantage headers only)
       let token: string | null = null;
       try {
-        token = tokenFromProps(this.props!, this.env as RequiredEnv);
+        token = tokenFromProps(this.props!, this.env);
       } catch (_error) {
         // If no token is available, we'll rely on vantage headers for authentication
         if (Object.keys(vantageHeaders).length === 0) {
@@ -86,7 +87,7 @@ export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> 
       }
 
       const result = await callApi<P, M, Request, Response>(
-        (this.env as RequiredEnv).VANTAGE_API_HOST,
+        this.env.VANTAGE_API_HOST,
         headers,
         params,
         method,
@@ -157,7 +158,7 @@ function createMcpServer(request: Request, sse: boolean): HeaderAuthProvider | O
 }
 
 export default {
-  async fetch(request: Request, env: RequiredEnv, ctx: ExecutionContext) {
+  async fetch(request: Request, env: AppEnv, ctx: ExecutionContext) {
     const sse = new URL(request.url).pathname.startsWith("/sse");
     if (env.VANTAGE_MCP_TOKEN) {
       // Direct token mode - bypass OAuth and serve MCP directly
@@ -171,7 +172,7 @@ export default {
 
     const mcpServer = createMcpServer(request, sse);
 
-    const sentryHandler = Sentry.withSentry((env: RequiredEnv) => {
+    const sentryHandler = Sentry.withSentry((env: AppEnv) => {
       const { id: versionId } = env.CF_VERSION_METADATA;
       return {
         dsn: env.SENTRY_DSN,
