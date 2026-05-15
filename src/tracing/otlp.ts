@@ -138,7 +138,7 @@ function toOtlpAnyValue(value: PrimitiveAttributeValue): Record<string, unknown>
 
   return { stringValue: value };
 }
-
+// https://github.com/open-telemetry/opentelemetry-proto/blob/main/opentelemetry/proto/trace/v1/trace.proto#L145
 function toOtlpSpanKind(kind: SpanKind): number {
   switch (kind) {
     case "server":
