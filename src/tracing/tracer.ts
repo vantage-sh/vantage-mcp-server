@@ -480,12 +480,12 @@ export class CloudflareWorkerTracer {
   }
 
   private resolveConfig(env?: AppEnv): ResolvedTracerConfig {
-    const endpoint = env?.OTLP_TRACES_ENDPOINT;
+    const endpoint = env?.OTEL_EXPORTER_OTLP_ENDPOINT;
     const sampleRate = parseSampleRate(env?.OTEL_TRACES_SAMPLE_RATE) ?? this.options.sampleRate ?? 1;
 
     return {
       endpoint,
-      headers: parseKeyValueList(env?.OTLP_HEADERS),
+      headers: parseKeyValueList(env?.OTEL_EXPORTER_OTLP_HEADERS),
       resourceAttributes: {
         ...this.options.resourceAttributes,
         ...parseKeyValueList(env?.OTEL_RESOURCE_ATTRIBUTES),

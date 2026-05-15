@@ -15,8 +15,8 @@ afterEach(() => {
 });
 
 const appEnv = {
-  OTLP_TRACES_ENDPOINT: "https://collector.example/v1/traces",
-  OTLP_HEADERS: "x-api-key=secret",
+  OTEL_EXPORTER_OTLP_ENDPOINT: "https://collector.example/v1/traces",
+  OTEL_EXPORTER_OTLP_HEADERS: "x-api-key=secret",
 } as unknown as AppEnv;
 
 function makeTracer(overrides: Partial<ConstructorParameters<typeof CloudflareWorkerTracer>[0]> = {}) {
