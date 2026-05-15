@@ -532,7 +532,7 @@ function httpStatusToSpanStatus(statusCode: number, kind: SpanKind = "internal")
     return { code: 2, message: `HTTP ${statusCode}` };
   }
 
-  return { code: 1 };
+  return { code: 0 };
 }
 
 function isAllZeros(value: string): boolean {

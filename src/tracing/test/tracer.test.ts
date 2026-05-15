@@ -300,7 +300,8 @@ describe("runWithSpan", () => {
 
 describe("traceFetch", () => {
   it("injects a traceparent header derived from the parent span", async () => {
-    const tracer = makeTracer({ exporterFetch: vi.fn<typeof fetch>(async () => new Response(null, { status: 200 })) });
+    const fetchSpy = vi.fn<typeof fetch>(async () => new Response(null, { status: 200 }));
+    const tracer = makeTracer({ exporterFetch: fetchSpy });
 
     const inner = vi.fn<typeof fetch>(async (_input, init) => {
       const headers = new Headers(init?.headers);
@@ -314,6 +315,10 @@ describe("traceFetch", () => {
       const seen = (inner.mock.calls[0][1] as RequestInit).headers as Headers;
       expect(seen.get("traceparent")?.split("-")[1]).toBe(parent.traceId);
     });
+
+    const body = JSON.parse(fetchSpy.mock.calls[0][1]?.body as string);
+    const fetchSpan = body.resourceSpans[0].scopeSpans[0].spans.find((s: { kind: number }) => s.kind === 3);
+    expect(fetchSpan.status).toEqual({ code: 0 });
   });
 
   it("falls back to the input URL when the input is a Request", async () => {
@@ -397,6 +402,7 @@ describe("wrapFetchHandler", () => {
     expect(span.traceId).toBe("0af7651916cd43dd8448eb211c80319c");
     expect(span.parentSpanId).toBe("b7ad6b7169203331");
     expect(span.kind).toBe(2);
+    expect(span.status).toEqual({ code: 0 });
   });
 
   it("records and rethrows handler errors", async () => {
