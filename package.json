@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.5",
-    "@commitlint/cli": "^20.1.0",
+    "@commitlint/cli": "^20.5.0",
     "@commitlint/config-conventional": "^20.0.0",
     "@modelcontextprotocol/inspector": "^0.16.7",
     "@types/node": "^24.0.3",
