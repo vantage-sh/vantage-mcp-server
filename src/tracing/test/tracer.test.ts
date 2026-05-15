@@ -203,6 +203,32 @@ describe("flush", () => {
     expect(attrs.map((a) => a.key)).toContain("a");
   });
 
+  it("sends dd-api-key header without mangling the value", async () => {
+    const fetchSpy = vi.fn<typeof fetch>(async () => new Response(null, { status: 200 }));
+    const tracer = makeTracer({ exporterFetch: fetchSpy });
+    const env = { ...appEnv, OTEL_EXPORTER_OTLP_HEADERS: "dd-api-key=asdf1234" } as unknown as AppEnv;
+
+    await tracer.runWithSpan("root", { env }, async () => undefined);
+
+    expect((fetchSpy.mock.calls[0][1] as RequestInit).headers).toEqual({
+      "Content-Type": "application/json",
+      "dd-api-key": "asdf1234",
+    });
+  });
+
+  it("URL-decodes header values from OTEL_EXPORTER_OTLP_HEADERS", async () => {
+    const fetchSpy = vi.fn<typeof fetch>(async () => new Response(null, { status: 200 }));
+    const tracer = makeTracer({ exporterFetch: fetchSpy });
+    const env = { ...appEnv, OTEL_EXPORTER_OTLP_HEADERS: "Authorization=Bearer%20mytoken" } as unknown as AppEnv;
+
+    await tracer.runWithSpan("root", { env }, async () => undefined);
+
+    expect((fetchSpy.mock.calls[0][1] as RequestInit).headers).toEqual({
+      "Content-Type": "application/json",
+      "Authorization": "Bearer mytoken",
+    });
+  });
+
   it("does not throw when the exporter rejects", async () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
     const fetchSpy = vi.fn<typeof fetch>(async () => {

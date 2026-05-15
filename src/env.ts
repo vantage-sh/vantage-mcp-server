@@ -5,6 +5,6 @@ export type AppEnv = Omit<Env, "ENVIRONMENT"> & {
   OTEL_EXPORTER_OTLP_HEADERS?: string;
   OTEL_RESOURCE_ATTRIBUTES?: string;
   OTEL_SERVICE_NAME?: string;
+  OTEL_SERVICE_VERSION?: string;
   OTEL_TRACES_SAMPLE_RATE?: string;
-  SENTRY_RELEASE?: string;
 };

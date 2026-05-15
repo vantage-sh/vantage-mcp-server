@@ -493,7 +493,7 @@ export class CloudflareWorkerTracer {
       },
       sampleRate,
       serviceName: env?.OTEL_SERVICE_NAME || this.options.serviceName,
-      serviceVersion: env?.SENTRY_RELEASE,
+      serviceVersion: env?.OTEL_SERVICE_VERSION,
     };
   }
 
@@ -568,7 +568,14 @@ function parseKeyValueList(value?: string): Record<string, string> {
           return [entry, ""];
         }
 
-        return [entry.slice(0, separatorIndex).trim(), entry.slice(separatorIndex + 1).trim()];
+        const rawValue = entry.slice(separatorIndex + 1).trim();
+        let decodedValue: string;
+        try {
+          decodedValue = decodeURIComponent(rawValue);
+        } catch {
+          decodedValue = rawValue;
+        }
+        return [entry.slice(0, separatorIndex).trim(), decodedValue];
       })
       .filter(([key]) => key.length > 0)
   );
