@@ -10,6 +10,7 @@ import "./create-virtual-tag-config";
 import "./delete-cost-report";
 import "./delete-folder";
 import "./delete-report-notification";
+import "./financial-commitment-reports";
 import "./get-anomaly";
 import "./get-cost-alert";
 import "./get-cost-provider-accounts";
