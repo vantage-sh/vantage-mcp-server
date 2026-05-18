@@ -2,8 +2,9 @@ import type { RequestBodyForPathAndMethod } from "@vantage-sh/vantage-client";
 import z from "zod/v4";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { dateIntervalOptions } from "../utils/dateIntervalOptions";
+import { pastDateIntervalOptions } from "../utils/dateIntervalOptions";
 import dateValidator from "../utils/dateValidator";
+import { groupingDescription, groupingSchema } from "./schemas";
 
 const description = `
 Create a new Financial Commitment Report in Vantage.
@@ -29,38 +30,6 @@ the full list of available financial_commitments fields and examples.
 
 type CreateFinancialCommitmentReportRequest = RequestBodyForPathAndMethod<"/v2/financial_commitment_reports", "POST">;
 
-const financialCommitmentGroupings = [
-  "provider",
-  "service",
-  "resource_account_id",
-  "provider_account_id",
-  "commitment_type",
-  "commitment_id",
-  "cost_type",
-  "cost_category",
-  "cost_sub_category",
-  "instance_type",
-  "region",
-] as const;
-
-const groupingDescription =
-  "Grouping dimensions for aggregating financial commitments on the report. Valid groupings: provider, service, resource_account_id, provider_account_id, commitment_type, commitment_id, cost_type, cost_category, cost_sub_category, instance_type, region, and tag:<tag_key>.";
-
-const groupingSchema = z
-  .string()
-  .min(1)
-  .refine(
-    (value) =>
-      financialCommitmentGroupings.includes(value as (typeof financialCommitmentGroupings)[number]) ||
-      value.startsWith("tag:"),
-    {
-      error: groupingDescription,
-      when(payload) {
-        return z.string().min(1).safeParse(payload.value).success;
-      },
-    }
-  );
-
 export default registerTool({
   name: "create-financial-commitment-report",
   title: "Create Financial Commitment Report",
@@ -84,7 +53,7 @@ export default registerTool({
       "The end date of the Financial Commitment Report. ISO 8601 Formatted. Incompatible with 'date_interval' parameter, required with 'start_date'."
     ).optional(),
     date_interval: z
-      .enum(dateIntervalOptions)
+      .enum(pastDateIntervalOptions)
       .optional()
       .describe(
         "The date interval of the Financial Commitment Report. Incompatible with 'start_date' and 'end_date' parameters."

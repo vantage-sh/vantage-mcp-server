@@ -1,4 +1,4 @@
-export const dateIntervalOptions = [
+export const pastDateIntervalOptions = [
   "this_month",
   "last_7_days",
   "last_30_days",
@@ -9,11 +9,15 @@ export const dateIntervalOptions = [
   "last_12_months",
   "last_24_months",
   "last_36_months",
+  "year_to_date",
+  "last_3_days",
+  "last_14_days",
+] as const;
+
+export const dateIntervalOptions = [
+  ...pastDateIntervalOptions,
   "next_month",
   "next_3_months",
   "next_6_months",
   "next_12_months",
-  "year_to_date",
-  "last_3_days",
-  "last_14_days",
 ] as const;
