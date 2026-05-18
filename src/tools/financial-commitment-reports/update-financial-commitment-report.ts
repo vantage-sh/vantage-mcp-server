@@ -4,6 +4,7 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import { pastDateIntervalOptions } from "../utils/dateIntervalOptions";
 import dateValidator from "../utils/dateValidator";
+import { groupingDescription, groupingSchema } from "./schemas";
 
 const description = `
 Updates an existing Financial Commitment Report. Use this to change the report title, VQL filter, date range, date bucket, on-demand costs scope, or grouping dimensions.
@@ -53,12 +54,10 @@ export default registerTool({
     date_bucket: z.enum(["hour", "day", "week", "month", "quarter"]).optional().describe("Updated date bucket."),
     on_demand_costs_scope: z.enum(["discountable", "all"]).optional().describe("Updated on-demand costs scope."),
     groupings: z
-      .array(z.string())
+      .array(groupingSchema)
       .optional()
       .transform((v) => v?.join(","))
-      .describe(
-        "Updated grouping dimensions. Valid groupings: cost_type, commitment_type, commitment_id, service, resource_account_id, provider_account_id, region, cost_category, cost_sub_category, instance_type, tag, tag:<label_name>."
-      ),
+      .describe(groupingDescription),
   },
   async execute(args, ctx) {
     const { financial_commitment_report_token, ...requestBody } = args;

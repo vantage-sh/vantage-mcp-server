@@ -92,6 +92,16 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     ],
   },
   {
+    name: "invalid grouping",
+    data: {
+      ...validInputArguments,
+      groupings: ["unsupported_grouping"],
+    },
+    expectedIssues: [
+      "Grouping dimensions for aggregating financial commitments on the report. Valid groupings: provider, service, resource_account_id, provider_account_id, commitment_type, commitment_id, cost_type, cost_category, cost_sub_category, instance_type, region, and tag:<tag_key>.",
+    ],
+  },
+  {
     name: "invalid start date",
     data: {
       ...validInputArguments,
