@@ -1,5 +1,6 @@
 import type { GetFinancialCommitmentReportsResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
+import { DEFAULT_LIMIT } from "../structure/constants";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
@@ -16,15 +17,13 @@ type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
   page: 1,
-  limit: 25,
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
-    name: "valid empty arguments",
+    name: "default page",
     data: {
       page: undefined,
-      limit: undefined,
     },
   },
   {
@@ -67,7 +66,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: "/v2/financial_commitment_reports",
         params: {
           page: 1,
-          limit: 25,
+          limit: DEFAULT_LIMIT,
         },
         method: "GET",
         result: {
@@ -88,13 +87,40 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     },
   },
   {
+    name: "defaults pagination arguments",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/financial_commitment_reports",
+        params: {
+          page: 1,
+          limit: DEFAULT_LIMIT,
+        },
+        method: "GET",
+        result: {
+          ok: true,
+          data: successData,
+        },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const res = await callExpectingSuccess({ page: undefined });
+      expect(res).toEqual({
+        financial_commitment_reports: successData.financial_commitment_reports,
+        pagination: {
+          hasNextPage: false,
+          nextPage: 0,
+        },
+      });
+    },
+  },
+  {
     name: "unsuccessful call",
     apiCallHandler: requestsInOrder([
       {
         endpoint: "/v2/financial_commitment_reports",
         params: {
           page: 1,
-          limit: 25,
+          limit: DEFAULT_LIMIT,
         },
         method: "GET",
         result: {
