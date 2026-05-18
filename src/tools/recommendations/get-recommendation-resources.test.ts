@@ -1,6 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import tool from "./get-recommendation-resources";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import {
   type ExecutionTestTableItem,
@@ -11,6 +10,7 @@ import {
   type SchemaTestTableItem,
   testTool,
 } from "../utils/testing";
+import tool from "./get-recommendation-resources";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
