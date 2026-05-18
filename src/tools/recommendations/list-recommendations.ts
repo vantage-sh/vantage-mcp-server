@@ -1,8 +1,8 @@
 import z from "zod/v4";
-import { DEFAULT_LIMIT } from "./structure/constants";
-import MCPUserError from "./structure/MCPUserError";
-import registerTool from "./structure/registerTool";
-import paginationData from "./utils/paginationData";
+import { DEFAULT_LIMIT } from "../structure/constants";
+import MCPUserError from "../structure/MCPUserError";
+import registerTool from "../structure/registerTool";
+import paginationData from "../utils/paginationData";
 
 const SUPPORTED_PROVIDERS = ["aws", "gcp", "azure", "kubernetes", "datadog"] as const;
 

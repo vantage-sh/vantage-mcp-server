@@ -1,8 +1,8 @@
 import { pathEncode, type UpdateRecommendationViewRequest } from "@vantage-sh/vantage-client";
 import z from "zod/v4";
-import MCPUserError from "./structure/MCPUserError";
-import registerTool from "./structure/registerTool";
-import dateValidator from "./utils/dateValidator";
+import MCPUserError from "../structure/MCPUserError";
+import registerTool from "../structure/registerTool";
+import dateValidator from "../utils/dateValidator";
 
 const description = `
 Updates an existing Recommendation View. Use this to change the view title or the filters applied to saved recommendation views.
@@ -17,7 +17,7 @@ export default registerTool({
   title: "Update Recommendation View",
   description,
   annotations: {
-    destructive: true,
+    destructive: false,
     openWorld: false,
     readOnly: false,
   },
