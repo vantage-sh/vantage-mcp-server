@@ -62,10 +62,8 @@ export default registerTool({
   },
   async execute(args, ctx) {
     const { financial_commitment_report_token, ...requestBody } = args;
-    const body: UpdateFinancialCommitmentReportRequest = {
-      ...requestBody,
-      date_interval: requestBody.date_interval as UpdateFinancialCommitmentReportRequest["date_interval"],
-    };
+    // The generated update type is behind the API for future intervals and CSV groupings.
+    const body = requestBody as unknown as UpdateFinancialCommitmentReportRequest;
     const response = await ctx.callVantageApi(
       `/v2/financial_commitment_reports/${pathEncode(financial_commitment_report_token)}`,
       body,

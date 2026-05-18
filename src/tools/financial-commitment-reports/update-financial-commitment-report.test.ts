@@ -1,4 +1,8 @@
-import { pathEncode, type UpdateFinancialCommitmentReportResponse } from "@vantage-sh/vantage-client";
+import {
+  pathEncode,
+  type UpdateFinancialCommitmentReportRequest,
+  type UpdateFinancialCommitmentReportResponse,
+} from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import {
   type ExecutionTestTableItem,
@@ -149,7 +153,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           date_bucket: "week",
           on_demand_costs_scope: "discountable",
           groupings: "cost_type,commitment_type",
-        },
+        } as unknown as UpdateFinancialCommitmentReportRequest,
         method: "PUT",
         result: {
           ok: true,
