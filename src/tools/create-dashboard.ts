@@ -1,6 +1,7 @@
 import z from "zod/v4";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
+import { dateIntervalOptions } from "./utils/dateIntervalOptions";
 import dateValidator from "./utils/dateValidator";
 
 const description = `
@@ -24,26 +25,6 @@ The list of supported widgets is:
 The token returned in the response can be used to link to the Dashboard in the Vantage Web UI:
 https://console.vantage.sh/go/<token>
 `.trim();
-
-const intervalOptions = [
-  "this_month",
-  "last_7_days",
-  "last_30_days",
-  "last_month",
-  "last_3_months",
-  "last_6_months",
-  "custom",
-  "last_12_months",
-  "last_24_months",
-  "last_36_months",
-  "next_month",
-  "next_3_months",
-  "next_6_months",
-  "next_12_months",
-  "year_to_date",
-  "last_3_days",
-  "last_14_days",
-] as const;
 
 const widgetSchema = z.object({
   widgetable_token: z.string().describe("The token of the represented Resource."),
@@ -78,7 +59,7 @@ export default registerTool({
       "The end date of the dashboard. ISO 8601 Formatted. Incompatible with 'date_interval' parameter, required with 'start_date'."
     ).optional(),
     date_interval: z
-      .enum(intervalOptions)
+      .enum(dateIntervalOptions)
       .optional()
       .describe("The date interval of the dashboard. Incompatible with 'start_date' and 'end_date' parameters."),
   },
