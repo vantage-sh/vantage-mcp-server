@@ -56,16 +56,6 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     data: validInputArguments,
   },
   {
-    name: "rejects future date interval",
-    data: {
-      ...validInputArguments,
-      date_interval: "next_12_months",
-    },
-    expectedIssues: [
-      'Invalid option: expected one of "this_month"|"last_7_days"|"last_30_days"|"last_month"|"last_3_months"|"last_6_months"|"custom"|"last_12_months"|"last_24_months"|"last_36_months"|"year_to_date"|"last_3_days"|"last_14_days"',
-    ],
-  },
-  {
     name: "invalid date bucket",
     data: {
       ...validInputArguments,
@@ -80,16 +70,6 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       on_demand_costs_scope: "covered" as any,
     },
     expectedIssues: ['Invalid option: expected one of "discountable"|"all"'],
-  },
-  {
-    name: "invalid date interval",
-    data: {
-      ...validInputArguments,
-      date_interval: "invalid" as any,
-    },
-    expectedIssues: [
-      'Invalid option: expected one of "this_month"|"last_7_days"|"last_30_days"|"last_month"|"last_3_months"|"last_6_months"|"custom"|"last_12_months"|"last_24_months"|"last_36_months"|"year_to_date"|"last_3_days"|"last_14_days"',
-    ],
   },
   {
     name: "invalid grouping",

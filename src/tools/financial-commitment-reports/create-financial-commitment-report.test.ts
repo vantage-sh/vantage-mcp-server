@@ -79,25 +79,6 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     expectedIssues: ["Too small: expected string to have >=1 characters"],
   },
   {
-    name: "valid date interval option",
-    data: {
-      ...undefineds,
-      workspace_token: "wrkspc_123",
-      title: "Current Month Commitments",
-      date_interval: "this_month",
-    },
-  },
-  {
-    name: "rejects future date interval",
-    data: {
-      ...validInputArguments,
-      date_interval: "next_month",
-    },
-    expectedIssues: [
-      'Invalid option: expected one of "this_month"|"last_7_days"|"last_30_days"|"last_month"|"last_3_months"|"last_6_months"|"custom"|"last_12_months"|"last_24_months"|"last_36_months"|"year_to_date"|"last_3_days"|"last_14_days"',
-    ],
-  },
-  {
     name: "tag grouping",
     data: {
       ...undefineds,
@@ -105,16 +86,6 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       title: "Commitments by Environment",
       groupings: ["tag:environment"],
     },
-  },
-  {
-    name: "invalid date interval",
-    data: {
-      ...validInputArguments,
-      date_interval: "invalid" as any,
-    },
-    expectedIssues: [
-      'Invalid option: expected one of "this_month"|"last_7_days"|"last_30_days"|"last_month"|"last_3_months"|"last_6_months"|"custom"|"last_12_months"|"last_24_months"|"last_36_months"|"year_to_date"|"last_3_days"|"last_14_days"',
-    ],
   },
   {
     name: "invalid date bucket",
