@@ -40,7 +40,7 @@ const validInputArguments: InferValidators<Validators> = {
   filter: "(financial_commitments.provider = 'aws')",
   start_date: "2024-10-01",
   end_date: "2025-01-25",
-  date_interval: "next_3_months",
+  date_interval: "last_3_months",
   date_bucket: "week",
   on_demand_costs_scope: "discountable",
   groupings: ["cost_type", "commitment_type"],
@@ -56,11 +56,14 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     data: validInputArguments,
   },
   {
-    name: "valid future date interval",
+    name: "rejects future date interval",
     data: {
       ...validInputArguments,
       date_interval: "next_12_months",
     },
+    expectedIssues: [
+      'Invalid option: expected one of "this_month"|"last_7_days"|"last_30_days"|"last_month"|"last_3_months"|"last_6_months"|"custom"|"last_12_months"|"last_24_months"|"last_36_months"|"year_to_date"|"last_3_days"|"last_14_days"',
+    ],
   },
   {
     name: "invalid date bucket",
@@ -85,7 +88,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       date_interval: "invalid" as any,
     },
     expectedIssues: [
-      'Invalid option: expected one of "this_month"|"last_7_days"|"last_30_days"|"last_month"|"last_3_months"|"last_6_months"|"custom"|"last_12_months"|"last_24_months"|"last_36_months"|"next_month"|"next_3_months"|"next_6_months"|"next_12_months"|"year_to_date"|"last_3_days"|"last_14_days"',
+      'Invalid option: expected one of "this_month"|"last_7_days"|"last_30_days"|"last_month"|"last_3_months"|"last_6_months"|"custom"|"last_12_months"|"last_24_months"|"last_36_months"|"year_to_date"|"last_3_days"|"last_14_days"',
     ],
   },
   {
@@ -131,7 +134,7 @@ const successData: UpdateFinancialCommitmentReportResponse = {
   user_token: null,
   start_date: "2024-10-01",
   end_date: "2025-01-25",
-  date_interval: "next_3_months",
+  date_interval: "last_3_months",
   date_bucket: "week",
   groupings: "cost_type,commitment_type",
   on_demand_costs_scope: "discountable",
@@ -149,7 +152,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           filter: "(financial_commitments.provider = 'aws')",
           start_date: "2024-10-01",
           end_date: "2025-01-25",
-          date_interval: "next_3_months",
+          date_interval: "last_3_months",
           date_bucket: "week",
           on_demand_costs_scope: "discountable",
           groupings: "cost_type,commitment_type",

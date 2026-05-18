@@ -2,7 +2,7 @@ import { pathEncode, type UpdateFinancialCommitmentReportRequest } from "@vantag
 import z from "zod/v4";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { dateIntervalOptions } from "../utils/dateIntervalOptions";
+import { pastDateIntervalOptions } from "../utils/dateIntervalOptions";
 import dateValidator from "../utils/dateValidator";
 
 const description = `
@@ -45,7 +45,7 @@ export default registerTool({
       "Updated end date for the Financial Commitment Report. YYYY-MM-DD formatted. Incompatible with 'date_interval' unless date_interval is 'custom'."
     ).optional(),
     date_interval: z
-      .enum(dateIntervalOptions)
+      .enum(pastDateIntervalOptions)
       .optional()
       .describe(
         "Updated date interval for the Financial Commitment Report. Unless 'custom' is used, this is incompatible with 'start_date' and 'end_date'."

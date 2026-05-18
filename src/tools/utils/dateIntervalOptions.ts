@@ -1,3 +1,19 @@
+export const pastDateIntervalOptions = [
+  "this_month",
+  "last_7_days",
+  "last_30_days",
+  "last_month",
+  "last_3_months",
+  "last_6_months",
+  "custom",
+  "last_12_months",
+  "last_24_months",
+  "last_36_months",
+  "year_to_date",
+  "last_3_days",
+  "last_14_days",
+] as const;
+
 export const dateIntervalOptions = [
   "this_month",
   "last_7_days",
