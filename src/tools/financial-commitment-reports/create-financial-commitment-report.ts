@@ -26,8 +26,7 @@ Use get-myself to find available workspaces. Use the VQL for Financial Commitmen
 the full list of available financial_commitments fields and examples.
 `.trim();
 
-type CreateFinancialCommitmentReportRequest =
-  RequestBodyForPathAndMethod<"/v2/financial_commitment_reports", "POST">;
+type CreateFinancialCommitmentReportRequest = RequestBodyForPathAndMethod<"/v2/financial_commitment_reports", "POST">;
 
 const intervalOptions = [
   "this_month",
@@ -66,17 +65,20 @@ const financialCommitmentGroupings = [
 const groupingDescription =
   "Grouping dimensions for aggregating financial commitments on the report. Valid groupings: provider, service, resource_account_id, provider_account_id, commitment_type, commitment_id, cost_type, cost_category, cost_sub_category, instance_type, region, and tag:<tag_key>.";
 
-const groupingSchema = z.string().min(1).refine(
-  (value) =>
-    financialCommitmentGroupings.includes(value as (typeof financialCommitmentGroupings)[number]) ||
-    value.startsWith("tag:"),
-  {
-    error: groupingDescription,
-    when(payload) {
-      return z.string().min(1).safeParse(payload.value).success;
-    },
-  }
-);
+const groupingSchema = z
+  .string()
+  .min(1)
+  .refine(
+    (value) =>
+      financialCommitmentGroupings.includes(value as (typeof financialCommitmentGroupings)[number]) ||
+      value.startsWith("tag:"),
+    {
+      error: groupingDescription,
+      when(payload) {
+        return z.string().min(1).safeParse(payload.value).success;
+      },
+    }
+  );
 
 export default registerTool({
   name: "create-financial-commitment-report",
@@ -106,10 +108,7 @@ export default registerTool({
       .describe(
         "The date interval of the Financial Commitment Report. Incompatible with 'start_date' and 'end_date' parameters."
       ),
-    date_bucket: z
-      .enum(["hour", "day", "week", "month", "quarter"])
-      .optional()
-      .describe("Date aggregation bucket"),
+    date_bucket: z.enum(["hour", "day", "week", "month", "quarter"]).optional().describe("Date aggregation bucket"),
     on_demand_costs_scope: z.enum(["discountable", "all"]).optional().describe("Scope for on-demand costs"),
     groupings: z
       .array(groupingSchema)
