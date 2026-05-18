@@ -31,7 +31,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     apiCallHandler: requestsInOrder([
       {
         endpoint: `/v2/financial_commitment_reports/${pathEncode(validArguments.financial_commitment_report_token)}`,
-        params: validArguments,
+        params: {},
         method: "DELETE",
         result: {
           ok: true,
@@ -41,7 +41,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     ]),
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess(validArguments);
-      expect(res).toBeUndefined();
+      expect(res).toEqual({ token: validArguments.financial_commitment_report_token });
     },
   },
   {
@@ -49,9 +49,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     apiCallHandler: requestsInOrder([
       {
         endpoint: `/v2/financial_commitment_reports/${pathEncode("fncl_cmnt_rprt_nonexistent")}`,
-        params: {
-          financial_commitment_report_token: "fncl_cmnt_rprt_nonexistent",
-        },
+        params: {},
         method: "DELETE",
         result: {
           ok: false,
