@@ -2,6 +2,7 @@ import type { RequestBodyForPathAndMethod } from "@vantage-sh/vantage-client";
 import z from "zod/v4";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { dateIntervalOptions } from "../utils/dateIntervalOptions";
 import dateValidator from "../utils/dateValidator";
 
 const description = `
@@ -27,26 +28,6 @@ the full list of available financial_commitments fields and examples.
 `.trim();
 
 type CreateFinancialCommitmentReportRequest = RequestBodyForPathAndMethod<"/v2/financial_commitment_reports", "POST">;
-
-const intervalOptions = [
-  "this_month",
-  "last_7_days",
-  "last_30_days",
-  "last_month",
-  "last_3_months",
-  "last_6_months",
-  "custom",
-  "last_12_months",
-  "last_24_months",
-  "last_36_months",
-  "next_month",
-  "next_3_months",
-  "next_6_months",
-  "next_12_months",
-  "year_to_date",
-  "last_3_days",
-  "last_14_days",
-] as const;
 
 const financialCommitmentGroupings = [
   "provider",
@@ -103,7 +84,7 @@ export default registerTool({
       "The end date of the Financial Commitment Report. ISO 8601 Formatted. Incompatible with 'date_interval' parameter, required with 'start_date'."
     ).optional(),
     date_interval: z
-      .enum(intervalOptions)
+      .enum(dateIntervalOptions)
       .optional()
       .describe(
         "The date interval of the Financial Commitment Report. Incompatible with 'start_date' and 'end_date' parameters."
