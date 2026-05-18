@@ -2,6 +2,7 @@ import { pathEncode, type UpdateFinancialCommitmentReportRequest } from "@vantag
 import z from "zod/v4";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { dateIntervalOptions } from "../utils/dateIntervalOptions";
 import dateValidator from "../utils/dateValidator";
 
 const description = `
@@ -15,22 +16,6 @@ Unless date_interval is "custom", date_interval is incompatible with start_date 
 
 VQL filters use financial commitment fields and should follow Vantage Query Language syntax. Additional VQL documentation is available at https://docs.vantage.sh/vql.
 `.trim();
-
-const intervalOptions = [
-  "this_month",
-  "last_7_days",
-  "last_30_days",
-  "last_month",
-  "last_3_months",
-  "last_6_months",
-  "custom",
-  "last_12_months",
-  "last_24_months",
-  "last_36_months",
-  "year_to_date",
-  "last_3_days",
-  "last_14_days",
-] as const;
 
 export default registerTool({
   name: "update-financial-commitment-report",
@@ -60,7 +45,7 @@ export default registerTool({
       "Updated end date for the Financial Commitment Report. YYYY-MM-DD formatted. Incompatible with 'date_interval' unless date_interval is 'custom'."
     ).optional(),
     date_interval: z
-      .enum(intervalOptions)
+      .enum(dateIntervalOptions)
       .optional()
       .describe(
         "Updated date interval for the Financial Commitment Report. Unless 'custom' is used, this is incompatible with 'start_date' and 'end_date'."
@@ -70,6 +55,7 @@ export default registerTool({
     groupings: z
       .array(z.string())
       .optional()
+      .transform((v) => v?.join(","))
       .describe(
         "Updated grouping dimensions. Valid groupings: cost_type, commitment_type, commitment_id, service, resource_account_id, provider_account_id, region, cost_category, cost_sub_category, instance_type, tag, tag:<label_name>."
       ),
