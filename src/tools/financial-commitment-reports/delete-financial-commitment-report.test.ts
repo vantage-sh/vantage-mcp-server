@@ -1,6 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import tool from "./delete-financial-commitment-report";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
@@ -9,7 +8,8 @@ import {
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
-} from "./utils/testing";
+} from "../utils/testing";
+import tool from "./delete-financial-commitment-report";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
@@ -31,7 +31,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     apiCallHandler: requestsInOrder([
       {
         endpoint: `/v2/financial_commitment_reports/${pathEncode(validArguments.financial_commitment_report_token)}`,
-        params: {},
+        params: validArguments,
         method: "DELETE",
         result: {
           ok: true,
@@ -41,7 +41,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     ]),
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess(validArguments);
-      expect(res).toEqual({ token: validArguments.financial_commitment_report_token });
+      expect(res).toBeUndefined();
     },
   },
   {
@@ -49,7 +49,9 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     apiCallHandler: requestsInOrder([
       {
         endpoint: `/v2/financial_commitment_reports/${pathEncode("fncl_cmnt_rprt_nonexistent")}`,
-        params: {},
+        params: {
+          financial_commitment_report_token: "fncl_cmnt_rprt_nonexistent",
+        },
         method: "DELETE",
         result: {
           ok: false,
