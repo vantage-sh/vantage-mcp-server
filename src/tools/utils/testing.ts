@@ -54,7 +54,7 @@ export function makeTestHandlerContext<Input extends z.ZodRawShape, Output exten
   >,
   apiCallHandler?: ExecutionTestTableItem<Input, Output>["apiCallHandler"]
 ) {
-  const mcpFunctionContext = {
+  const mcpFunctionContext: ToolCallContext = {
     callVantageApi:
       apiCallHandler ||
       (async () => {
