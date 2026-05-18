@@ -225,7 +225,7 @@ describe("flush", () => {
 
     expect((fetchSpy.mock.calls[0][1] as RequestInit).headers).toEqual({
       "Content-Type": "application/json",
-      "Authorization": "Bearer mytoken",
+      Authorization: "Bearer mytoken",
     });
   });
 
