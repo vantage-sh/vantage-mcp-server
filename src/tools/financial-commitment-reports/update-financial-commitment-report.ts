@@ -1,8 +1,8 @@
 import { pathEncode, type UpdateFinancialCommitmentReportRequest } from "@vantage-sh/vantage-client";
 import z from "zod/v4";
-import MCPUserError from "./structure/MCPUserError";
-import registerTool from "./structure/registerTool";
-import dateValidator from "./utils/dateValidator";
+import MCPUserError from "../structure/MCPUserError";
+import registerTool from "../structure/registerTool";
+import dateValidator from "../utils/dateValidator";
 
 const description = `
 Updates an existing Financial Commitment Report. Use this to change the report title, VQL filter, date range, date bucket, on-demand costs scope, or grouping dimensions.

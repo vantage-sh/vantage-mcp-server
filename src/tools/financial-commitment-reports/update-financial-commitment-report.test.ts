@@ -1,6 +1,5 @@
 import { pathEncode, type UpdateFinancialCommitmentReportResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import tool from "./update-financial-commitment-report";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
@@ -9,7 +8,8 @@ import {
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
-} from "./utils/testing";
+} from "../utils/testing";
+import tool from "./update-financial-commitment-report";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
