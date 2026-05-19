@@ -4,7 +4,9 @@ import type {
   ResponseBodyForPathAndMethod,
   SupportedMethods,
 } from "@vantage-sh/vantage-client";
+import type { AppEnv } from "./env";
 import { SERVER_VERSION } from "./tools/structure/constants";
+import { tracer } from "./tracing";
 
 export const serverMeta = {
   name: "Vantage Cloud Costs Helper",
@@ -21,7 +23,8 @@ export async function callApi<
   headers: Record<string, string>,
   params: Request,
   method: M,
-  endpoint: P
+  endpoint: P,
+  env?: AppEnv
 ): Promise<{ data: Response; ok: true } | { errors: unknown[]; ok: false }> {
   headers["User-Agent"] = `vantage-mcp-server/${serverMeta.version}`;
 
@@ -47,7 +50,7 @@ export async function callApi<
     body: method !== "GET" ? JSON.stringify(params) : undefined,
   };
 
-  const response = await fetch(url.toString(), options);
+  const response = await tracer.traceFetch(fetch, url.toString(), options, { env });
   if (!response.ok) {
     const bestAnyDetail = await response.text();
     try {

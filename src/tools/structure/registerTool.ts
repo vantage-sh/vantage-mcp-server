@@ -1,4 +1,6 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { RequestHandlerExtra } from "@modelcontextprotocol/sdk/shared/protocol.js";
+import type { ServerNotification, ServerRequest } from "@modelcontextprotocol/sdk/types.js";
 import type {
   Path,
   RequestBodyForPathAndMethod,
@@ -6,9 +8,13 @@ import type {
   SupportedMethods,
 } from "@vantage-sh/vantage-client";
 import type z from "zod/v4";
+import type { AppEnv } from "../../env";
+import { tracer, type WaitUntil } from "../../tracing";
 import MCPUserError from "./MCPUserError";
 
 export type ToolCallContext = {
+  env?: AppEnv;
+  waitUntil?: WaitUntil;
   callVantageApi: <
     P extends Path,
     M extends SupportedMethods<P>,
@@ -76,42 +82,62 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
         },
       },
 
-      // We use any here to handle the ambiguity of the output schema.
-      async (args: any): Promise<any> => {
-        try {
-          const res = await toolProps.execute(args, generateContext());
+      async (args: any, extra: RequestHandlerExtra<ServerRequest, ServerNotification>): Promise<any> => {
+        const ctx = generateContext();
+        const rawHeaders = extra?.requestInfo?.headers as HeadersInit | undefined;
+        const headers = rawHeaders ? new Headers(rawHeaders) : undefined;
+        const parent = tracer.extractTraceContext(headers);
+        const source = headers?.get("x-trace-source") ?? undefined;
 
-          if (toolProps.outputSchema) {
-            // Since there's an output schema, we should return structured content.
-            return {
-              structuredContent: res,
-            };
-          }
+        return tracer.runWithSpan(
+          `tool/${toolProps.name}`,
+          {
+            env: ctx.env,
+            waitUntil: ctx.waitUntil,
+            kind: "server",
+            parent,
+            attributes: {
+              "mcp.tool.name": toolProps.name,
+              ...(source ? { "mcp.source": source } : {}),
+            },
+          },
+          async () => {
+            try {
+              const res = await toolProps.execute(args, ctx);
 
-          // There's no output schema, so we should return text content.
-          return {
-            content: [
-              {
-                type: "text",
-                text: JSON.stringify(res, null, 2),
-              },
-            ],
-            isError: false,
-          };
-        } catch (e) {
-          if (e instanceof MCPUserError) {
-            return {
-              content: [
-                {
-                  type: "text",
-                  text: JSON.stringify(e.exception, null, 2),
-                },
-              ],
-              isError: true,
-            };
+              if (toolProps.outputSchema) {
+                // Since there's an output schema, we should return structured content.
+                return {
+                  structuredContent: res,
+                };
+              }
+
+              // There's no output schema, so we should return text content.
+              return {
+                content: [
+                  {
+                    type: "text",
+                    text: JSON.stringify(res, null, 2),
+                  },
+                ],
+                isError: false,
+              };
+            } catch (e) {
+              if (e instanceof MCPUserError) {
+                return {
+                  content: [
+                    {
+                      type: "text",
+                      text: JSON.stringify(e.exception, null, 2),
+                    },
+                  ],
+                  isError: true,
+                };
+              }
+              throw e;
+            }
           }
-          throw e;
-        }
+        );
       }
     );
   };
