@@ -102,6 +102,50 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     expectedIssues: ["Too small: expected string to have >=1 characters"],
   },
   {
+    name: "empty provider id",
+    data: {
+      ...minimalValidInputArguments,
+      provider_ids: [""],
+    },
+    expectedIssues: ["Too small: expected string to have >=1 characters"],
+  },
+  {
+    name: "empty billing account id",
+    data: {
+      ...minimalValidInputArguments,
+      billing_account_ids: [""],
+    },
+    expectedIssues: ["Too small: expected string to have >=1 characters"],
+  },
+  {
+    name: "empty account id",
+    data: {
+      ...minimalValidInputArguments,
+      account_ids: [""],
+    },
+    expectedIssues: ["Too small: expected string to have >=1 characters"],
+  },
+  {
+    name: "empty region",
+    data: {
+      ...minimalValidInputArguments,
+      regions: [""],
+    },
+    expectedIssues: ["Too small: expected string to have >=1 characters"],
+  },
+  {
+    name: "empty tag filters",
+    data: {
+      ...minimalValidInputArguments,
+      tag_key: "",
+      tag_value: "",
+    },
+    expectedIssues: [
+      "Too small: expected string to have >=1 characters",
+      "Too small: expected string to have >=1 characters",
+    ],
+  },
+  {
     name: "invalid start date",
     data: {
       ...minimalValidInputArguments,

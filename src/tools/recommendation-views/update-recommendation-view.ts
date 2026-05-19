@@ -25,17 +25,17 @@ export default registerTool({
     recommendation_view_token: z.string().min(1).describe("Token of the Recommendation View to update."),
     title: z.string().min(1).optional().describe("Updated title for the Recommendation View."),
     provider_ids: z
-      .array(z.string())
+      .array(z.string().min(1))
       .optional()
       .describe("Updated provider filters, such as aws, gcp, azure, kubernetes, or datadog."),
-    billing_account_ids: z.array(z.string()).optional().describe("Updated billing account identifier filters."),
-    account_ids: z.array(z.string()).optional().describe("Updated cloud account identifier filters."),
+    billing_account_ids: z.array(z.string().min(1)).optional().describe("Updated billing account identifier filters."),
+    account_ids: z.array(z.string().min(1)).optional().describe("Updated cloud account identifier filters."),
     regions: z
-      .array(z.string())
+      .array(z.string().min(1))
       .optional()
       .describe("Updated region slug filters, such as us-east-1, eastus, or asia-east1."),
-    tag_key: z.string().optional().describe("Updated tag key filter. Use with tag_value."),
-    tag_value: z.string().optional().describe("Updated tag value filter. Requires tag_key."),
+    tag_key: z.string().min(1).optional().describe("Updated tag key filter. Use with tag_value."),
+    tag_value: z.string().min(1).optional().describe("Updated tag value filter. Requires tag_key."),
     start_date: dateValidator(
       "Updated start date for recommendation creation filtering. YYYY-MM-DD formatted."
     ).optional(),
