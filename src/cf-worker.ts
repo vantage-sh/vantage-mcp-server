@@ -10,18 +10,20 @@ import type {
 import { McpAgent } from "agents/mcp";
 import { Hono } from "hono";
 import { withLogTags } from "workers-tagged-logger";
-import { authorize, callback, confirmConsent, type RequiredEnv, tokenExchangeCallback, type UserProps } from "./auth";
+import { authorize, callback, confirmConsent, tokenExchangeCallback, type UserProps } from "./auth";
+import type { AppEnv } from "./env";
 import { HeaderAuthProvider } from "./header-auth-provider";
 import homepage from "./homepage";
 import { logger } from "./logger";
 import setupRegisteredResources from "./resources";
 import { callApi, serverMeta } from "./shared";
 import { setupRegisteredTools } from "./tools/structure/registerTool";
+import { tracer } from "./tracing";
 
 // Side effect import to register all tools
 import "./tools";
 
-function tokenFromProps(props: UserProps, env?: RequiredEnv): string {
+function tokenFromProps(props: UserProps, env?: AppEnv): string {
   // Check if VANTAGE_MCP_TOKEN is provided in environment
   if (env?.VANTAGE_MCP_TOKEN) {
     return env.VANTAGE_MCP_TOKEN;
@@ -69,7 +71,7 @@ export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> 
       // Try to get token, but don't fail if not available (when using vantage headers only)
       let token: string | null = null;
       try {
-        token = tokenFromProps(this.props!, this.env as RequiredEnv);
+        token = tokenFromProps(this.props!, this.env);
       } catch (_error) {
         // If no token is available, we'll rely on vantage headers for authentication
         if (Object.keys(vantageHeaders).length === 0) {
@@ -86,11 +88,12 @@ export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> 
       }
 
       const result = await callApi<P, M, Request, Response>(
-        (this.env as RequiredEnv).VANTAGE_API_HOST,
+        this.env.VANTAGE_API_HOST,
         headers,
         params,
         method,
-        endpoint
+        endpoint,
+        this.env
       );
 
       logger.setTags({ ok: result.ok });
@@ -101,7 +104,12 @@ export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> 
   }
 
   async init() {
-    setupRegisteredTools(this.server, () => this);
+    const ctx = {
+      env: this.env,
+      waitUntil: (promise: Promise<unknown>) => this.ctx.waitUntil(promise),
+      callVantageApi: this.callVantageApi.bind(this),
+    };
+    setupRegisteredTools(this.server, () => ctx);
     setupRegisteredResources(this.server);
   }
 }
@@ -156,37 +164,55 @@ function createMcpServer(request: Request, sse: boolean): HeaderAuthProvider | O
   }
 }
 
-export default {
-  async fetch(request: Request, env: RequiredEnv, ctx: ExecutionContext) {
-    const sse = new URL(request.url).pathname.startsWith("/sse");
-    if (env.VANTAGE_MCP_TOKEN) {
-      // Direct token mode - bypass OAuth and serve MCP directly
-      // Can be used for easy local development or for MCP clients without
-      // OAuth support or the ability to pass headers.
-      if (sse) {
-        return VantageMCP.mount("/sse").fetch(request, env, ctx);
-      }
-      return VantageMCP.serve("/mcp").fetch(request, env, ctx);
+// Forwards the Worker span's W3C traceparent onto the request so downstream
+// handlers (the Durable Object, which reads `extra.requestInfo.headers`) can
+// chain their spans under it.
+function withActiveTrace(request: Request): Request {
+  const traceHeaders = tracer.getTraceHeaders();
+  if (!traceHeaders) return request;
+
+  const headers = new Headers(request.headers);
+  headers.set("traceparent", traceHeaders.traceparent);
+  if (traceHeaders.tracestate) {
+    headers.set("tracestate", traceHeaders.tracestate);
+  }
+  return new Request(request, { headers });
+}
+
+const fetchHandler = async (request: Request, env: AppEnv, ctx: ExecutionContext): Promise<Response> => {
+  const tracedRequest = withActiveTrace(request);
+  const sse = new URL(tracedRequest.url).pathname.startsWith("/sse");
+  if (env.VANTAGE_MCP_TOKEN) {
+    // Direct token mode - bypass OAuth and serve MCP directly
+    // Can be used for easy local development or for MCP clients without
+    // OAuth support or the ability to pass headers.
+    if (sse) {
+      return VantageMCP.mount("/sse").fetch(tracedRequest, env, ctx);
     }
+    return VantageMCP.serve("/mcp").fetch(tracedRequest, env, ctx);
+  }
 
-    const mcpServer = createMcpServer(request, sse);
+  const mcpServer = createMcpServer(tracedRequest, sse);
 
-    const sentryHandler = Sentry.withSentry((env: RequiredEnv) => {
-      const { id: versionId } = env.CF_VERSION_METADATA;
-      return {
-        dsn: env.SENTRY_DSN,
-        release: versionId,
-        // Adds request headers and IP for users, for more info visit:
-        // https://docs.sentry.io/platforms/javascript/guides/cloudflare/configuration/options/#sendDefaultPii
-        sendDefaultPii: true,
+  const sentryHandler = Sentry.withSentry((env: AppEnv) => {
+    const { id: versionId } = env.CF_VERSION_METADATA;
+    return {
+      dsn: env.SENTRY_DSN,
+      release: versionId,
+      // Adds request headers and IP for users, for more info visit:
+      // https://docs.sentry.io/platforms/javascript/guides/cloudflare/configuration/options/#sendDefaultPii
+      sendDefaultPii: true,
 
-        // Set tracesSampleRate to 1.0 to capture 100% of spans for tracing.
-        // Learn more at
-        // https://docs.sentry.io/platforms/javascript/configuration/options/#traces-sample-rate
-        tracesSampleRate: 1.0,
-      };
-    }, mcpServer);
+      // Set tracesSampleRate to 1.0 to capture 100% of spans for tracing.
+      // Learn more at
+      // https://docs.sentry.io/platforms/javascript/configuration/options/#traces-sample-rate
+      tracesSampleRate: 1.0,
+    };
+  }, mcpServer);
 
-    return sentryHandler.fetch!(request as any, env, ctx);
-  },
+  return sentryHandler.fetch!(tracedRequest as any, env, ctx);
+};
+
+export default {
+  fetch: tracer.wrapFetchHandler<AppEnv>(fetchHandler),
 };
