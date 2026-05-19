@@ -1,5 +1,5 @@
 import { pathEncode, type UpdateRecommendationViewResponse } from "@vantage-sh/vantage-client";
-import { expect } from "vitest";
+import { expect, test } from "vitest";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
@@ -188,5 +188,9 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     },
   },
 ];
+
+test("update-recommendation-view is marked destructive", () => {
+  expect(tool.annotations.destructive).toBe(true);
+});
 
 testTool(tool, argumentSchemaTests, executionTests);

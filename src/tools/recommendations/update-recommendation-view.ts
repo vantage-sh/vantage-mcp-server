@@ -17,7 +17,7 @@ export default registerTool({
   title: "Update Recommendation View",
   description,
   annotations: {
-    destructive: false,
+    destructive: true,
     openWorld: false,
     readOnly: false,
   },
