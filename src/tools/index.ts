@@ -44,6 +44,7 @@ import "./list-tag-values";
 import "./list-tags";
 import "./list-unit-costs";
 import "./query-costs";
+import "./recommendation-views";
 import "./submit-user-feedback";
 import "./update-anomaly";
 import "./update-folder";
