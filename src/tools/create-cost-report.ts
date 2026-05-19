@@ -1,6 +1,7 @@
 import z from "zod/v4";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
+import { dateIntervalOptions } from "./utils/dateIntervalOptions";
 import dateValidator from "./utils/dateValidator";
 
 const description = `
@@ -52,26 +53,6 @@ const settings = z.object({
     .default(true)
     .describe("Report will show previous period costs or usage comparison."),
 });
-
-const intervalOptions = [
-  "this_month",
-  "last_7_days",
-  "last_30_days",
-  "last_month",
-  "last_3_months",
-  "last_6_months",
-  "custom",
-  "last_12_months",
-  "last_24_months",
-  "last_36_months",
-  "next_month",
-  "next_3_months",
-  "next_6_months",
-  "next_12_months",
-  "year_to_date",
-  "last_3_days",
-  "last_14_days",
-] as const;
 
 const chartTypes = ["area", "line", "bar", "multi_bar", "pie"] as const;
 
@@ -143,7 +124,7 @@ export default registerTool({
       "The end date of the CostReport. ISO 8601 Formatted. Incompatible with 'date_interval' parameter, required with 'start_date'."
     ).optional(),
     date_interval: z
-      .enum(intervalOptions)
+      .enum(dateIntervalOptions)
       .optional()
       .describe(
         "The date interval of the CostReport. Incompatible with 'start_date' and 'end_date' parameters. Defaults to 'this_month' if start_date and end_date are not provided."
