@@ -5,6 +5,8 @@ import registerTool, { clearRegisteredToolsForTesting, setupRegisteredTools } fr
 
 afterEach(() => clearRegisteredToolsForTesting());
 
+const mockContext = { callVantageApi: vi.fn() };
+
 test("tool registration works properly", () => {
   const tool = {
     name: "test-tool",
@@ -67,7 +69,7 @@ describe("mcp server handler", () => {
     const mockServer = {
       registerTool: vi.fn(),
     } as any;
-    const generateContext = vi.fn();
+    const generateContext = vi.fn(() => mockContext);
     setupRegisteredTools(mockServer, generateContext);
 
     const toolHandler = (mockServer.registerTool as any).mock.calls.find((call: any) => call[0] === "error-tool")[2];
@@ -102,7 +104,7 @@ describe("mcp server handler", () => {
     const mockServer = {
       registerTool: vi.fn(),
     } as any;
-    const generateContext = vi.fn();
+    const generateContext = vi.fn(() => mockContext);
     setupRegisteredTools(mockServer, generateContext);
 
     const toolHandler = (mockServer.registerTool as any).mock.calls.find((call: any) => call[0] === "throw-tool")[2];
