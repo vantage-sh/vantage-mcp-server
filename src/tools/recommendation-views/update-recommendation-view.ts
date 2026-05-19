@@ -42,6 +42,17 @@ export default registerTool({
     end_date: dateValidator("Updated end date for recommendation creation filtering. YYYY-MM-DD formatted.").optional(),
   },
   async execute(args, ctx) {
+    if (!!args.tag_key !== !!args.tag_value) {
+      throw new MCPUserError({
+        errors: [{ message: "tag_key and tag_value must both be provided together" }],
+      });
+    }
+    if (!!args.start_date !== !!args.end_date) {
+      throw new MCPUserError({
+        errors: [{ message: "start_date and end_date must both be provided together" }],
+      });
+    }
+
     const { recommendation_view_token, ...requestBody } = args;
     const body: UpdateRecommendationViewRequest = requestBody;
     const response = await ctx.callVantageApi(

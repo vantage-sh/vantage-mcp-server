@@ -187,6 +187,54 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       });
     },
   },
+  {
+    name: "tag key without tag value",
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError({
+        ...minimalValidInputArguments,
+        tag_key: "environment",
+      });
+      expect(err.exception).toEqual({
+        errors: [{ message: "tag_key and tag_value must both be provided together" }],
+      });
+    },
+  },
+  {
+    name: "tag value without tag key",
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError({
+        ...minimalValidInputArguments,
+        tag_value: "production",
+      });
+      expect(err.exception).toEqual({
+        errors: [{ message: "tag_key and tag_value must both be provided together" }],
+      });
+    },
+  },
+  {
+    name: "start date without end date",
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError({
+        ...minimalValidInputArguments,
+        start_date: "2024-01-01",
+      });
+      expect(err.exception).toEqual({
+        errors: [{ message: "start_date and end_date must both be provided together" }],
+      });
+    },
+  },
+  {
+    name: "end date without start date",
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError({
+        ...minimalValidInputArguments,
+        end_date: "2024-12-31",
+      });
+      expect(err.exception).toEqual({
+        errors: [{ message: "start_date and end_date must both be provided together" }],
+      });
+    },
+  },
 ];
 
 test("update-recommendation-view is marked destructive", () => {
