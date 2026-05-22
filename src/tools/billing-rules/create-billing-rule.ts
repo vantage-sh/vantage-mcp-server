@@ -24,13 +24,23 @@ export default registerTool({
   args: {
     type: z.enum(["exclusion", "adjustment", "credit", "charge", "custom"]).describe("The type of billing rule."),
     title: z.string().min(1).describe("The title of the Billing Rule."),
-    start_date: dateValidator("The start date for the billing rule in ISO 8601 format (YYYY-MM-DD). Required for Charge and Credit rules.").optional(),
+    start_date: dateValidator(
+      "The start date for the billing rule in ISO 8601 format (YYYY-MM-DD). Required for Charge and Credit rules."
+    ).optional(),
     end_date: dateValidator("The end date for the billing rule in ISO 8601 format (YYYY-MM-DD).").optional(),
     apply_to_all: z.boolean().optional().describe("Whether the rule applies to all cost reports."),
     charge_type: z.string().min(1).optional().describe("The charge type. Required for Exclusion rules."),
     percentage: z.number().optional().describe("The percentage adjustment. Required for Adjustment rules (e.g. 75.0)."),
-    service: z.string().min(1).optional().describe("The service. Required for Charge and Credit rules, optional for Adjustment rules."),
-    category: z.string().min(1).optional().describe("The category. Required for Charge and Credit rules, optional for Adjustment rules."),
+    service: z
+      .string()
+      .min(1)
+      .optional()
+      .describe("The service. Required for Charge and Credit rules, optional for Adjustment rules."),
+    category: z
+      .string()
+      .min(1)
+      .optional()
+      .describe("The category. Required for Charge and Credit rules, optional for Adjustment rules."),
     sub_category: z.string().min(1).optional().describe("The sub-category. Required for Charge and Credit rules."),
     amount: z.number().optional().describe("The amount. Required for Charge and Credit rules (e.g. 300)."),
     sql_query: z.string().min(1).optional().describe("The SQL query. Required for Custom rules."),
