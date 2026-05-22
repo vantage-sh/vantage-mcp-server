@@ -135,6 +135,26 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     },
     expectedIssues: ["Invalid date input, must be YYYY-MM-DD format and a reasonable date."],
   },
+  {
+    name: "empty charge_type",
+    data: {
+      ...undefineds,
+      type: "exclusion",
+      title: "Empty Charge Type",
+      charge_type: "",
+    },
+    expectedIssues: ["Too small: expected string to have >=1 characters"],
+  },
+  {
+    name: "empty sql_query",
+    data: {
+      ...undefineds,
+      type: "custom",
+      title: "Empty SQL",
+      sql_query: "",
+    },
+    expectedIssues: ["Too small: expected string to have >=1 characters"],
+  },
 ];
 
 const successData = {

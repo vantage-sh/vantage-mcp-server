@@ -24,7 +24,6 @@ const undefineds = {
   service: undefined,
   category: undefined,
   sub_category: undefined,
-  start_period: undefined,
   amount: undefined,
   sql_query: undefined,
 };
@@ -45,7 +44,6 @@ const validInputArguments: InferValidators<Validators> = {
   service: "AWS",
   category: "Compute",
   sub_category: "EC2",
-  start_period: "2024-01",
   amount: 500,
   sql_query: "SELECT * FROM costs",
 };
@@ -83,6 +81,22 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     },
     expectedIssues: ["Invalid date input, must be YYYY-MM-DD format and a reasonable date."],
   },
+  {
+    name: "empty charge_type",
+    data: {
+      ...minimalValidInputArguments,
+      charge_type: "",
+    },
+    expectedIssues: ["Too small: expected string to have >=1 characters"],
+  },
+  {
+    name: "empty service",
+    data: {
+      ...minimalValidInputArguments,
+      service: "",
+    },
+    expectedIssues: ["Too small: expected string to have >=1 characters"],
+  },
 ];
 
 const successData = {
@@ -113,7 +127,6 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           service: "AWS",
           category: "Compute",
           sub_category: "EC2",
-          start_period: "2024-01",
           amount: 500,
           sql_query: "SELECT * FROM costs",
         },

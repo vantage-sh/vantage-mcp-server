@@ -6,6 +6,11 @@ import dateValidator from "../utils/dateValidator";
 
 const description = `
 Updates an existing Billing Rule. You can update the title, dates, and type-specific fields.
+Type-specific fields:
+- Exclusion: charge_type
+- Adjustment: percentage, service, category
+- Charge/Credit: service, category, sub_category, amount, start_date
+- Custom: sql_query
 `.trim();
 
 export default registerTool({
@@ -23,14 +28,13 @@ export default registerTool({
     start_date: dateValidator("The updated start date in ISO 8601 format (YYYY-MM-DD).").optional(),
     end_date: dateValidator("The updated end date in ISO 8601 format (YYYY-MM-DD).").optional(),
     apply_to_all: z.boolean().optional().describe("Whether the rule applies to all cost reports."),
-    charge_type: z.string().optional().describe("The charge type."),
+    charge_type: z.string().min(1).optional().describe("The charge type."),
     percentage: z.number().optional().describe("The percentage adjustment (e.g. 75.0)."),
-    service: z.string().optional().describe("The service."),
-    category: z.string().optional().describe("The category."),
-    sub_category: z.string().optional().describe("The sub-category."),
-    start_period: z.string().optional().describe("The start period."),
+    service: z.string().min(1).optional().describe("The service."),
+    category: z.string().min(1).optional().describe("The category."),
+    sub_category: z.string().min(1).optional().describe("The sub-category."),
     amount: z.number().optional().describe("The amount (e.g. 300)."),
-    sql_query: z.string().optional().describe("The SQL query for Custom rules."),
+    sql_query: z.string().min(1).optional().describe("The SQL query for Custom rules."),
   },
   async execute(args, ctx) {
     const { billing_rule_token, ...body } = args;
