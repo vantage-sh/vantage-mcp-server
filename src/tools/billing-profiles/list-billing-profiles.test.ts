@@ -1,0 +1,135 @@
+import { expect } from "vitest";
+import { DEFAULT_LIMIT } from "../structure/constants";
+import {
+  type ExecutionTestTableItem,
+  type ExtractOutputSchema,
+  type ExtractValidators,
+  type InferValidators,
+  requestsInOrder,
+  type SchemaTestTableItem,
+  testTool,
+} from "../utils/testing";
+import tool from "./list-billing-profiles";
+
+type Validators = ExtractValidators<typeof tool>;
+type OutputSchema = ExtractOutputSchema<typeof tool>;
+
+const validArguments: InferValidators<Validators> = {
+  page: 1,
+};
+
+const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
+  {
+    name: "default page",
+    data: {
+      page: undefined,
+    },
+  },
+  {
+    name: "valid page number",
+    data: validArguments,
+  },
+];
+
+const fullBillingInfo = {
+  token: "blng_inf_123",
+  company_name: "Acme Corp",
+  country_code: "US",
+  address_line_1: "123 Main St",
+  address_line_2: null,
+  city: "New York",
+  state: "NY",
+  postal_code: "10001",
+  billing_email: ["billing@acme.com"],
+};
+
+const fullBusinessInfo = {
+  token: "biz_inf_123",
+  metadata: { custom_fields: [] },
+};
+
+const fullInvoiceAdjustment = {
+  token: "inv_adj_123",
+  adjustment_items: [],
+};
+
+const successData = {
+  billing_profiles: [
+    {
+      token: "blng_prf_123",
+      nickname: "Primary Profile",
+      created_at: "2023-01-15T10:30:00Z",
+      updated_at: "2023-06-01T08:00:00Z",
+      billing_information_attributes: fullBillingInfo,
+      business_information_attributes: fullBusinessInfo,
+      invoice_adjustment_attributes: fullInvoiceAdjustment,
+      managed_accounts_count: "3",
+    },
+    {
+      token: "blng_prf_456",
+      nickname: "Secondary Profile",
+      created_at: "2023-02-20T14:00:00Z",
+      updated_at: "2023-07-15T12:00:00Z",
+      billing_information_attributes: { ...fullBillingInfo, token: "blng_inf_456" },
+      business_information_attributes: { ...fullBusinessInfo, token: "biz_inf_456" },
+      invoice_adjustment_attributes: { ...fullInvoiceAdjustment, token: "inv_adj_456" },
+      managed_accounts_count: "1",
+    },
+  ],
+  links: {},
+};
+
+const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
+  {
+    name: "successful call",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/billing_profiles",
+        params: {
+          page: 1,
+          limit: DEFAULT_LIMIT,
+        },
+        method: "GET",
+        result: {
+          ok: true,
+          data: successData,
+        },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const res = await callExpectingSuccess(validArguments);
+      expect(res).toEqual({
+        billing_profiles: successData.billing_profiles,
+        pagination: {
+          hasNextPage: false,
+          nextPage: 0,
+        },
+      });
+    },
+  },
+  {
+    name: "unsuccessful call",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/billing_profiles",
+        params: {
+          page: 1,
+          limit: DEFAULT_LIMIT,
+        },
+        method: "GET",
+        result: {
+          ok: false,
+          errors: [{ message: "Access denied" }],
+        },
+      },
+    ]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError(validArguments);
+      expect(err.exception).toEqual({
+        errors: [{ message: "Access denied" }],
+      });
+    },
+  },
+];
+
+testTool(tool, argumentSchemaTests, executionTests);
