@@ -64,7 +64,7 @@ Reference implementations to copy from:
 - create: `src/tools/budgets/create-budget.ts`
 - update: `src/tools/budgets/update-budget.ts`
 - delete: `src/tools/delete-folder.ts` (see "Delete tools" below)
-- output schema: `src/tools/get-myself.ts` (see "Output schema" below)
+- output schema: `src/tools/current-user/get-myself.ts` (see "Output schema" below)
 
 ## Discovering the API surface
 
@@ -193,7 +193,7 @@ Skip it when:
 
 Build the schema from the client types — `components["schemas"]["Foo"]` in `node_modules/@vantage-sh/vantage-client/dist/index.d.ts` is the source of truth. Define nested sub-schemas at module scope rather than inlining them; if a sibling tool later reuses them, lift to `schemas.ts`.
 
-Reference: `src/tools/get-myself.ts`. Shape:
+Reference: `src/tools/current-user/get-myself.ts`. Shape:
 
 ```ts
 const workspaceSchema = z.object({ /* mirrors components["schemas"]["Workspace"] */ });
@@ -291,7 +291,7 @@ Always include:
 - A case per nullable field — pass `null` and confirm it parses (catches accidental non-nullable schemas).
 - A poisoned case dropping a required field, with `expectedIssues` set to the zod message.
 
-`callExpectingSuccess` *also* re-parses the execute result through the output schema (`src/tools/utils/testing.ts:72`), so execution tests give you a second layer of drift detection for free. Reference: `src/tools/get-myself.test.ts`.
+`callExpectingSuccess` *also* re-parses the execute result through the output schema (`src/tools/utils/testing.ts`), so execution tests give you a second layer of drift detection for free. Reference: `src/tools/current-user/get-myself.test.ts`.
 
 ## Evals
 

@@ -1,8 +1,8 @@
 import { expect } from "vitest";
+import { requestsInOrder, testTool } from "../utils/testing";
 import tool from "./get-myself";
-import { requestsInOrder, testTool } from "./utils/testing";
 
-const ws = {
+const workspace = {
   token: "ws_123",
   name: "Workspace 1",
   created_at: "2023-01-01T00:00:00Z",
@@ -13,7 +13,7 @@ const ws = {
 
 const successData = {
   default_workspace_token: "ws_123",
-  workspaces: [ws],
+  workspaces: [workspace],
   bearer_token: {
     created_at: "2023-01-01T00:00:00Z",
     scope: ["read"],
@@ -27,6 +27,21 @@ testTool(
     {
       name: "is blank",
       data: {},
+    },
+  ],
+  [
+    {
+      name: "valid response",
+      data: successData,
+    },
+    {
+      name: "valid response with null default_workspace_token",
+      data: { ...successData, default_workspace_token: null },
+    },
+    {
+      name: "missing bearer_token",
+      data: { default_workspace_token: "ws_123", workspaces: [workspace] } as any,
+      expectedIssues: ["Invalid input: expected object, received undefined"],
     },
   ],
   [

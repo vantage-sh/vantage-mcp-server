@@ -34,7 +34,7 @@ Useful examples to copy:
 
 - Nested tool family: `src/tools/budgets/`
 - Another nested family with shared request typing: `src/tools/recommendation-views/`
-- Output schema: `src/tools/get-myself.ts`
+- Output schema: `src/tools/current-user/get-myself.ts`
 - Delete tool and 204 behavior: `src/tools/delete-folder.ts`
 
 ## Invariants
