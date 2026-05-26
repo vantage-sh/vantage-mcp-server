@@ -1,4 +1,4 @@
-import z from "zod/v4";
+import z from "zod";
 
 const ERR_BAD_DATE = "Invalid date input, must be YYYY-MM-DD format and a reasonable date.";
 

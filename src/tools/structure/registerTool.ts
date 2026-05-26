@@ -7,7 +7,7 @@ import type {
   ResponseBodyForPathAndMethod,
   SupportedMethods,
 } from "@vantage-sh/vantage-client";
-import type z from "zod/v4";
+import type z from "zod";
 import type { AppEnv } from "../../env";
 import { tracer, type WaitUntil } from "../../tracing";
 import MCPUserError from "./MCPUserError";

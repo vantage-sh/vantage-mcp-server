@@ -5,7 +5,7 @@ import type {
   SupportedMethods,
 } from "@vantage-sh/vantage-client";
 import { describe, expect, it, test, vi } from "vitest";
-import z from "zod/v4";
+import z from "zod";
 import MCPUserError from "../structure/MCPUserError";
 import { setupRegisteredTools, type ToolCallContext, type ToolProperties } from "../structure/registerTool";
 
