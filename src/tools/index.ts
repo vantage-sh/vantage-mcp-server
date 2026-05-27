@@ -1,5 +1,6 @@
 // This file is auto-generated. Do not edit directly. Run npm run generate-tools-index to update.
 
+import "./billing-rules";
 import "./budgets";
 import "./business-metrics";
 import "./create-cost-alert";
