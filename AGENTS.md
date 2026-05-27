@@ -41,7 +41,6 @@ Useful examples to copy:
 
 These are easy to violate by copying a neighbor. The skills show the full patterns; this is the checklist.
 
-- **Zod is always `zod/v4`.** Use `import z from "zod/v4"` (or `import type z from "zod/v4"`). The npm package is `zod@3.x`, but the v4 import path is what `registerTool`'s types are written against. A bare `import z from "zod"` in `src/` is wrong.
 - **URL path tokens use `pathEncode`.** Any token interpolated into a Vantage API path goes through `pathEncode` from `@vantage-sh/vantage-client`. See `delete-folder.ts`, `get-team.ts`.
 - **`callVantageApi` returns a discriminated union.** `{ ok: true, data }` or `{ ok: false, errors }`. Check `response.ok` and throw `MCPUserError` with the errors. Do not try/catch around the call — `registerTool` handles translation.
 - **204 No Content** is normalized in `src/shared.ts` to `{ ok: true, data: undefined }`. Delete tools must not touch `response.data`.
