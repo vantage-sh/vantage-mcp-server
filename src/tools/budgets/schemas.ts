@@ -1,4 +1,4 @@
-import z from "zod/v4";
+import z from "zod";
 import dateValidator from "../utils/dateValidator";
 
 export const budgetPeriod = z.object({
