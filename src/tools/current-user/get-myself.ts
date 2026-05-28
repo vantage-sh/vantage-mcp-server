@@ -1,11 +1,11 @@
-import MCPUserError from "./structure/MCPUserError";
-import registerTool from "./structure/registerTool";
+import MCPUserError from "../structure/MCPUserError";
+import registerTool from "../structure/registerTool";
 
 const description = `
-Get data that is available to the current auth token. 
+Get data that is available to the current auth token.
 This includes the list of Workspaces they have access to.
 
-default_workspace_token: The token of the workspace that is set as the default workspace for the user and can be used for queries unless told otherwise.
+default_workspace_token: The token of the workspace that is set as the default for the user and can be used for queries unless told otherwise.
 `.trim();
 
 const args = {};

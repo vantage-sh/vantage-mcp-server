@@ -64,7 +64,6 @@ Reference implementations to copy from:
 - create: `src/tools/budgets/create-budget.ts`
 - update: `src/tools/budgets/update-budget.ts`
 - delete: `src/tools/delete-folder.ts` (see "Delete tools" below)
-- output schema: `src/tools/get-myself.ts` (see "Output schema" below)
 
 ## Discovering the API surface
 
@@ -179,49 +178,6 @@ if (!!args.tag_key !== !!args.tag_value) {
 }
 ```
 
-## Output schema (optional)
-
-`registerTool` accepts an `outputSchema` (a `z.ZodRawShape`) that describes the shape of the tool's successful return value. When set, the framework switches from `content: [{ type: "text", text: JSON.stringify(...) }]` to `structuredContent: <result>` in the MCP response — clients that render structured content (Claude desktop, Cursor, the Vantage HTTP transport) get a typed object the model can reason over directly.
-
-Reach for it when:
-- The response shape is stable enough that drift would be a bug worth surfacing loudly.
-- You want the `execute` return to be type-checked against an explicit schema at the call site (the inferred return type from `registerTool` enforces it).
-
-Skip it when:
-- The endpoint returns deeply nested or polymorphic data that would explode into a brittle schema (cost queries, recommendation payloads).
-- You're prototyping and the API shape isn't pinned yet.
-
-Build the schema from the client types — `components["schemas"]["Foo"]` in `node_modules/@vantage-sh/vantage-client/dist/index.d.ts` is the source of truth. Define nested sub-schemas at module scope rather than inlining them; if a sibling tool later reuses them, lift to `schemas.ts`.
-
-Reference: `src/tools/get-myself.ts`. Shape:
-
-```ts
-const workspaceSchema = z.object({ /* mirrors components["schemas"]["Workspace"] */ });
-const bearerTokenSchema = z.object({ /* mirrors components["schemas"]["BearerToken"] */ });
-
-const outputSchema = {
-  default_workspace_token: z.string().nullable().describe("…"),
-  workspaces: z.array(workspaceSchema),
-  bearer_token: bearerTokenSchema,
-};
-
-export default registerTool({
-  // …
-  args,
-  outputSchema,
-  async execute(_, ctx) {
-    const response = await ctx.callVantageApi("/v2/me", {}, "GET");
-    if (!response.ok) throw new MCPUserError({ errors: response.errors });
-    return response.data; // TS verifies this matches outputSchema
-  },
-});
-```
-
-Notes:
-- Default `z.object(...)` strips unknown keys on parse. That's the right default — if the API adds a field before the client types regenerate, the model just doesn't see it. Use `.strict()` only when you want drift to throw.
-- Field `.describe()` strings are still worth writing for ambiguous names (`exchange_rate_date`, `scope`) but skip them for self-explanatory fields (`token`, `name`) — the model also sees the values.
-- Mark nullable fields with `.nullable()` exactly as the client type does. Don't paper over a `string | null` as `string()` — the parse will fail on real responses.
-
 ## Tests
 
 Co-locate `<tool>.test.ts` next to the tool. Use the `testTool` helper from `../utils/testing`. The shape:
@@ -283,16 +239,6 @@ Always include:
 - A successful-execution test that asserts both the request params (via `requestsInOrder`) and the returned shape.
 - An unsuccessful-execution test that asserts the `MCPUserError` exception shape.
 
-### When the tool has an `outputSchema`
-
-`testTool` gains a third middle argument for output schema tests — the signature becomes `testTool(tool, argumentSchemaTests, outputSchemaTests, executionTests)`. Output schema cases use the same `{ name, data, expectedIssues? }` shape as input schema cases and parse `data` through the zod schema. Include at least:
-
-- A valid-response case (typically the same fixture as the successful execution test).
-- A case per nullable field — pass `null` and confirm it parses (catches accidental non-nullable schemas).
-- A poisoned case dropping a required field, with `expectedIssues` set to the zod message.
-
-`callExpectingSuccess` *also* re-parses the execute result through the output schema (`src/tools/utils/testing.ts:72`), so execution tests give you a second layer of drift detection for free. Reference: `src/tools/get-myself.test.ts`.
-
 ## Evals
 
 Every new tool needs an eval file under `evals/`. Evals verify that the description and zod schema are enough for a model to select and call the tool from natural language — they are not optional for new tools.
@@ -308,7 +254,6 @@ See **`.agents/skills/writing-evals/SKILL.md`** for the full guide: file templat
 - [ ] Description is one or two sentences plus only the non-obvious context the model needs.
 - [ ] Every zod field has a `.describe(...)` and uses the right helper (`dateValidator`, `pathEncode`, `DEFAULT_LIMIT`, `paginationData`, `MCPUserError`).
 - [ ] Delete tools return `{ token: args.<resource>_token }`.
-- [ ] If using `outputSchema`, fields are derived from `components["schemas"]["…"]` in the client types and `testTool` uses the 4-arg signature with at least one valid-response case.
 - [ ] Tests cover schema validation (valid + poisoned), success, and failure.
 - [ ] Eval checklist in `.agents/skills/writing-evals/SKILL.md` is complete.
 - [ ] `npm run type-check` and `npm test -- --run` are green.
