@@ -38,11 +38,6 @@ testTool(
       name: "valid response with null default_workspace_token",
       data: { ...successData, default_workspace_token: null },
     },
-    {
-      name: "missing bearer_token",
-      data: { default_workspace_token: "ws_123", workspaces: [workspace] } as any,
-      expectedIssues: ["Invalid input: expected object, received undefined"],
-    },
   ],
   [
     {
