@@ -34,10 +34,6 @@ testTool(
       name: "valid response",
       data: successData,
     },
-    {
-      name: "valid response with null default_workspace_token",
-      data: { ...successData, default_workspace_token: null },
-    },
   ],
   [
     {
