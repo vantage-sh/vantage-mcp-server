@@ -156,45 +156,30 @@ For easier local development, you can configure the `VANTAGE_MCP_TOKEN` environm
 
 > 📝 _Note: Setting `VANTAGE_MCP_TOKEN` enables direct token mode, which bypasses OAuth entirely. This is useful for local development or for MCP clients without OAuth support or the ability to pass headers._
 
-## Local Development: Adding New Tools
+## Running Evals
 
-To add a new tool to the application, create a file at `src/tools/<tool-name>.ts`, and use the following structure:
+**New tools** must ship with an eval file under `evals/<tool>.eval.ts` (or `evals/<resource>/<tool>.eval.ts`). Evals drive natural-language prompts against the registered tool to verify the description + zod schema are good enough for a model to find and call it. Most existing tools predate evals — do not backfill unless asked. See `.agents/skills/writing-evals/SKILL.md` for the full eval guide (tool authoring: `.agents/skills/writing-mcp-tools/SKILL.md`).
 
-```typescript
-import registerTool from "./structure/registerTool";
-import MCPUserError from "./structure/MCPUserError";
-import z from "zod";
+Results are persisted to `evals/evalite.db` (a SQLite file committed to the repo as a shared baseline). Evals are not run in CI — they are a local/PR discipline. The workflow when adding or changing a tool:
 
-const description = `
-Your description here.
-`.trim();
+1. Write or update `evals/<...>/<your-tool>.eval.ts`.
+2. Run only that file — `npm run eval -- ./evals/<...>/<your-tool>.eval.ts`. Other tools' evals are not re-executed, so their existing rows in the db stay untouched.
+3. Commit the updated `evals/evalite.db` alongside the tool change. The `created_at` columns serve as an audit trail for when each eval last ran versus when its underlying tool last changed.
 
-const args = {
-    exampleArg: z.string(),
-};
+`npm run eval` with no path runs every eval file and appends rows for all of them — useful when intentionally refreshing the whole baseline, not for everyday development.
 
-export default registerTool({
-    name: "my-tool-name", // replace with the tool name
-    description,
-    async execute(args, ctx) {
-        // args will be a resolved version of the schema
-        console.log(args);
+### Browsing Eval Results
 
-        if (args.exampleArg === "something") {
-            // We throw a MCPUserError to send a message to the user
-            // The argument is the body
-            throw new MCPUserError({ my: "error" });
-        }
+The live UI for the committed `evalite.db` is published to GitHub Pages at <https://vantage-sh.github.io/vantage-mcp-server/>. The site rebuilds automatically on every push to `main` that touches `evals/evalite.db` (see `.github/workflows/deploy-eval-results.yml`).
 
-        // ctx is a ToolCallContext, this has the function to call the vantage api
+To browse results locally without publishing:
 
-        // Then we just return
-        return { a: "b" };
-    },
-});
+```bash
+npm run eval:export
+open ./evalite-export/index.html
 ```
 
-_**Important:** When you add or remove a tool, run `npm run generate-tools-index` to update the tools index._
+This produces a static bundle from the current state of `evals/evalite.db` and does not re-execute any evals. The `evalite-export/` directory is gitignored.
 
 ## Available Scripts
 
@@ -207,6 +192,9 @@ _**Important:** When you add or remove a tool, run `npm run generate-tools-index
 - `npm run type-check` - Run TypeScript type checking
 - `npm run cf-typegen` - Generate Cloudflare Worker types
 - `npm run generate-tools-index` - Generate tools index after adding/removing tools
+- `npm run eval` - Run all evals (use `npm run eval -- ./evals/<path>` to filter to one file)
+- `npm run eval:dev` - Run evalite in watch mode with UI on `localhost:3006`
+- `npm run eval:export` - Build a static HTML bundle of the current `evalite.db` under `./evalite-export/` (no re-execution)
 
 ## Public Assets
 
