@@ -16,7 +16,7 @@ src/tools/<resource>/
   index.ts                       # one `import "./<verb>-<resource>"` line per tool
   <verb>-<resource>.ts           # tool file (list, get, create, update, delete, …)
   <verb>-<resource>.test.ts      # tests, co-located
-  schemas.ts                     # OPTIONAL — shared zod objects used by multiple tools
+  schemas.ts                     # shared zod objects when multiple tools in the folder reuse them
 ```
 
 Create `src/tools/<resource>/index.ts` with one `import "./<verb>-<resource>"` line per tool, then run `npm run generate-tools-index`. That regenerates `src/tools/index.ts` to include the new directory — do not edit `src/tools/index.ts` by hand.
@@ -39,6 +39,19 @@ If you are adding a tool under `src/tools/<resource>/` and other tools for the s
 Reference layout after a move: `src/tools/cost-reports/` (`create-`, `list-`, `get-`, `update-`, `delete-`, `get-*-forecast`, each with a co-located test).
 
 Do **not** move top-level tools that belong to a different resource, even if the filename looks similar. Scope the move to one resource family per PR unless the user explicitly asks for a broader migration.
+
+### Shared schemas (`schemas.ts`)
+
+Nesting tools under one resource folder exists so siblings can share zod without copy-paste. When two or more tools in `src/tools/<resource>/` use the same argument shapes (or the same shape with create defaults vs update optionals), extract them into `schemas.ts` in that folder — **do not duplicate** constants or `z.object(...)` blocks across `create-*` and `update-*` files.
+
+Reference: `src/tools/budgets/schemas.ts` (`budgetPeriod` for `create-budget` and `update-budget`). Cost reports: `src/tools/cost-reports/schemas.ts` (`chartTypes`, `chartSettings`, `businessMetricTokenForCreate` / `businessMetricTokenForUpdate`, `costReportSettingsForCreate` / `costReportSettingsForUpdate`, `dateBins`).
+
+Rules:
+
+- Import shared exports from `./schemas` in each tool file; keep tool-specific fields (tokens, titles, one-off describes) in the tool file.
+- If create and update differ only by `.default(...)` vs `.optional()`, export two named schemas (e.g. `costReportSettingsForCreate` and `costReportSettingsForUpdate`) rather than maintaining two nearly identical inline copies.
+- Add or extend `schemas.ts` in the **same PR** as a new create/update pair when you introduce the second file that would duplicate an existing definition.
+- `schemas.ts` is not imported from `index.ts` — only tool files import it. It is not registered as a tool.
 
 ## Tool anatomy
 
@@ -153,7 +166,7 @@ Patterns to use:
 - `paginationData(response.data)` from `../utils/paginationData` to compute `{ hasNextPage, nextPage }` for list tools.
 - `pathEncode` from `@vantage-sh/vantage-client` for any token interpolated into a URL path.
 - Request body types: `RequestBodyForPathAndMethod<"/v2/…", "POST">` from `@vantage-sh/vantage-client` when you need to assert the body shape (see `create-recommendation-view.ts`).
-- Shared sub-schemas (e.g. `budgetPeriod` in `src/tools/budgets/schemas.ts`) go in a `schemas.ts` sibling.
+- Shared sub-schemas go in `src/tools/<resource>/schemas.ts` when used by more than one tool in that folder (see "Shared schemas"). Import with `from "./schemas"`.
 
 In `.describe()` strings: name the thing, give the format, and point at the tool that can discover valid values ("Use list-cost-providers to discover valid provider names"). Don't restate types — `z.number()` already says it's a number.
 
@@ -266,6 +279,7 @@ See **`.agents/skills/writing-evals/SKILL.md`** for the full guide: file templat
 
 - [ ] Tool file lives under `src/tools/<resource>/`, not at the top level.
 - [ ] Any other top-level tools for the same resource were moved into `src/tools/<resource>/` with imports updated (see "Moving existing siblings").
+- [ ] Duplicated zod across tools in the family lives in `schemas.ts`, not copy-pasted between files (see "Shared schemas").
 - [ ] `src/tools/<resource>/index.ts` imports every tool in the family.
 - [ ] `npm run generate-tools-index` has been run and `src/tools/index.ts` imports only `./<resource>` (no stale per-tool imports for that family).
 - [ ] `annotations` follow the table above (especially: `create-*` is `destructive: false`).

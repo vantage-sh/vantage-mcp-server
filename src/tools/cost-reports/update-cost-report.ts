@@ -4,51 +4,19 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import { dateIntervalOptions } from "../utils/dateIntervalOptions";
 import dateValidator from "../utils/dateValidator";
+import {
+  businessMetricTokenForUpdate,
+  chartSettings,
+  chartTypes,
+  costReportSettingsForUpdate,
+  dateBins,
+} from "./schemas";
 
 const description = `
 Updates an existing Cost Report. Use to change the title, VQL filter, groupings, date range, chart type, folder, report settings, or attached business metrics.
 
 Do not use create-cost-report (creates a new report) or get-cost-report (reads without changing). Use list-cost-reports or get-cost-report to find the cost_report_token.
 `.trim();
-
-const businessMetricToken = z.object({
-  business_metric_token: z.string().min(1).describe("The token of the BusinessMetric to attach to the CostReport."),
-  unit_scale: z
-    .enum(["per_unit", "per_hundred", "per_thousand", "per_million", "per_billion"])
-    .optional()
-    .describe("Determines the scale of the BusinessMetric's values within the CostReport."),
-  label_filter: z.array(z.string()).optional().describe("Include only values with these labels in the CostReport."),
-});
-
-const settings = z.object({
-  include_credits: z.boolean().optional().describe("Report will include credits."),
-  include_refunds: z.boolean().optional().describe("Report will include refunds."),
-  include_discounts: z.boolean().optional().describe("Report will include discounts."),
-  include_tax: z.boolean().optional().describe("Report will include tax."),
-  amortize: z.boolean().optional().describe("Report will amortize."),
-  unallocated: z.boolean().optional().describe("Report will show unallocated costs."),
-  aggregate_by: z.enum(["cost", "usage"]).optional().describe("Report will aggregate by cost or usage."),
-  show_previous_period: z.boolean().optional().describe("Report will show previous period costs or usage comparison."),
-});
-
-const chartTypes = ["area", "line", "bar", "multi_bar", "pie"] as const;
-
-const chartSettings = z.object({
-  x_axis_dimension: z
-    .array(z.string())
-    .optional()
-    .describe(
-      "The dimension used to group or label data along the x-axis (e.g., by date, region, or service). NOTE: Only one value is allowed at this time. Defaults to ['date']."
-    ),
-  y_axis_dimension: z
-    .string()
-    .optional()
-    .describe(
-      "The metric or measure displayed on the chart’s y-axis. Possible values: 'cost', 'usage'. Defaults to 'cost'."
-    ),
-});
-
-const dateBins = ["cumulative", "day", "week", "month", "quarter"] as const;
 
 export default registerTool({
   name: "update-cost-report",
@@ -78,14 +46,14 @@ export default registerTool({
       .optional()
       .describe("Updated SavedFilter tokens to apply to the Cost Report."),
     business_metric_tokens_with_metadata: z
-      .array(businessMetricToken)
+      .array(businessMetricTokenForUpdate)
       .optional()
       .describe("Updated BusinessMetric tokens and unit scale metadata."),
     folder_token: z
       .string()
       .optional()
       .describe("Updated Folder token. Determines the Workspace the report is assigned to."),
-    settings: settings.optional().describe("Updated report settings."),
+    settings: costReportSettingsForUpdate.optional().describe("Updated report settings."),
     previous_period_start_date: dateValidator(
       "Updated previous period start date. ISO 8601 formatted (YYYY-MM-DD)."
     ).optional(),
