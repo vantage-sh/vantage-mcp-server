@@ -1,7 +1,7 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod";
-import MCPUserError from "./structure/MCPUserError";
-import registerTool from "./structure/registerTool";
+import MCPUserError from "../structure/MCPUserError";
+import registerTool from "../structure/registerTool";
 
 const description = `
 Deletes a cost report by its token. This action is irreversible.

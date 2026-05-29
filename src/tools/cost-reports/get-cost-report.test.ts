@@ -1,7 +1,7 @@
 import { type GetCostReportResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "./get-cost-report";
-import { requestsInOrder, testTool } from "./utils/testing";
+import { requestsInOrder, testTool } from "../utils/testing";
 
 const success: GetCostReportResponse = {
   token: "rprt_fb27faa25ef5ea72",
