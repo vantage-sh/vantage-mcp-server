@@ -28,10 +28,7 @@ const settings = z.object({
   amortize: z.boolean().optional().describe("Report will amortize."),
   unallocated: z.boolean().optional().describe("Report will show unallocated costs."),
   aggregate_by: z.enum(["cost", "usage"]).optional().describe("Report will aggregate by cost or usage."),
-  show_previous_period: z
-    .boolean()
-    .optional()
-    .describe("Report will show previous period costs or usage comparison."),
+  show_previous_period: z.boolean().optional().describe("Report will show previous period costs or usage comparison."),
 });
 
 const chartTypes = ["area", "line", "bar", "multi_bar", "pie"] as const;
@@ -72,7 +69,10 @@ export default registerTool({
       .describe(
         "Updated grouping values. Valid groupings: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, tag:<tag_value>."
       ),
-    filter: z.string().optional().describe("Updated VQL filter. Use list-cost-providers and list-cost-services for valid names."),
+    filter: z
+      .string()
+      .optional()
+      .describe("Updated VQL filter. Use list-cost-providers and list-cost-services for valid names."),
     saved_filter_tokens: z
       .array(z.string())
       .optional()
@@ -104,10 +104,7 @@ export default registerTool({
       .describe("Updated date interval. Incompatible with start_date and end_date."),
     chart_type: z.enum(chartTypes).optional().describe("Updated chart type."),
     chart_settings: chartSettings.optional().describe("Updated chart settings."),
-    date_bin: z
-      .enum(dateBins)
-      .optional()
-      .describe("Updated date bin for how costs are bucketed over time."),
+    date_bin: z.enum(dateBins).optional().describe("Updated date bin for how costs are bucketed over time."),
   },
   async execute(args, ctx) {
     if (!!args.previous_period_start_date !== !!args.previous_period_end_date) {
@@ -129,14 +126,11 @@ export default registerTool({
     const { cost_report_token, ...requestBody } = args;
     const body: UpdateCostReportRequest = {
       ...requestBody,
-      previous_period_end_date: requestBody.previous_period_end_date as UpdateCostReportRequest["previous_period_end_date"],
+      previous_period_end_date:
+        requestBody.previous_period_end_date as UpdateCostReportRequest["previous_period_end_date"],
       end_date: requestBody.end_date as UpdateCostReportRequest["end_date"],
     };
-    const response = await ctx.callVantageApi(
-      `/v2/cost_reports/${pathEncode(cost_report_token)}`,
-      body,
-      "PUT"
-    );
+    const response = await ctx.callVantageApi(`/v2/cost_reports/${pathEncode(cost_report_token)}`, body, "PUT");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }
