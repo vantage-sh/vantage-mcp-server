@@ -1,8 +1,8 @@
 import z from "zod";
-import { DEFAULT_LIMIT } from "./structure/constants";
-import MCPUserError from "./structure/MCPUserError";
-import registerTool from "./structure/registerTool";
-import paginationData from "./utils/paginationData";
+import { DEFAULT_LIMIT } from "../structure/constants";
+import MCPUserError from "../structure/MCPUserError";
+import registerTool from "../structure/registerTool";
+import paginationData from "../utils/paginationData";
 
 const description = `
 List all cost reports available. Cost reports are already created reports authored by a user in Vantage. If the user isn't asking about a specific report, it's better to use the query-costs tool.

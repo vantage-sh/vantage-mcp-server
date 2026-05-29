@@ -1,6 +1,6 @@
 ---
 name: writing-mcp-tools
-description: Author a new MCP tool for the Vantage MCP server — file layout, registerTool template, annotation hints, description style, and tests. Use whenever adding, splitting, or refactoring a tool under `src/tools/`. For evals, see writing-evals.
+description: Author a new MCP tool for the Vantage MCP server — file layout, nesting/moving existing siblings into resource folders, registerTool template, annotation hints, description style, and tests. Use whenever adding, splitting, refactoring, or relocating a tool under `src/tools/`. For evals, see writing-evals.
 ---
 
 # Writing MCP tools
@@ -16,12 +16,42 @@ src/tools/<resource>/
   index.ts                       # one `import "./<verb>-<resource>"` line per tool
   <verb>-<resource>.ts           # tool file (list, get, create, update, delete, …)
   <verb>-<resource>.test.ts      # tests, co-located
-  schemas.ts                     # OPTIONAL — shared zod objects used by multiple tools
+  schemas.ts                     # shared zod objects when multiple tools in the folder reuse them
 ```
 
 Create `src/tools/<resource>/index.ts` with one `import "./<verb>-<resource>"` line per tool, then run `npm run generate-tools-index`. That regenerates `src/tools/index.ts` to include the new directory — do not edit `src/tools/index.ts` by hand.
 
-> Many existing tools (e.g. `src/tools/create-cost-alert.ts`, `src/tools/list-costs.ts`) still live at the top level. Don't move them as part of unrelated work, but **don't add new top-level tools** — even for a one-off, nest it under a resource directory so the family has somewhere to grow.
+> Many existing tools (e.g. `src/tools/create-cost-alert.ts`, `src/tools/list-costs.ts`) still live at the top level. **Don't add new top-level tools.** When you add or change a tool in a resource family, move any top-level siblings into that folder in the same PR (see below). Do not move unrelated top-level tools.
+
+### Moving existing siblings into the resource folder
+
+If you are adding a tool under `src/tools/<resource>/` and other tools for the same resource still live at `src/tools/<verb>-<resource>.ts` (or share the same resource noun in the filename, e.g. `list-cost-reports`, `get-cost-report`, `create-cost-report`), **move them all into `src/tools/<resource>/` in the same change** — not only the new file.
+
+1. **Identify the family** — same REST resource or shared noun (`cost-report`, `budget`, `recommendation-view`, …). Move every matching `*.ts` and `*.test.ts` from `src/tools/` into `src/tools/<resource>/`.
+2. **Fix imports** in every moved file — top-level paths become one level up:
+   - `from "./structure/…"` → `from "../structure/…"`
+   - `from "./utils/…"` → `from "../utils/…"`
+   - Tool imports stay sibling-relative: `import tool from "./list-cost-reports"`.
+3. **Update `src/tools/<resource>/index.ts`** — one `import "./<verb>-<resource>"` line per tool in the family (sorted is fine; the generator sorts the top-level index).
+4. **Regenerate the tools index** — `npm run generate-tools-index`. The top-level `src/tools/index.ts` should import `./<resource>` once, not each tool file. Remove any stale per-tool imports left over from before the move.
+5. **Verify** — `npm run type-check` and `npm test -- --run src/tools/<resource>/`.
+
+Reference layout after a move: `src/tools/cost-reports/` (`create-`, `list-`, `get-`, `update-`, `delete-`, `get-*-forecast`, each with a co-located test).
+
+Do **not** move top-level tools that belong to a different resource, even if the filename looks similar. Scope the move to one resource family per PR unless the user explicitly asks for a broader migration.
+
+### Shared schemas (`schemas.ts`)
+
+Nesting tools under one resource folder exists so siblings can share zod without copy-paste. When two or more tools in `src/tools/<resource>/` use the same argument shapes (or the same shape with create defaults vs update optionals), extract them into `schemas.ts` in that folder — **do not duplicate** constants or `z.object(...)` blocks across `create-*` and `update-*` files.
+
+Reference: `src/tools/budgets/schemas.ts` (`budgetPeriod` for `create-budget` and `update-budget`). Cost reports: `src/tools/cost-reports/schemas.ts` (`chartTypes`, `chartSettings`, `businessMetricTokenForCreate` / `businessMetricTokenForUpdate`, `costReportSettingsForCreate` / `costReportSettingsForUpdate`, `dateBins`).
+
+Rules:
+
+- Import shared exports from `./schemas` in each tool file; keep tool-specific fields (tokens, titles, one-off describes) in the tool file.
+- If create and update differ only by `.default(...)` vs `.optional()`, export two named schemas (e.g. `costReportSettingsForCreate` and `costReportSettingsForUpdate`) rather than maintaining two nearly identical inline copies.
+- Add or extend `schemas.ts` in the **same PR** as a new create/update pair when you introduce the second file that would duplicate an existing definition.
+- `schemas.ts` is not imported from `index.ts` — only tool files import it. It is not registered as a tool.
 
 ## Tool anatomy
 
@@ -136,7 +166,7 @@ Patterns to use:
 - `paginationData(response.data)` from `../utils/paginationData` to compute `{ hasNextPage, nextPage }` for list tools.
 - `pathEncode` from `@vantage-sh/vantage-client` for any token interpolated into a URL path.
 - Request body types: `RequestBodyForPathAndMethod<"/v2/…", "POST">` from `@vantage-sh/vantage-client` when you need to assert the body shape (see `create-recommendation-view.ts`).
-- Shared sub-schemas (e.g. `budgetPeriod` in `src/tools/budgets/schemas.ts`) go in a `schemas.ts` sibling.
+- Shared sub-schemas go in `src/tools/<resource>/schemas.ts` when used by more than one tool in that folder (see "Shared schemas"). Import with `from "./schemas"`.
 
 In `.describe()` strings: name the thing, give the format, and point at the tool that can discover valid values ("Use list-cost-providers to discover valid provider names"). Don't restate types — `z.number()` already says it's a number.
 
@@ -248,8 +278,10 @@ See **`.agents/skills/writing-evals/SKILL.md`** for the full guide: file templat
 ## Checklist before opening a PR
 
 - [ ] Tool file lives under `src/tools/<resource>/`, not at the top level.
-- [ ] `src/tools/<resource>/index.ts` imports the new tool.
-- [ ] `npm run generate-tools-index` has been run and `src/tools/index.ts` includes the directory.
+- [ ] Any other top-level tools for the same resource were moved into `src/tools/<resource>/` with imports updated (see "Moving existing siblings").
+- [ ] Duplicated zod across tools in the family lives in `schemas.ts`, not copy-pasted between files (see "Shared schemas").
+- [ ] `src/tools/<resource>/index.ts` imports every tool in the family.
+- [ ] `npm run generate-tools-index` has been run and `src/tools/index.ts` imports only `./<resource>` (no stale per-tool imports for that family).
 - [ ] `annotations` follow the table above (especially: `create-*` is `destructive: false`).
 - [ ] Description is one or two sentences plus only the non-obvious context the model needs.
 - [ ] Every zod field has a `.describe(...)` and uses the right helper (`dateValidator`, `pathEncode`, `DEFAULT_LIMIT`, `paginationData`, `MCPUserError`).
