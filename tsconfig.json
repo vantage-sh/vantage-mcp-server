@@ -16,5 +16,5 @@
 		"skipLibCheck": true,
 		"types": ["./worker-configuration.d.ts", "node"]
 	},
-	"include": ["src/**/*.ts"]
+	"include": ["src/**/*.ts", "evals/**/*.ts", "evalite.config.ts"]
 }
