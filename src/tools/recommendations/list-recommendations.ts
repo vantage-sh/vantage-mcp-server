@@ -145,10 +145,10 @@ Each recommendation includes:
 - Description of what can be optimized
 - Provider and service information
 - Number of resources affected
-- Current status (open, resolved, dismissed)
+- Current status (active or archived)
 
 Recommendations can be filtered by:
-- Status (open shows active recommendations, resolved shows implemented ones, dismissed shows ignored ones)
+- Status: active or archived
 - Cloud provider via provider (single) or provider_ids (multiple; requires workspace_token) — only use these when the user explicitly specifies cloud providers; do not infer or default to all providers
 - Specific workspace via workspace_token
 - Provider account ID via provider_account_id (single) or account_ids (multiple; requires workspace_token)
@@ -180,10 +180,10 @@ const args = {
     .describe(
       "Filter recommendations by type with case-insensitive fuzzy matching (e.g., aws, aws:ec2, aws:ec2:rightsizing). Natural language values like 'AWS recommendations' are normalized."
     ),
-  filter: z
-    .enum(["open", "resolved", "dismissed"])
+  status: z
+    .enum(["active", "archived"])
     .optional()
-    .describe("Filter recommendations by status: open (default), resolved, or dismissed"),
+    .describe("Filter by status: active or archived."),
   min_savings: z
     .number()
     .nonnegative()
@@ -254,7 +254,6 @@ export default registerTool({
     const requestParams = {
       ...args,
       limit: DEFAULT_LIMIT,
-      provider: args.provider as any,
     };
     const response = await ctx.callVantageApi("/v2/recommendations", requestParams, "GET");
     if (!response.ok) {

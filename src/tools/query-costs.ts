@@ -98,6 +98,11 @@ const args = {
     .describe(
       "Group the results by specific field(s). Defaults to provider, service, region. Valid groupings: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, tag:<tag_value>. Include every grouping you need in one call rather than issuing separate calls per grouping."
     ),
+  cost_report_token: z
+    .string()
+    .optional()
+    .describe("Cost Report token. When set, returns costs for that report instead of using filter."),
+  order: z.enum(["asc", "desc"]).optional().describe("Sort costs by date ascending or descending."),
 };
 
 export default registerTool({

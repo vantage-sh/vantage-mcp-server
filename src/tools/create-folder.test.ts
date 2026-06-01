@@ -22,6 +22,7 @@ const undefineds = {
 const minimalValidInputArguments: InferValidators<Validators> = {
   ...undefineds,
   title: "My Folder",
+  type: "CostFolder",
 };
 
 const validInputArguments: InferValidators<Validators> = {
@@ -29,6 +30,7 @@ const validInputArguments: InferValidators<Validators> = {
   parent_folder_token: "fldr_123",
   saved_filter_tokens: ["svd_fltr_abc", "svd_fltr_def"],
   workspace_token: "wrkspc_123",
+  type: "CostFolder",
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
@@ -45,6 +47,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     data: {
       ...undefineds,
       title: "",
+      type: "CostFolder",
     },
     expectedIssues: ["Too small: expected string to have >=1 characters"],
   },

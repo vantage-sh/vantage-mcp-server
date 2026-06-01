@@ -32,6 +32,8 @@ const baseApiParams = {
 
 const validInputArguments = {
   page: 1,
+  cost_report_token: undefined,
+  order: undefined,
   filter: "(costs.provider = 'aws')",
   start_date: "2023-01-01",
   end_date: "2023-01-31",
@@ -53,6 +55,8 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     name: "minimal valid arguments",
     data: {
       page: 1,
+      cost_report_token: undefined,
+      order: undefined,
       filter: "(costs.provider = 'aws')",
       start_date: undefined,
       end_date: undefined,
@@ -155,6 +159,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess({
         page: 1,
+                cost_report_token: undefined,
+        order: undefined,
         filter: "(costs.provider = 'aws')",
         start_date: undefined,
         end_date: undefined,
@@ -320,6 +326,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     handler: async ({ callExpectingMCPUserError }) => {
       const err = await callExpectingMCPUserError({
         page: 1,
+                cost_report_token: undefined,
+        order: undefined,
         filter: "(costs.provider = 'aws')",
         start_date: undefined,
         end_date: undefined,

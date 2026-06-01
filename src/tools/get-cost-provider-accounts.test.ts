@@ -14,13 +14,18 @@ import {
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
+const undefineds = {
+  account_id: undefined,
+  provider: undefined,
+  account_name: undefined,
+};
+
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "just workspace_token",
     data: {
       workspace_token: "wt_123",
-      account_id: undefined,
-      provider: undefined,
+      ...undefineds,
       page: undefined,
       limit: undefined,
     },
@@ -31,6 +36,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       workspace_token: "wt_123",
       account_id: "acct_123",
       provider: undefined,
+      account_name: undefined,
       page: undefined,
       limit: undefined,
     },
@@ -41,6 +47,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       workspace_token: "wt_123",
       account_id: undefined,
       provider: "aws",
+      account_name: undefined,
       page: undefined,
       limit: undefined,
     },
@@ -51,6 +58,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       workspace_token: "wt_123",
       account_id: "acct_123",
       provider: "aws",
+      account_name: undefined,
       page: 2,
       limit: 50,
     },
@@ -96,6 +104,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           workspace_token: "wt_123",
           account_id: undefined,
           provider: undefined,
+          account_name: undefined,
           ...defaultPaginationParams,
         },
         method: "GET",
@@ -110,6 +119,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         workspace_token: "wt_123",
         account_id: undefined,
         provider: undefined,
+        account_name: undefined,
         page: undefined,
         limit: undefined,
       });
@@ -131,6 +141,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           workspace_token: "wt_123",
           account_id: "acct_123",
           provider: undefined,
+          account_name: undefined,
           ...defaultPaginationParams,
         },
         method: "GET",
@@ -145,6 +156,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         workspace_token: "wt_123",
         account_id: "acct_123",
         provider: undefined,
+        account_name: undefined,
         page: undefined,
         limit: undefined,
       });
@@ -166,6 +178,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           workspace_token: "wt_123",
           account_id: undefined,
           provider: "aws",
+          account_name: undefined,
           ...defaultPaginationParams,
         },
         method: "GET",
@@ -180,6 +193,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         workspace_token: "wt_123",
         account_id: undefined,
         provider: "aws",
+        account_name: undefined,
         page: undefined,
         limit: undefined,
       });
@@ -201,6 +215,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           workspace_token: "wt_123",
           account_id: undefined,
           provider: undefined,
+          account_name: undefined,
           ...({ page: 2, limit: 50 } as Record<string, unknown>),
         },
         method: "GET",
@@ -215,6 +230,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         workspace_token: "wt_123",
         account_id: undefined,
         provider: undefined,
+        account_name: undefined,
         page: 2,
         limit: 50,
       });
@@ -236,6 +252,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           workspace_token: "wt_123",
           account_id: undefined,
           provider: undefined,
+          account_name: undefined,
           ...defaultPaginationParams,
         },
         method: "GET",
@@ -250,6 +267,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         workspace_token: "wt_123",
         account_id: undefined,
         provider: undefined,
+        account_name: undefined,
         page: undefined,
         limit: undefined,
       });

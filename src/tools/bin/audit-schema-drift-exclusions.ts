@@ -26,4 +26,18 @@ export const SCHEMA_DRIFT_EXCLUSIONS: SchemaDriftExclusion[] = [
     kind: "missing",
     reason: "Superseded by type in MCP; category remains on the API for backwards compatibility",
   },
+  {
+    operation: "createBillingRule",
+    tool: "create-billing-rule",
+    apiKey: "start_period",
+    kind: "missing",
+    reason: "Deprecated API field; MCP uses start_date only",
+  },
+  {
+    operation: "updateBillingRule",
+    tool: "update-billing-rule",
+    apiKey: "start_period",
+    kind: "missing",
+    reason: "Deprecated API field; MCP uses start_date only",
+  },
 ];

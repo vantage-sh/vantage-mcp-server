@@ -208,12 +208,30 @@ function resolveImportedArgsBlock(toolFilePath: string, source: string, exportNa
   }
 }
 
+function resolveSpreadArgKeys(
+  toolFilePath: string | undefined,
+  source: string,
+  block: string,
+  keys: Set<string>
+): void {
+  if (!toolFilePath) {
+    return;
+  }
+  for (const ref of block.matchAll(/\.\.(\w+)/g)) {
+    const spreadBlock = resolveImportedArgsBlock(toolFilePath, source, ref[1]);
+    if (spreadBlock) {
+      addArgKeysFromBlock(keys, spreadBlock, "  ");
+    }
+  }
+}
+
 function extractToolArgKeys(source: string, toolFilePath?: string): Set<string> {
   const keys = new Set<string>();
 
   const constArgsMatch = source.match(/const args = \{([\s\S]*?)\n\};/);
   if (constArgsMatch) {
     addArgKeysFromBlock(keys, constArgsMatch[1], "  ");
+    resolveSpreadArgKeys(toolFilePath, source, constArgsMatch[1], keys);
   }
 
   const inlineArgsMatch =
@@ -221,6 +239,7 @@ function extractToolArgKeys(source: string, toolFilePath?: string): Set<string> 
     source.match(/args:\s*\{([\s\S]*?)\n\s*\},?\s*\n\s*async execute/);
   if (inlineArgsMatch) {
     addArgKeysFromBlock(keys, inlineArgsMatch[1], "    ");
+    resolveSpreadArgKeys(toolFilePath, source, inlineArgsMatch[1], keys);
   }
 
   const externalArgsRef = source.match(/args:\s*(\w+),/);
@@ -360,7 +379,6 @@ function apiKeysForTool(typesContent: string, method: HttpMethod, operation: str
 
   return keys;
 }
-
 
 function isSchemaDriftExcluded(
   toolName: string,

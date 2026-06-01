@@ -15,10 +15,15 @@ import {
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
+const tagListUndefineds = {
+  providers: undefined,
+  search_query: undefined,
+  sort_direction: undefined,
+};
+
 const validArguments: InferValidators<Validators> = {
   page: 1,
-  search_query: undefined,
-  providers: undefined,
+  ...tagListUndefineds,
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
@@ -26,8 +31,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     name: "default page",
     data: {
       page: undefined,
-      search_query: undefined,
-      providers: undefined,
+      ...tagListUndefineds,
     },
   },
   {

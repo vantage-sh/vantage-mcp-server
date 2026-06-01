@@ -1,5 +1,6 @@
 import type { GetTagsRequest } from "@vantage-sh/vantage-client";
 import z from "zod";
+import { tagListQueryFields } from "./utils/tagListQuerySchema";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
@@ -16,11 +17,7 @@ Each tag in the response uses the field \`tag_key\` (not \`key\`).
 
 const args = {
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
-  search_query: z.string().optional().describe("Search query to filter tags by tag key name"),
-  providers: z
-    .array(z.string())
-    .optional()
-    .describe("Filter tags to those present on the given cost providers (e.g. aws, azure, gcp)"),
+  ...tagListQueryFields,
 };
 
 export default registerTool({
