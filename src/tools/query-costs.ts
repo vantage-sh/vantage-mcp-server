@@ -42,10 +42,17 @@ records. Only use day/week if needed, otherwise DateBin=month is preferred, and 
 
 const args = {
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
-  filter: z.string().describe("A VQL query to run against your vantage account"),
+  filter: z
+    .string()
+    .optional()
+    .describe("A VQL query to run against your vantage account. Optional when cost_report_token is set."),
   start_date: dateValidator("Start date to filter costs by, format=YYYY-MM-DD").optional(),
   end_date: dateValidator("End date to filter costs by, format=YYYY-MM-DD").optional(),
-  workspace_token: z.string().min(1).describe("The workspace token to scope the query to"),
+  workspace_token: z
+    .string()
+    .min(1)
+    .optional()
+    .describe("The workspace token to scope the query to. Ignored when cost_report_token is set."),
   date_bin: z
     .enum(["day", "week", "month"])
     .optional()
@@ -108,6 +115,12 @@ export default registerTool({
   },
   args,
   async execute(args, ctx) {
+    if (!args.filter && !args.cost_report_token) {
+      throw new MCPUserError({
+        errors: [{ message: "filter or cost_report_token must be provided" }],
+      });
+    }
+
     const requestParams: Record<string, unknown> = {
       limit: 1000,
     };

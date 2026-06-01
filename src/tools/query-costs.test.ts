@@ -74,6 +74,15 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     data: validInputArguments,
   },
   {
+    name: "cost report token without filter or workspace_token",
+    data: {
+      ...validInputArguments,
+      cost_report_token: "rprt_123",
+      filter: undefined,
+      workspace_token: undefined,
+    },
+  },
+  {
     name: "aggregate by usage",
     data: {
       ...validInputArguments,
@@ -159,7 +168,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess({
         page: 1,
-                cost_report_token: undefined,
+        cost_report_token: undefined,
         order: undefined,
         filter: "(costs.provider = 'aws')",
         start_date: undefined,
@@ -284,6 +293,56 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     },
   },
   {
+    name: "successful call with cost_report_token and no filter",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/costs",
+        params: {
+          page: 1,
+          cost_report_token: "rprt_123",
+          start_date: undefined,
+          end_date: undefined,
+          date_bin: "month",
+          groupings: GROUPINGS_API,
+          "settings[include_credits]": false,
+          "settings[include_refunds]": false,
+          "settings[include_discounts]": true,
+          "settings[include_tax]": true,
+          "settings[amortize]": true,
+          "settings[unallocated]": false,
+          "settings[aggregate_by]": "cost",
+          "settings[show_previous_period]": true,
+          limit: 1000,
+        },
+        method: "GET",
+        result: {
+          ok: true,
+          data: successData,
+        },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const res = await callExpectingSuccess({
+        ...validInputArguments,
+        cost_report_token: "rprt_123",
+        filter: undefined,
+        start_date: undefined,
+        end_date: undefined,
+        workspace_token: undefined,
+      });
+      expect(res).toEqual({
+        costs: successData.costs,
+        total_cost: successData.total_cost,
+        notes:
+          "Costs records represent one month, the accrued_at field is the first day of the month. If your date range is less than one month, this record includes only data for that date range, not the full month.",
+        pagination: {
+          hasNextPage: false,
+          nextPage: 0,
+        },
+      });
+    },
+  },
+  {
     name: "unsuccessful call",
     apiCallHandler: requestsInOrder([
       {
@@ -316,7 +375,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     handler: async ({ callExpectingMCPUserError }) => {
       const err = await callExpectingMCPUserError({
         page: 1,
-                cost_report_token: undefined,
+        cost_report_token: undefined,
         order: undefined,
         filter: "(costs.provider = 'aws')",
         start_date: undefined,
@@ -335,6 +394,20 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       });
       expect(err.exception).toEqual({
         errors: [{ message: "Invalid VQL query" }],
+      });
+    },
+  },
+  {
+    name: "requires filter or cost_report_token",
+    apiCallHandler: requestsInOrder([]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError({
+        ...validInputArguments,
+        cost_report_token: undefined,
+        filter: undefined,
+      });
+      expect(err.exception).toEqual({
+        errors: [{ message: "filter or cost_report_token must be provided" }],
       });
     },
   },
