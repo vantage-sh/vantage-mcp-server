@@ -13,13 +13,18 @@ import {
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
+const undefineds = {
+  account_id: undefined,
+  provider: undefined,
+  account_name: undefined,
+};
+
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "just workspace_token",
     data: {
       workspace_token: "wt_123",
-      account_id: undefined,
-      provider: undefined,
+      ...undefineds,
     },
   },
   {
@@ -28,6 +33,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       workspace_token: "wt_123",
       account_id: "acct_123",
       provider: undefined,
+      account_name: undefined,
     },
   },
   {
@@ -36,6 +42,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       workspace_token: "wt_123",
       account_id: undefined,
       provider: "aws",
+      account_name: undefined,
     },
   },
   {
@@ -44,6 +51,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       workspace_token: "wt_123",
       account_id: "acct_123",
       provider: "aws",
+      account_name: undefined,
     },
   },
 ];
@@ -77,6 +85,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           workspace_token: "wt_123",
           account_id: undefined,
           provider: undefined,
+          account_name: undefined,
         },
         method: "GET",
         result: {
@@ -90,6 +99,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         workspace_token: "wt_123",
         account_id: undefined,
         provider: undefined,
+        account_name: undefined,
       });
       expect(res).toEqual(successData);
     },
@@ -116,6 +126,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         workspace_token: "wt_123",
         account_id: "acct_123",
         provider: undefined,
+        account_name: undefined,
       });
       expect(res).toEqual(successData);
     },
@@ -129,6 +140,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           workspace_token: "wt_123",
           account_id: undefined,
           provider: "aws",
+          account_name: undefined,
         },
         method: "GET",
         result: {
@@ -142,6 +154,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         workspace_token: "wt_123",
         account_id: undefined,
         provider: "aws",
+        account_name: undefined,
       });
       expect(res).toEqual(successData);
     },
@@ -158,6 +171,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           workspace_token: "wt_123",
           account_id: undefined,
           provider: undefined,
+          account_name: undefined,
         },
         method: "GET",
         result: {
@@ -171,6 +185,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         workspace_token: "wt_123",
         account_id: undefined,
         provider: undefined,
+        account_name: undefined,
       });
       expect(err.exception).toEqual({
         errors: [{ message: "Invalid token" }],

@@ -16,7 +16,7 @@ type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
   page: 1,
-  filter: "open",
+  status: "active",
   provider: "aws",
   workspace_token: "wt_123",
   provider_account_id: "123456789",
@@ -34,7 +34,7 @@ const validArguments: InferValidators<Validators> = {
 
 const minimalArgs: InferValidators<Validators> = {
   page: 1,
-  filter: undefined,
+  status: undefined,
   provider: undefined,
   workspace_token: undefined,
   provider_account_id: undefined,
@@ -60,17 +60,10 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     data: validArguments,
   },
   {
-    name: "filter resolved",
+    name: "status archived",
     data: {
       ...validArguments,
-      filter: "resolved",
-    },
-  },
-  {
-    name: "filter dismissed",
-    data: {
-      ...validArguments,
-      filter: "dismissed",
+      status: "archived",
     },
   },
   {
@@ -230,11 +223,22 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       {
         endpoint: "/v2/recommendations",
         params: {
-          ...validArguments,
+          page: 1,
+          status: "active",
+          provider: "aws",
+          workspace_token: "wt_123",
+          provider_account_id: "123456789",
+          type: "aws",
+          min_savings: 100,
+          tag_key: undefined,
+          tag_value: undefined,
+          regions: undefined,
+          provider_ids: undefined,
+          account_ids: undefined,
+          billing_account_ids: undefined,
+          start_date: undefined,
+          end_date: undefined,
           limit: DEFAULT_LIMIT,
-          provider: validArguments.provider as any,
-          type: validArguments.type as string | undefined,
-          provider_ids: validArguments.provider_ids as any,
         },
         method: "GET",
         result: {
@@ -324,7 +328,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: "/v2/recommendations",
         params: {
           page: 1,
-          filter: undefined,
+          status: undefined,
           provider: "aws",
           workspace_token: undefined,
           provider_account_id: undefined,
@@ -360,7 +364,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: "/v2/recommendations",
         params: {
           page: 1,
-          filter: undefined,
+          status: undefined,
           provider: undefined,
           workspace_token: undefined,
           provider_account_id: undefined,
@@ -395,7 +399,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: "/v2/recommendations",
         params: {
           page: 1,
-          filter: undefined,
+          status: undefined,
           provider: undefined,
           workspace_token: undefined,
           provider_account_id: undefined,
@@ -430,7 +434,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: "/v2/recommendations",
         params: {
           page: 1,
-          filter: undefined,
+          status: undefined,
           provider: undefined,
           workspace_token: undefined,
           provider_account_id: undefined,
@@ -465,7 +469,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: "/v2/recommendations",
         params: {
           page: 1,
-          filter: undefined,
+          status: undefined,
           provider: undefined,
           workspace_token: undefined,
           provider_account_id: undefined,

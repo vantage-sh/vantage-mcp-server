@@ -14,6 +14,10 @@ The 'token' of a Folder can be used to generate a link in the Vantage Web UI: ht
 
 const args = {
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
+  type: z
+    .enum(["CostFolder", "ProviderResourceFolder"])
+    .optional()
+    .describe("Filter folders by type."),
 };
 
 export default registerTool({

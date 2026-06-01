@@ -24,6 +24,8 @@ const undefineds = {
   tag_value: undefined,
   start_date: undefined,
   end_date: undefined,
+  types: undefined,
+  min_savings: undefined,
 };
 
 const minimalValidInputArguments: InferValidators<Validators> = {
@@ -32,6 +34,7 @@ const minimalValidInputArguments: InferValidators<Validators> = {
 };
 
 const validInputArguments: InferValidators<Validators> = {
+  ...undefineds,
   recommendation_view_token: "rec_vw_123",
   title: "Production Recommendations",
   provider_ids: ["aws"],

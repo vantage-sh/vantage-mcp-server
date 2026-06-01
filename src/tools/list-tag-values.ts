@@ -1,5 +1,6 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod";
+import { tagListQueryFields } from "./utils/tagListQuerySchema";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
@@ -12,6 +13,7 @@ Tags can have many values. Use this tool to find the values and service provider
 const args = {
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
   key: z.string().min(1).describe("Tag key to list values for"),
+  ...tagListQueryFields,
 };
 
 export default registerTool({

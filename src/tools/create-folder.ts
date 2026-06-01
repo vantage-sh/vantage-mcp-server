@@ -29,6 +29,11 @@ export default registerTool({
       .describe(
         "The token of the Workspace to add the Folder to. Ignored if 'parent_folder_token' is set. Required if the API token is associated with multiple Workspaces."
       ),
+    type: z
+      .enum(["CostFolder", "ProviderResourceFolder"])
+      .optional()
+      .default("CostFolder")
+      .describe("Folder type. CostFolder for cost reports; ProviderResourceFolder for resource reports."),
   },
   async execute(args, ctx) {
     const res = await ctx.callVantageApi("/v2/folders", args, "POST");

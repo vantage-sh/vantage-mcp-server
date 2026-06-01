@@ -1,4 +1,5 @@
 import z from "zod";
+import { tagListQueryFields } from "./utils/tagListQuerySchema";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
@@ -12,6 +13,7 @@ Tags can be edited in the Vantage Web UI, or have further details displayed ther
 
 const args = {
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
+  ...tagListQueryFields,
 };
 
 export default registerTool({
