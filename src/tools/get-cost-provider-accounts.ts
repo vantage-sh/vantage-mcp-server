@@ -1,4 +1,5 @@
 import z from "zod";
+import { costProviderSchema } from "./utils/costProviderSchema";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 
@@ -15,7 +16,8 @@ export default registerTool({
   args: {
     workspace_token: z.string().describe("Workspace token to list cost provider accounts for"),
     account_id: z.string().optional().describe("Filter by a specific account ID"),
-    provider: z.string().optional().describe("Provider to filter provider accounts to"),
+    provider: costProviderSchema.optional().describe("Filter by provider type."),
+    account_name: z.string().optional().describe("Filter by account display name (exact match)."),
   },
   annotations: {
     destructive: false,
@@ -23,15 +25,7 @@ export default registerTool({
     readOnly: true,
   },
   async execute(args, ctx) {
-    const response = await ctx.callVantageApi(
-      "/v2/cost_provider_accounts",
-      {
-        ...args,
-        // @ts-expect-error: This is a workaround so we don't have to keep patching the type here
-        provider: args.provider,
-      },
-      "GET"
-    );
+    const response = await ctx.callVantageApi("/v2/cost_provider_accounts", args, "GET");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }

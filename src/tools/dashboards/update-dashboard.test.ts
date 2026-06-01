@@ -24,6 +24,7 @@ const undefineds = {
   start_date: undefined,
   end_date: undefined,
   date_interval: undefined,
+  workspace_token: undefined,
 };
 
 const minimalValidInputArguments: InferValidators<Validators> = {

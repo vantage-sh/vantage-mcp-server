@@ -17,6 +17,8 @@ type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
   page: 1,
+  provider: undefined,
+  account_identifier: undefined,
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
@@ -24,6 +26,8 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     name: "default page",
     data: {
       page: undefined,
+      provider: undefined,
+      account_identifier: undefined,
     },
   },
   {

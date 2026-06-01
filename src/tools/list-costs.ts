@@ -18,7 +18,7 @@ records. Only use day/week if needed, otherwise DateBin=month is preferred, and 
 
 const args = {
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
-  cost_report_token: z.string().describe("The workspace token to scope the query to"),
+  cost_report_token: z.string().describe("The Cost Report token to list costs for"),
   start_date: dateValidator("Start date to filter costs by, format=YYYY-MM-DD").optional(),
   end_date: dateValidator("End date to filter costs by, format=YYYY-MM-DD").optional(),
   date_bin: z
@@ -65,6 +65,17 @@ const args = {
     .describe(
       "Group the results by specific field(s). Defaults to provider, service, account_id. Valid groupings: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, tag:<tag_value>. Let Groupings default unless explicitly asked for."
     ),
+  order: z.enum(["asc", "desc"]).optional().describe("Sort costs by date ascending or descending."),
+  workspace_token: z
+    .string()
+    .optional()
+    .describe(
+      "Workspace token. Ignored when cost_report_token is set; required for multi-workspace tokens otherwise."
+    ),
+  filter: z
+    .string()
+    .optional()
+    .describe("VQL filter. Use query-costs instead when querying without a cost_report_token."),
 };
 
 export default registerTool({
