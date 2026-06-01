@@ -20,6 +20,7 @@ const undefineds = {
   business_metric_tokens_with_metadata: undefined,
   chart_settings: undefined,
   chart_type: undefined,
+  date_bin: undefined,
   date_interval: undefined,
   end_date: undefined,
   start_date: undefined,
@@ -55,6 +56,7 @@ const validInputArguments = {
     unallocated: false,
     aggregate_by: "cost" as const,
     show_previous_period: true,
+    complete_period: false,
   },
   previous_period_start_date: "2023-01-01",
   previous_period_end_date: "2023-01-31",
@@ -62,6 +64,7 @@ const validInputArguments = {
   end_date: "2023-02-28",
   date_interval: "custom" as const,
   chart_type: "line" as const,
+  date_bin: "day" as const,
   chart_settings: {
     x_axis_dimension: ["date"],
     y_axis_dimension: "cost",
@@ -136,6 +139,23 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       chart_type: "invalid" as any,
     },
     expectedIssues: ['Invalid option: expected one of "area"|"line"|"bar"|"multi_bar"|"pie"'],
+  },
+  {
+    name: "valid date_bin",
+    data: {
+      ...undefineds,
+      title: "Test Report",
+      date_bin: "quarter",
+    },
+  },
+  {
+    name: "invalid date_bin",
+    data: {
+      ...undefineds,
+      title: "Test Report",
+      date_bin: "year" as any,
+    },
+    expectedIssues: ["Invalid enum value. Expected 'cumulative' | 'day' | 'week' | 'month' | 'quarter' | 'hour', received 'year'"],
   },
   {
     name: "aggregate by usage",
@@ -302,6 +322,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: "/v2/cost_reports",
         params: {
           title: "Minimal Report",
+          date_bin: "day",
           previous_period_end_date: "2025-01-31",
           end_date: "2025-02-01",
         },
@@ -316,6 +337,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       const res = await callExpectingSuccess({
         ...undefineds,
         title: "Minimal Report",
+        date_bin: "day",
         end_date: "2025-02-01",
         previous_period_end_date: "2025-01-31",
       });

@@ -8,6 +8,7 @@ import {
   chartSettings,
   chartTypes,
   costReportSettingsForCreate,
+  dateBins,
 } from "./schemas";
 
 const description = `
@@ -99,6 +100,10 @@ export default registerTool({
       .enum(chartTypes)
       .optional()
       .describe("The chart type to use in the CostReport. Defaults to 'line' if not provided."),
+    date_bin: z
+      .enum(dateBins)
+      .optional()
+      .describe("The date bin of the CostReport. Defaults to 'cumulative' if not provided."),
     chart_settings: chartSettings.optional().describe("Report chart settings."),
   },
   async execute(args, ctx) {
