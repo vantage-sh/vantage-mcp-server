@@ -49,10 +49,7 @@ export const costReportSettingsForCreate = z.object({
     .boolean()
     .default(true)
     .describe("Report will show previous period costs or usage comparison."),
-  complete_period: z
-    .boolean()
-    .default(false)
-    .describe("Report will restrict date ranges to completed periods only."),
+  complete_period: z.boolean().default(false).describe("Report will restrict date ranges to completed periods only."),
 });
 
 export const costReportSettingsForUpdate = z.object({

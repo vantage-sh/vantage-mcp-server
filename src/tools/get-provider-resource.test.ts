@@ -69,6 +69,7 @@ const successData: GetResourceResponse = {
   region: "us-east-1",
   created_at: "2023-01-15T10:30:00Z",
   metadata: null,
+  tags: {},
 };
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [

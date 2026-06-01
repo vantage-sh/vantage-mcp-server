@@ -46,6 +46,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 const successData: GetFolderResponse = {
   token: "fldr_123",
   title: "Updated Team Reports",
+  type: "cost_reports",
   parent_folder_token: "fldr_parent",
   saved_filter_tokens: ["svd_fltr_abc"],
   created_at: "2023-01-01T00:00:00Z",

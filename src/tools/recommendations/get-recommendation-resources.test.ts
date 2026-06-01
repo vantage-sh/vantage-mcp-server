@@ -1,4 +1,4 @@
-import { pathEncode } from "@vantage-sh/vantage-client";
+import { type GetRecommendationResourcesResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import {
@@ -35,19 +35,35 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   },
 ];
 
-const successData = {
+const successData: GetRecommendationResourcesResponse = {
   resources: [
     {
       token: "res_123",
-      resource_type: "ec2_instance",
+      uuid: "i-1234567890abcdef0",
+      type: "aws_instance",
+      label: "i-1234567890abcdef0",
+      metadata: { instance_type: "m5.large" },
+      account_id: "123456789012",
+      billing_account_id: "123456789012",
+      provider: "aws",
+      region: "us-east-1",
+      created_at: "2023-01-15T10:30:00Z",
+      tags: {},
       resource_id: "i-1234567890abcdef0",
-      configuration: { instance_type: "m5.large" },
     },
     {
       token: "res_456",
-      resource_type: "ebs_volume",
+      uuid: "vol-1234567890abcdef0",
+      type: "aws_volume",
+      label: "vol-1234567890abcdef0",
+      metadata: { volume_type: "gp2", size: 100 },
+      account_id: "123456789012",
+      billing_account_id: "123456789012",
+      provider: "aws",
+      region: "us-east-1",
+      created_at: "2023-01-15T10:30:00Z",
+      tags: {},
       resource_id: "vol-1234567890abcdef0",
-      configuration: { volume_type: "gp2", size: 100 },
     },
   ],
   links: {},

@@ -10,6 +10,7 @@ export const success = {
   workspace_tokens: ["wrkspc_232345678", "wrkspc_987654321", "wrkspc_123456789"],
   user_emails: ["hello@test.com"],
   user_tokens: ["usr_wfergthyjukiop", "usr_987654321asdfghj"],
+  default_dashboard_token: null,
 };
 
 testTool(

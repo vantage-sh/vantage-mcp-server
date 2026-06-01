@@ -86,6 +86,7 @@ const successData = {
   key: "cost_center",
   overridable: true,
   backfill_until: "2024-01-01",
+  collapsed_tag_keys: [],
   values: [],
 };
 

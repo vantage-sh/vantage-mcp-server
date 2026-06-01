@@ -36,6 +36,7 @@ const successData = {
     {
       token: "fldr_123",
       title: "Platform Team Reports",
+      type: "cost_reports",
       parent_folder_token: undefined,
       saved_filter_tokens: [],
       workspace_token: "wrkspc_123",
@@ -45,6 +46,7 @@ const successData = {
     {
       token: "fldr_456",
       title: "Sub Folder",
+      type: "cost_reports",
       parent_folder_token: "fldr_123",
       saved_filter_tokens: ["svd_fltr_abc"],
       workspace_token: "wrkspc_123",
