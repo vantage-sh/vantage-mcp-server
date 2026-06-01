@@ -34,9 +34,9 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 
 const successData: GetTagsResponse = {
   tags: [
-    { tag_key: "environment", hidden: false, providers: ["aws", "azure"] },
-    { tag_key: "project", hidden: false, providers: ["aws", "gcp"] },
-    { tag_key: "team", hidden: false, providers: ["aws"] },
+    { tag_key: "environment", hidden: false, preferred: false, providers: ["aws", "azure"] },
+    { tag_key: "project", hidden: false, preferred: false, providers: ["aws", "gcp"] },
+    { tag_key: "team", hidden: false, preferred: false, providers: ["aws"] },
   ],
   links: {},
 };

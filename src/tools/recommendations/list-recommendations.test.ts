@@ -201,6 +201,7 @@ const successData = {
       currency_code: "USD",
       currency_symbol: "$",
       workspace_token: "wt_123",
+      documentation_url: null,
     },
     {
       token: "rec_456",
@@ -216,6 +217,7 @@ const successData = {
       currency_code: "USD",
       currency_symbol: "$",
       workspace_token: "wt_123",
+      documentation_url: null,
     },
   ],
   links: {},

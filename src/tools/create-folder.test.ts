@@ -53,6 +53,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 const successData = {
   token: "fldr_789",
   title: "Platform Team Reports",
+  type: "cost_reports",
   parent_folder_token: "fldr_123",
   saved_filter_tokens: ["svd_fltr_abc", "svd_fltr_def"],
   workspace_token: "wrkspc_123",

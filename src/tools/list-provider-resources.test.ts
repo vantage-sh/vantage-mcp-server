@@ -82,6 +82,7 @@ const successData: GetReportResourcesResponse = {
       provider: "aws",
       region: "us-east-1",
       created_at: "2023-01-15T10:30:00Z",
+      tags: {},
     },
     {
       token: "prvdr_rsrc_456",
@@ -94,6 +95,7 @@ const successData: GetReportResourcesResponse = {
       provider: "aws",
       region: "us-east-1",
       created_at: "2023-01-15T10:30:00Z",
+      tags: {},
     },
   ],
   links: {},

@@ -6,6 +6,7 @@ import { requestsInOrder, testTool } from "./utils/testing";
 const success: GetFolderResponse = {
   token: "fldr_123",
   title: "Platform Team Reports",
+  type: "cost_reports",
   saved_filter_tokens: [],
   created_at: "2023-01-01T00:00:00Z",
   updated_at: "2023-01-01T00:00:00Z",

@@ -41,6 +41,7 @@ const successData: GetRecommendationResponse = {
   resources_affected_count: 10,
   workspace_token: "wt_123",
   type: "suggestion",
+  documentation_url: null,
 };
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [

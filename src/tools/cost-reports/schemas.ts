@@ -17,7 +17,7 @@ export const chartSettings = z.object({
     ),
 });
 
-export const dateBins = ["cumulative", "day", "week", "month", "quarter"] as const;
+export const dateBins = ["cumulative", "day", "week", "month", "quarter", "hour"] as const;
 
 const businessMetricUnitScale = z.enum(["per_unit", "per_hundred", "per_thousand", "per_million", "per_billion"]);
 
@@ -49,6 +49,7 @@ export const costReportSettingsForCreate = z.object({
     .boolean()
     .default(true)
     .describe("Report will show previous period costs or usage comparison."),
+  complete_period: z.boolean().default(false).describe("Report will restrict date ranges to completed periods only."),
 });
 
 export const costReportSettingsForUpdate = z.object({

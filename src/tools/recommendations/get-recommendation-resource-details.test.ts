@@ -1,4 +1,4 @@
-import { pathEncode } from "@vantage-sh/vantage-client";
+import { type GetRecommendationResourceResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import {
   type ExecutionTestTableItem,
@@ -42,10 +42,19 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   },
 ];
 
-const successData = {
-  resource_id: "i-1234567890abcdef0",
-  account_id: "123456789012",
+const successData: GetRecommendationResourceResponse = {
   token: "res_456",
+  uuid: "i-1234567890abcdef0",
+  type: "aws_instance",
+  label: "i-1234567890abcdef0",
+  metadata: null,
+  account_id: "123456789012",
+  billing_account_id: "123456789012",
+  provider: "aws",
+  region: "us-east-1",
+  created_at: "2023-01-15T10:30:00Z",
+  tags: {},
+  resource_id: "i-1234567890abcdef0",
 };
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
