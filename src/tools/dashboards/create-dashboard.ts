@@ -1,8 +1,7 @@
 import z from "zod";
-import MCPUserError from "./structure/MCPUserError";
-import registerTool from "./structure/registerTool";
-import { dateIntervalOptions } from "./utils/dateIntervalOptions";
-import dateValidator from "./utils/dateValidator";
+import MCPUserError from "../structure/MCPUserError";
+import registerTool from "../structure/registerTool";
+import { dateBinSchema, dateIntervalSchema, endDateSchema, startDateSchema, widgetSchema } from "./schemas";
 
 const description = `
 Create a new Dashboard in Vantage.
@@ -26,16 +25,6 @@ The token returned in the response can be used to link to the Dashboard in the V
 https://console.vantage.sh/go/<token>
 `.trim();
 
-const widgetSchema = z.object({
-  widgetable_token: z.string().describe("The token of the represented Resource."),
-  title: z.string().describe("The title of the Widget (defaults to the title of the Resource).").optional(),
-  settings: z
-    .object({
-      display_type: z.enum(["table", "chart"]).describe("The display type of the Widget."),
-    })
-    .optional(),
-});
-
 export default registerTool({
   name: "create-dashboard",
   title: "Create Dashboard",
@@ -48,20 +37,10 @@ export default registerTool({
       .array(z.string())
       .describe("The tokens of the Saved Filters used in the Dashboard")
       .optional(),
-    date_bin: z
-      .enum(["day", "week", "month"])
-      .optional()
-      .describe("Date binning for returned costs, allowed values: day, week, month"),
-    start_date: dateValidator(
-      "The start date of the dashboard. ISO 8601 Formatted. Incompatible with 'date_interval' parameter."
-    ).optional(),
-    end_date: dateValidator(
-      "The end date of the dashboard. ISO 8601 Formatted. Incompatible with 'date_interval' parameter, required with 'start_date'."
-    ).optional(),
-    date_interval: z
-      .enum(dateIntervalOptions)
-      .optional()
-      .describe("The date interval of the dashboard. Incompatible with 'start_date' and 'end_date' parameters."),
+    date_bin: dateBinSchema,
+    start_date: startDateSchema,
+    end_date: endDateSchema,
+    date_interval: dateIntervalSchema,
   },
   annotations: {
     destructive: true,

@@ -1,7 +1,7 @@
 import z from "zod";
-import MCPUserError from "./structure/MCPUserError";
-import registerTool from "./structure/registerTool";
-import paginationData from "./utils/paginationData";
+import MCPUserError from "../structure/MCPUserError";
+import registerTool from "../structure/registerTool";
+import paginationData from "../utils/paginationData";
 
 const description = `
 List all dashboards available in the Vantage account. Dashboards provide visualizations of cost data.
