@@ -155,7 +155,9 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       title: "Test Report",
       date_bin: "year" as any,
     },
-    expectedIssues: ["Invalid enum value. Expected 'cumulative' | 'day' | 'week' | 'month' | 'quarter' | 'hour', received 'year'"],
+    expectedIssues: [
+      "Invalid enum value. Expected 'cumulative' | 'day' | 'week' | 'month' | 'quarter' | 'hour', received 'year'",
+    ],
   },
   {
     name: "aggregate by usage",
