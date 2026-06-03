@@ -4,7 +4,7 @@ import { requestsInOrder, testTool } from "../utils/testing";
 import tool from "./list-resource-report-columns";
 
 const success: GetResourceReportColumnsResponse = {
-  "columns": [
+  columns: [
     "provider",
     "label",
     "accruedCosts",
@@ -53,12 +53,12 @@ const success: GetResourceReportColumnsResponse = {
     "spotPrice",
     "datadogAgentInstalled",
     "networkInterfaces",
-    "tags"
-  ]
-}
+    "tags",
+  ],
+};
 
-const RESOURCE_TYPE: string = "aws_instance"
-const INVALID_RESOURCE_TYPE: string = "invalid"
+const RESOURCE_TYPE: string = "aws_instance";
+const INVALID_RESOURCE_TYPE: string = "invalid";
 
 testTool(
   tool,
@@ -76,7 +76,7 @@ testTool(
       apiCallHandler: requestsInOrder([
         {
           endpoint: `/v2/resource_reports/columns`,
-          params: {resource_type: RESOURCE_TYPE},
+          params: { resource_type: RESOURCE_TYPE },
           method: "GET",
           result: {
             ok: true,
@@ -96,7 +96,7 @@ testTool(
       apiCallHandler: requestsInOrder([
         {
           endpoint: `/v2/resource_reports/columns`,
-          params: {resource_type: INVALID_RESOURCE_TYPE},
+          params: { resource_type: INVALID_RESOURCE_TYPE },
           method: "GET",
           result: {
             ok: false,
@@ -106,7 +106,7 @@ testTool(
       ]),
       handler: async ({ callExpectingMCPUserError }) => {
         const err = await callExpectingMCPUserError({
-            resource_type: INVALID_RESOURCE_TYPE
+          resource_type: INVALID_RESOURCE_TYPE,
         });
         expect(err.exception).toEqual({
           errors: [{ message: "resource_type is missing" }],

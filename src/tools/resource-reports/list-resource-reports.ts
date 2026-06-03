@@ -15,7 +15,11 @@ If a user wants to see a report, you can link them like this: https://console.va
 
 const args = {
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
-  limit: z.number().optional().default(DEFAULT_LIMIT).describe(`The maximum number of returned resource reports this call, defaults to ${DEFAULT_LIMIT}`),
+  limit: z
+    .number()
+    .optional()
+    .default(DEFAULT_LIMIT)
+    .describe(`The maximum number of returned resource reports this call, defaults to ${DEFAULT_LIMIT}`),
 };
 
 export default registerTool({

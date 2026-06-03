@@ -7,23 +7,14 @@ const RESOURCE_REPORT_TOKEN: string = "prvdr_rsrc_rprt_5270d2a0708fd74f";
 const BAD_RESOURCE_REPORT_TOKEN: string = "prvdr_rsrc_rprt_nonexistent";
 
 const success: GetResourceReportResponse = {
-  "token": RESOURCE_REPORT_TOKEN,
-  "title": "Resource Report 84541657",
-  "filter": "(resources.provider = 'aws')",
-  "created_at": "2025-08-14T19:13:30Z",
-  "workspace_token": "wrkspc_2ed2f1a59293a996",
-  "user_token": null,
-  "created_by_token": null,
-  "columns": [
-    "provider",
-    "label",
-    "accrued_costs",
-    "recommendation_savings",
-    "resource",
-    "type",
-    "region",
-    "account"
-  ]
+  token: RESOURCE_REPORT_TOKEN,
+  title: "Resource Report 84541657",
+  filter: "(resources.provider = 'aws')",
+  created_at: "2025-08-14T19:13:30Z",
+  workspace_token: "wrkspc_2ed2f1a59293a996",
+  user_token: null,
+  created_by_token: null,
+  columns: ["provider", "label", "accrued_costs", "recommendation_savings", "resource", "type", "region", "account"],
 };
 
 testTool(

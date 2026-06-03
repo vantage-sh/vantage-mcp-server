@@ -22,7 +22,11 @@ export default registerTool({
   },
   args,
   async execute(args, ctx) {
-    const response = await ctx.callVantageApi(`/v2/resource_reports/${pathEncode(args.resource_report_token)}`, {}, "GET");
+    const response = await ctx.callVantageApi(
+      `/v2/resource_reports/${pathEncode(args.resource_report_token)}`,
+      {},
+      "GET"
+    );
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }

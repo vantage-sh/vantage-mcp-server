@@ -34,17 +34,17 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 ];
 
 const successData = {
-  "links": {},
-  "resource_reports": [
+  links: {},
+  resource_reports: [
     {
-      "token": "prvdr_rsrc_rprt_955ad21703b22099",
-      "title": "Resource Report 1274a351",
-      "filter": "(resources.provider = 'aws')",
-      "created_at": "2025-08-14T19:13:30Z",
-      "workspace_token": "wrkspc_490ea5f144c3896c",
-      "user_token": null,
-      "created_by_token": null,
-      "columns": [
+      token: "prvdr_rsrc_rprt_955ad21703b22099",
+      title: "Resource Report 1274a351",
+      filter: "(resources.provider = 'aws')",
+      created_at: "2025-08-14T19:13:30Z",
+      workspace_token: "wrkspc_490ea5f144c3896c",
+      user_token: null,
+      created_by_token: null,
+      columns: [
         "provider",
         "label",
         "accrued_costs",
@@ -52,10 +52,10 @@ const successData = {
         "resource",
         "type",
         "region",
-        "account"
-      ]
-    }
-  ]
+        "account",
+      ],
+    },
+  ],
 };
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
