@@ -139,7 +139,7 @@ function hasVantageHeaders(request: Request): boolean {
   return false;
 }
 
-function createMcpServer(request: Request, sse: boolean): HeaderAuthProvider | OAuthProvider {
+function createMcpServer(request: Request, sse: boolean): HeaderAuthProvider | OAuthProvider<AppEnv> {
   if (hasVantageHeaders(request) || hasValidAuthHeader(request)) {
     // Vantage headers or token is passed through headers, use HeaderAuthProvider
     // Can be used when programmatically accessing the server
@@ -151,13 +151,14 @@ function createMcpServer(request: Request, sse: boolean): HeaderAuthProvider | O
     });
   } else {
     // OAuth mode - use the full OAuth provider setup
-    return new OAuthProvider({
+    return new OAuthProvider<AppEnv>({
       apiHandler: sse ? VantageMCP.mount("/sse") : VantageMCP.serve("/mcp"),
       apiRoute: sse ? "/sse" : "/mcp",
       authorizeEndpoint: "/authorize",
       clientRegistrationEndpoint: "/register",
-      // @ts-expect-error
       defaultHandler: app,
+      refreshTokenTTL: undefined,
+      resourceMatchOriginOnly: true,
       tokenEndpoint: "/token",
       tokenExchangeCallback,
     });
