@@ -3,6 +3,7 @@
 import "./billing-rules";
 import "./budgets";
 import "./business-metrics";
+import "./canvases";
 import "./cost-reports";
 import "./create-cost-alert";
 import "./create-folder";
