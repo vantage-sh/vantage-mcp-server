@@ -12,6 +12,7 @@ import "./current-user";
 import "./dashboards";
 import "./delete-folder";
 import "./delete-report-notification";
+import "./exchange-rates";
 import "./financial-commitment-reports";
 import "./get-anomaly";
 import "./get-cost-alert";

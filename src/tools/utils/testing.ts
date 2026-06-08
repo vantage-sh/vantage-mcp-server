@@ -186,7 +186,7 @@ export function testTool<Input extends z.ZodRawShape, Output extends z.ZodRawSha
     } as any;
     const generateContext = vi.fn();
 
-    setupRegisteredTools(mcpServer, generateContext);
+    setupRegisteredTools(mcpServer, generateContext, { skipCapabilityChecks: true });
 
     const toolHandler = (mcpServer.registerTool as any).mock.calls.find((call: any) => call[0] === tool.name);
     expect(toolHandler).toBeDefined();

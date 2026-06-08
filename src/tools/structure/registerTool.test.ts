@@ -33,7 +33,7 @@ test("tool registration works properly", () => {
 
   const generateContext = vi.fn();
 
-  setupRegisteredTools(mockServer, generateContext);
+  setupRegisteredTools(mockServer, generateContext, { skipCapabilityChecks: true });
   expect(mockServer.registerTool).toHaveBeenCalledWith(
     tool.name,
     expect.objectContaining({
@@ -70,7 +70,7 @@ describe("mcp server handler", () => {
       registerTool: vi.fn(),
     } as any;
     const generateContext = vi.fn(() => mockContext);
-    setupRegisteredTools(mockServer, generateContext);
+    setupRegisteredTools(mockServer, generateContext, { skipCapabilityChecks: true });
 
     const toolHandler = (mockServer.registerTool as any).mock.calls.find((call: any) => call[0] === "error-tool")[2];
 
@@ -105,7 +105,7 @@ describe("mcp server handler", () => {
       registerTool: vi.fn(),
     } as any;
     const generateContext = vi.fn(() => mockContext);
-    setupRegisteredTools(mockServer, generateContext);
+    setupRegisteredTools(mockServer, generateContext, { skipCapabilityChecks: true });
 
     const toolHandler = (mockServer.registerTool as any).mock.calls.find((call: any) => call[0] === "throw-tool")[2];
 
@@ -135,7 +135,7 @@ describe("mcp server handler", () => {
       registerTool: vi.fn(),
     } as any;
     const generateContext = vi.fn(() => context);
-    setupRegisteredTools(mockServer, generateContext);
+    setupRegisteredTools(mockServer, generateContext, { skipCapabilityChecks: true });
 
     const toolRaw = (mockServer.registerTool as any).mock.calls.find((call: any) => call[0] === "arg-tool");
     const annotations = toolRaw[1].annotations;
@@ -208,10 +208,48 @@ test("tool output schema is typed and loaded properly", () => {
     registerTool: vi.fn(),
   } as any;
   const generateContext = vi.fn();
-  setupRegisteredTools(mockServer, generateContext);
+  setupRegisteredTools(mockServer, generateContext, { skipCapabilityChecks: true });
 
   const toolRaw = (mockServer.registerTool as any).mock.calls.find((call: any) => call[0] === "valid-output-tool");
   const outputSchemaFromTool = toolRaw[1].outputSchema;
   expect(outputSchemaFromTool).toBeDefined();
   expect(outputSchemaFromTool).toBe(outputSchema);
+});
+
+it("skips registration when requires.msp and account is not MSP", () => {
+  registerTool({
+    name: "gated-tool",
+    title: "Gated Tool",
+    description: "Gated",
+    annotations: { readOnly: true, openWorld: false, destructive: false },
+    args: {},
+    requires: { msp: true },
+    async execute() {
+      return {};
+    },
+  });
+
+  const mockServer = { registerTool: vi.fn() } as any;
+  setupRegisteredTools(mockServer, vi.fn(), { accountCapabilities: { msp: false } });
+
+  expect(mockServer.registerTool).not.toHaveBeenCalledWith("gated-tool", expect.anything(), expect.anything());
+});
+
+it("registers when requires.msp and account is MSP", () => {
+  registerTool({
+    name: "enabled-gated-tool",
+    title: "Enabled Gated Tool",
+    description: "Gated",
+    annotations: { readOnly: true, openWorld: false, destructive: false },
+    args: {},
+    requires: { msp: true },
+    async execute() {
+      return {};
+    },
+  });
+
+  const mockServer = { registerTool: vi.fn() } as any;
+  setupRegisteredTools(mockServer, vi.fn(), { accountCapabilities: { msp: true } });
+
+  expect(mockServer.registerTool).toHaveBeenCalledWith("enabled-gated-tool", expect.anything(), expect.anything());
 });
