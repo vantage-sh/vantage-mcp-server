@@ -34,16 +34,16 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 ];
 
 const successData = {
-  "exchange_rates": [
+  exchange_rates: [
     {
-      "base_currency_code": "USD",
-      "currency_code": "PHP",
-      "rate": "300.011",
-      "effective_date": "2025-09-01",
-      "updated_at": "2025-09-10 00:05:41 UTC"
-    }
+      base_currency_code: "USD",
+      currency_code: "PHP",
+      rate: "300.011",
+      effective_date: "2025-09-01",
+      updated_at: "2025-09-10 00:05:41 UTC",
+    },
   ],
-  "meta": {}
+  meta: {},
 };
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [

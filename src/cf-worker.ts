@@ -17,8 +17,8 @@ import homepage from "./homepage";
 import { logger } from "./logger";
 import setupRegisteredResources from "./resources";
 import { callApi, serverMeta } from "./shared";
-import { resolveAccountCapabilities } from "./tools/utils/accountCapabilities";
 import { setupRegisteredTools, type ToolCallContext } from "./tools/structure/registerTool";
+import { resolveAccountCapabilities } from "./tools/utils/accountCapabilities";
 import { tracer } from "./tracing";
 
 // Side effect import to register all tools
