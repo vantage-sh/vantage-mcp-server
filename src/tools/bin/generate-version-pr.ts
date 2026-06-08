@@ -50,11 +50,15 @@ if (!versionTagExists) {
 
 // Make a MCP server for the current branch
 const mainServer = new McpServer(serverMeta);
-setupRegisteredTools(mainServer, () => ({
-  callVantageApi() {
-    return Promise.reject(new Error("Not implemented"));
-  },
-}));
+setupRegisteredTools(
+  mainServer,
+  () => ({
+    callVantageApi() {
+      return Promise.reject(new Error("Not implemented"));
+    },
+  }),
+  { skipCapabilityChecks: true }
+);
 
 // Change to this version branch
 runCommandAndPipeToUser("git", ["checkout", `v${serverMeta.version}`], false);
@@ -71,7 +75,7 @@ setupRegisteredTools(server, () => ({
     callVantageApi() {
         return Promise.reject(new Error("Not implemented"));
     }
-}));
+}), { skipCapabilityChecks: true });
 
 export default server;
 `;
