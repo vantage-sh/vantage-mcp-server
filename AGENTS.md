@@ -36,6 +36,29 @@ Useful examples to copy:
 - Another nested family with shared request typing: `src/tools/recommendation-views/`
 - Output schema: `src/tools/current-user/get-myself.ts`
 - Delete tool and 204 behavior: `src/tools/delete-folder.ts`
+- Account-gated tool (`requires`): `src/tools/exchange-rates/list-exchange-rates.ts`
+
+## Account capability gating
+
+Some tools are only relevant for certain Vantage account types (today: MSP/partner accounts). Gating is **registration-time only** — it omits tools from `tools/list` so clients do not advertise operations the API will reject. The Vantage API remains the authorization boundary; gating is UX, not security.
+
+**Session flow** (`src/cf-worker.ts`, `src/local.ts`):
+
+1. After auth, `resolveAccountCapabilities` in `src/tools/utils/accountCapabilities.ts` probes the account once per MCP session.
+2. `setupRegisteredTools(server, generateContext, { accountCapabilities })` registers only tools whose `requires` match.
+3. `ToolCallContext` does **not** carry capabilities — execute handlers must not branch on MSP status.
+
+**Declaring a gated tool** — add `requires` on `registerTool`:
+
+```ts
+requires: { msp: true },
+```
+
+Only `{ msp?: true }` exists today. Omit `requires` for tools available to every account.
+
+**MSP probe (interim).** `/v2/me` does not expose `is_msp_account` yet, so the probe calls `GET /v2/exchange_rates?page=1&limit=1`. Success → `{ msp: true }`; the known denial message *"This feature is not available for this account."* → `{ msp: false }`; any other failure throws `MCPUserError` (do not treat transient errors as non-MSP). Long-term fix: expose `is_msp_account` on `/v2/me` and switch the probe.
+
+**Tests and tooling** pass `{ skipCapabilityChecks: true }` to `setupRegisteredTools` so every tool registers without a live account probe — see `src/tools/utils/testing.ts`, `src/tools/structure/registerTool.test.ts`, `src/tools/bin/generate-version-pr.ts`. Capability gating itself is covered in `src/tools/utils/accountCapabilities.test.ts` and the `requires.msp` cases in `registerTool.test.ts`.
 
 ## Invariants
 
@@ -47,6 +70,9 @@ These are easy to violate by copying a neighbor. The skills show the full patter
 - **Delete tools return `{ token: args.<resource>_token }`.** Confirms what was deleted without leaking anything. See `delete-folder.ts`.
 - **`MCPUserError` constructor takes a plain object.** `new MCPUserError({ errors: response.errors })` for upstream failures; `new MCPUserError({ errors: [{ message: "..." }] })` for cross-field validation. Do not pass an `Error`.
 - **Vantage client types are the source of truth** for request/response shape (`RequestBodyForPathAndMethod` / `ResponseBodyForPathAndMethod` from `@vantage-sh/vantage-client`). When the zod-inferred type does not line up, cast at the `callVantageApi` site — see `create-recommendation-view.ts`, `create-cost-report.ts`, `get-cost-provider-accounts.ts`.
+- **MSP-only tools need `requires: { msp: true }`.** Do not rely on the tool description alone — without `requires`, the tool appears in `tools/list` for every account and fails at the API. See `list-exchange-rates.ts`.
+- **Do not read MSP status in `execute`.** Capabilities are resolved at connect and used only in `setupRegisteredTools`; `ToolCallContext` has no `accountCapabilities` field.
+- **`setupRegisteredTools` in production must pass `accountCapabilities`.** Without it, `requires.msp` tools are skipped for everyone. Tests use `skipCapabilityChecks: true` instead.
 
 ## Known drift — do not copy it
 
