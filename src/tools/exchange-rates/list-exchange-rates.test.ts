@@ -65,7 +65,6 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     ]),
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess(validArguments);
-      console.log(res);
       expect(res).toEqual({
         exchange_rates: successData.exchange_rates,
         pagination: {
