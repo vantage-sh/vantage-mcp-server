@@ -40,6 +40,7 @@ import "./list-unit-costs";
 import "./query-costs";
 import "./recommendation-views";
 import "./recommendations";
+import "./resource-reports";
 import "./submit-user-feedback";
 import "./update-anomaly";
 import "./update-folder";
