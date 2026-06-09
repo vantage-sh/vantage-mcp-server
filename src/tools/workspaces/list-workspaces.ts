@@ -1,4 +1,5 @@
 import z from "zod";
+import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import paginationData from "../utils/paginationData";
@@ -10,8 +11,8 @@ Use get-myself to see the user's default workspace. Use get-workspace to retriev
 `.trim();
 
 const args = {
-  page: z.number().optional().describe("The page number to return"),
-  limit: z.number().optional().describe("The number of results to return per page"),
+  page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
+  limit: z.number().optional().describe(`The number of results to return per page, defaults to ${DEFAULT_LIMIT}`),
 };
 
 export default registerTool({
@@ -25,7 +26,8 @@ export default registerTool({
   },
   args,
   async execute(args, ctx) {
-    const response = await ctx.callVantageApi("/v2/workspaces", args, "GET");
+    const requestParams = { ...args, limit: args.limit ?? DEFAULT_LIMIT };
+    const response = await ctx.callVantageApi("/v2/workspaces", requestParams, "GET");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }
