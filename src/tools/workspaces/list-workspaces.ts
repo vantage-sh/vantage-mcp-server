@@ -12,7 +12,7 @@ Use get-myself to see the user's default workspace. Use get-workspace to retriev
 
 const args = {
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
-  limit: z.number().optional().describe(`The number of results to return per page, defaults to ${DEFAULT_LIMIT}`),
+  limit: z.number().optional().default(DEFAULT_LIMIT).describe(`The number of results to return per page, defaults to ${DEFAULT_LIMIT}`),
 };
 
 export default registerTool({
