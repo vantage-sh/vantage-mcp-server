@@ -12,7 +12,11 @@ Use get-myself to see the user's default workspace. Use get-workspace to retriev
 
 const args = {
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
-  limit: z.number().optional().default(DEFAULT_LIMIT).describe(`The number of results to return per page, defaults to ${DEFAULT_LIMIT}`),
+  limit: z
+    .number()
+    .optional()
+    .default(DEFAULT_LIMIT)
+    .describe(`The number of results to return per page, defaults to ${DEFAULT_LIMIT}`),
 };
 
 export default registerTool({
@@ -26,8 +30,7 @@ export default registerTool({
   },
   args,
   async execute(args, ctx) {
-    const requestParams = { ...args, limit: args.limit ?? DEFAULT_LIMIT };
-    const response = await ctx.callVantageApi("/v2/workspaces", requestParams, "GET");
+    const response = await ctx.callVantageApi("/v2/workspaces", args, "GET");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }
