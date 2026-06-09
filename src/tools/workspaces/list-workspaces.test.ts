@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+import { DEFAULT_LIMIT } from "../structure/constants";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
@@ -13,21 +14,17 @@ import tool from "./list-workspaces";
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
-const undefineds = {
-  page: undefined,
-  limit: undefined,
-};
+const noArguments = {} as InferValidators<Validators>;
 
 const validArguments: InferValidators<Validators> = {
-  ...undefineds,
   page: 1,
-  limit: 64,
+  limit: DEFAULT_LIMIT,
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "no arguments",
-    data: undefineds,
+    data: noArguments,
   },
   {
     name: "page and limit",
@@ -65,7 +62,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: "/v2/workspaces",
         params: {
           page: 1,
-          limit: 64,
+          limit: DEFAULT_LIMIT,
         },
         method: "GET",
         result: {
@@ -75,7 +72,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       },
     ]),
     handler: async ({ callExpectingSuccess }) => {
-      const res = await callExpectingSuccess(validArguments);
+      const res = await callExpectingSuccess(noArguments);
       expect(res).toEqual({
         workspaces: successData.workspaces,
         pagination: {
@@ -92,7 +89,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: "/v2/workspaces",
         params: {
           page: 1,
-          limit: 64,
+          limit: DEFAULT_LIMIT,
         },
         method: "GET",
         result: {
@@ -102,7 +99,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       },
     ]),
     handler: async ({ callExpectingMCPUserError }) => {
-      const err = await callExpectingMCPUserError(validArguments);
+      const err = await callExpectingMCPUserError(noArguments);
       expect(err.exception).toEqual({
         errors: [{ message: "Access denied" }],
       });
