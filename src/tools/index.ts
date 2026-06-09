@@ -44,3 +44,4 @@ import "./submit-user-feedback";
 import "./update-anomaly";
 import "./update-folder";
 import "./update-report-notification";
+import "./workspaces";
