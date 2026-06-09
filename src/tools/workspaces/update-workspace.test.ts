@@ -1,4 +1,4 @@
-import { type UpdateWorkspaceResponse, pathEncode } from "@vantage-sh/vantage-client";
+import { pathEncode, type UpdateWorkspaceResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import {
   type ExecutionTestTableItem,
