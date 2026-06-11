@@ -1,6 +1,7 @@
 import type { GetCostProviderAccountsResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "./get-cost-provider-accounts";
+import { DEFAULT_LIMIT } from "./structure/constants";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
@@ -20,6 +21,8 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       workspace_token: "wt_123",
       account_id: undefined,
       provider: undefined,
+      page: undefined,
+      limit: undefined,
     },
   },
   {
@@ -28,6 +31,8 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       workspace_token: "wt_123",
       account_id: "acct_123",
       provider: undefined,
+      page: undefined,
+      limit: undefined,
     },
   },
   {
@@ -36,6 +41,8 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       workspace_token: "wt_123",
       account_id: undefined,
       provider: "aws",
+      page: undefined,
+      limit: undefined,
     },
   },
   {
@@ -44,6 +51,8 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       workspace_token: "wt_123",
       account_id: "acct_123",
       provider: "aws",
+      page: 2,
+      limit: 50,
     },
   },
 ];
@@ -65,9 +74,19 @@ const successData: GetCostProviderAccountsResponse = {
   ],
 };
 
-const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
-  // Success cases
+const successDataWithNextPage: GetCostProviderAccountsResponse = {
+  ...successData,
+  links: {
+    next: "https://api.vantage.sh/v2/cost_provider_accounts?page=3",
+  },
+};
 
+// The API type for /v2/cost_provider_accounts doesn't include page/limit yet,
+// but they are passed through via ...args at runtime. We cast params to satisfy
+// the test framework's strict typing while matching actual runtime behavior.
+const defaultPaginationParams = { page: 1, limit: DEFAULT_LIMIT } as Record<string, unknown>;
+
+const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   {
     name: "successful call without filters",
     apiCallHandler: requestsInOrder([
@@ -77,6 +96,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           workspace_token: "wt_123",
           account_id: undefined,
           provider: undefined,
+          ...defaultPaginationParams,
         },
         method: "GET",
         result: {
@@ -90,8 +110,16 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         workspace_token: "wt_123",
         account_id: undefined,
         provider: undefined,
+        page: undefined,
+        limit: undefined,
       });
-      expect(res).toEqual(successData);
+      expect(res).toEqual({
+        cost_provider_accounts: successData.cost_provider_accounts,
+        pagination: {
+          hasNextPage: false,
+          nextPage: 0,
+        },
+      });
     },
   },
   {
@@ -103,6 +131,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           workspace_token: "wt_123",
           account_id: "acct_123",
           provider: undefined,
+          ...defaultPaginationParams,
         },
         method: "GET",
         result: {
@@ -116,8 +145,16 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         workspace_token: "wt_123",
         account_id: "acct_123",
         provider: undefined,
+        page: undefined,
+        limit: undefined,
       });
-      expect(res).toEqual(successData);
+      expect(res).toEqual({
+        cost_provider_accounts: successData.cost_provider_accounts,
+        pagination: {
+          hasNextPage: false,
+          nextPage: 0,
+        },
+      });
     },
   },
   {
@@ -129,6 +166,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           workspace_token: "wt_123",
           account_id: undefined,
           provider: "aws",
+          ...defaultPaginationParams,
         },
         method: "GET",
         result: {
@@ -142,13 +180,53 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         workspace_token: "wt_123",
         account_id: undefined,
         provider: "aws",
+        page: undefined,
+        limit: undefined,
       });
-      expect(res).toEqual(successData);
+      expect(res).toEqual({
+        cost_provider_accounts: successData.cost_provider_accounts,
+        pagination: {
+          hasNextPage: false,
+          nextPage: 0,
+        },
+      });
     },
   },
-
-  // Failure case
-
+  {
+    name: "successful call with pagination params and next page",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/cost_provider_accounts",
+        params: {
+          workspace_token: "wt_123",
+          account_id: undefined,
+          provider: undefined,
+          ...({ page: 2, limit: 50 } as Record<string, unknown>),
+        },
+        method: "GET",
+        result: {
+          ok: true,
+          data: successDataWithNextPage,
+        },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const res = await callExpectingSuccess({
+        workspace_token: "wt_123",
+        account_id: undefined,
+        provider: undefined,
+        page: 2,
+        limit: 50,
+      });
+      expect(res).toEqual({
+        cost_provider_accounts: successDataWithNextPage.cost_provider_accounts,
+        pagination: {
+          hasNextPage: true,
+          nextPage: 3,
+        },
+      });
+    },
+  },
   {
     name: "unsuccessful call",
     apiCallHandler: requestsInOrder([
@@ -158,6 +236,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           workspace_token: "wt_123",
           account_id: undefined,
           provider: undefined,
+          ...defaultPaginationParams,
         },
         method: "GET",
         result: {
@@ -171,6 +250,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         workspace_token: "wt_123",
         account_id: undefined,
         provider: undefined,
+        page: undefined,
+        limit: undefined,
       });
       expect(err.exception).toEqual({
         errors: [{ message: "Invalid token" }],
