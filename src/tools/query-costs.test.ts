@@ -133,7 +133,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           start_date: undefined,
           end_date: undefined,
           workspace_token: "wt_123",
-          date_bin: "month",
+          date_bin: undefined,
           groupings: GROUPINGS_API,
           "settings[include_credits]": false,
           "settings[include_refunds]": false,
@@ -173,8 +173,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       expect(res).toEqual({
         costs: successData.costs,
         total_cost: successData.total_cost,
-        notes:
-          "Costs records represent one month, the accrued_at field is the first day of the month. If your date range is less than one month, this record includes only data for that date range, not the full month.",
+        notes: "Costs records represent one day.",
         pagination: {
           hasNextPage: false,
           nextPage: 0,
@@ -288,7 +287,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           start_date: undefined,
           end_date: undefined,
           workspace_token: "wt_123",
-          date_bin: "month",
+          date_bin: undefined,
           groupings: GROUPINGS_API,
           "settings[include_credits]": false,
           "settings[include_refunds]": false,
