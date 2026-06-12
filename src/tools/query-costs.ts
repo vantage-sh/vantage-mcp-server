@@ -33,11 +33,11 @@ Some cost providers operate in a specific region, you can filter using the costs
 Note that when users want to query a Custom Provider, that has a special case. When doing a VQL query for custom provider, use the 'token' you get back from the 'list-cost-integrations' tool. Here is an example, where the token of the custom provider is "accss_crdntl_07171984": 
   (costs.provider = 'custom_provider:accss_crdntl_07171984')
 
-The DateBin parameter will let you get the information with fewer returned results.
+The DateBin parameter controls the time granularity of returned results.
 When DateBin=day you get a record for each service spend on that day. For DateBin=week you get one entry per week,
 with the accrued_at field set to the first day of the week, but the spend item represents spend for a full week.
 Same with DateBin=month, each record returned covers a month of data. This lets you get answers with processing fewer
-records. Only use day/week if needed, otherwise DateBin=month is preferred, and month is the value set if you pass no value for DateBin.
+records. If omitted, DateBin defaults to day.
 `.trim();
 
 const args = {
@@ -49,9 +49,7 @@ const args = {
   date_bin: z
     .enum(["day", "week", "month"])
     .optional()
-    .describe(
-      "Date binning for returned costs, default to month unless user says otherwise, allowed values: day, week, month"
-    ),
+    .describe("Date binning for returned costs, defaults to day if omitted, allowed values: day, week, month"),
   settings_include_credits: z
     .boolean()
     .optional()
@@ -106,8 +104,6 @@ export default registerTool({
     const requestParams: Record<string, unknown> = {
       limit: 1000,
     };
-    if (!args.date_bin) args.date_bin = "month";
-
     // Every arg we get needs to be in requestParams, but under 'settings' if it has that prefix.
     Object.keys(args).forEach((key) => {
       const typedKey = key as keyof typeof args;
@@ -143,7 +139,8 @@ export default registerTool({
           "Costs records represent one month, the accrued_at field is the first day of the month. If your date range is less than one month, this record includes only data for that date range, not the full month.";
         break;
       default:
-        throw new Error("Invalid date bin value");
+        notes = "Costs records represent one day.";
+        break;
     }
 
     return {
