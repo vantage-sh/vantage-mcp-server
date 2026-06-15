@@ -9,11 +9,11 @@ const description = `
 List the cost items inside a report. The Token of a Report must be provided. Use the page value of 1 to start.
 The report token can be used to link the user to the report in the Vantage Web UI. Build the link like this: https://console.vantage.sh/go/<CostReportToken>
 
-The DateBin parameter will let you get the information with fewer returned results.
+The DateBin parameter controls the time granularity of returned results.
 When DateBin=day you get a record for each service spend on that day. For DateBin=week you get one entry per week,
 with the accrued_at field set to the first day of the week, but the spend item represents spend for a full week.
 Same with DateBin=month, each record returned covers a month of data. This lets you get answers with processing fewer
-records. Only use day/week if needed, otherwise DateBin=month is preferred, and month is the value set if you pass no value for DateBin.
+records. If omitted, the API uses the cost report's configured date bin, or day if the report has no override.
 `.trim();
 
 const args = {
@@ -25,7 +25,7 @@ const args = {
     .enum(["day", "week", "month"])
     .optional()
     .describe(
-      "Date binning for returned costs, default to month unless user says otherwise, allowed values: day, week, month"
+      "Date binning for returned costs. If omitted, the API uses the cost report's configured date bin, or day if the report has no override. Allowed values: day, week, month."
     ),
   settings_include_credits: z
     .boolean()
@@ -115,7 +115,8 @@ export default registerTool({
           "Costs records represent one month, the accrued_at field is the first day of the month. If your date range is less than one month, this record includes only data for that date range, not the full month.";
         break;
       default:
-        notes = "Costs records represent one day.";
+        notes =
+          "No date_bin was specified; the API will use the cost report's configured date bin (defaulting to day). Each cost record's time span depends on that setting.";
         break;
     }
 
