@@ -56,7 +56,7 @@ requires: { msp: true },
 
 Only `{ msp?: true }` exists today. Omit `requires` for tools available to every account.
 
-**MSP probe (interim).** `/v2/me` does not expose `is_msp_account` yet, so the probe calls `GET /v2/exchange_rates?page=1&limit=1`. Success → `{ msp: true }`; the known denial message *"This feature is not available for this account."* → `{ msp: false }`; any other failure throws `MCPUserError` (do not treat transient errors as non-MSP). Long-term fix: expose `is_msp_account` on `/v2/me` and switch the probe.
+**MSP probe (interim).** `/v2/me` does not expose `is_msp_account` yet, so the probe calls `GET /v2/managed_accounts?page=1&limit=1`. Success → `{ msp: true }`; the known denial message *"This feature is not available for this account."* → `{ msp: false }`; any other failure throws `MCPUserError` (do not treat transient errors as non-MSP). Long-term fix: expose `is_msp_account` on `/v2/me` and switch the probe.
 
 **Tests and tooling** pass `{ skipCapabilityChecks: true }` to `setupRegisteredTools` so every tool registers without a live account probe — see `src/tools/utils/testing.ts`, `src/tools/structure/registerTool.test.ts`, `src/tools/bin/generate-version-pr.ts`. Capability gating itself is covered in `src/tools/utils/accountCapabilities.test.ts` and the `requires.msp` cases in `registerTool.test.ts`.
 
