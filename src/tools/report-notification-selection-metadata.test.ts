@@ -1,10 +1,10 @@
 import { expect, test } from "vitest";
-import createCostAlert from "./create-cost-alert";
+import createCostAlert from "./cost-alerts/create-cost-alert";
+import getCostAlert from "./cost-alerts/get-cost-alert";
+import listCostAlerts from "./cost-alerts/list-cost-alerts";
 import createReportNotification from "./create-report-notification";
 import deleteReportNotification from "./delete-report-notification";
-import getCostAlert from "./get-cost-alert";
 import getReportNotification from "./get-report-notification";
-import listCostAlerts from "./list-cost-alerts";
 import listReportNotifications from "./list-report-notifications";
 import updateReportNotification from "./update-report-notification";
 

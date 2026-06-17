@@ -1,23 +1,7 @@
-import { type GetCostAlertResponse, pathEncode } from "@vantage-sh/vantage-client";
+import { pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import tool from "./get-cost-alert";
-import { requestsInOrder, testTool } from "./utils/testing";
-
-export const success: GetCostAlertResponse = {
-  token: "cstm_alrt_rl_123",
-  title: "Daily AWS Alert",
-  interval: "day",
-  threshold: 100,
-  unit_type: "currency",
-  workspace_token: "wrkspc_123",
-  report_tokens: ["rprt_123"],
-  created_at: "2023-01-01T00:00:00Z",
-  updated_at: "2023-01-01T00:00:00Z",
-  email_recipients: ["user@example.com"],
-  slack_channels: ["#alerts"],
-  teams_channels: ["General"],
-  minimum_threshold: 50,
-};
+import { requestsInOrder, testTool } from "../utils/testing";
+import tool from "./delete-cost-alert";
 
 testTool(
   tool,
@@ -28,6 +12,13 @@ testTool(
         cost_alert_token: "cstm_alrt_rl_123",
       },
     },
+    {
+      name: "rejects empty cost_alert_token",
+      data: {
+        cost_alert_token: "",
+      },
+      expectedIssues: ["Too small: expected string to have >=1 characters"],
+    },
   ],
   [
     {
@@ -36,25 +27,27 @@ testTool(
         {
           endpoint: `/v2/cost_alerts/${pathEncode("cstm_alrt_rl_123")}`,
           params: {},
-          method: "GET",
+          method: "DELETE",
           result: {
             ok: true,
-            data: success,
+            data: undefined,
           },
         },
       ]),
       handler: async ({ callExpectingSuccess }) => {
-        const res = await callExpectingSuccess({ cost_alert_token: "cstm_alrt_rl_123" });
-        expect(res).toEqual(success);
+        const res = await callExpectingSuccess({
+          cost_alert_token: "cstm_alrt_rl_123",
+        });
+        expect(res).toEqual({ token: "cstm_alrt_rl_123" });
       },
     },
     {
       name: "unsuccessful call",
       apiCallHandler: requestsInOrder([
         {
-          endpoint: `/v2/cost_alerts/${pathEncode("cstm_alrt_rl_456")}`,
+          endpoint: `/v2/cost_alerts/${pathEncode("cstm_alrt_rl_missing")}`,
           params: {},
-          method: "GET",
+          method: "DELETE",
           result: {
             ok: false,
             errors: [{ message: "Cost alert not found" }],
@@ -63,7 +56,7 @@ testTool(
       ]),
       handler: async ({ callExpectingMCPUserError }) => {
         const err = await callExpectingMCPUserError({
-          cost_alert_token: "cstm_alrt_rl_456",
+          cost_alert_token: "cstm_alrt_rl_missing",
         });
         expect(err.exception).toEqual({
           errors: [{ message: "Cost alert not found" }],

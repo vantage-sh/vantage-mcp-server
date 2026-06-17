@@ -1,7 +1,7 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod";
-import MCPUserError from "./structure/MCPUserError";
-import registerTool from "./structure/registerTool";
+import MCPUserError from "../structure/MCPUserError";
+import registerTool from "../structure/registerTool";
 
 const description = `
 Gets a specific Cost Alert by its token.
@@ -12,7 +12,7 @@ Do not use this for Report Notifications, scheduled report summaries, or recurri
 `.trim();
 
 const args = {
-  cost_alert_token: z.string().describe("The cost alert token to retrieve"),
+  cost_alert_token: z.string().min(1).describe("The cost alert token to retrieve"),
 };
 
 export default registerTool({
