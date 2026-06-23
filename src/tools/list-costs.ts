@@ -14,6 +14,9 @@ When DateBin=day you get a record for each service spend on that day. For DateBi
 with the accrued_at field set to the first day of the week, but the spend item represents spend for a full week.
 Same with DateBin=month, each record returned covers a month of data. This lets you get answers with processing fewer
 records. If omitted, the API uses the cost report's configured date bin, or day if the report has no override.
+
+Cost settings (credits, refunds, discounts, tax, amortization, etc.) default to the report's own settings.
+Only provide these parameters if you need to override the report's defaults.
 `.trim();
 
 const args = {
@@ -30,35 +33,37 @@ const args = {
   settings_include_credits: z
     .boolean()
     .optional()
-    .default(false)
-    .describe("Results will include credits, defaults to false"),
+    .describe("Results will include credits. If not provided, the report's setting is used."),
   settings_include_refunds: z
     .boolean()
     .optional()
-    .default(false)
-    .describe("Results will include refunds, defaults to false"),
+    .describe("Results will include refunds. If not provided, the report's setting is used."),
   settings_include_discounts: z
     .boolean()
     .optional()
-    .default(true)
-    .describe("Results will include discounts, defaults to true"),
-  settings_include_tax: z.boolean().optional().default(true).describe("Results will include tax, defaults to true"),
-  settings_amortize: z.boolean().optional().default(true).describe("Results will amortize, defaults to true"),
+    .describe("Results will include discounts. If not provided, the report's setting is used."),
+  settings_include_tax: z
+    .boolean()
+    .optional()
+    .describe("Results will include tax. If not provided, the report's setting is used."),
+  settings_amortize: z
+    .boolean()
+    .optional()
+    .describe("Results will amortize. If not provided, the report's setting is used."),
   settings_unallocated: z
     .boolean()
     .optional()
-    .default(false)
-    .describe("Results will show unallocated costs, defaults to false"),
+    .describe("Results will show unallocated costs. If not provided, the report's setting is used."),
   settings_aggregate_by: z
     .enum(["cost", "usage"])
     .optional()
-    .default("cost")
-    .describe("Results will aggregate by cost or usage, defaults to cost"),
+    .describe("Results will aggregate by cost or usage. If not provided, the report's setting is used."),
   settings_show_previous_period: z
     .boolean()
     .optional()
-    .default(true)
-    .describe("Results will show previous period costs or usage comparison, defaults to true"),
+    .describe(
+      "Results will show previous period costs or usage comparison. If not provided, the report's setting is used."
+    ),
   groupings: z
     .array(z.string())
     .default(["provider", "service", "account_id"])
@@ -78,19 +83,24 @@ export default registerTool({
   },
   args,
   async execute(args, ctx) {
-    // Every arg we get needs to be in requestParams, but under 'settings' if it has that prefix.
+    // Build request params. Settings that are not explicitly provided are left out
+    // so the API uses the cost report's own configured settings.
     const requestParams: Record<string, any> = {
       limit: DEFAULT_LIMIT,
     };
-    Object.keys(args).forEach((key) => {
+    for (const key of Object.keys(args)) {
       const typedKey = key as keyof typeof args;
       if (key.startsWith("settings_")) {
-        const keyWithoutPrefix = key.slice("settings_".length);
-        requestParams[`settings[${keyWithoutPrefix}]`] = args[typedKey];
+        const value = args[typedKey];
+        if (value !== undefined) {
+          const keyWithoutPrefix = key.slice("settings_".length);
+          requestParams[`settings[${keyWithoutPrefix}]`] = value;
+        }
       } else {
         requestParams[key] = args[typedKey];
       }
-    });
+    }
+
     // /v2/costs expects groupings as a comma-joined string (coerce_with: CSV::parse_line),
     // not the bracket-suffix array format used by other endpoints.
     if (Array.isArray(requestParams.groupings)) {
