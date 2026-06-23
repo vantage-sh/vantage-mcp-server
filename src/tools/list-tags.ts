@@ -8,10 +8,18 @@ const description = `
 List tags that can be used to filter costs and cost reports.
 Tags are associated with one or more Cost Providers.
 Tags can be edited in the Vantage Web UI, or have further details displayed there. Link a user to the tag page like this: https://console.vantage.sh/settings/tags?search_query=<tag>
+
+Requires integration settings permission; callers without it receive 403 from the API.
+Each tag in the response uses the field \`tag_key\` (not \`key\`).
 `.trim();
 
 const args = {
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
+  search_query: z.string().optional().describe("Search query to filter tags by tag key name"),
+  providers: z
+    .array(z.string())
+    .optional()
+    .describe("Filter tags to those present on the given cost providers (e.g. aws, azure, gcp)"),
 };
 
 export default registerTool({

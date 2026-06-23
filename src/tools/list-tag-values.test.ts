@@ -18,6 +18,8 @@ type OutputSchema = ExtractOutputSchema<typeof tool>;
 const validArguments: InferValidators<Validators> = {
   key: "environment",
   page: 1,
+  search_query: undefined,
+  providers: undefined,
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
