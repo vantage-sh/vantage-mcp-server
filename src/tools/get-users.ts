@@ -3,9 +3,12 @@ import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 import paginationData from "./utils/paginationData";
+import { PAGINATION_GUIDANCE } from "./utils/paginationGuidance";
 
 const description = `
 Return all Users that the user can see in the workspace.
+
+${PAGINATION_GUIDANCE}
 `.trim();
 
 const args = {

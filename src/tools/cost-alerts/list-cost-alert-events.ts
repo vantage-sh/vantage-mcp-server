@@ -4,9 +4,12 @@ import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import paginationData from "../utils/paginationData";
+import { PAGINATION_GUIDANCE } from "../utils/paginationGuidance";
 
 const description = `
 List events for a Cost Alert. Events are individual alert trigger records and can be filtered by Cost Report token.
+
+${PAGINATION_GUIDANCE}
 `.trim();
 
 export default registerTool({

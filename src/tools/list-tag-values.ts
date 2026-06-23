@@ -4,9 +4,12 @@ import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 import paginationData from "./utils/paginationData";
+import { PAGINATION_GUIDANCE } from "./utils/paginationGuidance";
 
 const description = `
 Tags can have many values. Use this tool to find the values and service providers that are associated with a tag.
+
+${PAGINATION_GUIDANCE}
 `.trim();
 
 const args = {

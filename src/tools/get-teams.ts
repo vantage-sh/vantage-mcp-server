@@ -3,9 +3,12 @@ import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 import paginationData from "./utils/paginationData";
+import { PAGINATION_GUIDANCE } from "./utils/paginationGuidance";
 
 const description = `
 Return all Teams that the user has access to.
+
+${PAGINATION_GUIDANCE}
 `.trim();
 
 const args = {

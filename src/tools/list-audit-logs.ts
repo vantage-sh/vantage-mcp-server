@@ -3,6 +3,7 @@ import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 import paginationData from "./utils/paginationData";
+import { PAGINATION_GUIDANCE, PAGINATION_LIMIT_GUIDANCE } from "./utils/paginationGuidance";
 
 const description = `
 List audit logs visible to the authenticated Vantage access token. Audit logs provide a chronological history of supported changes to user-facing resources in Vantage, such as cost reports, virtual tags, segments, recommendation commitments, and other workspace-related objects.
@@ -26,7 +27,7 @@ Audit logs commonly include actions such as:
 - Updating recommendation commitments
 - Creating, updating, or deleting segments
 
-Use pagination with the \`page\` parameter starting at 1. You can also pass \`limit\`; if omitted, the API defaults to 100 results per page.
+${PAGINATION_GUIDANCE} ${PAGINATION_LIMIT_GUIDANCE} If omitted, the API defaults to 100 results per page.
 
 Audit logs can be filtered by:
 - \`user\`: numeric user ID associated with the action

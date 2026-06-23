@@ -3,11 +3,14 @@ import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import paginationData from "../utils/paginationData";
+import { PAGINATION_GUIDANCE } from "../utils/paginationGuidance";
 
 const description = `
 List all Workspaces available to the authenticated API token. Workspaces are isolated environments within Vantage for organizing cost data and access control across teams.
 
 Use get-myself to see the user's default workspace. Use get-workspace to retrieve details for a specific workspace.
+
+${PAGINATION_GUIDANCE}
 `.trim();
 
 const args = {

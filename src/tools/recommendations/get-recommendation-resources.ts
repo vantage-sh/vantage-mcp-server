@@ -4,6 +4,7 @@ import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import paginationData from "../utils/paginationData";
+import { PAGINATION_GUIDANCE } from "../utils/paginationGuidance";
 
 const description = `
 Get a paginated list of all infrastructure resources affected by a specific cost optimization recommendation.
@@ -23,7 +24,7 @@ Use this tool after getting recommendation details to see exactly which resource
 
 Each resource has its own token that can be used with get-recommendation-resource-details to get comprehensive information about that specific resource and what actions are recommended.
 
-Use pagination (page parameter) to navigate through large numbers of affected resources.
+${PAGINATION_GUIDANCE}
 `.trim();
 
 const args = {

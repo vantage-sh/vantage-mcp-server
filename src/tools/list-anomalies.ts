@@ -4,10 +4,13 @@ import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 import dateValidator from "./utils/dateValidator";
 import paginationData from "./utils/paginationData";
+import { PAGINATION_GUIDANCE } from "./utils/paginationGuidance";
 
 const description = `
 Given a token of a Cost Report, look for anomalies in the report. You may optionally pass a Provider, like AWS to filter on. If you do pass a Provider, you can futher filter on a Service, like EC2 or S3.
 The report token can be used to link the user to the report in the Vantage Web UI. Build the link like this: https://console.vantage.sh/go/<CostReportToken>
+
+${PAGINATION_GUIDANCE}
 `.trim();
 
 const args = {
