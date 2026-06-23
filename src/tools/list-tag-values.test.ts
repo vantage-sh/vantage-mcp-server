@@ -1,4 +1,4 @@
-import { type GetTagValuesResponse, pathEncode } from "@vantage-sh/vantage-client";
+import { type GetTagValuesRequest, type GetTagValuesResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "./list-tag-values";
 import { DEFAULT_LIMIT } from "./structure/constants";
@@ -28,6 +28,8 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     data: {
       key: "",
       page: 1,
+      search_query: undefined,
+      providers: undefined,
     },
     expectedIssues: ["Too small: expected string to have >=1 characters"],
   },
@@ -55,7 +57,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         params: {
           ...validArguments,
           limit: DEFAULT_LIMIT,
-        },
+        } as GetTagValuesRequest,
         method: "GET",
         result: {
           ok: true,
@@ -83,7 +85,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           ...validArguments,
           page: 1,
           limit: DEFAULT_LIMIT,
-        },
+        } as GetTagValuesRequest,
         method: "GET",
         result: {
           ok: false,

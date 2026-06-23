@@ -1,4 +1,5 @@
 import z from "zod";
+import type { GetTagsRequest } from "@vantage-sh/vantage-client";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
@@ -34,7 +35,7 @@ export default registerTool({
   args,
   async execute(args, ctx) {
     const requestParams = { ...args, limit: DEFAULT_LIMIT };
-    const response = await ctx.callVantageApi("/v2/tags", requestParams, "GET");
+    const response = await ctx.callVantageApi("/v2/tags", requestParams as GetTagsRequest, "GET");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }

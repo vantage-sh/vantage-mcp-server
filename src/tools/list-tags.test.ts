@@ -26,6 +26,8 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     name: "default page",
     data: {
       page: undefined,
+      search_query: undefined,
+      providers: undefined,
     },
   },
   {
