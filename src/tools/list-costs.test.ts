@@ -18,15 +18,16 @@ type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const DEFAULT_GROUPINGS = "provider,service,account_id" as unknown as string[];
-const DEFAULT_SETTINGS_API = {
-  "settings[aggregate_by]": "cost",
-  "settings[amortize]": true,
-  "settings[include_credits]": false,
-  "settings[include_discounts]": true,
-  "settings[include_refunds]": false,
-  "settings[include_tax]": true,
-  "settings[show_previous_period]": true,
-  "settings[unallocated]": false,
+
+// Non-settings fields expected in every /v2/costs request.
+const baseApiParams = {
+  page: 1,
+  cost_report_token: "crt_123",
+  start_date: "2023-01-01",
+  end_date: "2023-01-31",
+  date_bin: "month" as const,
+  groupings: DEFAULT_GROUPINGS,
+  limit: DEFAULT_LIMIT,
 };
 
 const validArguments: InferValidators<Validators> = {
@@ -107,20 +108,11 @@ const successData: GetCostsResponse = {
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   {
-    name: "successful call with month date_bin",
+    name: "successful call with month date_bin omits settings so API uses report defaults",
     apiCallHandler: requestsInOrder([
       {
         endpoint: "/v2/costs",
-        params: {
-          ...DEFAULT_SETTINGS_API,
-          cost_report_token: "crt_123",
-          start_date: "2023-01-01",
-          end_date: "2023-01-31",
-          date_bin: "month",
-          groupings: DEFAULT_GROUPINGS,
-          page: 1,
-          limit: DEFAULT_LIMIT,
-        },
+        params: baseApiParams,
         method: "GET",
         result: {
           ok: true,
@@ -148,11 +140,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       {
         endpoint: "/v2/costs",
         params: {
-          ...validArguments,
-          ...DEFAULT_SETTINGS_API,
-          groupings: DEFAULT_GROUPINGS,
+          ...baseApiParams,
           date_bin: "day",
-          limit: DEFAULT_LIMIT,
         },
         method: "GET",
         result: {
@@ -175,11 +164,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       {
         endpoint: "/v2/costs",
         params: {
-          ...validArguments,
-          ...DEFAULT_SETTINGS_API,
-          groupings: DEFAULT_GROUPINGS,
+          ...baseApiParams,
           date_bin: "week",
-          limit: DEFAULT_LIMIT,
         },
         method: "GET",
         result: {
@@ -199,19 +185,41 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     },
   },
   {
+    name: "user-provided settings are sent to the API",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/costs",
+        params: {
+          ...baseApiParams,
+          "settings[amortize]": false,
+          "settings[include_credits]": true,
+        },
+        method: "GET",
+        result: {
+          ok: true,
+          data: successData,
+        },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const res = await callExpectingSuccess({
+        ...validArguments,
+        settings_amortize: false,
+        settings_include_credits: true,
+      });
+      expect(res.costs).toEqual(successData.costs);
+    },
+  },
+  {
     name: "unsuccessful call",
     apiCallHandler: requestsInOrder([
       {
         endpoint: "/v2/costs",
         params: {
-          page: 1,
-          cost_report_token: "crt_123",
+          ...baseApiParams,
           start_date: undefined,
           end_date: undefined,
           date_bin: undefined,
-          limit: DEFAULT_LIMIT,
-          groupings: DEFAULT_GROUPINGS,
-          ...DEFAULT_SETTINGS_API,
         },
         method: "GET",
         result: {
