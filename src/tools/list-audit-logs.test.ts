@@ -25,8 +25,8 @@ const validArguments: InferValidators<Validators> = {
   object_type: "cost_report" as const,
   token: "audit_123",
   object_token: "obj_123",
-  start_date: "2025-01-01T00:00:00Z",
-  end_date: "2025-01-31T23:59:59Z",
+  start_date: "2025-01-01",
+  end_date: "2025-01-31",
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
@@ -115,8 +115,8 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       object_type: undefined,
       token: undefined,
       object_token: undefined,
-      start_date: "2025-01-01T00:00:00Z",
-      end_date: "2025-01-31T23:59:59Z",
+      start_date: "2025-01-01",
+      end_date: "2025-01-31",
     },
   },
   {
@@ -132,7 +132,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       object_type: undefined,
       token: undefined,
       object_token: undefined,
-      start_date: "2025-01-01T00:00:00Z",
+      start_date: "2025-01-01",
       end_date: undefined,
     },
   },
@@ -150,7 +150,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       token: undefined,
       object_token: undefined,
       start_date: undefined,
-      end_date: "2025-01-31T23:59:59Z",
+      end_date: "2025-01-31",
     },
   },
   {
@@ -234,8 +234,8 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       object_type: undefined,
       token: undefined,
       object_token: undefined,
-      start_date: "2025-01-01T00:00:00Z",
-      end_date: "2025-01-31T23:59:59Z",
+      start_date: "2025-01-01",
+      end_date: "2025-01-31",
     },
   },
   {
@@ -251,8 +251,8 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       object_type: undefined,
       token: undefined,
       object_token: undefined,
-      start_date: "2025-01-01T00:00:00Z",
-      end_date: "2025-01-31T23:59:59Z",
+      start_date: "2025-01-01",
+      end_date: "2025-01-31",
     },
   },
   {
@@ -390,6 +390,43 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       start_date: undefined,
       end_date: undefined,
     },
+  },
+  {
+    name: "invalid source developer",
+    data: {
+      ...validArguments,
+      source: "developer" as "api",
+    },
+    expectedIssues: ['Invalid option: expected one of "console"|"api"|"finops_agent"'],
+  },
+  {
+    name: "invalid object_type dashboard",
+    data: {
+      ...validArguments,
+      object_type: "dashboard" as "cost_report",
+    },
+    expectedIssues: [
+      'Invalid option: expected one of "virtual_tag"|"cost_report"|"recommendation_commitment"|"segment"',
+    ],
+  },
+  {
+    name: "invalid action",
+    data: {
+      ...validArguments,
+      action: "destroy" as "create",
+    },
+    expectedIssues: ['Invalid option: expected one of "create"|"update"|"delete"'],
+  },
+  {
+    name: "invalid start_date format",
+    data: {
+      ...validArguments,
+      start_date: "01-01-2025",
+      end_date: "2025-01-31",
+    },
+    expectedIssues: [
+      "Invalid date input, must be YYYY-MM-DD format and a reasonable date.",
+    ],
   },
 ];
 
@@ -602,8 +639,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: "/v2/audit_logs",
         params: {
           page: 1,
-          start_date: "2025-01-01T00:00:00Z",
-          end_date: "2025-01-31T23:59:59Z",
+          start_date: "2025-01-01",
+          end_date: "2025-01-31",
           limit: DEFAULT_LIMIT,
         },
         method: "GET",
@@ -625,8 +662,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         object_type: undefined,
         token: undefined,
         object_token: undefined,
-        start_date: "2025-01-01T00:00:00Z",
-        end_date: "2025-01-31T23:59:59Z",
+        start_date: "2025-01-01",
+        end_date: "2025-01-31",
       });
       expect(res).toEqual({
         audit_logs: successData.audit_logs,
@@ -644,7 +681,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: "/v2/audit_logs",
         params: {
           page: 1,
-          start_date: "2025-01-01T00:00:00Z",
+          start_date: "2025-01-01",
           limit: DEFAULT_LIMIT,
         },
         method: "GET",
@@ -666,7 +703,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         object_type: undefined,
         token: undefined,
         object_token: undefined,
-        start_date: "2025-01-01T00:00:00Z",
+        start_date: "2025-01-01",
         end_date: undefined,
       });
       expect(res).toEqual({
@@ -685,7 +722,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: "/v2/audit_logs",
         params: {
           page: 1,
-          end_date: "2025-01-31T23:59:59Z",
+          end_date: "2025-01-31",
           limit: DEFAULT_LIMIT,
         },
         method: "GET",
@@ -708,7 +745,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         token: undefined,
         object_token: undefined,
         start_date: undefined,
-        end_date: "2025-01-31T23:59:59Z",
+        end_date: "2025-01-31",
       });
       expect(res).toEqual({
         audit_logs: successData.audit_logs,
@@ -851,8 +888,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         params: {
           page: 1,
           user: 123,
-          start_date: "2025-01-01T00:00:00Z",
-          end_date: "2025-01-31T23:59:59Z",
+          start_date: "2025-01-01",
+          end_date: "2025-01-31",
           limit: DEFAULT_LIMIT,
         },
         method: "GET",
@@ -874,8 +911,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         object_type: undefined,
         token: undefined,
         object_token: undefined,
-        start_date: "2025-01-01T00:00:00Z",
-        end_date: "2025-01-31T23:59:59Z",
+        start_date: "2025-01-01",
+        end_date: "2025-01-31",
       });
       expect(res).toEqual({
         audit_logs: successData.audit_logs,
@@ -894,8 +931,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         params: {
           page: 1,
           action: "update",
-          start_date: "2025-01-01T00:00:00Z",
-          end_date: "2025-01-31T23:59:59Z",
+          start_date: "2025-01-01",
+          end_date: "2025-01-31",
           limit: DEFAULT_LIMIT,
         },
         method: "GET",
@@ -917,8 +954,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         object_type: undefined,
         token: undefined,
         object_token: undefined,
-        start_date: "2025-01-01T00:00:00Z",
-        end_date: "2025-01-31T23:59:59Z",
+        start_date: "2025-01-01",
+        end_date: "2025-01-31",
       });
       expect(res).toEqual({
         audit_logs: successData.audit_logs,

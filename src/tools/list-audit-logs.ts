@@ -3,6 +3,16 @@ import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 import paginationData from "./utils/paginationData";
+import dateValidator from "./utils/dateValidator";
+
+const AUDIT_LOG_ACTIONS = ["create", "update", "delete"] as const;
+const AUDIT_LOG_SOURCES = ["console", "api", "finops_agent"] as const;
+const AUDIT_LOG_OBJECT_TYPES = [
+  "virtual_tag",
+  "cost_report",
+  "recommendation_commitment",
+  "segment",
+] as const;
 
 const description = `
 List audit logs visible to the authenticated Vantage access token. Audit logs provide a chronological history of supported changes to user-facing resources in Vantage, such as cost reports, virtual tags, segments, recommendation commitments, and other workspace-related objects.
@@ -36,7 +46,7 @@ Audit logs can be filtered by:
 - \`object_name\`: exact object title
 - \`object_token\`: audited object token
 - \`source\`: \`console\`, \`api\`, or \`finops_agent\`
-- \`start_date\` and \`end_date\`: ISO 8601 dates such as \`2024-06-01\`
+- \`start_date\` and \`end_date\`: YYYY-MM-DD dates such as \`2024-06-01\`
 - \`token\`: audit log token
 
 Use cases for audit logs include:
@@ -59,24 +69,31 @@ const args = {
     .number()
     .int()
     .optional()
-    .describe("Filter by personal or service API token that performed the action (user ID)"),
+    .describe(
+      "Filter by numeric user ID (the user's database id). Do not pass email addresses or user tokens."
+    ),
   workspace_token: z.string().optional().describe("Filter by workspace token"),
-  action: z.string().optional().describe("Filter by action type (e.g., create, update, delete)"),
+  action: z
+    .enum(AUDIT_LOG_ACTIONS)
+    .optional()
+    .describe("Filter by action type: create, update, or delete."),
   object_name: z.string().optional().describe("Filter by object name"),
   source: z
-    .string()
+    .enum(AUDIT_LOG_SOURCES)
     .optional()
     .describe(
-      "Filter by source (e.g., console, api, developer, finops_agent). Use 'finops_agent' to filter for actions specifically taken by the Finops Agent."
+      "Filter by source: console, api, or finops_agent. Use finops_agent for actions taken by the FinOps Agent."
     ),
   object_type: z
-    .string()
+    .enum(AUDIT_LOG_OBJECT_TYPES)
     .optional()
-    .describe("Filter by object type (e.g., virtual_tag, cost_report, recommendation_commitment)."),
+    .describe(
+      "Filter by object type: cost_report, virtual_tag, recommendation_commitment, or segment. Other types (e.g. dashboard, budget) are not supported."
+    ),
   token: z.string().optional().describe("Filter by audit log token"),
   object_token: z.string().optional().describe("Filter by object token (auditable_token)"),
-  start_date: z.string().optional().describe("Filter by start date (ISO 8601 format) for the time period"),
-  end_date: z.string().optional().describe("Filter by end date (ISO 8601 format) for the time period"),
+  start_date: dateValidator("Filter by start date (YYYY-MM-DD, inclusive).").optional(),
+  end_date: dateValidator("Filter by end date (YYYY-MM-DD, inclusive).").optional(),
 };
 
 export default registerTool({
