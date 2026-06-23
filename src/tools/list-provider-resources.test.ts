@@ -1,7 +1,7 @@
 import type { GetReportResourcesResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import { DEFAULT_LIMIT } from "./structure/constants";
 import tool from "./list-provider-resources";
+import { DEFAULT_LIMIT } from "./structure/constants";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
