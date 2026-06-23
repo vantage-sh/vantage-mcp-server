@@ -6,6 +6,8 @@ import paginationData from "./utils/paginationData";
 
 const description = `
 Return all Users that the user can see in the workspace.
+
+Requires account owner permissions; non-owners receive 403 from the API.
 `.trim();
 
 const args = {
