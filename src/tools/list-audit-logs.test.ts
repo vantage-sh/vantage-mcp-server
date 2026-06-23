@@ -424,9 +424,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       start_date: "01-01-2025",
       end_date: "2025-01-31",
     },
-    expectedIssues: [
-      "Invalid date input, must be YYYY-MM-DD format and a reasonable date.",
-    ],
+    expectedIssues: ["Invalid date input, must be YYYY-MM-DD format and a reasonable date."],
   },
 ];
 

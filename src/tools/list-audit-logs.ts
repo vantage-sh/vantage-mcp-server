@@ -2,17 +2,12 @@ import z from "zod";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
-import paginationData from "./utils/paginationData";
 import dateValidator from "./utils/dateValidator";
+import paginationData from "./utils/paginationData";
 
 const AUDIT_LOG_ACTIONS = ["create", "update", "delete"] as const;
 const AUDIT_LOG_SOURCES = ["console", "api", "finops_agent"] as const;
-const AUDIT_LOG_OBJECT_TYPES = [
-  "virtual_tag",
-  "cost_report",
-  "recommendation_commitment",
-  "segment",
-] as const;
+const AUDIT_LOG_OBJECT_TYPES = ["virtual_tag", "cost_report", "recommendation_commitment", "segment"] as const;
 
 const description = `
 List audit logs visible to the authenticated Vantage access token. Audit logs provide a chronological history of supported changes to user-facing resources in Vantage, such as cost reports, virtual tags, segments, recommendation commitments, and other workspace-related objects.
@@ -69,14 +64,9 @@ const args = {
     .number()
     .int()
     .optional()
-    .describe(
-      "Filter by numeric user ID (the user's database id). Do not pass email addresses or user tokens."
-    ),
+    .describe("Filter by numeric user ID (the user's database id). Do not pass email addresses or user tokens."),
   workspace_token: z.string().optional().describe("Filter by workspace token"),
-  action: z
-    .enum(AUDIT_LOG_ACTIONS)
-    .optional()
-    .describe("Filter by action type: create, update, or delete."),
+  action: z.enum(AUDIT_LOG_ACTIONS).optional().describe("Filter by action type: create, update, or delete."),
   object_name: z.string().optional().describe("Filter by object name"),
   source: z
     .enum(AUDIT_LOG_SOURCES)
