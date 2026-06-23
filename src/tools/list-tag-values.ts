@@ -1,4 +1,4 @@
-import { pathEncode, type GetTagValuesRequest } from "@vantage-sh/vantage-client";
+import { type GetTagValuesRequest, pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
