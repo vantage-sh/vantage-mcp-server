@@ -4,7 +4,7 @@ import registerTool from "./structure/registerTool";
 
 const description = `
 List cost service display names for a workspace. These names may NOT match VQL costs.service identifiers used in query-costs filters.
-Do not copy names from this tool directly into VQL. Use vql_info (Scout) or costs.service values from a broad query-costs probe instead.
+Do not copy names from this tool directly into VQL. Use vql_info or costs.service values from a broad query-costs probe instead.
 `.trim();
 
 const args = {

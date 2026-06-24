@@ -18,7 +18,7 @@ A cost provider is required on every VQL query.
 VQL is always in parenthesis. Always use single quotes around names that are being queried.
 To query on a cost provider, use this syntax: (costs.provider = '<provider name>'). The provider name must come from the list-cost-providers tool.
 To query on a cost service, use this syntax: (costs.provider = '<provider name>' AND costs.service = '<service name>').
-For AWS, costs.service must be a CUR identifier (e.g. 'AmazonEC2', 'AmazonVPC', 'AWSDirectConnect'). Use vql_info in Scout to resolve aliases — not display names from list-cost-services.
+For AWS, costs.service must be a CUR identifier (e.g. 'AmazonEC2', 'AmazonVPC', 'AWSDirectConnect'). Use vql_info to resolve aliases — not display names from list-cost-services.
 If a query returns no rows, run one broad probe query first (provider only, date_bin=month, wide date range) to learn available months and service identifiers before retrying with a narrower filter.
 For month-over-month comparisons, span both months in start_date/end_date with date_bin=month and settings_show_previous_period=true instead of separate queries per month.
 Prefer one query-costs call with all needed groupings (e.g. service, account_id, tag:<key>) over multiple calls that only change groupings.
@@ -160,7 +160,7 @@ export default registerTool({
     const costs = response.data.costs;
     const hint =
       costs.length === 0
-        ? "No cost rows matched this filter and date range. Widen the date range, verify costs.service identifiers (vql_info in Scout or service values from a broad probe query), and avoid retrying with only a different groupings parameter."
+        ? "No cost rows matched this filter and date range. Widen the date range, verify costs.service identifiers (vql_info or service values from a broad probe query), and avoid retrying with only a different groupings parameter."
         : undefined;
 
     return {
