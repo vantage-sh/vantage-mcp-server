@@ -266,6 +266,40 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     },
   },
   {
+    name: "successful call with empty costs returns hint",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/costs",
+        params: {
+          ...baseApiParams,
+          filter: "(costs.provider = 'aws' AND costs.service = 'AmazonVPC')",
+          start_date: "2025-04-01",
+          end_date: "2025-05-31",
+        },
+        method: "GET",
+        result: {
+          ok: true,
+          data: {
+            costs: [],
+            total_cost: { amount: "0", currency: "USD" },
+            total_usage: {},
+            links: {},
+          },
+        },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const res = await callExpectingSuccess({
+        ...validInputArguments,
+        filter: "(costs.provider = 'aws' AND costs.service = 'AmazonVPC')",
+        start_date: "2025-04-01",
+        end_date: "2025-05-31",
+      });
+      expect(res.costs).toEqual([]);
+      expect(res.hint).toContain("No cost rows matched");
+    },
+  },
+  {
     name: "unsuccessful call",
     apiCallHandler: requestsInOrder([
       {

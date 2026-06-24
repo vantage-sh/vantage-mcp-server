@@ -17,8 +17,11 @@ All costs originate from a Cost Provider (generally a cloud company like AWS, Az
 A cost provider is required on every VQL query.
 VQL is always in parenthesis. Always use single quotes around names that are being queried.
 To query on a cost provider, use this syntax: (costs.provider = '<provider name>'). The provider name must come from the list-cost-providers tool.
-To query on a cost service, use this syntax: (costs.provider = '<provider name>' AND costs.service = '<service name>'). The service name must come from the list-cost-services tool.
-For the AWS provider, always use short names for the services. example: Use 'AmazonEC2' not 'Amazon Elastic Compute Cloud' and 'AmazonRDS' not 'Amazon Relational Database Service'. Again the list-cost-services tool in this MCP can give accurate service names.
+To query on a cost service, use this syntax: (costs.provider = '<provider name>' AND costs.service = '<service name>').
+For AWS, costs.service must be a CUR identifier (e.g. 'AmazonEC2', 'AmazonVPC', 'AWSDirectConnect'). Use vql_info in Scout to resolve aliases — not display names from list-cost-services.
+If a query returns no rows, run one broad probe query first (provider only, date_bin=month, wide date range) to learn available months and service identifiers before retrying with a narrower filter.
+For month-over-month comparisons, span both months in start_date/end_date with date_bin=month and settings_show_previous_period=true instead of separate queries per month.
+Prefer one query-costs call with all needed groupings (e.g. service, account_id, tag:<key>) over multiple calls that only change groupings.
 You can only filter against one cost provider at a time. If you want to query for costs from two providers, you need to use the OR operator. Example: ((costs.provider = 'aws') OR (costs.provider = 'azure'))
 You can otherwise use the IN system to compare against a list of items, like this: (costs.provider = 'aws' AND costs.service IN ('AWSQueueService', 'AWSLambda'))
 To filter within a cost provider, keep the cost provider part and add a AND section, example: (costs.provider = 'aws' AND costs.service = 'AmazonRDS')
@@ -93,7 +96,7 @@ const args = {
     .array(z.string())
     .default(["provider", "service", "region"])
     .describe(
-      "Group the results by specific field(s). Defaults to provider, service, account_id. Valid groupings: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, tag:<tag_value>. Let Groupings default unless explicitly asked for."
+      "Group the results by specific field(s). Defaults to provider, service, region. Valid groupings: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, tag:<tag_value>. Include every grouping you need in one call rather than issuing separate calls per grouping."
     ),
 };
 
@@ -154,10 +157,17 @@ export default registerTool({
         break;
     }
 
+    const costs = response.data.costs;
+    const hint =
+      costs.length === 0
+        ? "No cost rows matched this filter and date range. Widen the date range, verify costs.service identifiers (vql_info in Scout or service values from a broad probe query), and avoid retrying with only a different groupings parameter."
+        : undefined;
+
     return {
-      costs: response.data.costs,
+      costs,
       total_cost: response.data.total_cost,
       notes,
+      ...(hint ? { hint } : {}),
       pagination: paginationData(response.data),
     };
   },

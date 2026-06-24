@@ -3,7 +3,8 @@ import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 
 const description = `
-List of cost services available to query for a given Workspace. Can be used to filter costs down to a specific service in VQL queries.
+List cost service display names for a workspace. These names may NOT match VQL costs.service identifiers used in query-costs filters.
+Do not copy names from this tool directly into VQL. Use vql_info (Scout) or costs.service values from a broad query-costs probe instead.
 `.trim();
 
 const args = {
