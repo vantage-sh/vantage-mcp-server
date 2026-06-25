@@ -9,6 +9,9 @@ const description = `
 Return all Users that the user can see in the workspace.
 
 ${PAGINATION_GUIDANCE}
+
+Requires account owner permissions; non-owners receive 403 from the API.
+
 `.trim();
 
 const args = {

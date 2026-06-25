@@ -17,7 +17,7 @@ type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
   page: 1,
-  resource_report_token: undefined,
+  resource_report_token: "rr_123",
   filter: undefined,
   workspace_token: undefined,
   include_cost: false,
@@ -103,6 +103,51 @@ const successData: GetReportResourcesResponse = {
 };
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
+  {
+    name: "throws when filter is provided without workspace_token",
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError({
+        page: 1,
+        resource_report_token: undefined,
+        filter: "(resources.provider = 'aws')",
+        workspace_token: undefined,
+        include_cost: false,
+      });
+      expect(err.exception).toEqual({
+        errors: [{ message: "workspace_token is required when filter is provided" }],
+      });
+    },
+  },
+  {
+    name: "throws when both resource_report_token and filter are provided",
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError({
+        page: 1,
+        resource_report_token: "rr_123",
+        filter: "(resources.provider = 'aws')",
+        workspace_token: "wt_123",
+        include_cost: false,
+      });
+      expect(err.exception).toEqual({
+        errors: [{ message: "Provide either resource_report_token or filter, not both" }],
+      });
+    },
+  },
+  {
+    name: "throws when neither resource_report_token nor filter is provided",
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError({
+        page: 1,
+        resource_report_token: undefined,
+        filter: undefined,
+        workspace_token: undefined,
+        include_cost: false,
+      });
+      expect(err.exception).toEqual({
+        errors: [{ message: "Either resource_report_token or filter is required" }],
+      });
+    },
+  },
   {
     name: "successful call",
     apiCallHandler: requestsInOrder([

@@ -11,6 +11,7 @@ Resources can be fetched either from a specific Resource Report or by using VQL 
 
 When using a resource_report_token, you get the pre-filtered resources from that report.
 When using VQL filters with workspace_token, you can dynamically query resources across your infrastructure.
+Provide either resource_report_token or filter (not both). When using filter, workspace_token is required.
 
 VQL for Resource Reports enables filtering using two primary namespaces:
 
@@ -124,6 +125,21 @@ export default registerTool({
       .describe("Include cost information broken down by category for each resource"),
   },
   async execute(args, ctx) {
+    if (!args.resource_report_token && !args.filter) {
+      throw new MCPUserError({
+        errors: [{ message: "Either resource_report_token or filter is required" }],
+      });
+    }
+    if (args.resource_report_token && args.filter) {
+      throw new MCPUserError({
+        errors: [{ message: "Provide either resource_report_token or filter, not both" }],
+      });
+    }
+    if (args.filter && !args.workspace_token) {
+      throw new MCPUserError({
+        errors: [{ message: "workspace_token is required when filter is provided" }],
+      });
+    }
     if (args.filter) {
       args.filter = correctResourceTypes(args.filter);
     }
