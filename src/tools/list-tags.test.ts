@@ -17,6 +17,8 @@ type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
   page: 1,
+  search_query: undefined,
+  providers: undefined,
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
@@ -24,6 +26,8 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     name: "default page",
     data: {
       page: undefined,
+      search_query: undefined,
+      providers: undefined,
     },
   },
   {
@@ -49,6 +53,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: "/v2/tags",
         params: {
           page: 1,
+          search_query: undefined,
+          providers: undefined,
           limit: DEFAULT_LIMIT,
         },
         method: "GET",
@@ -76,6 +82,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: "/v2/tags",
         params: {
           page: 1,
+          search_query: undefined,
+          providers: undefined,
           limit: DEFAULT_LIMIT,
         },
         method: "GET",
