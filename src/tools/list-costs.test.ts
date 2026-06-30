@@ -17,7 +17,7 @@ import {
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
-const DEFAULT_GROUPINGS = "provider,service,account_id" as unknown as string[];
+const DEFAULT_GROUPINGS = "provider,service,account_id";
 
 // Non-settings fields expected in every /v2/costs request.
 const baseApiParams = {

@@ -36,7 +36,7 @@ const undefineds = {
 const validInputArguments = {
   title: "Test Cost Report",
   workspace_token: "wt_123",
-  groupings: ["provider", "service", "region"] as ["provider", "service", "region"],
+  groupings: "provider,service,region",
   filter: "(costs.provider = 'aws')",
   saved_filter_tokens: ["sf_123", "sf_456"] as ["sf_123", "sf_456"],
   business_metric_tokens_with_metadata: [

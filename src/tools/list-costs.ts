@@ -65,10 +65,10 @@ const args = {
       "Results will show previous period costs or usage comparison. If not provided, the report's setting is used."
     ),
   groupings: z
-    .array(z.string())
-    .default(["provider", "service", "account_id"])
+    .string()
+    .default("provider,service,account_id")
     .describe(
-      "Group the results by specific field(s). Defaults to provider, service, account_id. Valid groupings: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, tag:<tag_value>. Let Groupings default unless explicitly asked for."
+      "Comma-separated grouping dimensions. Defaults to \"provider,service,account_id\". Valid values: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, tag:<tag_value>. Let groupings default unless explicitly asked for."
     ),
 };
 
@@ -101,11 +101,6 @@ export default registerTool({
       }
     }
 
-    // /v2/costs expects groupings as a comma-joined string (coerce_with: CSV::parse_line),
-    // not the bracket-suffix array format used by other endpoints.
-    if (Array.isArray(requestParams.groupings)) {
-      requestParams.groupings = requestParams.groupings.join(",");
-    }
     const response = await ctx.callVantageApi("/v2/costs", requestParams, "GET");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });

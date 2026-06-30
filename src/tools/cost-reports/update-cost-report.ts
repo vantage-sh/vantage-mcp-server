@@ -31,11 +31,10 @@ export default registerTool({
     cost_report_token: z.string().min(1).describe("The token of the Cost Report to update."),
     title: z.string().min(1).optional().describe("Updated title for the Cost Report."),
     groupings: z
-      .array(z.string())
+      .string()
       .optional()
-      .transform((v) => (v === undefined ? undefined : v.join(",")))
       .describe(
-        "Updated grouping values. Valid groupings: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, tag:<tag_value>."
+        "Updated comma-separated grouping dimensions. Examples: \"service\", \"provider,service\". Valid values: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, tag:<tag_value>."
       ),
     filter: z
       .string()

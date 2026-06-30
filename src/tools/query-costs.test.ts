@@ -15,8 +15,7 @@ import {
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
-// groupings is pre-joined to a CSV string for /v2/costs (coerce_with: CSV::parse_line)
-const GROUPINGS_API = "provider,service,region" as unknown as string[];
+const GROUPINGS_DEFAULT = "provider,service,region";
 
 // Non-settings fields expected in every /v2/costs request via query-costs.
 const baseApiParams = {
@@ -26,7 +25,7 @@ const baseApiParams = {
   start_date: "2023-01-01",
   end_date: "2023-01-31",
   date_bin: "month" as const,
-  groupings: GROUPINGS_API,
+  groupings: GROUPINGS_DEFAULT,
   limit: 1000,
 };
 
@@ -45,7 +44,7 @@ const validInputArguments = {
   settings_unallocated: undefined,
   settings_aggregate_by: undefined,
   settings_show_previous_period: undefined,
-  groupings: ["provider", "service", "region"] as string[],
+  groupings: "provider,service,region",
 } as const;
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
@@ -66,7 +65,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       settings_unallocated: undefined,
       settings_aggregate_by: undefined,
       settings_show_previous_period: undefined,
-      groupings: ["provider", "service", "region"],
+      groupings: "provider,service,region",
     },
   },
   {
@@ -168,7 +167,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         settings_unallocated: undefined,
         settings_aggregate_by: undefined,
         settings_show_previous_period: undefined,
-        groupings: ["provider", "service", "region"],
+        groupings: "provider,service,region",
       });
       expect(res).toEqual({
         costs: successData.costs,
@@ -333,7 +332,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         settings_unallocated: undefined,
         settings_aggregate_by: undefined,
         settings_show_previous_period: undefined,
-        groupings: ["provider", "service", "region"],
+        groupings: "provider,service,region",
       });
       expect(err.exception).toEqual({
         errors: [{ message: "Invalid VQL query" }],

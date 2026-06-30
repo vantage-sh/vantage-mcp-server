@@ -43,7 +43,7 @@ const validInputArguments: InferValidators<Validators> = {
   ...undefineds,
   cost_report_token: "rprt_123",
   title: "Updated Cost Report",
-  groupings: ["provider", "service", "region"] as ["provider", "service", "region"],
+  groupings: "provider,service,region",
   filter: "(costs.provider = 'aws')",
   saved_filter_tokens: ["sf_123", "sf_456"] as ["sf_123", "sf_456"],
   business_metric_tokens_with_metadata: [
