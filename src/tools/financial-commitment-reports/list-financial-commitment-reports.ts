@@ -6,6 +6,7 @@ import paginationData from "../utils/paginationData";
 
 const description = `
 List all financial commitment reports available in the Vantage account.
+Use the page value of 1 to start.
 `.trim();
 
 const args = {

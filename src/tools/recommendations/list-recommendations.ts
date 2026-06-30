@@ -131,6 +131,8 @@ const normalizeRecommendationType = (value: unknown) => {
 const description = `
 List all cost optimization recommendations available in the Vantage account. Recommendations are AI-powered suggestions that help identify opportunities to reduce costs and optimize cloud spending across your infrastructure.
 
+Use the page value of 1 to start pagination.
+
 Recommendations include various types such as:
 - EC2 rightsizing (resize overprovisioned instances)
 - Unused financial commitments (unused Reserved Instances or Savings Plans)

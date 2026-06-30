@@ -6,7 +6,7 @@ import paginationData from "./utils/paginationData";
 
 const description = `
 List all Folders for organizing Cost Reports. Folders can be nested within other Folders via the parent_folder_token field.
-
+When you first call this function, use the "page" parameter of 1.
 The 'title' of a Folder describes its purpose.
 The 'saved_filter_tokens' field contains tokens of SavedFilters applied to Cost Reports within the Folder.
 The 'token' of a Folder can be used to generate a link in the Vantage Web UI: https://console.vantage.sh/go/<token>

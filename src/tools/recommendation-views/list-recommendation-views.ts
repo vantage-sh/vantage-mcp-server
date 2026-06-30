@@ -6,7 +6,7 @@ import paginationData from "../utils/paginationData";
 
 const description = `
 List all recommendation views available in the Vantage account. Recommendation views are saved filters for cost optimization recommendations.
-
+Use the page value of 1 to start.
 The title of a recommendation view is a good way to understand what optimization scope it represents.
 The token of a recommendation view is its unique identifier and can be used to link the user to the view in the Vantage Web UI. Build the link like this: https://console.vantage.sh/go/<token>
 The workspace token, date range, providers, accounts, regions, and tag fields provide additional context about which recommendations are included in the view.

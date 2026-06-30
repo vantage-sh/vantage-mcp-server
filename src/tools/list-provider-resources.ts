@@ -78,6 +78,7 @@ Example VQL queries:
 - Untagged resources: (resources.provider = 'aws' AND tags.name = NULL)
 
 Set include_cost to true to get cost breakdowns by category for each resource.
+Use the page parameter starting with 1 for pagination.
 
 Resources include metadata specific to their type (EC2 instances show instance type, EBS volumes show size, etc.).
 Each resource has a unique token that can be used to get more details or link to the Vantage Web UI.

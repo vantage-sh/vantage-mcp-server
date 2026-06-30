@@ -22,6 +22,8 @@ Use this tool after getting recommendation details to see exactly which resource
 - For storage optimization: shows the volumes that could be optimized
 
 Each resource has its own token that can be used with get-recommendation-resource-details to get comprehensive information about that specific resource and what actions are recommended.
+
+Use pagination (page parameter) to navigate through large numbers of affected resources.
 `.trim();
 
 const args = {

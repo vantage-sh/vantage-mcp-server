@@ -6,7 +6,7 @@ import dateValidator from "./utils/dateValidator";
 import paginationData from "./utils/paginationData";
 
 const description = `
-List the cost items inside a report. The Token of a Report must be provided.
+List the cost items inside a report. The Token of a Report must be provided. Use the page value of 1 to start.
 The report token can be used to link the user to the report in the Vantage Web UI. Build the link like this: https://console.vantage.sh/go/<CostReportToken>
 
 The DateBin parameter controls the time granularity of returned results.

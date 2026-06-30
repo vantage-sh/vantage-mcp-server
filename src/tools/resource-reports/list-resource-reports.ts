@@ -6,7 +6,7 @@ import paginationData from "../utils/paginationData";
 
 const description = `
 List all resource reports available. Resource reports are already created reports authored by a user in Vantage.
-
+When you first call this function, use the "Page" parameter of 1.
 The 'Title' of a report is a good way to know what the report is about.
 The 'filter' of a report also gives clues to the data it provides.
 The 'token' of a report is a unique identifier for the report. It can be used to generate a link to the report in the Vantage Web UI.

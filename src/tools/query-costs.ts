@@ -41,6 +41,7 @@ When DateBin=day you get a record for each service spend on that day. For DateBi
 with the accrued_at field set to the first day of the week, but the spend item represents spend for a full week.
 Same with DateBin=month, each record returned covers a month of data. This lets you get answers with processing fewer
 records. If omitted, DateBin defaults to day.
+
 Cost settings (credits, refunds, discounts, tax, amortization, etc.) default to the workspace's default report settings.
 Only provide these parameters if you need to override those defaults.
 `.trim();

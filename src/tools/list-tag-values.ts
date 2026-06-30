@@ -6,9 +6,6 @@ import registerTool from "./structure/registerTool";
 import paginationData from "./utils/paginationData";
 
 const description = `
-
-Tags can have many values. Use this tool to find the values and service providers that are associated with a tag.
-
 List values for a tag key. The argument is \`key\` (the tag key name); the API response fields use \`tag_value\`.
 
 Requires integration settings permission; callers without it receive 403 from the API.

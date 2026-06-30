@@ -5,7 +5,7 @@ import paginationData from "../utils/paginationData";
 
 const description = `
 List all dashboards available in the Vantage account. Dashboards provide visualizations of cost data.
-
+Use the page value of 1 to start.
 The token of a dashboard can be used to link the user to the dashboard in the Vantage Web UI. Build the link like this: https://console.vantage.sh/go/<token>
 `.trim();
 
