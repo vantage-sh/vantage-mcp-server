@@ -3,12 +3,9 @@ import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 import dateValidator from "./utils/dateValidator";
 import paginationData from "./utils/paginationData";
-import { PAGINATION_GUIDANCE } from "./utils/paginationGuidance";
 
 const description = `
 Retrieve the unit costs for a given CostReport, with optional paging, date filters, and ordering.
-
-${PAGINATION_GUIDANCE}
 `.trim();
 
 const args = {

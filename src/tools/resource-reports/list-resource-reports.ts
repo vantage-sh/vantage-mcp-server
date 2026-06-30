@@ -3,12 +3,9 @@ import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import paginationData from "../utils/paginationData";
-import { PAGINATION_GUIDANCE } from "../utils/paginationGuidance";
 
 const description = `
 List all resource reports available. Resource reports are already created reports authored by a user in Vantage.
-
-${PAGINATION_GUIDANCE}
 
 The 'Title' of a report is a good way to know what the report is about.
 The 'filter' of a report also gives clues to the data it provides.

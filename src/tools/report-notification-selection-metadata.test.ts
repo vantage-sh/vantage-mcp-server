@@ -13,7 +13,6 @@ test("report notification metadata targets natural-language report notification 
   expect(listReportNotifications.title).toBe("List Report Notifications");
   expect(listReportNotifications.description).toContain("List Report Notifications available in the Vantage account.");
   expect(listReportNotifications.description.toLowerCase()).toContain("scheduled report notifications");
-  expect(listReportNotifications.description).toContain("hasNextPage");
 
   for (const tool of [
     createReportNotification,

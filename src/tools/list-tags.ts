@@ -4,14 +4,11 @@ import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 import paginationData from "./utils/paginationData";
-import { PAGINATION_GUIDANCE } from "./utils/paginationGuidance";
 
 const description = `
 List tags that can be used to filter costs and cost reports.
 Tags are associated with one or more Cost Providers.
 Tags can be edited in the Vantage Web UI, or have further details displayed there. Link a user to the tag page like this: https://console.vantage.sh/settings/tags?search_query=<tag>
-
-${PAGINATION_GUIDANCE}
 Requires integration settings permission; callers without it receive 403 from the API.
 Each tag in the response uses the field \`tag_key\` (not \`key\`).
 `.trim();

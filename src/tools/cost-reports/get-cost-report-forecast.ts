@@ -5,14 +5,11 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import dateValidator from "../utils/dateValidator";
 import paginationData from "../utils/paginationData";
-import { PAGINATION_GUIDANCE } from "../utils/paginationGuidance";
 
 const description = `
 Given a Cost Report Token, Vantage can forecast the costs for a given time range. Vantage will return costs that are *predicted*, but have not yet been actually incurred.
 If the user does not set a date, best to pick the next month as the default.
 The report token can be used to link the user to the report in the Vantage Web UI. Build the link like this: https://console.vantage.sh/go/<CostReportToken>
-
-${PAGINATION_GUIDANCE}
 `.trim();
 
 const args = {

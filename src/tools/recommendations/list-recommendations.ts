@@ -4,7 +4,6 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import dateValidator from "../utils/dateValidator";
 import paginationData from "../utils/paginationData";
-import { PAGINATION_GUIDANCE } from "../utils/paginationGuidance";
 
 const SUPPORTED_PROVIDERS = ["aws", "gcp", "azure", "kubernetes", "datadog"] as const;
 
@@ -131,8 +130,6 @@ const normalizeRecommendationType = (value: unknown) => {
 
 const description = `
 List all cost optimization recommendations available in the Vantage account. Recommendations are AI-powered suggestions that help identify opportunities to reduce costs and optimize cloud spending across your infrastructure.
-
-${PAGINATION_GUIDANCE}
 
 Recommendations include various types such as:
 - EC2 rightsizing (resize overprovisioned instances)

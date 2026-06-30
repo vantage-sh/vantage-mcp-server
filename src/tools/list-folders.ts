@@ -3,12 +3,9 @@ import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 import paginationData from "./utils/paginationData";
-import { PAGINATION_GUIDANCE } from "./utils/paginationGuidance";
 
 const description = `
 List all Folders for organizing Cost Reports. Folders can be nested within other Folders via the parent_folder_token field.
-
-${PAGINATION_GUIDANCE}
 
 The 'title' of a Folder describes its purpose.
 The 'saved_filter_tokens' field contains tokens of SavedFilters applied to Cost Reports within the Folder.

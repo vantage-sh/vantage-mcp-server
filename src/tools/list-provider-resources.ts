@@ -3,7 +3,6 @@ import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 import paginationData from "./utils/paginationData";
-import { PAGINATION_GUIDANCE } from "./utils/paginationGuidance";
 
 const description = `
 List infrastructure provider resources (instances, volumes, load balancers, etc.) from your cloud accounts.
@@ -79,8 +78,6 @@ Example VQL queries:
 - Untagged resources: (resources.provider = 'aws' AND tags.name = NULL)
 
 Set include_cost to true to get cost breakdowns by category for each resource.
-
-${PAGINATION_GUIDANCE}
 
 Resources include metadata specific to their type (EC2 instances show instance type, EBS volumes show size, etc.).
 Each resource has a unique token that can be used to get more details or link to the Vantage Web UI.

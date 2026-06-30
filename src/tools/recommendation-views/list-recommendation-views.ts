@@ -3,12 +3,9 @@ import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import paginationData from "../utils/paginationData";
-import { PAGINATION_GUIDANCE } from "../utils/paginationGuidance";
 
 const description = `
 List all recommendation views available in the Vantage account. Recommendation views are saved filters for cost optimization recommendations.
-
-${PAGINATION_GUIDANCE}
 
 The title of a recommendation view is a good way to understand what optimization scope it represents.
 The token of a recommendation view is its unique identifier and can be used to link the user to the view in the Vantage Web UI. Build the link like this: https://console.vantage.sh/go/<token>

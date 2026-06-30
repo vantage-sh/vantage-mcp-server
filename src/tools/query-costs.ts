@@ -3,7 +3,6 @@ import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 import dateValidator from "./utils/dateValidator";
 import paginationData from "./utils/paginationData";
-import { PAGINATION_GUIDANCE } from "./utils/paginationGuidance";
 
 const description = `
 Query for costs in a Vantage Account. These are independent of a cost reports.
@@ -42,8 +41,6 @@ When DateBin=day you get a record for each service spend on that day. For DateBi
 with the accrued_at field set to the first day of the week, but the spend item represents spend for a full week.
 Same with DateBin=month, each record returned covers a month of data. This lets you get answers with processing fewer
 records. If omitted, DateBin defaults to day.
-
-${PAGINATION_GUIDANCE}
 Cost settings (credits, refunds, discounts, tax, amortization, etc.) default to the workspace's default report settings.
 Only provide these parameters if you need to override those defaults.
 `.trim();

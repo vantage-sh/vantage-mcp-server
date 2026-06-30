@@ -4,7 +4,6 @@ import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 import dateValidator from "./utils/dateValidator";
 import paginationData from "./utils/paginationData";
-import { PAGINATION_GUIDANCE } from "./utils/paginationGuidance";
 
 const description = `
 List the cost items inside a report. The Token of a Report must be provided.
@@ -15,8 +14,6 @@ When DateBin=day you get a record for each service spend on that day. For DateBi
 with the accrued_at field set to the first day of the week, but the spend item represents spend for a full week.
 Same with DateBin=month, each record returned covers a month of data. This lets you get answers with processing fewer
 records. If omitted, the API uses the cost report's configured date bin, or day if the report has no override.
-
-${PAGINATION_GUIDANCE}
 
 Cost settings (credits, refunds, discounts, tax, amortization, etc.) default to the report's own settings.
 Only provide these parameters if you need to override the report's defaults.

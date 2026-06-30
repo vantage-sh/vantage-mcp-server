@@ -2,16 +2,13 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import paginationData from "../utils/paginationData";
-import { PAGINATION_GUIDANCE } from "../utils/paginationGuidance";
 import { BUSINESS_METRICS_LIMIT, businessMetricValueArgs } from "./schemas";
 
 const description = `
 Get forecasted values for a BusinessMetric.
 Values are returned in descending date order by the Vantage API and can include optional labels.
 Use start_date to limit results to values on or after a YYYY-MM-DD date.
-
-${PAGINATION_GUIDANCE}
-
+If the user asks for all values, complete data, or values for a date range such as a month, keep calling this tool with pagination.nextPage until pagination.hasNextPage is false before answering.
 The API only supports a start_date lower bound. For bounded ranges, such as a specific month, fetch all pages from the requested start date and then filter the returned values to the requested end date locally.
 `.trim();
 

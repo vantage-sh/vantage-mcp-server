@@ -2,12 +2,9 @@ import z from "zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import paginationData from "../utils/paginationData";
-import { PAGINATION_GUIDANCE } from "../utils/paginationGuidance";
 
 const description = `
 List all dashboards available in the Vantage account. Dashboards provide visualizations of cost data.
-
-${PAGINATION_GUIDANCE}
 
 The token of a dashboard can be used to link the user to the dashboard in the Vantage Web UI. Build the link like this: https://console.vantage.sh/go/<token>
 `.trim();

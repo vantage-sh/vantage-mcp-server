@@ -3,12 +3,9 @@ import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import paginationData from "../utils/paginationData";
-import { PAGINATION_GUIDANCE } from "../utils/paginationGuidance";
 
 const description = `
 List all budgets available in the Vantage account. Budgets help track spending against predefined limits.
-
-${PAGINATION_GUIDANCE}
 
 A budget is built against a Cost Report. The Budget objects returned by this tool will have a "cost_report_token" field that contains the token of the Cost Report. The Cost Report has the "filter" field to know what is the range of providers & services that the budget is tracking.
 When a user is looking at a Cost Report for a specific date range, they can decide if the providers and services spend is higher than desired by looking at the budgets for that report and the date range of the budget.

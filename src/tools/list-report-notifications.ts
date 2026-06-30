@@ -3,14 +3,11 @@ import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 import paginationData from "./utils/paginationData";
-import { PAGINATION_GUIDANCE } from "./utils/paginationGuidance";
 
 const description = `
 List Report Notifications available in the Vantage account. Report Notifications are scheduled deliveries of Cost Report summaries to users, Slack channels, or Microsoft Teams channels.
 
 Use this tool when a user asks to list, show, view, or find scheduled report notifications or recurring Cost Report summaries.
-
-${PAGINATION_GUIDANCE}
 
 Do not use this for Cost Alerts, budget alerts, threshold alerts, or spend-limit notifications. Cost Alerts are threshold-based spending alerts; Report Notifications are scheduled report deliveries.
 `.trim();
