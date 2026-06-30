@@ -34,7 +34,7 @@ export default registerTool({
       .string()
       .optional()
       .describe(
-        "Updated comma-separated grouping dimensions. Examples: \"service\", \"provider,service\". Valid values: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, tag:<tag_value>."
+        'Updated comma-separated grouping dimensions. Examples: "service", "provider,service". Valid values: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, tag:<tag_value>.'
       ),
     filter: z
       .string()

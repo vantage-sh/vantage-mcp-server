@@ -59,7 +59,7 @@ export default registerTool({
       .string()
       .optional()
       .describe(
-        "Comma-separated grouping dimensions for the report. Examples: \"service\", \"provider,service\", \"service,region\". Valid values: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, tag:<tag_value>."
+        'Comma-separated grouping dimensions for the report. Examples: "service", "provider,service", "service,region". Valid values: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, tag:<tag_value>.'
       ),
     filter: z.string().optional().describe("VQL filter to apply to the Cost Report"),
     saved_filter_tokens: z

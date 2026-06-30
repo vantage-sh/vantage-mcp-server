@@ -68,7 +68,7 @@ const args = {
     .string()
     .default("provider,service,account_id")
     .describe(
-      "Comma-separated grouping dimensions. Defaults to \"provider,service,account_id\". Valid values: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, tag:<tag_value>. Let groupings default unless explicitly asked for."
+      'Comma-separated grouping dimensions. Defaults to "provider,service,account_id". Valid values: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, tag:<tag_value>. Let groupings default unless explicitly asked for.'
     ),
 };
 
