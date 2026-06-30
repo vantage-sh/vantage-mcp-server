@@ -17,7 +17,7 @@ const args = {
     .enum(["day", "week", "month"])
     .optional()
     .describe(
-      "Date binning for returned costs, default to month unless user says otherwise, allowed values: day, week, month"
+      "Date binning for returned costs. If omitted, the API uses the cost report's configured date bin, or day if the report has no override. Allowed values: day, week, month."
     ),
   order: z.enum(["asc", "desc"]).optional().default("desc").describe("Order of the returned costs, defaults to desc"),
 };

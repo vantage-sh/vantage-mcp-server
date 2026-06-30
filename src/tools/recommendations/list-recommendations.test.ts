@@ -153,7 +153,10 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       start_date: "01-01-2024",
       end_date: "12-31-2024",
     },
-    expectedIssues: ["Must be in YYYY-MM-DD format", "Must be in YYYY-MM-DD format"],
+    expectedIssues: [
+      "Invalid date input, must be YYYY-MM-DD format and a reasonable date.",
+      "Invalid date input, must be YYYY-MM-DD format and a reasonable date.",
+    ],
   },
   {
     name: "regions array is valid",

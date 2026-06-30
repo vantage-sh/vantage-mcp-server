@@ -1,7 +1,5 @@
-import type { GetTagsResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import tool from "./list-tags";
-import { DEFAULT_LIMIT } from "./structure/constants";
+import { DEFAULT_LIMIT } from "../structure/constants";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
@@ -10,37 +8,48 @@ import {
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
-} from "./utils/testing";
+} from "../utils/testing";
+import tool from "./list-workspaces";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
+const noArguments = {} as InferValidators<Validators>;
+
 const validArguments: InferValidators<Validators> = {
   page: 1,
-  search_query: undefined,
-  providers: undefined,
+  limit: DEFAULT_LIMIT,
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
-    name: "default page",
-    data: {
-      page: undefined,
-      search_query: undefined,
-      providers: undefined,
-    },
+    name: "no arguments",
+    data: noArguments,
   },
   {
-    name: "valid page number",
+    name: "page and limit",
     data: validArguments,
   },
 ];
 
-const successData: GetTagsResponse = {
-  tags: [
-    { tag_key: "environment", hidden: false, preferred: false, providers: ["aws", "azure"] },
-    { tag_key: "project", hidden: false, preferred: false, providers: ["aws", "gcp"] },
-    { tag_key: "team", hidden: false, preferred: false, providers: ["aws"] },
+const successData = {
+  workspaces: [
+    {
+      token: "wrkspc_5d9752a116e4d28e",
+      name: "Production",
+      created_at: "2024-10-01T01:00:56Z",
+      enable_currency_conversion: false,
+      currency: "USD",
+      exchange_rate_date: "daily_rate" as const,
+    },
+    {
+      token: "wrkspc_9a319290712d817d",
+      name: "Staging",
+      created_at: "2024-10-01T01:00:56Z",
+      enable_currency_conversion: true,
+      currency: "EUR",
+      exchange_rate_date: "end_of_billing_period_rate" as const,
+    },
   ],
   links: {},
 };
@@ -50,11 +59,9 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "successful call",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: "/v2/tags",
+        endpoint: "/v2/workspaces",
         params: {
           page: 1,
-          search_query: undefined,
-          providers: undefined,
           limit: DEFAULT_LIMIT,
         },
         method: "GET",
@@ -65,9 +72,9 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       },
     ]),
     handler: async ({ callExpectingSuccess }) => {
-      const res = await callExpectingSuccess(validArguments);
+      const res = await callExpectingSuccess(noArguments);
       expect(res).toEqual({
-        tags: successData.tags,
+        workspaces: successData.workspaces,
         pagination: {
           hasNextPage: false,
           nextPage: 0,
@@ -79,11 +86,9 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "unsuccessful call",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: "/v2/tags",
+        endpoint: "/v2/workspaces",
         params: {
           page: 1,
-          search_query: undefined,
-          providers: undefined,
           limit: DEFAULT_LIMIT,
         },
         method: "GET",
@@ -94,7 +99,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       },
     ]),
     handler: async ({ callExpectingMCPUserError }) => {
-      const err = await callExpectingMCPUserError(validArguments);
+      const err = await callExpectingMCPUserError(noArguments);
       expect(err.exception).toEqual({
         errors: [{ message: "Access denied" }],
       });

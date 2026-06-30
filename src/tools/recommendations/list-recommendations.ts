@@ -2,6 +2,7 @@ import z from "zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import dateValidator from "../utils/dateValidator";
 import paginationData from "../utils/paginationData";
 
 const SUPPORTED_PROVIDERS = ["aws", "gcp", "azure", "kubernetes", "datadog"] as const;
@@ -221,20 +222,12 @@ const args = {
     .array(z.string())
     .optional()
     .describe("Filter by billing account identifiers. Requires workspace_token."),
-  start_date: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be in YYYY-MM-DD format")
-    .optional()
-    .describe(
-      "Filter recommendations created on or after this date (YYYY-MM-DD). Must be provided together with end_date. Requires workspace_token."
-    ),
-  end_date: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be in YYYY-MM-DD format")
-    .optional()
-    .describe(
-      "Filter recommendations created on or before this date (YYYY-MM-DD). Must be provided together with start_date. Requires workspace_token."
-    ),
+  start_date: dateValidator(
+    "Filter recommendations created on or after this date (YYYY-MM-DD). Must be provided together with end_date. Requires workspace_token."
+  ).optional(),
+  end_date: dateValidator(
+    "Filter recommendations created on or before this date (YYYY-MM-DD). Must be provided together with start_date. Requires workspace_token."
+  ).optional(),
 };
 
 export default registerTool({

@@ -5,18 +5,23 @@ import registerTool from "../structure/registerTool";
 import paginationData from "../utils/paginationData";
 
 const description = `
-Return all Users that the user can see in the workspace.
+List all Workspaces available to the authenticated API token. Workspaces are isolated environments within Vantage for organizing cost data and access control across teams.
 
-Requires account owner permissions; non-owners receive 403 from the API.
+Use get-myself to see the user's default workspace. Use get-workspace to retrieve details for a specific workspace.
 `.trim();
 
 const args = {
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
+  limit: z
+    .number()
+    .optional()
+    .default(DEFAULT_LIMIT)
+    .describe(`The number of results to return per page, defaults to ${DEFAULT_LIMIT}`),
 };
 
 export default registerTool({
-  name: "get-users",
-  title: "Get Users",
+  name: "list-workspaces",
+  title: "List Workspaces",
   description,
   annotations: {
     destructive: false,
@@ -25,13 +30,12 @@ export default registerTool({
   },
   args,
   async execute(args, ctx) {
-    const requestParams = { ...args, limit: DEFAULT_LIMIT };
-    const response = await ctx.callVantageApi("/v2/users", requestParams, "GET");
+    const response = await ctx.callVantageApi("/v2/workspaces", args, "GET");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }
     return {
-      users: response.data.users,
+      workspaces: response.data.workspaces,
       pagination: paginationData(response.data),
     };
   },

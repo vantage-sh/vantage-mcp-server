@@ -17,8 +17,11 @@ All costs originate from a Cost Provider (generally a cloud company like AWS, Az
 A cost provider is required on every VQL query.
 VQL is always in parenthesis. Always use single quotes around names that are being queried.
 To query on a cost provider, use this syntax: (costs.provider = '<provider name>'). The provider name must come from the list-cost-providers tool.
-To query on a cost service, use this syntax: (costs.provider = '<provider name>' AND costs.service = '<service name>'). The service name must come from the list-cost-services tool.
-For the AWS provider, always use short names for the services. example: Use 'AmazonEC2' not 'Amazon Elastic Compute Cloud' and 'AmazonRDS' not 'Amazon Relational Database Service'. Again the list-cost-services tool in this MCP can give accurate service names.
+To query on a cost service, use this syntax: (costs.provider = '<provider name>' AND costs.service = '<service name>').
+For AWS, costs.service must be a CUR identifier (e.g. 'AmazonEC2', 'AmazonVPC', 'AWSDirectConnect'). Use vql_info to resolve aliases — not display names from list-cost-services.
+If a query returns no rows, run one broad probe query first (provider only, date_bin=month, wide date range) to learn available months and service identifiers before retrying with a narrower filter.
+For month-over-month comparisons, span both months in start_date/end_date with date_bin=month and settings_show_previous_period=true instead of separate queries per month.
+Prefer one query-costs call with all needed groupings (e.g. service, account_id, tag:<key>) over multiple calls that only change groupings.
 You can only filter against one cost provider at a time. If you want to query for costs from two providers, you need to use the OR operator. Example: ((costs.provider = 'aws') OR (costs.provider = 'azure'))
 You can otherwise use the IN system to compare against a list of items, like this: (costs.provider = 'aws' AND costs.service IN ('AWSQueueService', 'AWSLambda'))
 To filter within a cost provider, keep the cost provider part and add a AND section, example: (costs.provider = 'aws' AND costs.service = 'AmazonRDS')
@@ -33,11 +36,14 @@ Some cost providers operate in a specific region, you can filter using the costs
 Note that when users want to query a Custom Provider, that has a special case. When doing a VQL query for custom provider, use the 'token' you get back from the 'list-cost-integrations' tool. Here is an example, where the token of the custom provider is "accss_crdntl_07171984": 
   (costs.provider = 'custom_provider:accss_crdntl_07171984')
 
-The DateBin parameter will let you get the information with fewer returned results.
+The DateBin parameter controls the time granularity of returned results.
 When DateBin=day you get a record for each service spend on that day. For DateBin=week you get one entry per week,
 with the accrued_at field set to the first day of the week, but the spend item represents spend for a full week.
 Same with DateBin=month, each record returned covers a month of data. This lets you get answers with processing fewer
-records. Only use day/week if needed, otherwise DateBin=month is preferred, and month is the value set if you pass no value for DateBin.
+records. If omitted, DateBin defaults to day.
+
+Cost settings (credits, refunds, discounts, tax, amortization, etc.) default to the workspace's default report settings.
+Only provide these parameters if you need to override those defaults.
 `.trim();
 
 const args = {
@@ -49,46 +55,48 @@ const args = {
   date_bin: z
     .enum(["day", "week", "month"])
     .optional()
-    .describe(
-      "Date binning for returned costs, default to month unless user says otherwise, allowed values: day, week, month"
-    ),
+    .describe("Date binning for returned costs. Defaults to day if omitted. Allowed values: day, week, month."),
   settings_include_credits: z
     .boolean()
     .optional()
-    .default(false)
-    .describe("Results will include credits, defaults to false"),
+    .describe("Results will include credits. If not provided, the workspace's default report setting is used."),
   settings_include_refunds: z
     .boolean()
     .optional()
-    .default(false)
-    .describe("Results will include refunds, defaults to false"),
+    .describe("Results will include refunds. If not provided, the workspace's default report setting is used."),
   settings_include_discounts: z
     .boolean()
     .optional()
-    .default(true)
-    .describe("Results will include discounts, defaults to true"),
-  settings_include_tax: z.boolean().optional().default(true).describe("Results will include tax, defaults to true"),
-  settings_amortize: z.boolean().optional().default(true).describe("Results will amortize, defaults to true"),
+    .describe("Results will include discounts. If not provided, the workspace's default report setting is used."),
+  settings_include_tax: z
+    .boolean()
+    .optional()
+    .describe("Results will include tax. If not provided, the workspace's default report setting is used."),
+  settings_amortize: z
+    .boolean()
+    .optional()
+    .describe("Results will amortize. If not provided, the workspace's default report setting is used."),
   settings_unallocated: z
     .boolean()
     .optional()
-    .default(false)
-    .describe("Results will show unallocated costs, defaults to false"),
+    .describe("Results will show unallocated costs. If not provided, the workspace's default report setting is used."),
   settings_aggregate_by: z
     .enum(["cost", "usage"])
     .optional()
-    .default("cost")
-    .describe("Results will aggregate by cost or usage, defaults to cost"),
+    .describe(
+      "Results will aggregate by cost or usage. If not provided, the workspace's default report setting is used."
+    ),
   settings_show_previous_period: z
     .boolean()
     .optional()
-    .default(true)
-    .describe("Results will show previous period costs or usage comparison, defaults to true"),
+    .describe(
+      "Results will show previous period costs or usage comparison. If not provided, the workspace's default report setting is used."
+    ),
   groupings: z
     .array(z.string())
     .default(["provider", "service", "region"])
     .describe(
-      "Group the results by specific field(s). Defaults to provider, service, account_id. Valid groupings: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, tag:<tag_value>. Let Groupings default unless explicitly asked for."
+      "Group the results by specific field(s). Defaults to provider, service, region. Valid groupings: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, tag:<tag_value>. Include every grouping you need in one call rather than issuing separate calls per grouping."
     ),
 };
 
@@ -103,21 +111,23 @@ export default registerTool({
   },
   args,
   async execute(args, ctx) {
+    // Build request params. Settings that are not explicitly provided are left out
+    // so the API uses the workspace's default report settings.
     const requestParams: Record<string, unknown> = {
       limit: 1000,
     };
-    if (!args.date_bin) args.date_bin = "month";
-
-    // Every arg we get needs to be in requestParams, but under 'settings' if it has that prefix.
-    Object.keys(args).forEach((key) => {
+    for (const key of Object.keys(args)) {
       const typedKey = key as keyof typeof args;
       if (key.startsWith("settings_")) {
-        const keyWithoutPrefix = key.slice("settings_".length);
-        requestParams[`settings[${keyWithoutPrefix}]`] = args[typedKey];
+        const value = args[typedKey];
+        if (value !== undefined) {
+          const keyWithoutPrefix = key.slice("settings_".length);
+          requestParams[`settings[${keyWithoutPrefix}]`] = value;
+        }
       } else {
         requestParams[key] = args[typedKey];
       }
-    });
+    }
     // /v2/costs expects groupings as a comma-joined string (coerce_with: CSV::parse_line),
     // not the bracket-suffix array format used by other endpoints.
     if (Array.isArray(requestParams.groupings)) {
@@ -143,13 +153,21 @@ export default registerTool({
           "Costs records represent one month, the accrued_at field is the first day of the month. If your date range is less than one month, this record includes only data for that date range, not the full month.";
         break;
       default:
-        throw new Error("Invalid date bin value");
+        notes = "Costs records represent one day.";
+        break;
     }
 
+    const costs = response.data.costs;
+    const hint =
+      costs.length === 0
+        ? "No cost rows matched this filter and date range. Widen the date range, verify costs.service identifiers (vql_info or service values from a broad probe query), and avoid retrying with only a different groupings parameter."
+        : undefined;
+
     return {
-      costs: response.data.costs,
+      costs,
       total_cost: response.data.total_cost,
       notes,
+      ...(hint ? { hint } : {}),
       pagination: paginationData(response.data),
     };
   },

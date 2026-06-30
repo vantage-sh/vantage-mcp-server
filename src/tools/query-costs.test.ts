@@ -18,6 +18,18 @@ type OutputSchema = ExtractOutputSchema<typeof tool>;
 // groupings is pre-joined to a CSV string for /v2/costs (coerce_with: CSV::parse_line)
 const GROUPINGS_API = "provider,service,region" as unknown as string[];
 
+// Non-settings fields expected in every /v2/costs request via query-costs.
+const baseApiParams = {
+  page: 1,
+  filter: "(costs.provider = 'aws')",
+  workspace_token: "wt_123",
+  start_date: "2023-01-01",
+  end_date: "2023-01-31",
+  date_bin: "month" as const,
+  groupings: GROUPINGS_API,
+  limit: 1000,
+};
+
 const validInputArguments = {
   page: 1,
   filter: "(costs.provider = 'aws')",
@@ -25,14 +37,14 @@ const validInputArguments = {
   end_date: "2023-01-31",
   workspace_token: "wt_123",
   date_bin: "month",
-  settings_include_credits: false,
-  settings_include_refunds: false,
-  settings_include_discounts: true,
-  settings_include_tax: true,
-  settings_amortize: true,
-  settings_unallocated: false,
-  settings_aggregate_by: "cost",
-  settings_show_previous_period: true,
+  settings_include_credits: undefined,
+  settings_include_refunds: undefined,
+  settings_include_discounts: undefined,
+  settings_include_tax: undefined,
+  settings_amortize: undefined,
+  settings_unallocated: undefined,
+  settings_aggregate_by: undefined,
+  settings_show_previous_period: undefined,
   groupings: ["provider", "service", "region"] as string[],
 } as const;
 
@@ -46,14 +58,14 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       end_date: undefined,
       workspace_token: "wt_123",
       date_bin: undefined,
-      settings_include_credits: false,
-      settings_include_refunds: false,
-      settings_include_discounts: true,
-      settings_include_tax: true,
-      settings_amortize: true,
-      settings_unallocated: false,
-      settings_aggregate_by: "cost",
-      settings_show_previous_period: true,
+      settings_include_credits: undefined,
+      settings_include_refunds: undefined,
+      settings_include_discounts: undefined,
+      settings_include_tax: undefined,
+      settings_amortize: undefined,
+      settings_unallocated: undefined,
+      settings_aggregate_by: undefined,
+      settings_show_previous_period: undefined,
       groupings: ["provider", "service", "region"],
     },
   },
@@ -123,27 +135,15 @@ const successData: GetCostsResponse = {
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   {
-    name: "successful call with minimal arguments",
+    name: "successful call omits settings so API uses workspace defaults",
     apiCallHandler: requestsInOrder([
       {
         endpoint: "/v2/costs",
         params: {
-          page: 1,
-          filter: "(costs.provider = 'aws')",
+          ...baseApiParams,
           start_date: undefined,
           end_date: undefined,
-          workspace_token: "wt_123",
-          date_bin: "month",
-          groupings: GROUPINGS_API,
-          "settings[include_credits]": false,
-          "settings[include_refunds]": false,
-          "settings[include_discounts]": true,
-          "settings[include_tax]": true,
-          "settings[amortize]": true,
-          "settings[unallocated]": false,
-          "settings[aggregate_by]": "cost",
-          "settings[show_previous_period]": true,
-          limit: 1000,
+          date_bin: undefined,
         },
         method: "GET",
         result: {
@@ -160,21 +160,20 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         end_date: undefined,
         workspace_token: "wt_123",
         date_bin: undefined,
-        settings_include_credits: false,
-        settings_include_refunds: false,
-        settings_include_discounts: true,
-        settings_include_tax: true,
-        settings_amortize: true,
-        settings_unallocated: false,
-        settings_aggregate_by: "cost",
-        settings_show_previous_period: true,
+        settings_include_credits: undefined,
+        settings_include_refunds: undefined,
+        settings_include_discounts: undefined,
+        settings_include_tax: undefined,
+        settings_amortize: undefined,
+        settings_unallocated: undefined,
+        settings_aggregate_by: undefined,
+        settings_show_previous_period: undefined,
         groupings: ["provider", "service", "region"],
       });
       expect(res).toEqual({
         costs: successData.costs,
         total_cost: successData.total_cost,
-        notes:
-          "Costs records represent one month, the accrued_at field is the first day of the month. If your date range is less than one month, this record includes only data for that date range, not the full month.",
+        notes: "Costs records represent one day.",
         pagination: {
           hasNextPage: false,
           nextPage: 0,
@@ -183,18 +182,12 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     },
   },
   {
-    name: "successful call with all arguments",
+    name: "successful call with all arguments and explicit settings",
     apiCallHandler: requestsInOrder([
       {
         endpoint: "/v2/costs",
         params: {
-          page: 1,
-          filter: "(costs.provider = 'aws')",
-          start_date: "2023-01-01",
-          end_date: "2023-01-31",
-          workspace_token: "wt_123",
-          date_bin: "month",
-          groupings: GROUPINGS_API,
+          ...baseApiParams,
           "settings[include_credits]": false,
           "settings[include_refunds]": false,
           "settings[include_discounts]": true,
@@ -203,7 +196,6 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           "settings[unallocated]": false,
           "settings[aggregate_by]": "cost",
           "settings[show_previous_period]": true,
-          limit: 1000,
         },
         method: "GET",
         result: {
@@ -218,7 +210,17 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       },
     ]),
     handler: async ({ callExpectingSuccess }) => {
-      const res = await callExpectingSuccess(validInputArguments);
+      const res = await callExpectingSuccess({
+        ...validInputArguments,
+        settings_include_credits: false,
+        settings_include_refunds: false,
+        settings_include_discounts: true,
+        settings_include_tax: true,
+        settings_amortize: true,
+        settings_unallocated: false,
+        settings_aggregate_by: "cost",
+        settings_show_previous_period: true,
+      });
       expect(res).toEqual({
         costs: successData.costs,
         total_cost: successData.total_cost,
@@ -237,22 +239,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       {
         endpoint: "/v2/costs",
         params: {
-          page: 1,
-          filter: "(costs.provider = 'aws')",
-          start_date: "2023-01-01",
-          end_date: "2023-01-31",
-          workspace_token: "wt_123",
+          ...baseApiParams,
           date_bin: "day",
-          groupings: GROUPINGS_API,
-          "settings[include_credits]": false,
-          "settings[include_refunds]": false,
-          "settings[include_discounts]": true,
-          "settings[include_tax]": true,
-          "settings[amortize]": true,
-          "settings[unallocated]": false,
-          "settings[aggregate_by]": "cost",
-          "settings[show_previous_period]": true,
-          limit: 1000,
         },
         method: "GET",
         result: {
@@ -278,27 +266,49 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     },
   },
   {
+    name: "successful call with empty costs returns hint",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/costs",
+        params: {
+          ...baseApiParams,
+          filter: "(costs.provider = 'aws' AND costs.service = 'AmazonVPC')",
+          start_date: "2025-04-01",
+          end_date: "2025-05-31",
+        },
+        method: "GET",
+        result: {
+          ok: true,
+          data: {
+            costs: [],
+            total_cost: { amount: "0", currency: "USD" },
+            total_usage: {},
+            links: {},
+          },
+        },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const res = await callExpectingSuccess({
+        ...validInputArguments,
+        filter: "(costs.provider = 'aws' AND costs.service = 'AmazonVPC')",
+        start_date: "2025-04-01",
+        end_date: "2025-05-31",
+      });
+      expect(res.costs).toEqual([]);
+      expect(res.hint).toContain("No cost rows matched");
+    },
+  },
+  {
     name: "unsuccessful call",
     apiCallHandler: requestsInOrder([
       {
         endpoint: "/v2/costs",
         params: {
-          page: 1,
-          filter: "(costs.provider = 'aws')",
+          ...baseApiParams,
           start_date: undefined,
           end_date: undefined,
-          workspace_token: "wt_123",
-          date_bin: "month",
-          groupings: GROUPINGS_API,
-          "settings[include_credits]": false,
-          "settings[include_refunds]": false,
-          "settings[include_discounts]": true,
-          "settings[include_tax]": true,
-          "settings[amortize]": true,
-          "settings[unallocated]": false,
-          "settings[aggregate_by]": "cost",
-          "settings[show_previous_period]": true,
-          limit: 1000,
+          date_bin: undefined,
         },
         method: "GET",
         result: {
@@ -315,14 +325,14 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         end_date: undefined,
         workspace_token: "wt_123",
         date_bin: undefined,
-        settings_include_credits: false,
-        settings_include_refunds: false,
-        settings_include_discounts: true,
-        settings_include_tax: true,
-        settings_amortize: true,
-        settings_unallocated: false,
-        settings_aggregate_by: "cost",
-        settings_show_previous_period: true,
+        settings_include_credits: undefined,
+        settings_include_refunds: undefined,
+        settings_include_discounts: undefined,
+        settings_include_tax: undefined,
+        settings_amortize: undefined,
+        settings_unallocated: undefined,
+        settings_aggregate_by: undefined,
+        settings_show_previous_period: undefined,
         groupings: ["provider", "service", "region"],
       });
       expect(err.exception).toEqual({
