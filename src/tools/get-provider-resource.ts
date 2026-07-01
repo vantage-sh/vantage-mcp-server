@@ -6,6 +6,8 @@ import registerTool from "./structure/registerTool";
 const description = `
 Get detailed information about a specific provider resource using its token or UUID.
 
+Use this for one resource at a time. When you need many resources, prefer list-provider-resources instead—it returns batches and supports include_cost. Do not call this tool repeatedly for every resource from a list.
+
 This returns comprehensive details about the resource including:
 - Resource metadata (instance type, size, configuration, etc.)
 - Account and billing account information

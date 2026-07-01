@@ -1,6 +1,7 @@
 import type { GetReportResourcesResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "./list-provider-resources";
+import { DEFAULT_LIMIT } from "./structure/constants";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
@@ -158,6 +159,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           filter: undefined,
           workspace_token: undefined,
           include_cost: false,
+          limit: DEFAULT_LIMIT,
         },
         method: "GET",
         result: {
@@ -194,6 +196,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           filter: "invalid VQL syntax",
           workspace_token: "wt_123",
           include_cost: false,
+          limit: DEFAULT_LIMIT,
         },
         method: "GET",
         result: {
