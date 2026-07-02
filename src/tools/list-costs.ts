@@ -94,9 +94,7 @@ export default registerTool({
       throw new MCPUserError({ errors: reportResponse.errors });
     }
 
-    const reportSettings = (reportResponse.data as Record<string, any>).settings as
-      | Record<string, unknown>
-      | undefined;
+    const reportSettings = (reportResponse.data as Record<string, any>).settings as Record<string, unknown> | undefined;
 
     // Every arg we get needs to be in requestParams, but under 'settings' if it has that prefix.
     // Settings that are not explicitly provided by the caller fall back to the report's settings.

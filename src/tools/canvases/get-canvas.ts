@@ -21,8 +21,7 @@ export default registerTool({
     canvas_token: z.string().describe("The token of the Canvas to retrieve."),
   },
   async execute(args, ctx) {
-    // Canvas endpoints not yet in vantage-client types
-    const response: any = await (ctx.callVantageApi as any)(`/v2/canvases/${pathEncode(args.canvas_token)}`, {}, "GET");
+    const response = await ctx.callVantageApi(`/v2/canvases/${pathEncode(args.canvas_token)}`, {}, "GET");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }

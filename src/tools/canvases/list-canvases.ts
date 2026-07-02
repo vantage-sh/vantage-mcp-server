@@ -26,8 +26,7 @@ export default registerTool({
   args,
   async execute(args, ctx) {
     const requestParams = { ...args, limit: DEFAULT_LIMIT };
-    // Canvas endpoints not yet in vantage-client types
-    const response: any = await (ctx.callVantageApi as any)("/v2/canvases", requestParams, "GET");
+    const response = await ctx.callVantageApi("/v2/canvases", requestParams, "GET");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }

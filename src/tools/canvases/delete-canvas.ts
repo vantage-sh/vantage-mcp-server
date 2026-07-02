@@ -20,12 +20,7 @@ export default registerTool({
     canvas_token: z.string().describe("The token of the Canvas to delete."),
   },
   async execute(args, ctx) {
-    // Canvas endpoints not yet in vantage-client types
-    const response: any = await (ctx.callVantageApi as any)(
-      `/v2/canvases/${pathEncode(args.canvas_token)}`,
-      {},
-      "DELETE"
-    );
+    const response = await ctx.callVantageApi(`/v2/canvases/${pathEncode(args.canvas_token)}`, {}, "DELETE");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }
