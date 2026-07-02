@@ -116,6 +116,7 @@ const successData: UpdateCostReportResponse = {
     {
       business_metric_token: "bm_123",
       unit_scale: "per_thousand",
+      calculation_type: "unit_cost",
       label_filter: ["prod"],
     },
   ],
@@ -137,6 +138,7 @@ const successData: UpdateCostReportResponse = {
   previous_period_end_date: "2023-01-31",
   start_date: "2023-02-01",
   end_date: "2023-02-28",
+  default_forecast: { kind: "baseline" },
   date_interval: "this_month",
   chart_type: "pie",
   date_bin: "week",

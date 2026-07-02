@@ -310,6 +310,7 @@ const minSuccess = {
   created_at: "2023-01-01T00:00:00Z",
   date_bin: "month",
   date_interval: "this_month",
+  default_forecast: { kind: "baseline" },
   filter: "(costs.provider = 'aws')",
   workspace_token: "wt_123",
 };
