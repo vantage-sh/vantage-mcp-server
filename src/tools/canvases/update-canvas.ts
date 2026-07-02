@@ -12,7 +12,7 @@ export default registerTool({
   title: "Update Canvas",
   description,
   annotations: {
-    destructive: true,
+    destructive: false,
     openWorld: false,
     readOnly: false,
   },

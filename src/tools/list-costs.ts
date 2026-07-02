@@ -1,4 +1,3 @@
-import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
@@ -84,45 +83,21 @@ export default registerTool({
   },
   args,
   async execute(args, ctx) {
-    // Fetch the cost report to use its settings as defaults.
-    const reportResponse = await ctx.callVantageApi(
-      `/v2/cost_reports/${pathEncode(args.cost_report_token)}`,
-      {},
-      "GET"
-    );
-    if (!reportResponse.ok) {
-      throw new MCPUserError({ errors: reportResponse.errors });
-    }
-
-    const reportSettings = (reportResponse.data as Record<string, any>).settings as Record<string, unknown> | undefined;
-
-    // Every arg we get needs to be in requestParams, but under 'settings' if it has that prefix.
-    // Settings that are not explicitly provided by the caller fall back to the report's settings.
+    // Build request params. Settings that are not explicitly provided are left out
+    // so the API uses the cost report's own configured settings.
     const requestParams: Record<string, any> = {
       limit: DEFAULT_LIMIT,
     };
-    const settingsKeys = [
-      "include_credits",
-      "include_refunds",
-      "include_discounts",
-      "include_tax",
-      "amortize",
-      "unallocated",
-      "aggregate_by",
-      "show_previous_period",
-    ] as const;
-
-    for (const key of settingsKeys) {
-      const argKey = `settings_${key}` as keyof typeof args;
-      const userValue = args[argKey];
-      // Use the user-provided value if present, otherwise fall back to the report's setting.
-      requestParams[`settings[${key}]`] = userValue ?? reportSettings?.[key];
-    }
-
-    // Non-settings args.
     for (const key of Object.keys(args)) {
-      if (!key.startsWith("settings_")) {
-        requestParams[key] = args[key as keyof typeof args];
+      const typedKey = key as keyof typeof args;
+      if (key.startsWith("settings_")) {
+        const value = args[typedKey];
+        if (value !== undefined) {
+          const keyWithoutPrefix = key.slice("settings_".length);
+          requestParams[`settings[${keyWithoutPrefix}]`] = value;
+        }
+      } else {
+        requestParams[key] = args[typedKey];
       }
     }
 
