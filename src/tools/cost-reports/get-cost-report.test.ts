@@ -30,6 +30,7 @@ const success: GetCostReportResponse = {
   date_interval: "this_month",
   chart_type: "line",
   date_bin: "cumulative",
+  default_forecast: { kind: "baseline" },
   chart_settings: {
     y_axis_dimension: "cost",
     x_axis_dimension: ["date"],
