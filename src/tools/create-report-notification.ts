@@ -15,7 +15,7 @@ export default registerTool({
   title: "Create Report Notification",
   description,
   annotations: {
-    destructive: true,
+    destructive: false,
     openWorld: false,
     readOnly: false,
   },

@@ -51,7 +51,7 @@ export default registerTool({
     values: z.array(valueSchema).optional(),
   },
   annotations: {
-    destructive: true,
+    destructive: false,
     openWorld: false,
     readOnly: false,
   },
