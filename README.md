@@ -84,7 +84,7 @@ See the [MCP documentation](https://modelcontextprotocol.io/clients) for a list 
      }
    }
    ```
-   
+
    > 📝 _Note: The server uses `tsx` to run TypeScript directly. If you have `tsx` installed globally, you can use `"command": "tsx"` and `"args": ["<path_to_repository>/src/local.ts"]` instead._
 
 6. Save the configuration file and restart Claude.
@@ -110,9 +110,9 @@ See the [MCP documentation](https://modelcontextprotocol.io/clients) for a list 
      }
    }
    ```
-   
+
    > 📝 _Note: The server uses `tsx` to run TypeScript directly. If you have `tsx` installed globally, you can use `"command": "tsx"` and `"args": ["<path_to_repository>/src/local.ts"]` instead._
-6. Save the configuration file. 
+6. Save the configuration file.
 7. You will see the Vantage MCP Server with tools enabled in the **Installed MCP Servers** list.
 
 #### Goose
@@ -124,7 +124,7 @@ See the [MCP documentation](https://modelcontextprotocol.io/clients) for a list 
 5. For **Type**, select **STDIO**.
 6. In the **Description** field, enter `Query costs and usage data`.
 7. In the **Command** field, enter `npx tsx <path_to_repository>/src/local.ts` (replace `<path_to_repository>` with the actual path to your cloned repository).
-8. In the **Environment Variables** section, add a new variable with the name `VANTAGE_TOKEN` and the value set to your Vantage API token. Next to the environment variable, click **Add**. 
+8. In the **Environment Variables** section, add a new variable with the name `VANTAGE_TOKEN` and the value set to your Vantage API token. Next to the environment variable, click **Add**.
 9. Click **Add Extension**.
 
 ## Local Development: Run the HTTP Mode
@@ -150,26 +150,6 @@ For easier local development, you can configure the `VANTAGE_MCP_TOKEN` environm
 3. The server will be available at `http://localhost:8787` (Wrangler's default port) and will bypass OAuth, using the `VANTAGE_MCP_TOKEN` for authentication instead.
 
 > 📝 _Note: Setting `VANTAGE_MCP_TOKEN` enables direct token mode, which bypasses OAuth entirely. This is useful for local development or for MCP clients without OAuth support or the ability to pass headers._
-
-## Remote Deployments
-
-Cloudflare Worker deployment settings are defined in `wrangler.jsonc`.
-
-- `development` is used by `npm run dev` for local HTTP development.
-- `staging` deploys the `vantage-mcp-staging` worker to `hosted-mcp-staging.vantage.sh`.
-- `production` deploys the `hosted-mcp-prod` worker to the production custom domains.
-
-Staging deploys automatically after changes merge to `main` via the `Deploy Worker Staging` GitHub Actions workflow. The workflow can also be triggered manually with an optional branch, tag, or SHA to deploy pre-merge changes.
-
-Before the first staging deploy, create a separate OAuth KV namespace and replace the staging `OAUTH_KV` placeholder in `wrangler.jsonc`:
-
-```bash
-npx wrangler kv namespace create hosted-mcp-staging-oauth-kv
-```
-
-Also configure staging Cloudflare secrets for the OAuth/Sentry values that are intentionally not committed to `wrangler.jsonc`, matching the production secret pattern.
-
-The development `OAUTH_KV` binding intentionally uses a local-only placeholder because `npm run dev` stores KV data locally. Replace it with a real namespace ID only if you plan to deploy the `development` environment to Cloudflare.
 
 ## Running Evals
 
@@ -203,17 +183,13 @@ This produces a static bundle from the current state of `evals/evalite.db` and d
 - `npm run --silent local` - Run local MCP server with reduced output (recommended for development)
 - `npm run inspect` - Launch MCP inspector tool
 - `npm run format` - Format code using Biome
-- `npm run lint:fix` - Lint and auto-fix issues with Biome  
+- `npm run lint:fix` - Lint and auto-fix issues with Biome
 - `npm run type-check` - Run TypeScript type checking
 - `npm run cf-typegen` - Generate Cloudflare Worker types
 - `npm run generate-tools-index` - Generate tools index after adding/removing tools
 - `npm run eval` - Run all evals (use `npm run eval -- ./evals/<path>` to filter to one file)
 - `npm run eval:dev` - Run evalite in watch mode with UI on `localhost:3006`
 - `npm run eval:export` - Build a static HTML bundle of the current `evalite.db` under `./evalite-export/` (no re-execution)
-
-## Public Assets
-
-The `/public` folder is publicly accessible. Any file like `/public/asset.gif` is accessible as `/asset.gif` when running locally or on Cloudflare.
 
 ## Contribution Guidelines
 
@@ -235,3 +211,15 @@ We welcome community contributions, improvements, and bug fixes.
 ## License
 
 See the `LICENSE.md` file for commercial and non-commercial licensing details.
+
+## Remote Deployments
+
+Cloudflare Worker deployment settings are defined in `wrangler.jsonc`.
+
+- `development` is used by `npm run dev` for local HTTP development.
+- `staging` deploys the `vantage-mcp-staging` worker to `hosted-mcp-staging.vantage.sh`.
+- `production` deploys the `hosted-mcp-prod` worker to the production custom domains.
+
+Staging deploys automatically after changes merge to `main` via the `Deploy Worker Staging` GitHub Actions workflow. The workflow can also be triggered manually with an optional branch, tag, or SHA to deploy pre-merge changes.
+
+The development `OAUTH_KV` binding intentionally uses a local-only placeholder because `npm run dev` stores KV data locally. Replace it with a real namespace ID only if you plan to deploy the `development` environment to Cloudflare.
