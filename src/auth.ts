@@ -90,12 +90,13 @@ export async function authorize(c: Context<{ Bindings: AppEnv & { OAUTH_PROVIDER
 
   // Store the auth request in a transaction-specific cookie
   const cookieName = `auth0_req_${transactionState}`;
+  const isHostedEnvironment = c.env.ENVIRONMENT !== "development";
   setCookie(c, cookieName, btoa(JSON.stringify(auth0AuthRequest)), {
     httpOnly: true,
     maxAge: 60 * 60 * 1,
     path: "/",
-    sameSite: c.env.ENVIRONMENT === "production" ? "none" : "lax",
-    secure: c.env.ENVIRONMENT === "production", // 1 hour
+    sameSite: isHostedEnvironment ? "none" : "lax",
+    secure: isHostedEnvironment,
   });
 
   // Extract client information for the consent screen
