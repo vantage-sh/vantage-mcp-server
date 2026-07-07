@@ -43,7 +43,7 @@ export default registerTool({
     date_interval: dateIntervalSchema,
   },
   annotations: {
-    destructive: true,
+    destructive: false,
     openWorld: false,
     readOnly: false,
   },

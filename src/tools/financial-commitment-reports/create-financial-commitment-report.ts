@@ -35,7 +35,7 @@ export default registerTool({
   title: "Create Financial Commitment Report",
   description,
   annotations: {
-    destructive: true,
+    destructive: false,
     openWorld: false,
     readOnly: false,
   },

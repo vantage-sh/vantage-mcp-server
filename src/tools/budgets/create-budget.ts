@@ -13,7 +13,7 @@ export default registerTool({
   title: "Create Budget",
   description,
   annotations: {
-    destructive: true,
+    destructive: false,
     openWorld: false,
     readOnly: false,
   },

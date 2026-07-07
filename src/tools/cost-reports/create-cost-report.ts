@@ -43,7 +43,7 @@ export default registerTool({
   title: "Create Cost Report",
   description,
   annotations: {
-    destructive: true,
+    destructive: false,
     openWorld: false,
     readOnly: false,
   },

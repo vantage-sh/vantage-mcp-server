@@ -27,7 +27,7 @@ export default registerTool({
   title: "Create Recommendation View",
   description,
   annotations: {
-    destructive: true,
+    destructive: false,
     openWorld: false,
     readOnly: false,
   },
