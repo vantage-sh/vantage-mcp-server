@@ -133,17 +133,12 @@ To develop and test the HTTP/Cloudflare Worker mode locally, you can use `npm ru
 
 ### Bypass OAuth for Local Development
 
-For easier local development, you can configure the `VANTAGE_MCP_TOKEN` environment variable in `wrangler-DEV.jsonc` to bypass OAuth authentication. When set, the server will use this token directly instead of requiring OAuth flow.
+For easier local development, you can configure the `VANTAGE_MCP_TOKEN` environment variable in `.dev.vars.development` to bypass OAuth authentication. When set, the server will use this token directly instead of requiring OAuth flow.
 
-1. Open `wrangler-DEV.jsonc` and set the `VANTAGE_MCP_TOKEN` value in the `vars` section:
+1. Create `.dev.vars.development` and set the `VANTAGE_MCP_TOKEN` value:
 
-   ```jsonc
-   {
-     "vars": {
-       "VANTAGE_MCP_TOKEN": "your_vantage_api_token_here",
-       // ... other vars
-     }
-   }
+   ```bash
+   VANTAGE_MCP_TOKEN=your_vantage_api_token_here
    ```
 
 2. Run the development server:
@@ -152,9 +147,27 @@ For easier local development, you can configure the `VANTAGE_MCP_TOKEN` environm
    npm run dev
    ```
 
-3. The server will be available at `http://localhost:8787` (Wrangler's default port, as configured in `wrangler-DEV.jsonc`) and will bypass OAuth, using the `VANTAGE_MCP_TOKEN` for authentication instead.
+3. The server will be available at `http://localhost:8787` (Wrangler's default port) and will bypass OAuth, using the `VANTAGE_MCP_TOKEN` for authentication instead.
 
 > 📝 _Note: Setting `VANTAGE_MCP_TOKEN` enables direct token mode, which bypasses OAuth entirely. This is useful for local development or for MCP clients without OAuth support or the ability to pass headers._
+
+## Remote Deployments
+
+Cloudflare Worker deployment settings are defined in `wrangler.jsonc`.
+
+- `development` is used by `npm run dev` for local HTTP development.
+- `staging` deploys the `vantage-mcp-staging` worker to `hosted-mcp-staging.vantage.sh`.
+- `production` deploys the `hosted-mcp-prod` worker to the production custom domains.
+
+Staging deploys automatically after changes merge to `main` via the `Deploy Worker Staging` GitHub Actions workflow. The workflow can also be triggered manually with an optional branch, tag, or SHA to deploy pre-merge changes.
+
+Before the first staging deploy, create a separate OAuth KV namespace and replace the staging `OAUTH_KV` placeholder in `wrangler.jsonc`:
+
+```bash
+npx wrangler kv namespace create hosted-mcp-staging-oauth-kv
+```
+
+Also configure staging Cloudflare secrets for the OAuth/Sentry values that are intentionally not committed to `wrangler.jsonc`, matching the production secret pattern.
 
 ## Running Evals
 
@@ -183,7 +196,7 @@ This produces a static bundle from the current state of `evals/evalite.db` and d
 
 ## Available Scripts
 
-- `npm run dev` - Start development server with Wrangler DEV config
+- `npm run dev` - Start development server with the Wrangler development environment
 - `npm run local` - Run local stdio MCP server (uses tsx for TypeScript support)
 - `npm run --silent local` - Run local MCP server with reduced output (recommended for development)
 - `npm run inspect` - Launch MCP inspector tool
