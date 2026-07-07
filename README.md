@@ -169,6 +169,8 @@ npx wrangler kv namespace create hosted-mcp-staging-oauth-kv
 
 Also configure staging Cloudflare secrets for the OAuth/Sentry values that are intentionally not committed to `wrangler.jsonc`, matching the production secret pattern.
 
+The development `OAUTH_KV` binding intentionally uses a local-only placeholder because `npm run dev` stores KV data locally. Replace it with a real namespace ID only if you plan to deploy the `development` environment to Cloudflare.
+
 ## Running Evals
 
 **New tools** must ship with an eval file under `evals/<tool>.eval.ts` (or `evals/<resource>/<tool>.eval.ts`). Evals drive natural-language prompts against the registered tool to verify the description + zod schema are good enough for a model to find and call it. Most existing tools predate evals — do not backfill unless asked. See `.agents/skills/writing-evals/SKILL.md` for the full eval guide (tool authoring: `.agents/skills/writing-mcp-tools/SKILL.md`).

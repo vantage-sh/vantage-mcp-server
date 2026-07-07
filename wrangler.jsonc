@@ -38,7 +38,9 @@
       "kv_namespaces": [
         {
           "binding": "OAUTH_KV",
-          "id": "aa9945510d56453da98ea1af611e84f3",
+          // Wrangler dev uses a local KV store. Do not deploy the development
+          // environment without replacing this with a real dev namespace ID.
+          "id": "local-development-oauth-kv",
         },
       ],
       "durable_objects": {
@@ -77,9 +79,7 @@
       "kv_namespaces": [
         {
           "binding": "OAUTH_KV",
-          // Replace after creating the staging namespace:
-          // npx wrangler kv namespace create hosted-mcp-staging-oauth-kv
-          "id": "REPLACE_WITH_STAGING_OAUTH_KV_NAMESPACE_ID",
+          "id": "83fde579986c4285bafceefe877c970a",
         },
       ],
       "durable_objects": {
