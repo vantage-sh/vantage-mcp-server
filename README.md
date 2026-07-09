@@ -8,215 +8,283 @@
 
 </div>
 
-## About the Vantage MCP Server
+## About
 
-This repository supports two different deployment modes for the Vantage MCP Server:
+The Vantage MCP Server exposes tools for listing, querying, and creating Vantage resources. Tools are defined in [/src/tools](/src/tools); see the [Vantage MCP documentation](https://docs.vantage.sh/vantage_mcp) for the full tool list, prompting examples, and product details.
 
-- Self-Hosted (Local) Mode: via `src/local.ts`
-   - Runs locally using [Standard Input/Output (stdio) Transport](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports#standard-input%2Foutput-stdio)
-   - Direct communication with MCP clients
-   - Requires a Vantage API token
-   - Best for individual users, development, or when you want full control
+This repository supports two deployment modes:
 
-- Remote (HTTP) Mode: via `src/cf-worker.ts`
-   - Runs as a **Cloudflare Worker** with HTTP endpoints
-   - Supports multiple authentication methods (OAuth, API tokens, Vantage headers)
-   - Accessible via web requests
-   - Best for teams, production deployments, or when you need web-based access
-   > 📝 _Note: For using the remote HTTP version in a non-development workflow, see the [Vantage MCP documentation](https://docs.vantage.sh/vantage_mcp)._
+| Mode | Best for |
+| ---- | -------- |
+| **Hosted (Remote) MCP** — Vantage-managed at `https://mcp.vantage.sh/mcp` | Most users and teams. OAuth sign-in, no local server to run. |
+| **Self-Hosted (Local) MCP** — stdio via `npx -y vantage-mcp-server` or this repo | API-token auth, air-gapped environments, or contributing to this codebase. |
 
-## Available Tools
+**Start with the hosted MCP** unless you have a specific reason to self-host.
 
-The Vantage MCP Server exposes a set of tools for listing, querying, and creating Vantage resources. These tools can be invoked by any compatible MCP client and are available in [/src/tools](/src/tools).
+## Setup Instructions
 
-## Get Started
+### General
 
-### Prerequisites
+The hosted MCP server uses [Streamable HTTP](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports#streamable-http) with OAuth 2.1. After connecting a client, a browser window prompts you to sign in to Vantage — the same account you use at [console.vantage.sh](https://console.vantage.sh/).
 
-- [Node.js (v18 or higher)](https://nodejs.org/en/download) and [npm](https://www.npmjs.com/) installed
-- Access to an MCP-compatible client (such as Claude Desktop, Cursor, or Goose)
-- A [Vantage account](https://console.vantage.sh/) with at least one [connected provider](https://docs.vantage.sh/getting_started) (AWS, Azure, Google Cloud, etc.)
+**Server URL:** `https://mcp.vantage.sh/mcp`
 
-### Installation
+Clients that support remote MCP natively can connect directly to that URL. For clients that only support stdio, use the `mcp-remote` bridge (see [Visual Studio Code](#visual-studio-code) below).
 
-1. Clone this repo and install dependencies:
+**API token auth:** If your client or script cannot complete OAuth, pass a [Vantage API token](https://docs.vantage.sh/vantage_account#create-an-api-token) as a Bearer token instead:
 
-   ```bash
-   git clone https://github.com/vantage-sh/vantage-mcp-server
-   cd vantage-mcp-server
-   npm install
-   ```
+```http
+Authorization: Bearer <your_vantage_api_token>
+```
 
-2. Create a Vantage API token following the [Vantage documentation](https://docs.vantage.sh/vantage_account#create-an-api-token).
+### Claude Code
 
-## Run the MCP Server: Self-Hosted (Local) Mode
+```bash
+claude mcp add --transport http vantage https://mcp.vantage.sh/mcp
+```
 
-> 📝 _Note: This self-hosted mode is intended for developing and contributing to the MCP server. For personal use, the recommended approach is to use `npx -y vantage-mcp-server`._
+Then run `/mcp` in a Claude Code session to complete the OAuth flow.
 
-To use the self-hosted MCP server, you'll need to configure your MCP client to launch the server. The configuration process varies depending on which MCP client you use. Example clients include:
+### Codex
 
-- [Claude for Desktop](https://modelcontextprotocol.io/quickstart/user)
-- [Cursor](https://docs.cursor.com/context/model-context-protocol)
-- [Goose](https://block.github.io/goose/)
+```bash
+codex mcp add vantage --url https://mcp.vantage.sh/mcp
+```
 
-See the [MCP documentation](https://modelcontextprotocol.io/clients) for a list of available clients. Detailed instructions for Claude for Desktop, Cursor, and Goose are provided below.
+Run `codex mcp login vantage` if Codex prompts you to authenticate.
 
-#### Claude for Desktop
+### Cursor
 
-1. Download [Claude for Desktop](https://claude.ai/download).
-2. From the top of Claude for Desktop, click **Claude > Settings** (keyboard shortcut `Command + ,`).
-3. In the left menu of the Settings pane, select **Developer**.
-4. Click **Edit Config**. A configuration file is created at:
+The recommended install is the official Vantage plugin — in the Cursor chat panel, run:
 
-- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+```
+/add-plugin vantage
+```
 
-5. Open the `claude_desktop_config.json` file and update its contents. Replace the placeholders `<path_to_repository>` with the path where you cloned this repository, and `<personal_vantage_api_token>` with your Vantage API token.
+To configure manually (for example, to commit `.cursor/mcp.json` to a repo):
 
-   ```json
-   {
-     "mcpServers": {
-       "Vantage": {
-         "command": "npx",
-         "args": ["tsx", "<path_to_repository>/src/local.ts"],
-         "env": { "VANTAGE_TOKEN": "<personal_vantage_api_token>" }
-       }
-     }
-   }
-   ```
-   
-   > 📝 _Note: The server uses `tsx` to run TypeScript directly. If you have `tsx` installed globally, you can use `"command": "tsx"` and `"args": ["<path_to_repository>/src/local.ts"]` instead._
+```json
+{
+  "mcpServers": {
+    "VantageMCP": {
+      "url": "https://mcp.vantage.sh/mcp"
+    }
+  }
+}
+```
 
-6. Save the configuration file and restart Claude.
-7. In the left corner of the Claude for Desktop input box, click the **Search and tools** icon to see the available tools for the Vantage MCP Server.
-8. Once you've set up the configuration, you can start prompting Claude. Each time you use a new tool, Claude will ask for your approval before proceeding.
+Open **Cursor Settings → Tools & MCP → New MCP Server** to edit `mcp.json`, or create `.cursor/mcp.json` in your project root.
 
-#### Cursor
+### Claude
 
-1. Download [Cursor](https://www.cursor.com).
-2. Open Cursor and click **Cursor > Settings > Cursor Settings** from the menu bar.
-3. In the left pane, select **Tools & MCP**.
-4. Click **New MCP Server**.
-5. Update the contents of the opened `mcp.json` file. Make sure to replace the placeholders `<path_to_repository>` with the path where you cloned this repository, and `<personal_vantage_api_token>` with your Vantage API token.
+**Claude.ai (Team / Enterprise):** **Settings → Connectors → Add custom connector** — enter `https://mcp.vantage.sh/mcp`.
 
-   ```json
-   {
-     "mcpServers": {
-       "Vantage": {
-         "command": "npx",
-         "args": ["tsx", "<path_to_repository>/src/local.ts"],
-         "env": { "VANTAGE_TOKEN": "<personal_vantage_api_token>" }
-       }
-     }
-   }
-   ```
-   
-   > 📝 _Note: The server uses `tsx` to run TypeScript directly. If you have `tsx` installed globally, you can use `"command": "tsx"` and `"args": ["<path_to_repository>/src/local.ts"]` instead._
-6. Save the configuration file. 
-7. You will see the Vantage MCP Server with tools enabled in the **Installed MCP Servers** list.
+**Claude Desktop:** **Settings → Connectors** — add a custom connector with the same URL.
 
-#### Goose
+### Goose
 
-1. Download [Goose](https://block.github.io/goose/).
-2. Open Goose. In the left navigation, select **Extensions**.
-3. Click **Add custom extension**.
-4. In the **Extension Name** field, enter `Vantage`.
-5. For **Type**, select **STDIO**.
-6. In the **Description** field, enter `Query costs and usage data`.
-7. In the **Command** field, enter `npx tsx <path_to_repository>/src/local.ts` (replace `<path_to_repository>` with the actual path to your cloned repository).
-8. In the **Environment Variables** section, add a new variable with the name `VANTAGE_TOKEN` and the value set to your Vantage API token. Next to the environment variable, click **Add**. 
-9. Click **Add Extension**.
+1. **Extensions → Add custom extension**
+2. **Type:** Streamable HTTP
+3. **Endpoint:** `https://mcp.vantage.sh/mcp`
 
-## Local Development: Run the HTTP Mode
+Complete the OAuth flow when Goose connects.
 
-To develop and test the HTTP/Cloudflare Worker mode locally, you can use `npm run dev`. This starts a local development server using Wrangler.
+### Visual Studio Code
 
-### Bypass OAuth for Local Development
+```json
+{
+  "mcpServers": {
+    "vantage": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://mcp.vantage.sh/mcp"]
+    }
+  }
+}
+```
 
-For easier local development, you can configure the `VANTAGE_MCP_TOKEN` environment variable in `wrangler-DEV.jsonc` to bypass OAuth authentication. When set, the server will use this token directly instead of requiring OAuth flow.
+Or use the command palette: **MCP: Add Server → Command (stdio)** and enter:
 
-1. Open `wrangler-DEV.jsonc` and set the `VANTAGE_MCP_TOKEN` value in the `vars` section:
+```bash
+npx -y mcp-remote https://mcp.vantage.sh/mcp
+```
 
-   ```jsonc
-   {
-     "vars": {
-       "VANTAGE_MCP_TOKEN": "your_vantage_api_token_here",
-       // ... other vars
-     }
-   }
-   ```
+### Windsurf
 
-2. Run the development server:
+Under **Cascade → MCP servers → Add custom server**, add:
 
-   ```bash
-   npm run dev
-   ```
+```json
+{
+  "mcpServers": {
+    "vantage": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://mcp.vantage.sh/mcp"]
+    }
+  }
+}
+```
 
-3. The server will be available at `http://localhost:8787` (Wrangler's default port, as configured in `wrangler-DEV.jsonc`) and will bypass OAuth, using the `VANTAGE_MCP_TOKEN` for authentication instead.
+### Zed
 
-> 📝 _Note: Setting `VANTAGE_MCP_TOKEN` enables direct token mode, which bypasses OAuth entirely. This is useful for local development or for MCP clients without OAuth support or the ability to pass headers._
+In Zed settings, add:
+
+```json
+{
+  "context_servers": {
+    "vantage": {
+      "source": "custom",
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://mcp.vantage.sh/mcp"],
+      "env": {}
+    }
+  }
+}
+```
+
+### Other clients
+
+For any stdio-only MCP client, use:
+
+- **Command:** `npx`
+- **Arguments:** `-y mcp-remote https://mcp.vantage.sh/mcp`
+
+See the [MCP clients list](https://modelcontextprotocol.io/clients) and the [Vantage MCP documentation](https://docs.vantage.sh/vantage_mcp) for additional clients (including ChatGPT via the Vantage app).
+
+### Authorize
+
+After configuring your client, you may need to restart it. A browser window opens for Vantage OAuth — sign in and click **Allow Access**. You can revoke access anytime under **Vantage Settings → API Access Tokens → MCP Server Token**.
+
+Try a prompt like: *"In Vantage, which workspaces do I have access to?"*
+
+---
+
+## Self-Hosted (Local) MCP
+
+Use self-hosted mode when you need API-key auth without OAuth, or when developing against this repository.
+
+### npm package (recommended for self-host)
+
+Install nothing — configure your MCP client to run the published package:
+
+```json
+{
+  "mcpServers": {
+    "Vantage": {
+      "command": "npx",
+      "args": ["-y", "vantage-mcp-server"],
+      "env": {
+        "VANTAGE_TOKEN": "<your_vantage_api_token>"
+      }
+    }
+  }
+}
+```
+
+Create a token in the [Vantage console](https://docs.vantage.sh/vantage_account#create-an-api-token). Requires [Node.js 20+](https://nodejs.org/en/download).
+
+### From this repository (contributors)
+
+For working on the MCP server itself:
+
+```bash
+git clone https://github.com/vantage-sh/vantage-mcp-server
+cd vantage-mcp-server
+npm install
+```
+
+Configure your client to run the local entrypoint (replace `<path_to_repository>` and `<personal_vantage_api_token>`):
+
+```json
+{
+  "mcpServers": {
+    "Vantage": {
+      "command": "npx",
+      "args": ["tsx", "<path_to_repository>/src/local.ts"],
+      "env": { "VANTAGE_TOKEN": "<personal_vantage_api_token>" }
+    }
+  }
+}
+```
+
+Or use the repo's installed binary directly:
+
+```json
+{
+  "mcpServers": {
+    "Vantage": {
+      "command": "<path_to_repository>/node_modules/.bin/tsx",
+      "args": ["<path_to_repository>/src/local.ts"],
+      "env": { "VANTAGE_TOKEN": "<personal_vantage_api_token>" }
+    }
+  }
+}
+```
+
+Test from the terminal: `npm run local` (requires `VANTAGE_TOKEN` in the environment).
+
+---
+
+## Local Development
+
+To develop the hosted worker locally:
+
+```bash
+cp .dev.vars.example .dev.vars.development
+# Edit .dev.vars.development — set VANTAGE_MCP_TOKEN to your API token
+npm run dev
+```
+
+Wrangler serves the worker at `http://localhost:8787` (default). Setting `VANTAGE_MCP_TOKEN` bypasses OAuth for local testing.
+
+---
 
 ## Running Evals
 
-**New tools** must ship with an eval file under `evals/<tool>.eval.ts` (or `evals/<resource>/<tool>.eval.ts`). Evals drive natural-language prompts against the registered tool to verify the description + zod schema are good enough for a model to find and call it. Most existing tools predate evals — do not backfill unless asked. See `.agents/skills/writing-evals/SKILL.md` for the full eval guide (tool authoring: `.agents/skills/writing-mcp-tools/SKILL.md`).
-
-Results are persisted to `evals/evalite.db` (a SQLite file committed to the repo as a shared baseline). Evals are not run in CI — they are a local/PR discipline. The workflow when adding or changing a tool:
-
-1. Write or update `evals/<...>/<your-tool>.eval.ts`.
-2. Run only that file — `npm run eval -- ./evals/<...>/<your-tool>.eval.ts`. Other tools' evals are not re-executed, so their existing rows in the db stay untouched.
-3. Commit the updated `evals/evalite.db` alongside the tool change. The `created_at` columns serve as an audit trail for when each eval last ran versus when its underlying tool last changed.
-
-`npm run eval` with no path runs every eval file and appends rows for all of them — useful when intentionally refreshing the whole baseline, not for everyday development.
-
-### Browsing Eval Results
-
-The live UI for the committed `evalite.db` is published to GitHub Pages at <https://vantage-sh.github.io/vantage-mcp-server/>. The site rebuilds automatically on every push to `main` that touches `evals/evalite.db` (see `.github/workflows/deploy-eval-results.yml`).
-
-To browse results locally without publishing:
+**New tools** must ship with an eval file under `evals/<tool>.eval.ts` (or `evals/<resource>/<tool>.eval.ts`). See `.agents/skills/writing-evals/SKILL.md` (tool authoring: `.agents/skills/writing-mcp-tools/SKILL.md`).
 
 ```bash
-npm run eval:export
-open ./evalite-export/index.html
+npm run eval -- ./evals/<...>/<your-tool>.eval.ts
 ```
 
-This produces a static bundle from the current state of `evals/evalite.db` and does not re-execute any evals. The `evalite-export/` directory is gitignored.
+Commit the updated `evals/evalite.db` alongside the tool change. Evals are not run in CI.
+
+Browse results locally: `npm run eval:export && open ./evalite-export/index.html`. A live UI is published at <https://vantage-sh.github.io/vantage-mcp-server/>.
+
+---
 
 ## Available Scripts
 
-- `npm run dev` - Start development server with Wrangler DEV config
-- `npm run local` - Run local stdio MCP server (uses tsx for TypeScript support)
-- `npm run --silent local` - Run local MCP server with reduced output (recommended for development)
-- `npm run inspect` - Launch MCP inspector tool
-- `npm run format` - Format code using Biome
-- `npm run lint:fix` - Lint and auto-fix issues with Biome  
-- `npm run type-check` - Run TypeScript type checking
-- `npm run cf-typegen` - Generate Cloudflare Worker types
-- `npm run generate-tools-index` - Generate tools index after adding/removing tools
-- `npm run eval` - Run all evals (use `npm run eval -- ./evals/<path>` to filter to one file)
-- `npm run eval:dev` - Run evalite in watch mode with UI on `localhost:3006`
-- `npm run eval:export` - Build a static HTML bundle of the current `evalite.db` under `./evalite-export/` (no re-execution)
+- `npm run dev` — Start the Wrangler development server
+- `npm run local` — Run the stdio MCP server locally
+- `npm run inspect` — Launch the MCP inspector
+- `npm run test` — Run Vitest
+- `npm run format` / `npm run lint:fix` — Biome format and lint
+- `npm run type-check` — TypeScript check
+- `npm run cf-typegen` — Generate Cloudflare Worker types
+- `npm run generate-tools-index` — Regenerate `src/tools/index.ts` after tool changes
+- `npm run generate-resources-index` — Regenerate `src/resources/index.ts` after resource changes
+- `npm run eval` — Run evals (`npm run eval -- ./evals/<path>` for one file)
+- `npm run eval:dev` — Evalite watch mode with UI on `localhost:3006`
+- `npm run eval:export` — Static HTML bundle from `evals/evalite.db`
 
-## Public Assets
-
-The `/public` folder is publicly accessible. Any file like `/public/asset.gif` is accessible as `/asset.gif` when running locally or on Cloudflare.
+---
 
 ## Contribution Guidelines
 
-If you'd like to contribute to this project:
-
-1. Fork this repository.
-2. Create a new branch: `git checkout -b feature/my-feature`.
-3. Make your changes.
-4. Ensure your code is formatted and builds cleanly:
+1. Fork this repository and create a branch: `git checkout -b feature/my-feature`.
+2. Make your changes.
+3. Verify locally:
    ```bash
    npm run format
    npm run lint:fix
    npm run type-check
+   npm test -- --run
    ```
-5. Submit a [pull request](https://github.com/vantage-sh/vantage-mcp-server/pulls).
+4. Submit a [pull request](https://github.com/vantage-sh/vantage-mcp-server/pulls).
 
-We welcome community contributions, improvements, and bug fixes.
+See [AGENTS.md](/AGENTS.md) for conventions when adding tools, evals, or resources.
+
+---
 
 ## License
 
-See the `LICENSE.md` file for commercial and non-commercial licensing details.
+See [LICENSE.md](LICENSE.md) for commercial and non-commercial licensing details.

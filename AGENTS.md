@@ -18,7 +18,7 @@ Working notes for agents in this repo. The README covers setup and deployment; t
 ## What this file does not cover
 
 - MCP client configuration (Claude, Cursor, etc.) — README
-- Cloudflare Worker / OAuth deployment — README and wrangler configs
+- Cloudflare Worker / OAuth deployment — README and Wrangler config
 - Resource authoring details — `src/resources/README.md`
 - Fixing convention drift in unrelated PRs — see "Known drift" below
 

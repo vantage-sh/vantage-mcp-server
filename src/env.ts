@@ -1,6 +1,6 @@
-// Omit the ENVIRONMENT that is hardcoded into the wrangler files
+// Omit the ENVIRONMENT that is hardcoded into the Wrangler config
 export type AppEnv = Omit<Env, "ENVIRONMENT"> & {
-  ENVIRONMENT: "development" | "production";
+  ENVIRONMENT: "development" | "staging" | "production";
   OTEL_EXPORTER_OTLP_ENDPOINT?: string;
   OTEL_EXPORTER_OTLP_HEADERS?: string;
   OTEL_RESOURCE_ATTRIBUTES?: string;

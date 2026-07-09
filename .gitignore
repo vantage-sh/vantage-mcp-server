@@ -168,15 +168,12 @@ dist
 
 # wrangler project
 
-.dev.vars
+.dev.vars*
+!.dev.vars.example
 .wrangler/
 
 # Ignore Ruby Mine
 .idea/
-
-
-# Our slack agent has a dedicated deployment, and the deployment config contains secrets
-wrangler-SLACK.jsonc
 
 # Our build for CLI
 local-package
