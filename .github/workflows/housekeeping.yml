@@ -65,6 +65,8 @@ jobs:
         run: npm ci
 
       - name: Get the version and create a tag/publish if it doesn't exist
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION=$(npm run --silent print-version)
           if git tag -l "v$VERSION" | grep -q .; then
@@ -75,10 +77,12 @@ jobs:
             # Build the package and publish it
             npm run local:dist
             cd local-package && npm publish --provenance
+            cd ..
 
-            # Push the tag to the remote repository
+            # Push the tag and create a GitHub Release so Releases stay in sync with npm
             git tag "v$VERSION"
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git push origin "v$VERSION"
+            gh release create "v$VERSION" --title "v$VERSION" --generate-notes --latest
           fi
