@@ -42,7 +42,7 @@ writeFileSync(
 chmodSync(join(__dirname, "../local-package/index.js"), 0o755);
 
 copyFileSync(
-    join(__dirname, "../README.local.md"),
+    join(__dirname, "../README.npmjs.md"),
     join(__dirname, "../local-package/README.md"),
 );
 
