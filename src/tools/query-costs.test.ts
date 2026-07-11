@@ -404,6 +404,19 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       });
     },
   },
+  {
+    name: "rejects filter and cost_report_token together",
+    apiCallHandler: requestsInOrder([]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError({
+        ...validInputArguments,
+        cost_report_token: "rprt_123",
+      });
+      expect(err.exception).toEqual({
+        errors: [{ message: "Provide either filter or cost_report_token, not both" }],
+      });
+    },
+  },
 ];
 
 testTool(tool, argumentSchemaTests, executionTests);
