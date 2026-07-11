@@ -560,7 +560,7 @@ function main(): void {
   }
 
   const failing = rows.filter(hasParameterDrift);
-  if (failing.length > 0 && !jsonOutput) {
+  if (failing.length > 0) {
     process.exit(1);
   }
 }

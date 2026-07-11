@@ -128,6 +128,11 @@ export default registerTool({
         errors: [{ message: "filter or cost_report_token must be provided" }],
       });
     }
+    if (args.filter && args.cost_report_token) {
+      throw new MCPUserError({
+        errors: [{ message: "Provide either filter or cost_report_token, not both" }],
+      });
+    }
 
     // Build request params. Settings that are not explicitly provided are left out
     // so the API uses the workspace's default report settings.
