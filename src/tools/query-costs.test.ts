@@ -417,6 +417,19 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       });
     },
   },
+  {
+    name: "requires workspace_token when filter is provided",
+    apiCallHandler: requestsInOrder([]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError({
+        ...validInputArguments,
+        workspace_token: undefined,
+      });
+      expect(err.exception).toEqual({
+        errors: [{ message: "workspace_token is required when filter is provided" }],
+      });
+    },
+  },
 ];
 
 testTool(tool, argumentSchemaTests, executionTests);
