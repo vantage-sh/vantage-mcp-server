@@ -1,10 +1,10 @@
 import type { GetTagsRequest } from "@vantage-sh/vantage-client";
 import z from "zod";
-import { tagListQueryFields } from "./utils/tagListQuerySchema";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 import paginationData from "./utils/paginationData";
+import { tagListQueryFields } from "./utils/tagListQuerySchema";
 
 const description = `
 List tags that can be used to filter costs and cost reports.

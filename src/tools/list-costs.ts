@@ -74,9 +74,7 @@ const args = {
   workspace_token: z
     .string()
     .optional()
-    .describe(
-      "Workspace token. Ignored when cost_report_token is set; required for multi-workspace tokens otherwise."
-    ),
+    .describe("Workspace token. Ignored when cost_report_token is set; required for multi-workspace tokens otherwise."),
   filter: z
     .string()
     .optional()

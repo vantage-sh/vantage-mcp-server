@@ -22,9 +22,7 @@ const args = {
   account_identifier: z
     .string()
     .optional()
-    .describe(
-      "Filter by account identifier (e.g. AWS account ID, Azure subscription ID). Must be used with provider."
-    ),
+    .describe("Filter by account identifier (e.g. AWS account ID, Azure subscription ID). Must be used with provider."),
 };
 
 export default registerTool({

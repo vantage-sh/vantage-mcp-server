@@ -40,4 +40,18 @@ export const SCHEMA_DRIFT_EXCLUSIONS: SchemaDriftExclusion[] = [
     kind: "missing",
     reason: "Deprecated API field; MCP uses start_date only",
   },
+  {
+    operation: "getCostProviderAccounts",
+    tool: "get-cost-provider-accounts",
+    apiKey: "page",
+    kind: "extra",
+    reason: "API supports pagination, but the generated client types do not expose page yet",
+  },
+  {
+    operation: "getCostProviderAccounts",
+    tool: "get-cost-provider-accounts",
+    apiKey: "limit",
+    kind: "extra",
+    reason: "API supports pagination, but the generated client types do not expose limit yet",
+  },
 ];

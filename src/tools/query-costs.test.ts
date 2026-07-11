@@ -86,6 +86,15 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     data: validInputArguments,
   },
   {
+    name: "cost report token without filter or workspace_token",
+    data: {
+      ...validInputArguments,
+      cost_report_token: "rprt_123",
+      filter: undefined,
+      workspace_token: undefined,
+    },
+  },
+  {
     name: "aggregate by usage",
     data: {
       ...validInputArguments,
@@ -159,7 +168,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess({
         page: 1,
-                cost_report_token: undefined,
+        cost_report_token: undefined,
         order: undefined,
         filter: "(costs.provider = 'aws')",
         start_date: undefined,
@@ -185,6 +194,39 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           nextPage: 0,
         },
       });
+    },
+  },
+  {
+    name: "successful call with cost_report_token and no filter",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/costs",
+        params: {
+          page: 1,
+          cost_report_token: "rprt_123",
+          order: undefined,
+          filter: undefined,
+          start_date: undefined,
+          end_date: undefined,
+          workspace_token: undefined,
+          date_bin: "month",
+          groupings: GROUPINGS_API,
+          limit: 1000,
+        },
+        method: "GET",
+        result: { ok: true, data: successData },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const res = await callExpectingSuccess({
+        ...validInputArguments,
+        cost_report_token: "rprt_123",
+        filter: undefined,
+        workspace_token: undefined,
+        start_date: undefined,
+        end_date: undefined,
+      });
+      expect(res.costs).toEqual(successData.costs);
     },
   },
   {
@@ -326,7 +368,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     handler: async ({ callExpectingMCPUserError }) => {
       const err = await callExpectingMCPUserError({
         page: 1,
-                cost_report_token: undefined,
+        cost_report_token: undefined,
         order: undefined,
         filter: "(costs.provider = 'aws')",
         start_date: undefined,
@@ -345,6 +387,20 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       });
       expect(err.exception).toEqual({
         errors: [{ message: "Invalid VQL query" }],
+      });
+    },
+  },
+  {
+    name: "requires filter or cost_report_token",
+    apiCallHandler: requestsInOrder([]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError({
+        ...validInputArguments,
+        cost_report_token: undefined,
+        filter: undefined,
+      });
+      expect(err.exception).toEqual({
+        errors: [{ message: "filter or cost_report_token must be provided" }],
       });
     },
   },

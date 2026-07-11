@@ -180,10 +180,7 @@ const args = {
     .describe(
       "Filter recommendations by type with case-insensitive fuzzy matching (e.g., aws, aws:ec2, aws:ec2:rightsizing). Natural language values like 'AWS recommendations' are normalized."
     ),
-  status: z
-    .enum(["active", "archived"])
-    .optional()
-    .describe("Filter by status: active or archived."),
+  status: z.enum(["active", "archived"]).optional().describe("Filter by status: active or archived."),
   min_savings: z
     .number()
     .nonnegative()

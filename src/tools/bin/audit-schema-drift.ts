@@ -164,24 +164,30 @@ function normalizeEndpoint(template: string): string {
   return ENDPOINT_ALIASES[normalized] ?? normalized;
 }
 
-function extractEndpoint(source: string): string | undefined {
-  const callIndex = source.indexOf("callVantageApi(");
+function extractCallVantageApiSlice(source: string): string | undefined {
+  const callIndex = source.lastIndexOf("callVantageApi(");
   if (callIndex === -1) {
     return undefined;
   }
-  const slice = source.slice(callIndex);
+  return source.slice(callIndex, callIndex + 1200);
+}
+
+function extractEndpoint(source: string): string | undefined {
+  const slice = extractCallVantageApiSlice(source);
+  if (!slice) {
+    return undefined;
+  }
   const match = slice.match(/callVantageApi\(\s*(?:\n\s*)?[`"]([^`"]+)[`"]/);
   return match?.[1];
 }
 
 function extractHttpMethod(source: string): HttpMethod | undefined {
-  const callIndex = source.lastIndexOf("callVantageApi(");
-  if (callIndex === -1) {
+  const slice = extractCallVantageApiSlice(source);
+  if (!slice) {
     return undefined;
   }
-  const slice = source.slice(callIndex, callIndex + 1200);
   const methods = [...slice.matchAll(/"(GET|POST|PUT|DELETE)"/g)];
-  return methods.at(-1)?.[1] as HttpMethod | undefined;
+  return methods[methods.length - 1]?.[1] as HttpMethod | undefined;
 }
 
 function addArgKeysFromBlock(keys: Set<string>, block: string, indent: "  " | "    "): void {
@@ -475,7 +481,11 @@ function compareTool(tool: ToolRecord, typesContent: string, pathMethodToOp: Map
 }
 
 function hasDrift(row: DriftRow): boolean {
-  return row.unmapped || row.missingInSchema.length > 0 || row.extraInSchema.length > 0;
+  return row.unmapped || hasParameterDrift(row);
+}
+
+function hasParameterDrift(row: DriftRow): boolean {
+  return row.missingInSchema.length > 0 || row.extraInSchema.length > 0;
 }
 
 function printHumanReport(rows: DriftRow[], clientVersion: string): void {
@@ -549,7 +559,7 @@ function main(): void {
     printHumanReport(rows, clientVersion);
   }
 
-  const failing = rows.filter((r) => r.unmapped || r.missingInSchema.length > 0 || r.extraInSchema.length > 0);
+  const failing = rows.filter(hasParameterDrift);
   if (failing.length > 0 && !jsonOutput) {
     process.exit(1);
   }

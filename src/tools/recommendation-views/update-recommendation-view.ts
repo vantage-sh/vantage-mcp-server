@@ -44,11 +44,7 @@ export default registerTool({
       .array(z.string().min(1))
       .optional()
       .describe("Updated recommendation type slugs (e.g. aws:ec2:rightsizing)."),
-    min_savings: z
-      .number()
-      .min(0)
-      .optional()
-      .describe("Updated minimum potential savings filter."),
+    min_savings: z.number().min(0).optional().describe("Updated minimum potential savings filter."),
   },
   async execute(args, ctx) {
     if (!!args.tag_key !== !!args.tag_value) {
