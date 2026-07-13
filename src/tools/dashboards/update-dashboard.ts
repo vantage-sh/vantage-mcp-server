@@ -29,6 +29,7 @@ export default registerTool({
     start_date: startDateSchema,
     end_date: endDateSchema,
     date_interval: updateDateIntervalSchema,
+    workspace_token: z.string().min(1).optional().describe("Move the dashboard to a different workspace."),
   },
   async execute(args, ctx) {
     const { dashboard_token, ...body } = args;
