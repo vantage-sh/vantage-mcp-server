@@ -8,6 +8,7 @@ on:
 jobs:
   generate-version-pr:
     name: Generate Version PR
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-22.04
     permissions:
       contents: write
@@ -44,6 +45,7 @@ jobs:
 
   publish:
     name: Publish Package and Auto Tag
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-22.04
     needs: generate-version-pr
     permissions:
