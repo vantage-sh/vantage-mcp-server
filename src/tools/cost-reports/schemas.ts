@@ -20,7 +20,7 @@ export const chartSettings = z.object({
 export const dateBins = ["cumulative", "day", "week", "month", "quarter", "hour"] as const;
 
 const businessMetricUnitScale = z.enum(["per_unit", "per_hundred", "per_thousand", "per_million", "per_billion"]);
-const businessMetricCalcuationType = z.enum(["unit_cost", "gross_margin", "usage_unit_cost", "raw_business_metric"])
+const businessMetricCalcuationType = z.enum(["unit_cost", "gross_margin", "usage_unit_cost", "raw_business_metric"]);
 
 export const businessMetricTokenForCreate = z.object({
   business_metric_token: z.string().min(1).describe("The token of the BusinessMetric to attach to the CostReport."),
@@ -29,7 +29,9 @@ export const businessMetricTokenForCreate = z.object({
     .describe("Determines the scale of the BusinessMetric's values within the CostReport."),
   label_filter: z.array(z.string()).optional().describe("Include only values with these labels in the CostReport."),
   label: z.string().optional().describe("An optional label for this business metric on this report."),
-  calculation_type: businessMetricCalcuationType.optional().describe("Calculation to apply to business metric value. Default: unit_cost")
+  calculation_type: businessMetricCalcuationType
+    .optional()
+    .describe("Calculation to apply to business metric value. Default: unit_cost"),
 });
 
 export const businessMetricTokenForUpdate = z.object({
@@ -39,7 +41,9 @@ export const businessMetricTokenForUpdate = z.object({
     .describe("Determines the scale of the BusinessMetric's values within the CostReport."),
   label_filter: z.array(z.string()).optional().describe("Include only values with these labels in the CostReport."),
   label: z.string().optional().describe("An optional label for this business metric on this report."),
-  calculation_type: businessMetricCalcuationType.optional().describe("Calculation to apply to business metric value. Default: unit_cost")
+  calculation_type: businessMetricCalcuationType
+    .optional()
+    .describe("Calculation to apply to business metric value. Default: unit_cost"),
 });
 
 export const costReportSettingsForCreate = z.object({
