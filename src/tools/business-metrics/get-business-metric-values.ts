@@ -2,11 +2,12 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import paginationData from "../utils/paginationData";
-import { BUSINESS_METRICS_LIMIT, businessMetricValueArgs } from "./schemas";
+import { BUSINESS_METRICS_LIMIT, historicalBusinessMetricValueArgs } from "./schemas";
 
 const description = `
 Get historical values for a BusinessMetric.
 Values are returned in descending date order by the Vantage API and can include optional labels.
+When a request depends on labels but exact values are not confirmed, call list-business-metric-labels first and pass the selected values through label_values. Skip label discovery when exact values are already supplied.
 Use start_date to limit results to values on or after a YYYY-MM-DD date.
 This endpoint is paginated. If the user asks for all values, complete data, or values for a date range such as a month, keep calling this tool with pagination.nextPage until pagination.hasNextPage is false before answering.
 The API only supports a start_date lower bound. For bounded ranges, such as a specific month, fetch all pages from the requested start date and then filter the returned values to the requested end date locally.
@@ -21,7 +22,7 @@ export default registerTool({
     openWorld: false,
     readOnly: true,
   },
-  args: businessMetricValueArgs,
+  args: historicalBusinessMetricValueArgs,
   async execute(args, ctx) {
     const { business_metric_token, ...params } = args;
     const requestParams = { ...params, limit: BUSINESS_METRICS_LIMIT };
