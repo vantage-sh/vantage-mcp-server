@@ -1,52 +1,63 @@
-import type { GetBusinessMetricValuesResponse } from "@vantage-sh/vantage-client";
-import { pathEncode } from "@vantage-sh/vantage-client";
+import {
+  type GetBusinessMetricLabelsRequest,
+  type GetBusinessMetricLabelsResponse,
+  pathEncode,
+} from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import {
-  dateValidatorPoisoner,
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
   type ExtractValidators,
   type InferValidators,
-  poisonOneValue,
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
 } from "../utils/testing";
-import tool from "./get-business-metric-values";
-import { BUSINESS_METRICS_LIMIT } from "./schemas";
+import tool from "./list-business-metric-labels";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
   business_metric_token: "bsnss_mtrc_3080a050c04104ff",
-  label_values: ["Prod", "Staging"],
   page: 1,
-  start_date: "2024-01-01",
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
-    name: "default page and start date",
+    name: "default page",
     data: {
       business_metric_token: "bsnss_mtrc_3080a050c04104ff",
-      label_values: undefined,
       page: undefined,
-      start_date: undefined,
     },
+  },
+  {
+    name: "blank business metric token",
+    data: {
+      business_metric_token: "",
+      page: 1,
+    },
+    expectedIssues: ["Too small: expected string to have >=1 characters"],
+  },
+  {
+    name: "page must be positive",
+    data: {
+      business_metric_token: "bsnss_mtrc_3080a050c04104ff",
+      page: 0,
+    },
+    expectedIssues: ["Too small: expected number to be >=1"],
   },
   {
     name: "valid arguments",
     data: validArguments,
   },
-  poisonOneValue<Validators, string>(validArguments, "start_date", dateValidatorPoisoner),
 ];
 
-const successData: GetBusinessMetricValuesResponse = {
-  values: [
-    { date: "2024-01-03T00:00:00Z", amount: "300.0", label: "Prod" },
-    { date: "2024-01-02T00:00:00Z", amount: "200.0" },
-  ],
+const successData: GetBusinessMetricLabelsResponse = {
+  labels: [{ value: "Enterprise" }, { value: "Prod" }, { value: "Staging" }],
+  links: {
+    next: "https://api.vantage.sh/v2/business_metrics/bsnss_mtrc_3080a050c04104ff/labels?page=2",
+  },
 };
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
@@ -54,13 +65,11 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "successful call",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: `/v2/business_metrics/${pathEncode("bsnss_mtrc_3080a050c04104ff")}/values`,
+        endpoint: `/v2/business_metrics/${pathEncode(validArguments.business_metric_token)}/labels`,
         params: {
-          label_values: ["Prod", "Staging"],
           page: 1,
-          start_date: "2024-01-01",
-          limit: BUSINESS_METRICS_LIMIT,
-        },
+          limit: 5000,
+        } as GetBusinessMetricLabelsRequest,
         method: "GET",
         result: {
           ok: true,
@@ -71,10 +80,10 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess(validArguments);
       expect(res).toEqual({
-        values: successData.values,
+        labels: successData.labels,
         pagination: {
-          hasNextPage: false,
-          nextPage: 0,
+          hasNextPage: true,
+          nextPage: 2,
         },
       });
     },
@@ -83,13 +92,11 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "encodes token in path",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: `/v2/business_metrics/${pathEncode("bsnss_mtrc_with/slash")}/values`,
+        endpoint: `/v2/business_metrics/${pathEncode("bsnss_mtrc_with/slash")}/labels`,
         params: {
-          label_values: undefined,
           page: 1,
-          start_date: undefined,
-          limit: BUSINESS_METRICS_LIMIT,
-        },
+          limit: 5000,
+        } as GetBusinessMetricLabelsRequest,
         method: "GET",
         result: {
           ok: true,
@@ -98,18 +105,9 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       },
     ]),
     handler: async ({ callExpectingSuccess }) => {
-      const res = await callExpectingSuccess({
+      await callExpectingSuccess({
         business_metric_token: "bsnss_mtrc_with/slash",
-        label_values: undefined,
         page: 1,
-        start_date: undefined,
-      });
-      expect(res).toEqual({
-        values: successData.values,
-        pagination: {
-          hasNextPage: false,
-          nextPage: 0,
-        },
       });
     },
   },
@@ -117,13 +115,11 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "unsuccessful call",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: `/v2/business_metrics/${pathEncode("bsnss_mtrc_nonexistent")}/values`,
+        endpoint: `/v2/business_metrics/${pathEncode("bsnss_mtrc_nonexistent")}/labels`,
         params: {
-          label_values: ["Prod", "Staging"],
           page: 1,
-          start_date: "2024-01-01",
-          limit: BUSINESS_METRICS_LIMIT,
-        },
+          limit: 5000,
+        } as GetBusinessMetricLabelsRequest,
         method: "GET",
         result: {
           ok: false,
@@ -133,8 +129,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     ]),
     handler: async ({ callExpectingMCPUserError }) => {
       const err = await callExpectingMCPUserError({
-        ...validArguments,
         business_metric_token: "bsnss_mtrc_nonexistent",
+        page: 1,
       });
       expect(err.exception).toEqual({
         errors: [{ message: "Business Metric not found" }],
