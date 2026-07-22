@@ -34,6 +34,7 @@ import "./list-report-notifications";
 import "./list-tag-values";
 import "./list-tags";
 import "./list-unit-costs";
+import "./network-flow-reports";
 import "./query-costs";
 import "./recommendation-views";
 import "./recommendations";
