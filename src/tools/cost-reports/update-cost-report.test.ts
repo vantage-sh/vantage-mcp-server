@@ -23,6 +23,7 @@ const undefineds = {
   saved_filter_tokens: undefined,
   business_metric_tokens_with_metadata: undefined,
   folder_token: undefined,
+  default_forecast: undefined,
   settings: undefined,
   previous_period_start_date: undefined,
   previous_period_end_date: undefined,
@@ -54,6 +55,7 @@ const validInputArguments: InferValidators<Validators> = {
     },
   ],
   folder_token: "folder_123",
+  default_forecast: { kind: "baseline" as const },
   settings: {
     include_credits: true,
     include_refunds: false,
@@ -99,6 +101,14 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       ...undefineds,
       cost_report_token: "rprt_123",
       date_interval: "last_30_days",
+    },
+  },
+  {
+    name: "report forecast requires token",
+    data: {
+      ...undefineds,
+      cost_report_token: "rprt_123",
+      default_forecast: { kind: "report_forecast" },
     },
   },
   poisonOneValue(validInputArguments, "start_date", dateValidatorPoisoner),
@@ -167,6 +177,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
             },
           ],
           folder_token: "folder_123",
+          default_forecast: { kind: "baseline" },
           settings: {
             include_credits: true,
             include_refunds: false,
@@ -198,6 +209,20 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess(validInputArguments);
       expect(res).toEqual(successData);
+    },
+  },
+  {
+    name: "report forecast requires token",
+    apiCallHandler: requestsInOrder([]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError({
+        ...undefineds,
+        cost_report_token: "rprt_123",
+        default_forecast: { kind: "report_forecast" },
+      });
+      expect(err.exception).toEqual({
+        errors: [{ message: "report_forecast_token is required when default_forecast kind is report_forecast" }],
+      });
     },
   },
   {

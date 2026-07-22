@@ -40,6 +40,11 @@ export default registerTool({
       "Updated start date for recommendation creation filtering. YYYY-MM-DD formatted."
     ).optional(),
     end_date: dateValidator("Updated end date for recommendation creation filtering. YYYY-MM-DD formatted.").optional(),
+    types: z
+      .array(z.string().min(1))
+      .optional()
+      .describe("Updated recommendation type slugs (e.g. aws:ec2:rightsizing)."),
+    min_savings: z.number().min(0).optional().describe("Updated minimum potential savings filter."),
   },
   async execute(args, ctx) {
     if (!!args.tag_key !== !!args.tag_value) {

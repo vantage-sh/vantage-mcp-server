@@ -4,6 +4,7 @@ import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 import paginationData from "./utils/paginationData";
+import { tagListQueryFields } from "./utils/tagListQuerySchema";
 
 const description = `
 List values for a tag key. The argument is \`key\` (the tag key name); the API response fields use \`tag_value\`.
@@ -14,11 +15,7 @@ Requires integration settings permission; callers without it receive 403 from th
 const args = {
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
   key: z.string().min(1).describe("Tag key name to list values for (matches API path parameter `key`)"),
-  search_query: z.string().optional().describe("Search query to filter tag values by value name"),
-  providers: z
-    .array(z.string())
-    .optional()
-    .describe("Filter values to those present on the given cost providers (e.g. aws, azure, gcp)"),
+  ...tagListQueryFields,
 };
 
 export default registerTool({

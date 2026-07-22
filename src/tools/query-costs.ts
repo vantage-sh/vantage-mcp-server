@@ -48,10 +48,17 @@ Only provide these parameters if you need to override those defaults.
 
 const args = {
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
-  filter: z.string().describe("A VQL query to run against your vantage account"),
+  filter: z
+    .string()
+    .optional()
+    .describe("A VQL query to run against your Vantage account. Optional when cost_report_token is set."),
   start_date: dateValidator("Start date to filter costs by, format=YYYY-MM-DD").optional(),
   end_date: dateValidator("End date to filter costs by, format=YYYY-MM-DD").optional(),
-  workspace_token: z.string().min(1).describe("The workspace token to scope the query to"),
+  workspace_token: z
+    .string()
+    .min(1)
+    .optional()
+    .describe("Workspace token to scope the query to. Ignored when cost_report_token is set."),
   date_bin: z
     .enum(["day", "week", "month"])
     .optional()
@@ -98,6 +105,11 @@ const args = {
     .describe(
       "Group the results by specific field(s). Defaults to provider, service, region. Valid groupings: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, tag:<tag_value>. Include every grouping you need in one call rather than issuing separate calls per grouping."
     ),
+  cost_report_token: z
+    .string()
+    .optional()
+    .describe("Cost Report token. When set, returns costs for that report instead of using filter."),
+  order: z.enum(["asc", "desc"]).optional().describe("Sort costs by date ascending or descending."),
 };
 
 export default registerTool({
@@ -111,6 +123,22 @@ export default registerTool({
   },
   args,
   async execute(args, ctx) {
+    if (!args.filter && !args.cost_report_token) {
+      throw new MCPUserError({
+        errors: [{ message: "filter or cost_report_token must be provided" }],
+      });
+    }
+    if (args.filter && args.cost_report_token) {
+      throw new MCPUserError({
+        errors: [{ message: "Provide either filter or cost_report_token, not both" }],
+      });
+    }
+    if (args.filter && !args.workspace_token) {
+      throw new MCPUserError({
+        errors: [{ message: "workspace_token is required when filter is provided" }],
+      });
+    }
+
     // Build request params. Settings that are not explicitly provided are left out
     // so the API uses the workspace's default report settings.
     const requestParams: Record<string, unknown> = {

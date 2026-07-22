@@ -34,6 +34,7 @@ const minimalValidInputArguments: InferValidators<Validators> = {
 };
 
 const validInputArguments: InferValidators<Validators> = {
+  ...undefineds,
   billing_rule_token: "blng_rl_123",
   title: "Updated Rule",
   start_date: "2024-01-01",

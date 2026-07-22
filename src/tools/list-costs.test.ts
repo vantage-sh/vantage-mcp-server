@@ -33,6 +33,9 @@ const baseApiParams = {
 const validArguments: InferValidators<Validators> = {
   page: 1,
   cost_report_token: "crt_123",
+  filter: undefined,
+  workspace_token: undefined,
+  order: undefined,
   start_date: "2023-01-01",
   end_date: "2023-01-31",
   date_bin: "month",

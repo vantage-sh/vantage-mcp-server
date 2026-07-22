@@ -17,7 +17,8 @@
     "prepare": "husky",
     "local": "tsx src/local.ts",
     "local:dist": "tsx build/npm.ts",
-    "print-version": "tsx src/tools/bin/print-version.ts"
+    "print-version": "tsx src/tools/bin/print-version.ts",
+    "audit-schema-drift": "tsx src/tools/bin/audit-schema-drift.ts"
   },
   "dependencies": {
     "@cloudflare/workers-oauth-provider": "^0.0.11",

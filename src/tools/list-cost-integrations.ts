@@ -2,6 +2,7 @@ import z from "zod";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
+import { costProviderSchema } from "./utils/costProviderSchema";
 import paginationData from "./utils/paginationData";
 
 const description = `
@@ -15,6 +16,13 @@ Note that when 'provider' is 'custom_provider', that has a special case. When do
 
 const args = {
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
+  provider: costProviderSchema
+    .optional()
+    .describe("Filter integrations by provider. Required when using account_identifier."),
+  account_identifier: z
+    .string()
+    .optional()
+    .describe("Filter by account identifier (e.g. AWS account ID, Azure subscription ID). Must be used with provider."),
 };
 
 export default registerTool({
@@ -28,6 +36,11 @@ export default registerTool({
   },
   args,
   async execute(args, ctx) {
+    if (args.account_identifier && !args.provider) {
+      throw new MCPUserError({
+        errors: [{ message: "provider is required when account_identifier is provided" }],
+      });
+    }
     const requestParams = { ...args, limit: DEFAULT_LIMIT };
     const response = await ctx.callVantageApi("/v2/integrations", requestParams, "GET");
     if (!response.ok) {

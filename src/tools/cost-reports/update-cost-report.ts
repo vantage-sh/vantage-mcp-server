@@ -53,6 +53,13 @@ export default registerTool({
       .string()
       .optional()
       .describe("Updated Folder token. Determines the Workspace the report is assigned to."),
+    default_forecast: z
+      .object({
+        kind: z.enum(["baseline", "report_forecast"]),
+        report_forecast_token: z.string().optional(),
+      })
+      .optional()
+      .describe("Updated default forecast selection."),
     settings: costReportSettingsForUpdate.optional().describe("Updated report settings."),
     previous_period_start_date: dateValidator(
       "Updated previous period start date. ISO 8601 formatted (YYYY-MM-DD)."
@@ -75,6 +82,11 @@ export default registerTool({
     date_bin: z.enum(dateBins).optional().describe("Updated date bin for how costs are bucketed over time."),
   },
   async execute(args, ctx) {
+    if (args.default_forecast?.kind === "report_forecast" && !args.default_forecast.report_forecast_token) {
+      throw new MCPUserError({
+        errors: [{ message: "report_forecast_token is required when default_forecast kind is report_forecast" }],
+      });
+    }
     if (!!args.previous_period_start_date !== !!args.previous_period_end_date) {
       throw new MCPUserError({
         errors: [{ message: "previous_period_start_date and previous_period_end_date must both be provided together" }],

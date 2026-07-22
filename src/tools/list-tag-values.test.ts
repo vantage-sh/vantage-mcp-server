@@ -15,11 +15,16 @@ import {
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
+const tagListUndefineds = {
+  providers: undefined,
+  search_query: undefined,
+  sort_direction: undefined,
+};
+
 const validArguments: InferValidators<Validators> = {
   key: "environment",
   page: 1,
-  search_query: undefined,
-  providers: undefined,
+  ...tagListUndefineds,
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
@@ -28,8 +33,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     data: {
       key: "",
       page: 1,
-      search_query: undefined,
-      providers: undefined,
+      ...tagListUndefineds,
     },
     expectedIssues: ["Too small: expected string to have >=1 characters"],
   },
