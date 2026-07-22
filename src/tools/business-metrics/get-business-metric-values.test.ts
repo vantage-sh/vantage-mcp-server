@@ -13,7 +13,6 @@ import {
   testTool,
 } from "../utils/testing";
 import tool from "./get-business-metric-values";
-import { BUSINESS_METRICS_LIMIT } from "./schemas";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
@@ -59,7 +58,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           label_values: ["Prod", "Staging"],
           page: 1,
           start_date: "2024-01-01",
-          limit: BUSINESS_METRICS_LIMIT,
+          limit: 5000,
         },
         method: "GET",
         result: {
@@ -88,7 +87,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           label_values: undefined,
           page: 1,
           start_date: undefined,
-          limit: BUSINESS_METRICS_LIMIT,
+          limit: 5000,
         },
         method: "GET",
         result: {
@@ -122,7 +121,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           label_values: ["Prod", "Staging"],
           page: 1,
           start_date: "2024-01-01",
-          limit: BUSINESS_METRICS_LIMIT,
+          limit: 5000,
         },
         method: "GET",
         result: {

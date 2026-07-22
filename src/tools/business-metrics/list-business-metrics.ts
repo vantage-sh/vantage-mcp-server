@@ -2,7 +2,7 @@ import z from "zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import paginationData from "../utils/paginationData";
-import { BUSINESS_METRICS_LIMIT } from "./schemas";
+import { BUSINESS_METRICS_LIST_LIMIT } from "./schemas";
 
 const description = `
 List all BusinessMetrics available to the current Vantage API token.
@@ -26,7 +26,7 @@ export default registerTool({
   },
   args,
   async execute(args, ctx) {
-    const requestParams = { ...args, limit: BUSINESS_METRICS_LIMIT };
+    const requestParams = { ...args, limit: BUSINESS_METRICS_LIST_LIMIT };
     const response = await ctx.callVantageApi("/v2/business_metrics", requestParams, "GET");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });

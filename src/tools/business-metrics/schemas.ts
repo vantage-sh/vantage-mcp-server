@@ -1,8 +1,9 @@
 import z from "zod";
 import dateValidator from "../utils/dateValidator";
 
-export const BUSINESS_METRICS_LIMIT = 1000;
+export const BUSINESS_METRICS_LIST_LIMIT = 1000;
 export const BUSINESS_METRIC_LABELS_LIMIT = 5000;
+export const BUSINESS_METRIC_VALUES_LIMIT = 5000;
 
 export const businessMetricValueArgs = {
   business_metric_token: z.string().describe("The BusinessMetric token to retrieve values for."),
