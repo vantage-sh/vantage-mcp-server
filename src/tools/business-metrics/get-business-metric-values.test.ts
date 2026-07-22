@@ -20,6 +20,7 @@ type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
   business_metric_token: "bsnss_mtrc_3080a050c04104ff",
+  date_bin: "day",
   label_values: ["Prod", "Staging"],
   page: 1,
   start_date: "2024-01-01",
@@ -30,6 +31,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     name: "default page and start date",
     data: {
       business_metric_token: "bsnss_mtrc_3080a050c04104ff",
+      date_bin: undefined,
       label_values: undefined,
       page: undefined,
       start_date: undefined,
@@ -38,6 +40,14 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "valid arguments",
     data: validArguments,
+  },
+  {
+    name: "invalid date bin",
+    data: {
+      ...validArguments,
+      date_bin: "week" as any,
+    },
+    expectedIssues: ['Invalid option: expected one of "raw"|"day"|"month"'],
   },
   poisonOneValue<Validators, string>(validArguments, "start_date", dateValidatorPoisoner),
 ];
@@ -56,6 +66,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       {
         endpoint: `/v2/business_metrics/${pathEncode("bsnss_mtrc_3080a050c04104ff")}/values`,
         params: {
+          date_bin: "day",
           label_values: ["Prod", "Staging"],
           page: 1,
           start_date: "2024-01-01",
@@ -85,6 +96,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       {
         endpoint: `/v2/business_metrics/${pathEncode("bsnss_mtrc_with/slash")}/values`,
         params: {
+          date_bin: "month",
           label_values: undefined,
           page: 1,
           start_date: undefined,
@@ -100,6 +112,42 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess({
         business_metric_token: "bsnss_mtrc_with/slash",
+        date_bin: undefined,
+        label_values: undefined,
+        page: 1,
+        start_date: undefined,
+      });
+      expect(res).toEqual({
+        values: successData.values,
+        pagination: {
+          hasNextPage: false,
+          nextPage: 0,
+        },
+      });
+    },
+  },
+  {
+    name: "preserves raw timestamps",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: `/v2/business_metrics/${pathEncode("bsnss_mtrc_3080a050c04104ff")}/values`,
+        params: {
+          label_values: undefined,
+          page: 1,
+          start_date: undefined,
+          limit: BUSINESS_METRIC_DATA_LIMIT,
+        },
+        method: "GET",
+        result: {
+          ok: true,
+          data: successData,
+        },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const res = await callExpectingSuccess({
+        business_metric_token: "bsnss_mtrc_3080a050c04104ff",
+        date_bin: "raw",
         label_values: undefined,
         page: 1,
         start_date: undefined,
@@ -119,6 +167,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       {
         endpoint: `/v2/business_metrics/${pathEncode("bsnss_mtrc_nonexistent")}/values`,
         params: {
+          date_bin: "day",
           label_values: ["Prod", "Staging"],
           page: 1,
           start_date: "2024-01-01",
