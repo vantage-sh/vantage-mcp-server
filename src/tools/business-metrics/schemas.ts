@@ -14,6 +14,13 @@ export const businessMetricValueArgs = {
 
 export const historicalBusinessMetricValueArgs = {
   ...businessMetricValueArgs,
+  date_bin: z
+    .enum(["raw", "day", "month"])
+    .optional()
+    .default("month")
+    .describe(
+      "Time aggregation. Defaults to month. Day and month sum amounts by UTC bucket and label; raw preserves original timestamps, including hourly values. Use raw for gauges or percentages when summing is not appropriate."
+    ),
   label_values: z
     .array(z.string())
     .optional()

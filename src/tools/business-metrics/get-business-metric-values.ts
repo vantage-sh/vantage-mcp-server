@@ -6,6 +6,7 @@ import { BUSINESS_METRIC_DATA_LIMIT, historicalBusinessMetricValueArgs } from ".
 
 const description = `
 Get historical values for a BusinessMetric.
+Values default to monthly sums grouped by label. Use day for daily sums or raw to preserve original timestamps, including hourly values; binned sums may not suit gauges or percentages.
 Values are returned in descending date order by the Vantage API and can include optional labels.
 When a request depends on labels but exact values are not confirmed, call list-business-metric-labels first and pass the selected values through label_values. Skip label discovery when exact values are already supplied.
 Use start_date to limit results to values on or after a YYYY-MM-DD date.
@@ -24,8 +25,12 @@ export default registerTool({
   },
   args: historicalBusinessMetricValueArgs,
   async execute(args, ctx) {
-    const { business_metric_token, ...params } = args;
-    const requestParams = { ...params, limit: BUSINESS_METRIC_DATA_LIMIT };
+    const { business_metric_token, date_bin, ...params } = args;
+    const requestParams = {
+      ...params,
+      ...(date_bin === "raw" ? {} : { date_bin }),
+      limit: BUSINESS_METRIC_DATA_LIMIT,
+    };
     const response = await ctx.callVantageApi(
       `/v2/business_metrics/${pathEncode(business_metric_token)}/values`,
       requestParams,
