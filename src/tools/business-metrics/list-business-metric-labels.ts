@@ -3,7 +3,7 @@ import z from "zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import paginationData from "../utils/paginationData";
-import { BUSINESS_METRIC_LABELS_LIMIT } from "./schemas";
+import { BUSINESS_METRIC_DATA_LIMIT } from "./schemas";
 
 const description = `
 List distinct label values for a BusinessMetric. For multi-label metrics, values are flattened across label keys.
@@ -31,7 +31,7 @@ export default registerTool({
   args,
   async execute(args, ctx) {
     const { business_metric_token, ...params } = args;
-    const requestParams = { ...params, limit: BUSINESS_METRIC_LABELS_LIMIT };
+    const requestParams = { ...params, limit: BUSINESS_METRIC_DATA_LIMIT };
     const response = await ctx.callVantageApi(
       `/v2/business_metrics/${pathEncode(business_metric_token)}/labels`,
       requestParams as GetBusinessMetricLabelsRequest,
