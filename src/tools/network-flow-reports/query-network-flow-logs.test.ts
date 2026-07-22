@@ -1,3 +1,4 @@
+import type { GetNetworkFlowLogsRequest, GetNetworkFlowLogsResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import type { ToolCallContext } from "../structure/registerTool";
 import {
@@ -11,16 +12,10 @@ import {
   testTool,
 } from "../utils/testing";
 import tool from "./query-network-flow-logs";
-import {
-  NETWORK_FLOW_LOGS_ENDPOINT,
-  type TemporaryCallNetworkFlowLogsApi,
-  type TemporaryNetworkFlowLogsRequest,
-  type TemporaryNetworkFlowLogsResponse,
-} from "./temporary-network-flow-logs-types";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
-type ApiResult = Awaited<ReturnType<TemporaryCallNetworkFlowLogsApi>>;
+type ApiResult = { ok: true; data: GetNetworkFlowLogsResponse } | { ok: false; errors: unknown[] };
 
 const savedReportArguments: InferValidators<Validators> = {
   network_flow_report_token: "ntflw_lg_rprt_123",
@@ -80,11 +75,11 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   poisonOneValue(customDateArguments, "end_date", dateValidatorPoisoner),
 ];
 
-const successData: TemporaryNetworkFlowLogsResponse = {
+const successData: GetNetworkFlowLogsResponse = {
   links: {
-    self: `https://api.vantage.sh${NETWORK_FLOW_LOGS_ENDPOINT}?network_flow_report_token=ntflw_lg_rprt_123`,
-    first: `https://api.vantage.sh${NETWORK_FLOW_LOGS_ENDPOINT}?network_flow_report_token=ntflw_lg_rprt_123&page=1`,
-    next: `https://api.vantage.sh${NETWORK_FLOW_LOGS_ENDPOINT}?network_flow_report_token=ntflw_lg_rprt_123&page=2`,
+    self: "https://api.vantage.sh/v2/network_flow_logs?network_flow_report_token=ntflw_lg_rprt_123",
+    first: "https://api.vantage.sh/v2/network_flow_logs?network_flow_report_token=ntflw_lg_rprt_123&page=1",
+    next: "https://api.vantage.sh/v2/network_flow_logs?network_flow_report_token=ntflw_lg_rprt_123&page=2",
     last: null,
     prev: null,
   },
@@ -117,11 +112,11 @@ const successData: TemporaryNetworkFlowLogsResponse = {
 };
 
 function networkFlowLogsApiCall(
-  expectedParams: TemporaryNetworkFlowLogsRequest,
+  expectedParams: GetNetworkFlowLogsRequest,
   result: ApiResult
 ): ToolCallContext["callVantageApi"] {
   return (async (endpoint: unknown, params: unknown, method: unknown) => {
-    expect(endpoint).toBe(NETWORK_FLOW_LOGS_ENDPOINT);
+    expect(endpoint).toBe("/v2/network_flow_logs");
     expect(params).toEqual(expectedParams);
     expect(method).toBe("GET");
     return result;
@@ -131,7 +126,7 @@ function networkFlowLogsApiCall(
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   {
     name: "queries a saved report",
-    apiCallHandler: networkFlowLogsApiCall(savedReportArguments as TemporaryNetworkFlowLogsRequest, {
+    apiCallHandler: networkFlowLogsApiCall(savedReportArguments as GetNetworkFlowLogsRequest, {
       ok: true,
       data: successData,
     }),
@@ -147,7 +142,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   },
   {
     name: "queries ad hoc VQL",
-    apiCallHandler: networkFlowLogsApiCall(adHocArguments as TemporaryNetworkFlowLogsRequest, {
+    apiCallHandler: networkFlowLogsApiCall(adHocArguments as GetNetworkFlowLogsRequest, {
       ok: true,
       data: { ...successData, links: {}, flow_weight: "bytes" },
     }),
@@ -238,7 +233,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   },
   {
     name: "returns Vantage API errors",
-    apiCallHandler: networkFlowLogsApiCall(savedReportArguments as TemporaryNetworkFlowLogsRequest, {
+    apiCallHandler: networkFlowLogsApiCall(savedReportArguments as GetNetworkFlowLogsRequest, {
       ok: false,
       errors: [{ message: "No Network Flow Log integration exists for this Workspace." }],
     }),

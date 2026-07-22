@@ -1,4 +1,4 @@
-import type { GetNetworkFlowReportsResponse } from "@vantage-sh/vantage-client";
+import type { GetNetworkFlowReportsRequest, GetNetworkFlowReportsResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import {
@@ -11,7 +11,6 @@ import {
   testTool,
 } from "../utils/testing";
 import tool from "./list-network-flow-reports";
-import type { TemporaryListNetworkFlowReportsRequest } from "./temporary-network-flow-logs-types";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
@@ -94,7 +93,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           q: undefined,
           page: 1,
           limit: DEFAULT_LIMIT,
-        } as TemporaryListNetworkFlowReportsRequest,
+        } as GetNetworkFlowReportsRequest,
         method: "GET",
         result: { ok: true, data: { network_flow_reports: [], links: {} } },
       },

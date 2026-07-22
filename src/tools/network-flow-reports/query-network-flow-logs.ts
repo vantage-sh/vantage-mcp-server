@@ -1,21 +1,20 @@
+import type { GetNetworkFlowLogsRequest } from "@vantage-sh/vantage-client";
 import z from "zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import dateValidator from "../utils/dateValidator";
 import paginationData from "../utils/paginationData";
-import { networkFlowReportGroupingOptions, networkFlowReportRelativeDateIntervals } from "./schemas";
 import {
-  NETWORK_FLOW_LOGS_ENDPOINT,
-  type TemporaryCallNetworkFlowLogsApi,
-  type TemporaryNetworkFlowLogsRequest,
-} from "./temporary-network-flow-logs-types";
+  flowDirectionSchema,
+  flowWeightSchemaForUpdate,
+  networkFlowReportGroupingOptions,
+  networkFlowReportRelativeDateIntervals,
+} from "./schemas";
 
 const description = `
-Queries aggregated Network Flow Log data, including estimated costs and bytes, from a saved Network Flow Report or an ad hoc VQL query. Use list-network-flow-reports and get-network-flow-report for saved report configuration rather than result data.
+Queries aggregated network flow log data (costs and bytes). Pass a saved report token or an ad hoc filter. Unlike create/update, custom date ranges use start_date and end_date without date_interval=custom.
 `.trim();
-
-const groupingDescription = `Dimensions used to aggregate network traffic. Valid values: ${networkFlowReportGroupingOptions.join(", ")}.`;
 
 export default registerTool({
   name: "query-network-flow-logs",
@@ -31,7 +30,7 @@ export default registerTool({
       .string()
       .min(1)
       .optional()
-      .describe("Saved Network Flow Report token to query. Use list-network-flow-reports to discover."),
+      .describe("Saved Network Flow Report token. Use list-network-flow-reports to discover."),
     workspace_token: z
       .string()
       .min(1)
@@ -41,17 +40,15 @@ export default registerTool({
       .string()
       .min(1)
       .optional()
-      .describe("Ad hoc or override VQL filter using the network_flow_logs namespace."),
+      .describe("Ad hoc VQL filter or override for a saved report. Uses the network_flow_logs namespace."),
     date_interval: z
       .enum(networkFlowReportRelativeDateIntervals)
       .optional()
       .describe("Relative date interval. Incompatible with start_date and end_date."),
     start_date: dateValidator(
-      "Custom range start date, formatted YYYY-MM-DD. Provide end_date and omit date_interval."
+      "Custom range start date, YYYY-MM-DD. Provide end_date and omit date_interval."
     ).optional(),
-    end_date: dateValidator(
-      "Custom range end date, formatted YYYY-MM-DD. Provide start_date and omit date_interval."
-    ).optional(),
+    end_date: dateValidator("Custom range end date, YYYY-MM-DD. Provide start_date and omit date_interval.").optional(),
     groupings: z
       .array(z.enum(networkFlowReportGroupingOptions))
       .min(1)
@@ -59,24 +56,11 @@ export default registerTool({
         error: "groupings must contain unique values",
       })
       .optional()
-      .describe(groupingDescription),
-    flow_direction: z
-      .enum(["all", "ingress", "egress"])
-      .optional()
-      .describe("Network traffic direction to include: all, ingress, or egress."),
-    flow_weight: z
-      .enum(["costs", "bytes"])
-      .optional()
-      .describe("Metric used to order aggregated rows: costs or bytes."),
-    page: z.number().int().min(1).optional().default(1).describe("Page number, defaults to 1."),
-    limit: z
-      .number()
-      .int()
-      .min(1)
-      .max(1000)
-      .optional()
-      .default(DEFAULT_LIMIT)
-      .describe(`Number of rows per page, defaults to ${DEFAULT_LIMIT} and cannot exceed 1000.`),
+      .describe("Dimensions used to group network traffic."),
+    flow_direction: flowDirectionSchema.describe("Override the saved report's traffic direction."),
+    flow_weight: flowWeightSchemaForUpdate.describe("Override the saved report's ordering metric."),
+    page: z.number().int().min(1).optional().default(1).describe("Page number, defaults to 1"),
+    limit: z.number().int().min(1).max(1000).optional().default(DEFAULT_LIMIT).describe("Number of rows per page"),
   },
   async execute(args, ctx) {
     if (!args.network_flow_report_token && !args.filter) {
@@ -116,13 +100,7 @@ export default registerTool({
       });
     }
 
-    // Temporary boundary cast: the endpoint is live in core#20392 before it exists in vantage-client.
-    const callNetworkFlowLogsApi = ctx.callVantageApi as unknown as TemporaryCallNetworkFlowLogsApi;
-    const response = await callNetworkFlowLogsApi(
-      NETWORK_FLOW_LOGS_ENDPOINT,
-      args as TemporaryNetworkFlowLogsRequest,
-      "GET"
-    );
+    const response = await ctx.callVantageApi("/v2/network_flow_logs", args as GetNetworkFlowLogsRequest, "GET");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }

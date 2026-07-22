@@ -5,7 +5,7 @@ import registerTool from "../structure/registerTool";
 import paginationData from "../utils/paginationData";
 
 const description = `
-Lists saved Network Flow Reports, which analyze ingress and egress cloud network traffic by cost or bytes. Use the returned token with get-network-flow-report or https://console.vantage.sh/go/<token>.
+Lists saved Network Flow Reports. Use get-network-flow-report for a report's configuration.
 `.trim();
 
 export default registerTool({
@@ -18,16 +18,9 @@ export default registerTool({
     readOnly: true,
   },
   args: {
-    q: z.string().min(1).optional().describe("Search report titles for this text."),
-    page: z.number().int().min(1).optional().default(1).describe("Page number, defaults to 1."),
-    limit: z
-      .number()
-      .int()
-      .min(1)
-      .max(1000)
-      .optional()
-      .default(DEFAULT_LIMIT)
-      .describe(`Number of reports per page, defaults to ${DEFAULT_LIMIT} and cannot exceed 1000.`),
+    q: z.string().min(1).optional().describe("Search reports by title."),
+    page: z.number().int().min(1).optional().default(1).describe("Page number, defaults to 1"),
+    limit: z.number().int().min(1).max(1000).optional().default(DEFAULT_LIMIT).describe("Number of reports per page"),
   },
   async execute(args, ctx) {
     const response = await ctx.callVantageApi("/v2/network_flow_reports", args, "GET");

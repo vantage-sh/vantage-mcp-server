@@ -169,11 +169,30 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     },
   },
   {
+    name: "rejects reversed custom dates",
+    apiCallHandler: requestsInOrder([]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const error = await callExpectingMCPUserError({
+        ...minimalArguments,
+        date_interval: "custom",
+        start_date: "2025-01-31",
+        end_date: "2025-01-01",
+      });
+      expect(error.exception).toEqual({
+        errors: [{ message: "start_date must be on or before end_date" }],
+      });
+    },
+  },
+  {
     name: "unsuccessful API call",
     apiCallHandler: requestsInOrder([
       {
         endpoint: "/v2/network_flow_reports",
-        params: minimalArguments as CreateNetworkFlowReportRequest,
+        params: {
+          ...minimalArguments,
+          date_interval: "last_7_days",
+          flow_weight: "costs",
+        } as CreateNetworkFlowReportRequest,
         method: "POST",
         result: { ok: false, errors: [{ message: "Workspace not found" }] },
       },

@@ -37,39 +37,47 @@ export const networkFlowReportGroupingOptions = [
   "vpc_id",
 ] as const;
 
-export const filterSchema = z
-  .string()
-  .min(1)
-  .optional()
-  .describe("VQL filter for the Network Flow Report. Filters use the network_flow_logs namespace.");
+export const filterSchema = z.string().min(1).optional().describe("VQL filter using the network_flow_logs namespace.");
 
 export const startDateSchema = dateValidator(
-  "Start date for a custom report range, formatted YYYY-MM-DD. Provide end_date with it."
+  "Custom range start date, YYYY-MM-DD. Requires date_interval=custom and end_date."
 ).optional();
 
 export const endDateSchema = dateValidator(
-  "End date for a custom report range, formatted YYYY-MM-DD. Provide start_date with it."
+  "Custom range end date, YYYY-MM-DD. Requires date_interval=custom and start_date."
 ).optional();
 
-export const dateIntervalSchema = z
+export const dateIntervalSchemaForCreate = z
   .enum(networkFlowReportDateIntervals)
   .optional()
-  .describe("Report date interval. Defaults to last_7_days; use custom with start_date and end_date.");
+  .default("last_7_days")
+  .describe("For a custom range, set to custom and provide start_date and end_date.");
+
+export const dateIntervalSchemaForUpdate = z
+  .enum(networkFlowReportDateIntervals)
+  .optional()
+  .describe("For a custom range, set to custom and provide start_date and end_date.");
 
 export const groupingsSchema = z
   .array(z.enum(networkFlowReportGroupingOptions))
   .optional()
-  .describe(`Dimensions used to group network traffic. Valid values: ${networkFlowReportGroupingOptions.join(", ")}.`);
+  .describe("Dimensions used to group network traffic.");
 
 export const flowDirectionSchema = z
   .enum(["all", "ingress", "egress"])
   .optional()
-  .describe("Network traffic direction to include: all, ingress, or egress.");
+  .describe("Network traffic direction to include.");
 
-export const flowWeightSchema = z
+export const flowWeightSchemaForCreate = z
   .enum(["costs", "bytes"])
   .optional()
-  .describe("Metric used to weight network flows. Defaults to costs.");
+  .default("costs")
+  .describe("Metric used to order aggregated network flow rows.");
+
+export const flowWeightSchemaForUpdate = z
+  .enum(["costs", "bytes"])
+  .optional()
+  .describe("Metric used to order aggregated network flow rows.");
 
 type NetworkFlowReportDateRange = {
   start_date?: string;
@@ -93,6 +101,12 @@ export function validateNetworkFlowReportDateRange(args: NetworkFlowReportDateRa
   if (args.date_interval === "custom" && (args.start_date === undefined || args.end_date === undefined)) {
     throw new MCPUserError({
       errors: [{ message: "custom date_interval requires start_date and end_date" }],
+    });
+  }
+
+  if (args.start_date !== undefined && args.end_date !== undefined && args.start_date > args.end_date) {
+    throw new MCPUserError({
+      errors: [{ message: "start_date must be on or before end_date" }],
     });
   }
 }

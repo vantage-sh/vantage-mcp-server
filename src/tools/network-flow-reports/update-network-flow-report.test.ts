@@ -152,6 +152,21 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     },
   },
   {
+    name: "rejects reversed custom dates",
+    apiCallHandler: requestsInOrder([]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const error = await callExpectingMCPUserError({
+        ...minimalArguments,
+        date_interval: "custom",
+        start_date: "2025-02-28",
+        end_date: "2025-02-01",
+      });
+      expect(error.exception).toEqual({
+        errors: [{ message: "start_date must be on or before end_date" }],
+      });
+    },
+  },
+  {
     name: "unsuccessful API call",
     apiCallHandler: requestsInOrder([
       {

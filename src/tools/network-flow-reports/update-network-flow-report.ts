@@ -3,18 +3,18 @@ import z from "zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import {
-  dateIntervalSchema,
+  dateIntervalSchemaForUpdate,
   endDateSchema,
   filterSchema,
   flowDirectionSchema,
-  flowWeightSchema,
+  flowWeightSchemaForUpdate,
   groupingsSchema,
   startDateSchema,
   validateNetworkFlowReportDateRange,
 } from "./schemas";
 
 const description = `
-Updates an existing Network Flow Report's title, VQL filter, date range, groupings, traffic direction, or weighting metric. Use list-network-flow-reports to discover its token.
+Updates a saved Network Flow Report. Use list-network-flow-reports to discover tokens.
 `.trim();
 
 export default registerTool({
@@ -32,10 +32,10 @@ export default registerTool({
     filter: filterSchema,
     start_date: startDateSchema,
     end_date: endDateSchema,
-    date_interval: dateIntervalSchema,
+    date_interval: dateIntervalSchemaForUpdate,
     groupings: groupingsSchema,
     flow_direction: flowDirectionSchema,
-    flow_weight: flowWeightSchema,
+    flow_weight: flowWeightSchemaForUpdate,
   },
   async execute(args, ctx) {
     validateNetworkFlowReportDateRange(args);

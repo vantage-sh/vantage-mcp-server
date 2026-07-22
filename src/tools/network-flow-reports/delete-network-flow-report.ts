@@ -4,7 +4,7 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
 const description = `
-Deletes a Network Flow Report by token. This action is irreversible.
+Deletes a Network Flow Report by token.
 `.trim();
 
 export default registerTool({
