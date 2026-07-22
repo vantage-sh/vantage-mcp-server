@@ -10,7 +10,7 @@ import {
   testTool,
 } from "../utils/testing";
 import tool from "./list-business-metrics";
-import { BUSINESS_METRICS_LIMIT } from "./schemas";
+import { BUSINESS_METRICS_LIST_LIMIT } from "./schemas";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
@@ -69,7 +69,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: "/v2/business_metrics",
         params: {
           page: 1,
-          limit: BUSINESS_METRICS_LIMIT,
+          limit: BUSINESS_METRICS_LIST_LIMIT,
         },
         method: "GET",
         result: {
@@ -96,7 +96,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: "/v2/business_metrics",
         params: {
           page: 1,
-          limit: BUSINESS_METRICS_LIMIT,
+          limit: BUSINESS_METRICS_LIST_LIMIT,
         },
         method: "GET",
         result: {

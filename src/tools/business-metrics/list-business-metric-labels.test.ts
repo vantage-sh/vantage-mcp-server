@@ -14,6 +14,7 @@ import {
   testTool,
 } from "../utils/testing";
 import tool from "./list-business-metric-labels";
+import { BUSINESS_METRIC_DATA_LIMIT } from "./schemas";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
@@ -68,7 +69,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: `/v2/business_metrics/${pathEncode(validArguments.business_metric_token)}/labels`,
         params: {
           page: 1,
-          limit: 5000,
+          limit: BUSINESS_METRIC_DATA_LIMIT,
         } as GetBusinessMetricLabelsRequest,
         method: "GET",
         result: {
@@ -95,7 +96,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: `/v2/business_metrics/${pathEncode("bsnss_mtrc_with/slash")}/labels`,
         params: {
           page: 1,
-          limit: 5000,
+          limit: BUSINESS_METRIC_DATA_LIMIT,
         } as GetBusinessMetricLabelsRequest,
         method: "GET",
         result: {
@@ -118,7 +119,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: `/v2/business_metrics/${pathEncode("bsnss_mtrc_nonexistent")}/labels`,
         params: {
           page: 1,
-          limit: 5000,
+          limit: BUSINESS_METRIC_DATA_LIMIT,
         } as GetBusinessMetricLabelsRequest,
         method: "GET",
         result: {

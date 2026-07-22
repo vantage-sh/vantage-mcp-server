@@ -2,7 +2,7 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import paginationData from "../utils/paginationData";
-import { BUSINESS_METRICS_LIMIT, historicalBusinessMetricValueArgs } from "./schemas";
+import { BUSINESS_METRIC_DATA_LIMIT, historicalBusinessMetricValueArgs } from "./schemas";
 
 const description = `
 Get historical values for a BusinessMetric.
@@ -25,7 +25,7 @@ export default registerTool({
   args: historicalBusinessMetricValueArgs,
   async execute(args, ctx) {
     const { business_metric_token, ...params } = args;
-    const requestParams = { ...params, limit: BUSINESS_METRICS_LIMIT };
+    const requestParams = { ...params, limit: BUSINESS_METRIC_DATA_LIMIT };
     const response = await ctx.callVantageApi(
       `/v2/business_metrics/${pathEncode(business_metric_token)}/values`,
       requestParams,
