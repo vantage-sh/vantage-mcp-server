@@ -1,7 +1,7 @@
 import z from "zod";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
-import paginationData from "./utils/paginationData";
+import paginationData from "../utils/paginationData";
 
 const description = `
 List of cost providers available to query for a given Workspace. Can be used to filter costs down to a specific provider in VQL queries.

@@ -2,8 +2,8 @@ import { pathEncode, type UpdateFinancialCommitmentReportRequest } from "@vantag
 import z from "zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { pastDateIntervalOptions } from "../utils/dateIntervalOptions";
-import dateValidator from "../utils/dateValidator";
+import { pastDateIntervalOptions } from "../../utils/dateIntervalOptions";
+import dateValidator from "../../utils/dateValidator";
 import { groupingDescription, groupingSchema } from "./schemas";
 
 const description = `

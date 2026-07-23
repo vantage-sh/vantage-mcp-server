@@ -3,7 +3,7 @@ import z from "zod";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
-import paginationData from "./utils/paginationData";
+import paginationData from "../utils/paginationData";
 
 const description = `
 List values for a tag key. The argument is \`key\` (the tag key name); the API response fields use \`tag_value\`.

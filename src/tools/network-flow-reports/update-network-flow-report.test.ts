@@ -14,7 +14,7 @@ import {
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
-} from "../utils/testing";
+} from "../../utils/testing";
 import tool from "./update-network-flow-report";
 
 type Validators = ExtractValidators<typeof tool>;

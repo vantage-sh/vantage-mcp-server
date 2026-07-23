@@ -1,6 +1,6 @@
 import z from "zod";
 import MCPUserError from "../structure/MCPUserError";
-import dateValidator from "../utils/dateValidator";
+import dateValidator from "../../utils/dateValidator";
 
 export const networkFlowReportRelativeDateIntervals = [
   "last_3_days",

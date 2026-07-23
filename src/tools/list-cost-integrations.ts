@@ -2,7 +2,7 @@ import z from "zod";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
-import paginationData from "./utils/paginationData";
+import paginationData from "../utils/paginationData";
 
 const description = `
 List all cost provider integrations available to provide costs data from and their associated accounts.

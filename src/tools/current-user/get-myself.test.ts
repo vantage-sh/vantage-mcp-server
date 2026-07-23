@@ -1,5 +1,5 @@
 import { expect } from "vitest";
-import { requestsInOrder, testTool } from "../utils/testing";
+import { requestsInOrder, testTool } from "../../utils/testing";
 import tool from "./get-myself";
 
 const workspace = {

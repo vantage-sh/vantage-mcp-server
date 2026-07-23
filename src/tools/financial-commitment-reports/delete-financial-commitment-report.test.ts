@@ -8,7 +8,7 @@ import {
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
-} from "../utils/testing";
+} from "../../utils/testing";
 import tool from "./delete-financial-commitment-report";
 
 type Validators = ExtractValidators<typeof tool>;

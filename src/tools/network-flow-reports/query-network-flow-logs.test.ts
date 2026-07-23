@@ -10,7 +10,7 @@ import {
   poisonOneValue,
   type SchemaTestTableItem,
   testTool,
-} from "../utils/testing";
+} from "../../utils/testing";
 import tool from "./query-network-flow-logs";
 
 type Validators = ExtractValidators<typeof tool>;

@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import paginationData from "./paginationData";
+import paginationData from "../../src/utils/paginationData";
 
 test("no object", () => {
   expect(paginationData({})).toEqual({

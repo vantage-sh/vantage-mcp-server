@@ -1,6 +1,6 @@
 import { type GetRecommendationViewResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import { requestsInOrder, testTool } from "../utils/testing";
+import { requestsInOrder, testTool } from "../../utils/testing";
 import tool from "./get-recommendation-view";
 
 const success: GetRecommendationViewResponse = {

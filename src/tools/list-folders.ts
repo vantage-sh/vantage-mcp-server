@@ -2,7 +2,7 @@ import z from "zod";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
-import paginationData from "./utils/paginationData";
+import paginationData from "../utils/paginationData";
 
 const description = `
 List all Folders for organizing Cost Reports. Folders can be nested within other Folders via the parent_folder_token field.

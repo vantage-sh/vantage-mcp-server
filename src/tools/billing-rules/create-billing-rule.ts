@@ -1,7 +1,7 @@
 import z from "zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import dateValidator from "../utils/dateValidator";
+import dateValidator from "../../utils/dateValidator";
 
 const description = `
 Creates a new Billing Rule. Billing rules allow you to adjust, exclude, credit, charge, or apply custom modifications to your cost data.
