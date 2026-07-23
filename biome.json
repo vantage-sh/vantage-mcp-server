@@ -11,6 +11,7 @@
   "files": {
     "includes": [
       "src/**/*.{ts,js}",
+      "test/**/*.{ts,js}",
       "!src/resources/index.ts",
       "*.{ts,js}",
       "!**/*.d.ts"
