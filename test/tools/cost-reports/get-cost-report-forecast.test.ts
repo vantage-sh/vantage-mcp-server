@@ -1,0 +1,116 @@
+import { pathEncode } from "@vantage-sh/vantage-client";
+import { expect } from "vitest";
+import { DEFAULT_LIMIT } from "../../../src/tools/structure/constants";
+import {
+  dateValidatorPoisoner,
+  type ExecutionTestTableItem,
+  type ExtractOutputSchema,
+  type ExtractValidators,
+  type InferValidators,
+  poisonOneValue,
+  requestsInOrder,
+  type SchemaTestTableItem,
+  testTool,
+} from "../../../src/utils/testing";
+import tool from "../../../src/tools/cost-reports/get-cost-report-forecast";
+
+type Validators = ExtractValidators<typeof tool>;
+type OutputSchema = ExtractOutputSchema<typeof tool>;
+
+const validArguments: InferValidators<Validators> = {
+  cost_report_token: "crt_123",
+  page: 1,
+  provider: "aws",
+  service: "AmazonEC2",
+  start_date: "2023-01-01",
+  end_date: "2023-01-31",
+};
+
+const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
+  {
+    name: "all valid arguments",
+    data: validArguments,
+  },
+  poisonOneValue(validArguments, "start_date", dateValidatorPoisoner),
+  poisonOneValue(validArguments, "end_date", dateValidatorPoisoner),
+];
+
+const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
+  // Success cases
+
+  {
+    name: "successful call",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: `/v2/cost_reports/${pathEncode("crt_123")}/forecasted_costs`,
+        params: {
+          ...validArguments,
+          limit: DEFAULT_LIMIT,
+          provider: validArguments.provider as any,
+        },
+        method: "GET",
+        result: {
+          ok: true,
+          data: {
+            forecasted_costs: [
+              {
+                amount: "10.0",
+                date: "2023-01-01",
+                provider: "aws" as "aws",
+                service: "AmazonEC2",
+              },
+            ],
+            currency: "USD",
+            links: {},
+          },
+        },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const res = await callExpectingSuccess(validArguments);
+      expect(res).toEqual({
+        forecasted_costs: [
+          {
+            amount: "10.0",
+            date: "2023-01-01",
+            provider: "aws" as "aws",
+            service: "AmazonEC2",
+          },
+        ],
+        pagination: {
+          hasNextPage: false,
+          nextPage: 0,
+        },
+      });
+    },
+  },
+
+  // API failure
+
+  {
+    name: "unsuccessful call",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: `/v2/cost_reports/${pathEncode("crt_123")}/forecasted_costs`,
+        params: {
+          ...validArguments,
+          limit: DEFAULT_LIMIT,
+          provider: validArguments.provider as any,
+        },
+        method: "GET",
+        result: {
+          ok: false,
+          errors: [{ message: "Invalid token" }],
+        },
+      },
+    ]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError(validArguments);
+      expect(err.exception).toEqual({
+        errors: [{ message: "Invalid token" }],
+      });
+    },
+  },
+];
+
+testTool(tool, argumentSchemaTests, executionTests);

@@ -1,0 +1,105 @@
+import type { GetTagsResponse } from "@vantage-sh/vantage-client";
+import { expect } from "vitest";
+import tool from "../../src/tools/list-tags";
+import { DEFAULT_LIMIT } from "../../src/tools/structure/constants";
+import {
+  type ExecutionTestTableItem,
+  type ExtractOutputSchema,
+  type ExtractValidators,
+  type InferValidators,
+  requestsInOrder,
+  type SchemaTestTableItem,
+  testTool,
+} from "../../src/utils/testing";
+
+type Validators = ExtractValidators<typeof tool>;
+type OutputSchema = ExtractOutputSchema<typeof tool>;
+
+const validArguments: InferValidators<Validators> = {
+  page: 1,
+  search_query: undefined,
+  providers: undefined,
+};
+
+const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
+  {
+    name: "default page",
+    data: {
+      page: undefined,
+      search_query: undefined,
+      providers: undefined,
+    },
+  },
+  {
+    name: "valid page number",
+    data: validArguments,
+  },
+];
+
+const successData: GetTagsResponse = {
+  tags: [
+    { tag_key: "environment", hidden: false, preferred: false, providers: ["aws", "azure"] },
+    { tag_key: "project", hidden: false, preferred: false, providers: ["aws", "gcp"] },
+    { tag_key: "team", hidden: false, preferred: false, providers: ["aws"] },
+  ],
+  links: {},
+};
+
+const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
+  {
+    name: "successful call",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/tags",
+        params: {
+          page: 1,
+          search_query: undefined,
+          providers: undefined,
+          limit: DEFAULT_LIMIT,
+        },
+        method: "GET",
+        result: {
+          ok: true,
+          data: successData,
+        },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const res = await callExpectingSuccess(validArguments);
+      expect(res).toEqual({
+        tags: successData.tags,
+        pagination: {
+          hasNextPage: false,
+          nextPage: 0,
+        },
+      });
+    },
+  },
+  {
+    name: "unsuccessful call",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/tags",
+        params: {
+          page: 1,
+          search_query: undefined,
+          providers: undefined,
+          limit: DEFAULT_LIMIT,
+        },
+        method: "GET",
+        result: {
+          ok: false,
+          errors: [{ message: "Access denied" }],
+        },
+      },
+    ]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError(validArguments);
+      expect(err.exception).toEqual({
+        errors: [{ message: "Access denied" }],
+      });
+    },
+  },
+];
+
+testTool(tool, argumentSchemaTests, executionTests);
