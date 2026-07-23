@@ -9,7 +9,7 @@ import {
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
-} from "../utils/testing";
+} from "../../utils/testing";
 import tool from "./create-dashboard";
 
 type Validators = ExtractValidators<typeof tool>;

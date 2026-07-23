@@ -1,6 +1,6 @@
 import { type GetCostAlertEventResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import { requestsInOrder, testTool } from "../utils/testing";
+import { requestsInOrder, testTool } from "../../utils/testing";
 import tool from "./get-cost-alert-event";
 
 const success: GetCostAlertEventResponse = {

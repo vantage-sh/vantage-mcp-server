@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { expect, test } from "vitest";
-import generateIndex from "./utils/generateIndex";
+import generateIndex from "../utils/generateIndex";
 
 test("index file is up to date", () => {
   const generated = generateIndex(__dirname);

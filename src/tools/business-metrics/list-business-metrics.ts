@@ -1,7 +1,7 @@
 import z from "zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import paginationData from "../utils/paginationData";
+import paginationData from "../../utils/paginationData";
 import { BUSINESS_METRICS_LIST_LIMIT } from "./schemas";
 
 const description = `

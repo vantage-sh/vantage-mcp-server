@@ -2,7 +2,7 @@ import { pathEncode, type UpdateRecommendationViewRequest } from "@vantage-sh/va
 import z from "zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import dateValidator from "../utils/dateValidator";
+import dateValidator from "../../utils/dateValidator";
 
 const description = `
 Updates an existing Recommendation View. Use this to change the view title or the filters applied to saved recommendation views.

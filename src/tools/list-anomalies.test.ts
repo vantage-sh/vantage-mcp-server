@@ -12,7 +12,7 @@ import {
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
-} from "./utils/testing";
+} from "../utils/testing";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;

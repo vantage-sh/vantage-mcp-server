@@ -11,7 +11,7 @@ import {
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
-} from "../utils/testing";
+} from "../../utils/testing";
 import tool from "./get-business-metric-forecasted-values";
 import { BUSINESS_METRIC_DATA_LIMIT } from "./schemas";
 

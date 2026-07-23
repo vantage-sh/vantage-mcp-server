@@ -30,7 +30,7 @@ If you are adding a tool under `src/tools/<resource>/` and other tools for the s
 1. **Identify the family** — same REST resource or shared noun (`cost-report`, `budget`, `recommendation-view`, …). Move every matching `*.ts` and `*.test.ts` from `src/tools/` into `src/tools/<resource>/`.
 2. **Fix imports** in every moved file — top-level paths become one level up:
    - `from "./structure/…"` → `from "../structure/…"`
-   - `from "./utils/…"` → `from "../utils/…"`
+   - `from "./utils/…"` → `from "../../utils/…"`
    - Tool imports stay sibling-relative: `import tool from "./list-cost-reports"`.
 3. **Update `src/tools/<resource>/index.ts`** — one `import "./<verb>-<resource>"` line per tool in the family (sorted is fine; the generator sorts the top-level index).
 4. **Regenerate the tools index** — `npm run generate-tools-index`. The top-level `src/tools/index.ts` should import `./<resource>` once, not each tool file. Remove any stale per-tool imports left over from before the move.
@@ -161,9 +161,9 @@ args: {
 ```
 
 Patterns to use:
-- `dateValidator("…")` from `../utils/dateValidator` for any `YYYY-MM-DD` field.
+- `dateValidator("…")` from `../../utils/dateValidator` for any `YYYY-MM-DD` field.
 - `DEFAULT_LIMIT` from `../structure/constants` when paginating.
-- `paginationData(response.data)` from `../utils/paginationData` to compute `{ hasNextPage, nextPage }` for list tools.
+- `paginationData(response.data)` from `../../utils/paginationData` to compute `{ hasNextPage, nextPage }` for list tools.
 - `pathEncode` from `@vantage-sh/vantage-client` for any token interpolated into a URL path.
 - Request body types: `RequestBodyForPathAndMethod<"/v2/…", "POST">` from `@vantage-sh/vantage-client` when you need to assert the body shape (see `create-recommendation-view.ts`).
 - Shared sub-schemas go in `src/tools/<resource>/schemas.ts` when used by more than one tool in that folder (see "Shared schemas"). Import with `from "./schemas"`.
@@ -210,7 +210,7 @@ if (!!args.tag_key !== !!args.tag_value) {
 
 ## Tests
 
-Co-locate `<tool>.test.ts` next to the tool. Use the `testTool` helper from `../utils/testing`. The shape:
+Co-locate `<tool>.test.ts` next to the tool. Use the `testTool` helper from `../../utils/testing`. The shape:
 
 ```ts
 import { expect } from "vitest";
@@ -222,7 +222,7 @@ import {
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
-} from "../utils/testing";
+} from "../../utils/testing";
 import tool from "./list-widgets";
 
 type Validators = ExtractValidators<typeof tool>;

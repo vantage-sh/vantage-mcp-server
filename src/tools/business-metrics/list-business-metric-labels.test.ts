@@ -12,7 +12,7 @@ import {
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
-} from "../utils/testing";
+} from "../../utils/testing";
 import tool from "./list-business-metric-labels";
 import { BUSINESS_METRIC_DATA_LIMIT } from "./schemas";
 

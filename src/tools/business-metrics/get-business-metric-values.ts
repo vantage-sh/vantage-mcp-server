@@ -1,7 +1,7 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import paginationData from "../utils/paginationData";
+import paginationData from "../../utils/paginationData";
 import { BUSINESS_METRIC_DATA_LIMIT, historicalBusinessMetricValueArgs } from "./schemas";
 
 const description = `

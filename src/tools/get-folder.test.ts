@@ -1,7 +1,7 @@
 import { type GetFolderResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "./get-folder";
-import { requestsInOrder, testTool } from "./utils/testing";
+import { requestsInOrder, testTool } from "../utils/testing";
 
 const success: GetFolderResponse = {
   token: "fldr_123",

@@ -2,7 +2,7 @@ import type { RequestBodyForPathAndMethod } from "@vantage-sh/vantage-client";
 import z from "zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import dateValidator from "../utils/dateValidator";
+import dateValidator from "../../utils/dateValidator";
 
 const description = `
 Create a new Recommendation View in Vantage.

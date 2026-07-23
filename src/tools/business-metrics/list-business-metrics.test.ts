@@ -8,7 +8,7 @@ import {
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
-} from "../utils/testing";
+} from "../../utils/testing";
 import tool from "./list-business-metrics";
 import { BUSINESS_METRICS_LIST_LIMIT } from "./schemas";
 

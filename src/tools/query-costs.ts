@@ -1,8 +1,8 @@
 import z from "zod";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
-import dateValidator from "./utils/dateValidator";
-import paginationData from "./utils/paginationData";
+import dateValidator from "../utils/dateValidator";
+import paginationData from "../utils/paginationData";
 
 const description = `
 Query for costs in a Vantage Account. These are independent of a cost reports.

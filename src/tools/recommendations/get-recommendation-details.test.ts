@@ -7,7 +7,7 @@ import {
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
-} from "../utils/testing";
+} from "../../utils/testing";
 import tool from "./get-recommendation-details";
 
 type Validators = ExtractValidators<typeof tool>;

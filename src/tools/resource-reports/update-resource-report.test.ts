@@ -8,7 +8,7 @@ import {
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
-} from "../utils/testing";
+} from "../../utils/testing";
 import tool from "./update-resource-report";
 
 const RESOURCE_REPORT_TOKEN: string = "prvdr_rsrc_rprt_d881b5362adab1c2";

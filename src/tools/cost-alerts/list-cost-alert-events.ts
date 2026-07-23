@@ -3,7 +3,7 @@ import z from "zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import paginationData from "../utils/paginationData";
+import paginationData from "../../utils/paginationData";
 
 const description = `
 List events for a Cost Alert. Events are individual alert trigger records and can be filtered by Cost Report token.

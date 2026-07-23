@@ -1,5 +1,5 @@
 import z from "zod";
-import dateValidator from "../utils/dateValidator";
+import dateValidator from "../../utils/dateValidator";
 
 export const BUSINESS_METRICS_LIST_LIMIT = 1000;
 export const BUSINESS_METRIC_DATA_LIMIT = 5000;

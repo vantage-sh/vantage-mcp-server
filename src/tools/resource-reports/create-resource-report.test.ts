@@ -8,7 +8,7 @@ import {
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
-} from "../utils/testing";
+} from "../../utils/testing";
 import tool from "./create-resource-report";
 
 const WORKSPACE_TOKEN: string = "wrkspc_2ed2f1a59293a996";
