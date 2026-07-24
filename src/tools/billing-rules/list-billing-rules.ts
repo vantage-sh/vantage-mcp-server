@@ -23,6 +23,7 @@ export default registerTool({
     readOnly: true,
   },
   args,
+  requires: { msp: true },
   async execute(args, ctx) {
     const requestParams = { ...args, limit: DEFAULT_LIMIT };
     const response = await ctx.callVantageApi("/v2/billing_rules", requestParams, "GET");

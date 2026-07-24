@@ -16,6 +16,7 @@ export default registerTool({
     openWorld: false,
     readOnly: true,
   },
+  requires: { msp: true },
   args: {
     billing_rule_token: z.string().describe("The token of the Billing Rule to retrieve."),
   },

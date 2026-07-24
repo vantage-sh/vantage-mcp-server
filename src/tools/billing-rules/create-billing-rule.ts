@@ -21,6 +21,7 @@ export default registerTool({
     openWorld: false,
     readOnly: false,
   },
+  requires: { msp: true },
   args: {
     type: z.enum(["exclusion", "adjustment", "credit", "charge", "custom"]).describe("The type of billing rule."),
     title: z.string().min(1).describe("The title of the Billing Rule."),

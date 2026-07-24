@@ -1,8 +1,18 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { callApi } from "../shared";
 import MCPUserError from "../tools/structure/MCPUserError";
 import { resolveAccountCapabilities } from "./accountCapabilities";
 
+const MANAGED_ACCOUNTS_MSP_DENIAL_BODY = JSON.stringify({
+  errors: ["You do not have permission to access this resource."],
+});
+
 describe("resolveAccountCapabilities", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
   it("sets msp true when managed_accounts succeeds", async () => {
     const ctx = {
       callVantageApi: vi.fn().mockResolvedValue({
@@ -35,6 +45,29 @@ describe("resolveAccountCapabilities", () => {
     };
 
     await expect(resolveAccountCapabilities(ctx)).resolves.toEqual({ msp: false });
+  });
+
+  it("parses core's Grape 403 body through callApi and resolves msp false", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(MANAGED_ACCOUNTS_MSP_DENIAL_BODY, {
+          status: 403,
+          headers: { "Content-Type": "application/json" },
+        })
+      )
+    );
+
+    const ctx = {
+      callVantageApi: (endpoint: "/v2/managed_accounts", params: { page: 1; limit: 1 }, method: "GET") =>
+        callApi("https://api.vantage.sh", { Authorization: "Bearer test" }, params, method, endpoint),
+    };
+
+    await expect(resolveAccountCapabilities(ctx)).resolves.toEqual({ msp: false });
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining("/v2/managed_accounts"),
+      expect.objectContaining({ method: "GET" })
+    );
   });
 
   it("throws when managed_accounts fails for a reason other than MSP denial", async () => {

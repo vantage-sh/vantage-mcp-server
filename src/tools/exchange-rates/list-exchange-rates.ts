@@ -6,9 +6,7 @@ import registerTool from "../structure/registerTool";
 
 const description = `
 List custom exchange rates uploaded for MSP currency management (base currency, target currency, rate, effective month).
-MSP (partner) accounts only. Do not call for standard Vantage customer accounts. 
-The API returns "This feature is not available for this account."
- Do not use for workspace display-currency settings, built-in cost-report FX conversion, or general currency questions unless the user is explicitly managing MSP custom rates for managed accounts.
+Do not use for workspace display-currency settings, built-in cost-report FX conversion, or general currency questions unless the user is explicitly managing MSP custom rates for managed accounts.
 `.trim();
 
 const args = {

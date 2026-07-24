@@ -22,6 +22,7 @@ export default registerTool({
     openWorld: false,
     readOnly: false,
   },
+  requires: { msp: true },
   args: {
     billing_rule_token: z.string().describe("The token of the Billing Rule to update."),
     title: z.string().min(1).optional().describe("The updated title of the Billing Rule."),
