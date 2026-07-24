@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { AppEnv } from "../../../src/env";
-import { CloudflareWorkerTracer } from "../../../src/tracing/tracer";
+import type { AppEnv } from "../../src/env";
+import { CloudflareWorkerTracer } from "../../src/tracing/tracer";
 
 const FIXED_NOW = 1_700_000_000_000;
 

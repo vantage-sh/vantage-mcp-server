@@ -5,8 +5,8 @@ import {
   type CompletedSpan,
   type ResolvedTracerConfig,
   toOtlpAttributes,
-} from "../../../src/tracing/otlp";
-import type { TraceSpan } from "../../../src/tracing/tracer";
+} from "../../src/tracing/otlp";
+import type { TraceSpan } from "../../src/tracing/tracer";
 
 const FIXED_NOW = 1_700_000_000_000;
 
