@@ -1,7 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { callApi } from "../shared";
 import MCPUserError from "../tools/structure/MCPUserError";
-import { resolveAccountCapabilities } from "./accountCapabilities";
+import type { ToolCallContext } from "../tools/structure/registerTool";
+import { resolveAccountCapabilities, resolveAccountCapabilitiesForSession } from "./accountCapabilities";
 
 const MANAGED_ACCOUNTS_MSP_DENIAL_BODY = JSON.stringify({
   errors: ["You do not have permission to access this resource."],
@@ -58,9 +59,15 @@ describe("resolveAccountCapabilities", () => {
       )
     );
 
-    const ctx = {
-      callVantageApi: (endpoint: "/v2/managed_accounts", params: { page: 1; limit: 1 }, method: "GET") =>
-        callApi("https://api.vantage.sh", { Authorization: "Bearer test" }, params, method, endpoint),
+    const ctx: ToolCallContext = {
+      callVantageApi: ((endpoint, params, method) =>
+        callApi(
+          "https://api.vantage.sh",
+          { Authorization: "Bearer test" },
+          params,
+          method,
+          endpoint
+        )) as ToolCallContext["callVantageApi"],
     };
 
     await expect(resolveAccountCapabilities(ctx)).resolves.toEqual({ msp: false });
@@ -90,5 +97,16 @@ describe("resolveAccountCapabilities", () => {
     await expect(resolveAccountCapabilities(ctx)).rejects.toMatchObject({
       exception: { errors },
     });
+  });
+
+  it("continues session setup without capabilities when the probe fails", async () => {
+    const ctx = {
+      callVantageApi: vi.fn().mockResolvedValue({
+        ok: false,
+        errors: [{ message: "Vantage API request failed", status: 503 }],
+      }),
+    };
+
+    await expect(resolveAccountCapabilitiesForSession(ctx)).resolves.toBeUndefined();
   });
 });

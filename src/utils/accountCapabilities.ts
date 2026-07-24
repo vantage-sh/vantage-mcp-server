@@ -36,3 +36,17 @@ export async function resolveAccountCapabilities(ctx: ToolCallContext): Promise<
   }
   throw new MCPUserError({ errors: response.errors });
 }
+
+/**
+ * Resolve account capabilities for session setup without making tool registration depend on the probe.
+ * When the probe fails, callers should continue initializing and omit MSP-gated tools.
+ */
+export async function resolveAccountCapabilitiesForSession(
+  ctx: ToolCallContext
+): Promise<AccountCapabilities | undefined> {
+  try {
+    return await resolveAccountCapabilities(ctx);
+  } catch {
+    return undefined;
+  }
+}
