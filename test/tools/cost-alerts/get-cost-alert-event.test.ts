@@ -1,7 +1,7 @@
 import { type GetCostAlertEventResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import { requestsInOrder, testTool } from "../../../src/utils/testing";
 import tool from "../../../src/tools/cost-alerts/get-cost-alert-event";
+import { requestsInOrder, testTool } from "../../../src/utils/testing";
 
 const success: GetCostAlertEventResponse = {
   token: "cstm_alrt_evnt_123",

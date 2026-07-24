@@ -1,5 +1,6 @@
 import { pathEncode, type UpdateCostReportResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
+import tool from "../../../src/tools/cost-reports/update-cost-report";
 import {
   dateValidatorPoisoner,
   type ExecutionTestTableItem,
@@ -11,7 +12,6 @@ import {
   type SchemaTestTableItem,
   testTool,
 } from "../../../src/utils/testing";
-import tool from "../../../src/tools/cost-reports/update-cost-report";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;

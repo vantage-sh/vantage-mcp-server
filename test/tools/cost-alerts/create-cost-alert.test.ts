@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+import tool from "../../../src/tools/cost-alerts/create-cost-alert";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
@@ -8,7 +9,6 @@ import {
   type SchemaTestTableItem,
   testTool,
 } from "../../../src/utils/testing";
-import tool from "../../../src/tools/cost-alerts/create-cost-alert";
 
 type Validators = ExtractValidators<typeof tool>;
 

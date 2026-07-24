@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+import tool from "../../../src/tools/billing-rules/create-billing-rule";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
@@ -8,7 +9,6 @@ import {
   type SchemaTestTableItem,
   testTool,
 } from "../../../src/utils/testing";
-import tool from "../../../src/tools/billing-rules/create-billing-rule";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;

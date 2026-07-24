@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+import tool from "../../../src/tools/cost-reports/create-cost-report";
 import {
   dateValidatorPoisoner,
   type ExecutionTestTableItem,
@@ -9,7 +10,6 @@ import {
   type SchemaTestTableItem,
   testTool,
 } from "../../../src/utils/testing";
-import tool from "../../../src/tools/cost-reports/create-cost-report";
 
 type Validators = ExtractValidators<typeof tool>;
 

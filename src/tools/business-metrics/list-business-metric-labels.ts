@@ -1,8 +1,8 @@
 import { type GetBusinessMetricLabelsRequest, pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod";
+import paginationData from "../../utils/paginationData";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import paginationData from "../../utils/paginationData";
 import { BUSINESS_METRIC_DATA_LIMIT } from "./schemas";
 
 const description = `

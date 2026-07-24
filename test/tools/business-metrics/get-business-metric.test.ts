@@ -1,7 +1,7 @@
 import { type GetBusinessMetricResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import { requestsInOrder, testTool } from "../../../src/utils/testing";
 import tool from "../../../src/tools/business-metrics/get-business-metric";
+import { requestsInOrder, testTool } from "../../../src/utils/testing";
 
 const success: GetBusinessMetricResponse = {
   token: "bsnss_mtrc_6d8f14830f9870ac",

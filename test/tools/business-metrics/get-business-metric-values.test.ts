@@ -1,6 +1,8 @@
 import type { GetBusinessMetricValuesResponse } from "@vantage-sh/vantage-client";
 import { pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
+import tool from "../../../src/tools/business-metrics/get-business-metric-values";
+import { BUSINESS_METRIC_DATA_LIMIT } from "../../../src/tools/business-metrics/schemas";
 import {
   dateValidatorPoisoner,
   type ExecutionTestTableItem,
@@ -12,8 +14,6 @@ import {
   type SchemaTestTableItem,
   testTool,
 } from "../../../src/utils/testing";
-import tool from "../../../src/tools/business-metrics/get-business-metric-values";
-import { BUSINESS_METRIC_DATA_LIMIT } from "../../../src/tools/business-metrics/schemas";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
