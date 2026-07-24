@@ -4,6 +4,8 @@ import {
   pathEncode,
 } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
+import tool from "../../../src/tools/business-metrics/list-business-metric-labels";
+import { BUSINESS_METRIC_DATA_LIMIT } from "../../../src/tools/business-metrics/schemas";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
@@ -13,8 +15,6 @@ import {
   type SchemaTestTableItem,
   testTool,
 } from "../../../src/utils/testing";
-import tool from "../../../src/tools/business-metrics/list-business-metric-labels";
-import { BUSINESS_METRIC_DATA_LIMIT } from "../../../src/tools/business-metrics/schemas";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;

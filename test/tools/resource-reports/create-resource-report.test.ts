@@ -1,5 +1,6 @@
 import type { CreateResourceReportResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
+import tool from "../../../src/tools/resource-reports/create-resource-report";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
@@ -9,7 +10,6 @@ import {
   type SchemaTestTableItem,
   testTool,
 } from "../../../src/utils/testing";
-import tool from "../../../src/tools/resource-reports/create-resource-report";
 
 const WORKSPACE_TOKEN: string = "wrkspc_2ed2f1a59293a996";
 const BAD_WORKSPACE_TOKEN: string = "wrkspc_nonexistent";

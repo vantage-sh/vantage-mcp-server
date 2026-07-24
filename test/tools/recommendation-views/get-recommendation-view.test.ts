@@ -1,7 +1,7 @@
 import { type GetRecommendationViewResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import { requestsInOrder, testTool } from "../../../src/utils/testing";
 import tool from "../../../src/tools/recommendation-views/get-recommendation-view";
+import { requestsInOrder, testTool } from "../../../src/utils/testing";
 
 const success: GetRecommendationViewResponse = {
   token: "rec_vw_be3f24eb1b5aabf6",

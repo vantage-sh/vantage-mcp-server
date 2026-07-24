@@ -1,5 +1,6 @@
 import { type GetCostAlertEventsResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
+import tool from "../../../src/tools/cost-alerts/list-cost-alert-events";
 import { DEFAULT_LIMIT } from "../../../src/tools/structure/constants";
 import {
   type ExecutionTestTableItem,
@@ -10,7 +11,6 @@ import {
   type SchemaTestTableItem,
   testTool,
 } from "../../../src/utils/testing";
-import tool from "../../../src/tools/cost-alerts/list-cost-alert-events";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;

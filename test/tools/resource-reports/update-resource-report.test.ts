@@ -1,5 +1,6 @@
 import { pathEncode, type UpdateResourceReportResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
+import tool from "../../../src/tools/resource-reports/update-resource-report";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
@@ -9,7 +10,6 @@ import {
   type SchemaTestTableItem,
   testTool,
 } from "../../../src/utils/testing";
-import tool from "../../../src/tools/resource-reports/update-resource-report";
 
 const RESOURCE_REPORT_TOKEN: string = "prvdr_rsrc_rprt_d881b5362adab1c2";
 const BAD_RESOURCE_REPORT_TOKEN: string = "prvdr_rsrc_rprt_nonexistent";

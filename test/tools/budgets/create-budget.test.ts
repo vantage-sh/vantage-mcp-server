@@ -1,5 +1,6 @@
 import type { CreateBudgetResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
+import tool from "../../../src/tools/budgets/create-budget";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
@@ -9,7 +10,6 @@ import {
   type SchemaTestTableItem,
   testTool,
 } from "../../../src/utils/testing";
-import tool from "../../../src/tools/budgets/create-budget";
 
 type Validators = ExtractValidators<typeof tool>;
 

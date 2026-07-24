@@ -1,7 +1,7 @@
 import type { GetResourceReportColumnsResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import { requestsInOrder, testTool } from "../../../src/utils/testing";
 import tool from "../../../src/tools/resource-reports/list-resource-report-columns";
+import { requestsInOrder, testTool } from "../../../src/utils/testing";
 
 const success: GetResourceReportColumnsResponse = {
   columns: [

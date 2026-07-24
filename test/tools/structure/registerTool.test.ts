@@ -1,7 +1,10 @@
 import { afterEach, describe, expect, it, test, vi } from "vitest";
 import z from "zod";
 import MCPUserError from "../../../src/tools/structure/MCPUserError";
-import registerTool, { clearRegisteredToolsForTesting, setupRegisteredTools } from "../../../src/tools/structure/registerTool";
+import registerTool, {
+  clearRegisteredToolsForTesting,
+  setupRegisteredTools,
+} from "../../../src/tools/structure/registerTool";
 
 afterEach(() => clearRegisteredToolsForTesting());
 

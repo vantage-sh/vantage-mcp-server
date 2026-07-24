@@ -1,7 +1,7 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import { requestsInOrder, testTool } from "../../../src/utils/testing";
 import tool from "../../../src/tools/dashboards/get-dashboard";
+import { requestsInOrder, testTool } from "../../../src/utils/testing";
 
 const success = {
   token: "dshbrd_fb27faa25ef5ea72",

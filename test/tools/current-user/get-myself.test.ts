@@ -1,6 +1,6 @@
 import { expect } from "vitest";
-import { requestsInOrder, testTool } from "../../../src/utils/testing";
 import tool from "../../../src/tools/current-user/get-myself";
+import { requestsInOrder, testTool } from "../../../src/utils/testing";
 
 const workspace = {
   token: "ws_123",

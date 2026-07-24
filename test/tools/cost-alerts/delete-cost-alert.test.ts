@@ -1,7 +1,7 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import { requestsInOrder, testTool } from "../../../src/utils/testing";
 import tool from "../../../src/tools/cost-alerts/delete-cost-alert";
+import { requestsInOrder, testTool } from "../../../src/utils/testing";
 
 testTool(
   tool,

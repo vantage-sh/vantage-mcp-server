@@ -1,9 +1,9 @@
 import type { RequestBodyForPathAndMethod } from "@vantage-sh/vantage-client";
 import z from "zod";
-import MCPUserError from "../structure/MCPUserError";
-import registerTool from "../structure/registerTool";
 import { pastDateIntervalOptions } from "../../utils/dateIntervalOptions";
 import dateValidator from "../../utils/dateValidator";
+import MCPUserError from "../structure/MCPUserError";
+import registerTool from "../structure/registerTool";
 import { groupingDescription, groupingSchema } from "./schemas";
 
 const description = `

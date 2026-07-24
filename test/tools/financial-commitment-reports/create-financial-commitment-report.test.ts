@@ -1,5 +1,6 @@
 import type { RequestBodyForPathAndMethod } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
+import tool from "../../../src/tools/financial-commitment-reports/create-financial-commitment-report";
 import {
   dateValidatorPoisoner,
   type ExecutionTestTableItem,
@@ -11,7 +12,6 @@ import {
   type SchemaTestTableItem,
   testTool,
 } from "../../../src/utils/testing";
-import tool from "../../../src/tools/financial-commitment-reports/create-financial-commitment-report";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;

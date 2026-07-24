@@ -1,7 +1,7 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import { requestsInOrder, testTool } from "../../../src/utils/testing";
 import tool from "../../../src/tools/resource-reports/delete-resource-report";
+import { requestsInOrder, testTool } from "../../../src/utils/testing";
 
 const RESOURCE_REPORT_TOKEN: string = "prvdr_rsrc_rprt_5270d2a0708fd74f";
 const BAD_RESOURCE_REPORT_TOKEN: string = "prvdr_rsrc_rprt_missing";

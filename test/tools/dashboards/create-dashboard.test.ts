@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+import tool from "../../../src/tools/dashboards/create-dashboard";
 import {
   dateValidatorPoisoner,
   type ExecutionTestTableItem,
@@ -10,7 +11,6 @@ import {
   type SchemaTestTableItem,
   testTool,
 } from "../../../src/utils/testing";
-import tool from "../../../src/tools/dashboards/create-dashboard";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;

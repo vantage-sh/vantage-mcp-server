@@ -1,5 +1,6 @@
 import type { CreateNetworkFlowReportRequest, CreateNetworkFlowReportResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
+import tool from "../../../src/tools/network-flow-reports/create-network-flow-report";
 import {
   dateValidatorPoisoner,
   type ExecutionTestTableItem,
@@ -11,7 +12,6 @@ import {
   type SchemaTestTableItem,
   testTool,
 } from "../../../src/utils/testing";
-import tool from "../../../src/tools/network-flow-reports/create-network-flow-report";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
