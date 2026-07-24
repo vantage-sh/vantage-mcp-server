@@ -6,7 +6,10 @@ export type AccountCapabilities = {
   msp: boolean;
 };
 
-const MSP_UNAVAILABLE_MESSAGE = "You do not have permission to access this resource.";
+const MSP_UNAVAILABLE_MESSAGES = new Set([
+  "This feature is not available for this account.",
+  "You do not have permission to access this resource.",
+]);
 
 function errorMessage(error: unknown): string | undefined {
   if (typeof error === "string") {
@@ -18,7 +21,10 @@ function errorMessage(error: unknown): string | undefined {
 }
 
 function isMspUnavailable(errors: unknown[]): boolean {
-  return errors.some((error) => errorMessage(error) === MSP_UNAVAILABLE_MESSAGE);
+  return errors.some((error) => {
+    const message = errorMessage(error);
+    return message !== undefined && MSP_UNAVAILABLE_MESSAGES.has(message);
+  });
 }
 
 /**

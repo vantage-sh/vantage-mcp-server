@@ -15,18 +15,29 @@ describe("resolveAccountCapabilities", () => {
     expect(ctx.callVantageApi).toHaveBeenCalledWith("/v2/managed_accounts", { page: 1, limit: 1 }, "GET");
   });
 
-  it("sets msp false when managed_accounts returns the MSP denial message as a string", async () => {
+  it("sets msp false when managed_accounts returns the documented MSP denial message as a string", async () => {
     const ctx = {
       callVantageApi: vi.fn().mockResolvedValue({
         ok: false,
-        errors: ["You do not have permission to access this resource."],
+        errors: ["This feature is not available for this account."],
       }),
     };
 
     await expect(resolveAccountCapabilities(ctx)).resolves.toEqual({ msp: false });
   });
 
-  it("sets msp false when managed_accounts returns the MSP denial in an error object", async () => {
+  it("sets msp false when managed_accounts returns the documented MSP denial in an error object", async () => {
+    const ctx = {
+      callVantageApi: vi.fn().mockResolvedValue({
+        ok: false,
+        errors: [{ message: "This feature is not available for this account." }],
+      }),
+    };
+
+    await expect(resolveAccountCapabilities(ctx)).resolves.toEqual({ msp: false });
+  });
+
+  it("sets msp false when managed_accounts returns the legacy permission denial message", async () => {
     const ctx = {
       callVantageApi: vi.fn().mockResolvedValue({
         ok: false,
