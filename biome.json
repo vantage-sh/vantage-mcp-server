@@ -13,7 +13,8 @@
       "src/**/*.{ts,js}",
       "!src/resources/index.ts",
       "*.{ts,js}",
-      "!**/*.d.ts"
+      "!**/*.d.ts",
+      "test/**/*.{ts,js}"
     ],
     "ignoreUnknown": true
   },
