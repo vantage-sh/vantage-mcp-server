@@ -31,7 +31,7 @@ Audit logs commonly include actions such as:
 - Updating recommendation commitments
 - Creating, updating, or deleting segments
 
-Use pagination with the \`page\` parameter starting at 1. You can also pass \`limit\`; if omitted, the API defaults to 100 results per page.
+You can pass \`limit\`; if omitted, the API defaults to 100 results per page.
 
 Audit logs can be filtered by:
 - \`user\`: numeric user ID associated with the action

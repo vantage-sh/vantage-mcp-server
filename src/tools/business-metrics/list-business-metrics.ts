@@ -6,7 +6,7 @@ import { BUSINESS_METRICS_LIST_LIMIT } from "./schemas";
 
 const description = `
 List all BusinessMetrics available to the current Vantage API token.
-Use page 1 when calling this tool for the first time. If the user asks for all BusinessMetrics or needs to search across the full set, keep calling this tool with pagination.nextPage until pagination.hasNextPage is false.
+If the user asks for all BusinessMetrics or needs to search across the full set, keep calling this tool with pagination.nextPage until pagination.hasNextPage is false.
 BusinessMetrics represent business KPIs, such as requests, users, or revenue, that can be attached to Cost Reports for per-unit cost analysis.
 The token of a BusinessMetric can be used with get-business-metric, list-business-metric-labels, get-business-metric-values, and get-business-metric-forecasted-values.
 `.trim();

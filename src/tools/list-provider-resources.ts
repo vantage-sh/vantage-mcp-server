@@ -1,4 +1,5 @@
 import z from "zod";
+import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
 import paginationData from "../utils/paginationData";
@@ -140,7 +141,7 @@ export default registerTool({
     if (args.filter) {
       args.filter = correctResourceTypes(args.filter);
     }
-    const response = await ctx.callVantageApi("/v2/resources", args, "GET");
+    const response = await ctx.callVantageApi("/v2/resources", { ...args, limit: DEFAULT_LIMIT }, "GET");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }
