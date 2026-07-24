@@ -1,6 +1,5 @@
 import type { GetFinancialCommitmentReportsResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import { DEFAULT_LIMIT } from "../structure/constants";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
@@ -10,6 +9,7 @@ import {
   type SchemaTestTableItem,
   testTool,
 } from "../../utils/testing";
+import { DEFAULT_LIMIT } from "../structure/constants";
 import tool from "./list-financial-commitment-reports";
 
 type Validators = ExtractValidators<typeof tool>;

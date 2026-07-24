@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import MCPUserError from "../structure/MCPUserError";
+import MCPUserError from "../tools/structure/MCPUserError";
 import { resolveAccountCapabilities } from "./accountCapabilities";
 
 describe("resolveAccountCapabilities", () => {

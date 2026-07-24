@@ -3,7 +3,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import setupRegisteredResources from "./resources";
 import { callApi, serverMeta } from "./shared";
 import { setupRegisteredTools, type ToolCallContext } from "./tools/structure/registerTool";
-import { resolveAccountCapabilities } from "./tools/utils/accountCapabilities";
+import { resolveAccountCapabilities } from "./utils/accountCapabilities";
 
 // Side effect import to register all tools
 import "./tools";

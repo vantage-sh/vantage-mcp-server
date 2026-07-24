@@ -1,7 +1,7 @@
 import { type GetAnomalyAlertResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import tool from "./get-anomaly";
 import { requestsInOrder, testTool } from "../utils/testing";
+import tool from "./get-anomaly";
 
 const success: GetAnomalyAlertResponse = {
   token: "anmly_alrt_123",

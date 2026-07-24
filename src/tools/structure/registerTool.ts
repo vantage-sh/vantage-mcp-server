@@ -10,7 +10,7 @@ import type {
 import type z from "zod";
 import type { AppEnv } from "../../env";
 import { tracer, type WaitUntil } from "../../tracing";
-import type { AccountCapabilities } from "../utils/accountCapabilities";
+import type { AccountCapabilities } from "../../utils/accountCapabilities";
 import MCPUserError from "./MCPUserError";
 
 export type ToolCallContext = {

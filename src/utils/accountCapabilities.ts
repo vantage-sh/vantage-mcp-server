@@ -1,5 +1,5 @@
-import MCPUserError from "../structure/MCPUserError";
-import type { ToolCallContext } from "../structure/registerTool";
+import MCPUserError from "../tools/structure/MCPUserError";
+import type { ToolCallContext } from "../tools/structure/registerTool";
 
 export type AccountCapabilities = {
   /** `Account#msp?` / `is_msp_account` in core. */

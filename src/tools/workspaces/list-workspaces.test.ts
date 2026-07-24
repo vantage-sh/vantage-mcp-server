@@ -1,5 +1,4 @@
 import { expect } from "vitest";
-import { DEFAULT_LIMIT } from "../structure/constants";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
@@ -9,6 +8,7 @@ import {
   type SchemaTestTableItem,
   testTool,
 } from "../../utils/testing";
+import { DEFAULT_LIMIT } from "../structure/constants";
 import tool from "./list-workspaces";
 
 type Validators = ExtractValidators<typeof tool>;
