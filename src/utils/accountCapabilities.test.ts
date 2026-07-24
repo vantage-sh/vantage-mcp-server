@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { callApi } from "../shared";
 import MCPUserError from "../tools/structure/MCPUserError";
+import type { ToolCallContext } from "../tools/structure/registerTool";
 import { resolveAccountCapabilities } from "./accountCapabilities";
 
 const MANAGED_ACCOUNTS_MSP_DENIAL_BODY = JSON.stringify({
@@ -58,8 +59,8 @@ describe("resolveAccountCapabilities", () => {
       )
     );
 
-    const ctx = {
-      callVantageApi: (endpoint: "/v2/managed_accounts", params: { page: 1; limit: 1 }, method: "GET") =>
+    const ctx: ToolCallContext = {
+      callVantageApi: (endpoint, params, method) =>
         callApi("https://api.vantage.sh", { Authorization: "Bearer test" }, params, method, endpoint),
     };
 
