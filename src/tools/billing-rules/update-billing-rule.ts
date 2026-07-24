@@ -1,8 +1,8 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod";
+import dateValidator from "../../utils/dateValidator";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import dateValidator from "../../utils/dateValidator";
 
 const description = `
 Updates an existing Billing Rule. You can update the title, dates, and type-specific fields.
@@ -22,6 +22,7 @@ export default registerTool({
     openWorld: false,
     readOnly: false,
   },
+  requires: { msp: true },
   args: {
     billing_rule_token: z.string().describe("The token of the Billing Rule to update."),
     title: z.string().min(1).optional().describe("The updated title of the Billing Rule."),

@@ -17,8 +17,9 @@ import homepage from "./homepage";
 import { logger } from "./logger";
 import setupRegisteredResources from "./resources";
 import { callApi, serverMeta } from "./shared";
-import { setupRegisteredTools } from "./tools/structure/registerTool";
+import { setupRegisteredTools, type ToolCallContext } from "./tools/structure/registerTool";
 import { tracer } from "./tracing";
+import { resolveAccountCapabilities } from "./utils/accountCapabilities";
 
 // Side effect import to register all tools
 import "./tools";
@@ -104,12 +105,13 @@ export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> 
   }
 
   async init() {
-    const ctx = {
+    const ctx: ToolCallContext = {
       env: this.env,
       waitUntil: (promise: Promise<unknown>) => this.ctx.waitUntil(promise),
       callVantageApi: this.callVantageApi.bind(this),
     };
-    setupRegisteredTools(this.server, () => ctx);
+    const accountCapabilities = await resolveAccountCapabilities(ctx);
+    setupRegisteredTools(this.server, () => ctx, { accountCapabilities });
     setupRegisteredResources(this.server);
   }
 }

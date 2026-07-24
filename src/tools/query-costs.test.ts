@@ -1,6 +1,5 @@
 import type { GetCostsResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import tool from "./query-costs";
 import {
   dateValidatorPoisoner,
   type ExecutionTestTableItem,
@@ -11,6 +10,7 @@ import {
   type SchemaTestTableItem,
   testTool,
 } from "../utils/testing";
+import tool from "./query-costs";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;

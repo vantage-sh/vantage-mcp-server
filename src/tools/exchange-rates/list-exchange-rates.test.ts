@@ -7,28 +7,43 @@ import {
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
-} from "../utils/testing";
-import tool from "./list-cost-providers";
+} from "../../utils/testing";
+import { DEFAULT_LIMIT } from "../structure/constants";
+import tool from "./list-exchange-rates";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
-  workspace_token: "wt_123",
+  page: 1,
+  limit: DEFAULT_LIMIT,
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
-    name: "valid workspace_token",
+    name: "default page",
+    data: {
+      page: undefined,
+      limit: DEFAULT_LIMIT,
+    },
+  },
+  {
+    name: "valid page number",
     data: validArguments,
   },
 ];
 
 const successData = {
-  cost_providers: [
-    { name: "AWS", key: "aws" },
-    { name: "Azure", key: "azure" },
+  exchange_rates: [
+    {
+      base_currency_code: "USD",
+      currency_code: "PHP",
+      rate: "300.011",
+      effective_date: "2025-09-01",
+      updated_at: "2025-09-10 00:05:41 UTC",
+    },
   ],
+  meta: {},
 };
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
@@ -36,9 +51,10 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "successful call",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: "/v2/cost_providers",
+        endpoint: "/v2/exchange_rates",
         params: {
-          workspace_token: "wt_123",
+          page: 1,
+          limit: DEFAULT_LIMIT,
         },
         method: "GET",
         result: {
@@ -50,7 +66,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess(validArguments);
       expect(res).toEqual({
-        providers: successData.cost_providers,
+        exchange_rates: successData.exchange_rates,
         pagination: {
           hasNextPage: false,
           nextPage: 0,
@@ -62,21 +78,22 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "unsuccessful call",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: "/v2/cost_providers",
+        endpoint: "/v2/exchange_rates",
         params: {
-          workspace_token: "wt_123",
+          page: 1,
+          limit: DEFAULT_LIMIT,
         },
         method: "GET",
         result: {
           ok: false,
-          errors: [{ message: "Invalid workspace token" }],
+          errors: [{ message: "Access denied" }],
         },
       },
     ]),
     handler: async ({ callExpectingMCPUserError }) => {
       const err = await callExpectingMCPUserError(validArguments);
       expect(err.exception).toEqual({
-        errors: [{ message: "Invalid workspace token" }],
+        errors: [{ message: "Access denied" }],
       });
     },
   },

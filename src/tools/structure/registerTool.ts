@@ -10,6 +10,7 @@ import type {
 import type z from "zod";
 import type { AppEnv } from "../../env";
 import { tracer, type WaitUntil } from "../../tracing";
+import type { AccountCapabilities } from "../../utils/accountCapabilities";
 import MCPUserError from "./MCPUserError";
 
 export type ToolCallContext = {
@@ -38,6 +39,8 @@ export type ToolProperties<Input extends z.ZodRawShape, Output extends z.ZodRawS
   };
   args: Input;
   outputSchema?: Output;
+  /** Omit from tools/list when resolved account capabilities do not satisfy these requirements. */
+  requires?: { msp?: true };
 
   execute: (
     args: z.core.$InferObjectOutput<{ -readonly [P in keyof Input]: Input[P] }, Record<string, unknown>>,
@@ -49,7 +52,12 @@ export type ToolProperties<Input extends z.ZodRawShape, Output extends z.ZodRawS
   >;
 };
 
-const toolSetups = new Map<string, (server: McpServer, generateContext: () => ToolCallContext) => void>();
+type ToolSetup = {
+  register: (server: McpServer, generateContext: () => ToolCallContext) => void;
+  requires?: { msp?: true };
+};
+
+const toolSetups = new Map<string, ToolSetup>();
 
 export function clearRegisteredToolsForTesting() {
   toolSetups.clear();
@@ -146,13 +154,30 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
     throw new Error(`Tool ${toolProps.name} is already registered`);
   }
 
-  toolSetups.set(toolProps.name, serverSetup);
+  toolSetups.set(toolProps.name, {
+    register: serverSetup,
+    requires: toolProps.requires,
+  });
 
   return toolProps;
 }
 
-export function setupRegisteredTools(server: McpServer, generateContext: () => ToolCallContext) {
-  for (const setup of toolSetups.values()) {
-    setup(server, generateContext);
+export type SetupRegisteredToolsOptions = {
+  /** Capabilities resolved once at MCP connect; gates tools with `requires`. */
+  accountCapabilities?: AccountCapabilities;
+  /** Register every tool regardless of `requires` (unit tests and tooling). */
+  skipCapabilityChecks?: boolean;
+};
+
+export function setupRegisteredTools(
+  server: McpServer,
+  generateContext: () => ToolCallContext,
+  options?: SetupRegisteredToolsOptions
+) {
+  for (const { register, requires } of toolSetups.values()) {
+    if (!options?.skipCapabilityChecks && requires?.msp && !options?.accountCapabilities?.msp) {
+      continue;
+    }
+    register(server, generateContext);
   }
 }

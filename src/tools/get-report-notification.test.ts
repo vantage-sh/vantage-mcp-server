@@ -1,7 +1,7 @@
 import { type GetReportNotificationResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import tool from "./get-report-notification";
 import { requestsInOrder, testTool } from "../utils/testing";
+import tool from "./get-report-notification";
 
 const success: GetReportNotificationResponse = {
   token: "rprt_ntfctn_123",

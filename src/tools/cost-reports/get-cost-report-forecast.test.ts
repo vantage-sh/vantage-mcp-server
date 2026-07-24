@@ -1,6 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import { DEFAULT_LIMIT } from "../structure/constants";
 import {
   dateValidatorPoisoner,
   type ExecutionTestTableItem,
@@ -12,6 +11,7 @@ import {
   type SchemaTestTableItem,
   testTool,
 } from "../../utils/testing";
+import { DEFAULT_LIMIT } from "../structure/constants";
 import tool from "./get-cost-report-forecast";
 
 type Validators = ExtractValidators<typeof tool>;

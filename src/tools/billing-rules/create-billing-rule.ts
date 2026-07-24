@@ -1,7 +1,7 @@
 import z from "zod";
+import dateValidator from "../../utils/dateValidator";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import dateValidator from "../../utils/dateValidator";
 
 const description = `
 Creates a new Billing Rule. Billing rules allow you to adjust, exclude, credit, charge, or apply custom modifications to your cost data.
@@ -21,6 +21,7 @@ export default registerTool({
     openWorld: false,
     readOnly: false,
   },
+  requires: { msp: true },
   args: {
     type: z.enum(["exclusion", "adjustment", "credit", "charge", "custom"]).describe("The type of billing rule."),
     title: z.string().min(1).describe("The title of the Billing Rule."),

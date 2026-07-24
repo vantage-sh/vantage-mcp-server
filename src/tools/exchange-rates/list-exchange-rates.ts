@@ -5,17 +5,22 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
 const description = `
-List all billing rules available in the Vantage account. Billing rules allow you to adjust, exclude, or add charges to your cost data.
-Use the page value of 1 to start.
+List custom exchange rates uploaded for MSP currency management (base currency, target currency, rate, effective month).
+Do not use for workspace display-currency settings, built-in cost-report FX conversion, or general currency questions unless the user is explicitly managing MSP custom rates for managed accounts.
 `.trim();
 
 const args = {
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
+  limit: z
+    .number()
+    .optional()
+    .default(DEFAULT_LIMIT)
+    .describe(`The maximum number of returned exchange rates this call, defaults to ${DEFAULT_LIMIT}`),
 };
 
 export default registerTool({
-  name: "list-billing-rules",
-  title: "List Billing Rules",
+  name: "list-exchange-rates",
+  title: "List Exchange Rates",
   description,
   annotations: {
     destructive: false,
@@ -25,13 +30,13 @@ export default registerTool({
   args,
   requires: { msp: true },
   async execute(args, ctx) {
-    const requestParams = { ...args, limit: DEFAULT_LIMIT };
-    const response = await ctx.callVantageApi("/v2/billing_rules", requestParams, "GET");
+    const requestParams = args;
+    const response = await ctx.callVantageApi("/v2/exchange_rates", requestParams, "GET");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }
     return {
-      billing_rules: response.data.billing_rules,
+      exchange_rates: response.data.exchange_rates,
       pagination: paginationData(response.data),
     };
   },
