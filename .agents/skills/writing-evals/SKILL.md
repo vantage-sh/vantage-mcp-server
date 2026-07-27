@@ -43,12 +43,11 @@ evals/
     variants.ts           # cartesian product of {model} × {isolated, mixed} = 8 variants
     buildAiSdkTools.ts    # reads from the live registerTool registry → AI SDK tool() defs
     runToolSelection.ts   # { prompt, model, toolNames } → { toolCalls, text }
-  <tool-name>.eval.ts                   # for top-level tools
-  <resource>/<tool>.eval.ts             # for nested tools
+  <resource>/<tool>.eval.ts             # mirrors src/tools/<resource>/
 evalite.config.ts
 ```
 
-Top-level `evals/` keeps `*.eval.ts` out of Vitest's path. The adapter imports `src/tools` once and reads tools out of the live `registerTool` registry — adding a new tool to the codebase makes it available to evals automatically; you just need to write its eval file.
+Eval files live under `evals/<resource>/` so they stay out of Vitest's path. The adapter imports `src/tools` once and reads tools out of the live `registerTool` registry — adding a new tool to the codebase makes it available to evals automatically; you just need to write its eval file.
 
 ## The matrix
 
