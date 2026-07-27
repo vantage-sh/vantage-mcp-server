@@ -67,7 +67,7 @@ const validInputArguments = {
   date_bin: "day" as const,
   chart_settings: {
     x_axis_dimension: ["date"],
-    y_axis_dimension: "cost",
+    y_axis_dimension: "cost" as const,
   },
 };
 
@@ -168,6 +168,16 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     },
   },
   {
+    name: "aggregate by count",
+    data: {
+      ...undefineds,
+      title: "Test Report",
+      settings: {
+        aggregate_by: "count",
+      },
+    },
+  },
+  {
     name: "invalid aggregate_by",
     data: {
       ...undefineds,
@@ -176,7 +186,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
         aggregate_by: "invalid" as any,
       },
     },
-    expectedIssues: ['Invalid option: expected one of "cost"|"usage"'],
+    expectedIssues: ['Invalid option: expected one of "cost"|"usage"|"count"'],
   },
   {
     name: "business metric with per_thousand scale",
@@ -288,7 +298,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       ...undefineds,
       title: "Test Report",
       chart_settings: {
-        y_axis_dimension: "usage",
+        y_axis_dimension: "usage" as const,
       },
     },
   },
@@ -303,14 +313,14 @@ const minSuccess = {
   title: "Minimal Report",
   business_metric_tokens_with_metadata: [],
   chart_settings: {
-    y_axis_dimension: "cost",
+    y_axis_dimension: "cost" as const,
     x_axis_dimension: ["date"],
   },
-  chart_type: "line",
+  chart_type: "line" as const,
   created_at: "2023-01-01T00:00:00Z",
-  date_bin: "month",
-  date_interval: "this_month",
-  default_forecast: { kind: "baseline" },
+  date_bin: "month" as const,
+  date_interval: "this_month" as const,
+  default_forecast: { kind: "baseline" as const },
   filter: "(costs.provider = 'aws')",
   workspace_token: "wt_123",
 };
@@ -343,6 +353,64 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         previous_period_end_date: "2025-01-31",
       });
       expect(res).toEqual(minSuccess);
+    },
+  },
+  {
+    name: "partial settings with count y-axis omits aggregate_by so API can sync modes",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/cost_reports",
+        params: {
+          title: "Count Report",
+          end_date: "2025-02-01",
+          previous_period_end_date: "2025-01-31",
+          settings: {
+            include_credits: true,
+            include_refunds: false,
+            include_discounts: true,
+            include_tax: true,
+            amortize: true,
+            unallocated: false,
+            show_previous_period: true,
+            complete_period: false,
+          },
+          chart_settings: {
+            y_axis_dimension: "count",
+          },
+        },
+        method: "POST",
+        result: {
+          ok: true,
+          data: {
+            ...minSuccess,
+            title: "Count Report",
+            chart_settings: {
+              y_axis_dimension: "count" as const,
+              x_axis_dimension: ["date"],
+            },
+          },
+        },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const res = await callExpectingSuccess({
+        ...undefineds,
+        title: "Count Report",
+        end_date: "2025-02-01",
+        previous_period_end_date: "2025-01-31",
+        settings: {
+          include_credits: true,
+        },
+        chart_settings: {
+          y_axis_dimension: "count",
+        },
+      });
+      expect(res).toMatchObject({
+        title: "Count Report",
+        chart_settings: {
+          y_axis_dimension: "count",
+        },
+      });
     },
   },
   {

@@ -10,10 +10,10 @@ export const chartSettings = z.object({
       "The dimension used to group or label data along the x-axis (e.g., by date, region, or service). NOTE: Only one value is allowed at this time. Defaults to ['date']."
     ),
   y_axis_dimension: z
-    .string()
+    .enum(["cost", "usage", "count"])
     .optional()
     .describe(
-      "The metric or measure displayed on the chart’s y-axis. Possible values: 'cost', 'usage'. Defaults to 'cost'."
+      "The metric or measure displayed on the chart’s y-axis. Possible values: 'cost', 'usage', 'count'. Defaults to 'cost'."
     ),
 });
 
@@ -53,11 +53,14 @@ export const costReportSettingsForCreate = z.object({
   include_tax: z.boolean().default(true).describe("Report will include tax."),
   amortize: z.boolean().default(true).describe("Report will amortize."),
   unallocated: z.boolean().default(false).describe("Report will show unallocated costs."),
-  aggregate_by: z.enum(["cost", "usage"]).default("cost").describe("Report will aggregate by cost or usage."),
+  aggregate_by: z
+    .enum(["cost", "usage", "count"])
+    .optional()
+    .describe("Report will aggregate by cost, usage, or count. Defaults to cost when omitted."),
   show_previous_period: z
     .boolean()
     .default(true)
-    .describe("Report will show previous period costs or usage comparison."),
+    .describe("Report will show previous period cost, usage, or count comparison."),
   complete_period: z.boolean().default(false).describe("Report will restrict date ranges to completed periods only."),
 });
 
@@ -68,6 +71,12 @@ export const costReportSettingsForUpdate = z.object({
   include_tax: z.boolean().optional().describe("Report will include tax."),
   amortize: z.boolean().optional().describe("Report will amortize."),
   unallocated: z.boolean().optional().describe("Report will show unallocated costs."),
-  aggregate_by: z.enum(["cost", "usage"]).optional().describe("Report will aggregate by cost or usage."),
-  show_previous_period: z.boolean().optional().describe("Report will show previous period costs or usage comparison."),
+  aggregate_by: z
+    .enum(["cost", "usage", "count"])
+    .optional()
+    .describe("Report will aggregate by cost, usage, or count."),
+  show_previous_period: z
+    .boolean()
+    .optional()
+    .describe("Report will show previous period cost, usage, or count comparison."),
 });

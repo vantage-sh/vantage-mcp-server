@@ -1,9 +1,9 @@
 import z from "zod";
+import dateValidator from "../utils/dateValidator";
+import paginationData from "../utils/paginationData";
 import { DEFAULT_LIMIT } from "./structure/constants";
 import MCPUserError from "./structure/MCPUserError";
 import registerTool from "./structure/registerTool";
-import dateValidator from "../utils/dateValidator";
-import paginationData from "../utils/paginationData";
 
 const description = `
 List the cost items inside a report. The Token of a Report must be provided. Use the page value of 1 to start.
@@ -17,6 +17,9 @@ records. If omitted, the API uses the cost report's configured date bin, or day 
 
 Cost settings (credits, refunds, discounts, tax, amortization, etc.) default to the report's own settings.
 Only provide these parameters if you need to override the report's defaults.
+
+Use settings_aggregate_by to choose the metric: cost (default), usage, or count.
+When aggregate_by is count, the response includes total_count and counts (date-binned distinct Group By permutation counts for the full requested period). Count is not supported for segment reports.
 `.trim();
 
 const args = {
@@ -55,14 +58,14 @@ const args = {
     .optional()
     .describe("Results will show unallocated costs. If not provided, the report's setting is used."),
   settings_aggregate_by: z
-    .enum(["cost", "usage"])
+    .enum(["cost", "usage", "count"])
     .optional()
-    .describe("Results will aggregate by cost or usage. If not provided, the report's setting is used."),
+    .describe("Results will aggregate by cost, usage, or count. If not provided, the report's setting is used."),
   settings_show_previous_period: z
     .boolean()
     .optional()
     .describe(
-      "Results will show previous period costs or usage comparison. If not provided, the report's setting is used."
+      "Results will show previous period cost, usage, or count comparison. If not provided, the report's setting is used."
     ),
   groupings: z
     .array(z.string())
@@ -133,6 +136,8 @@ export default registerTool({
     return {
       costs: response.data.costs,
       total_cost: response.data.total_cost,
+      ...(response.data.total_count != null ? { total_count: response.data.total_count } : {}),
+      ...(response.data.counts != null ? { counts: response.data.counts } : {}),
       notes,
       pagination: paginationData(response.data),
     };
