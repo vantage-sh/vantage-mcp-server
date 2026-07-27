@@ -1,7 +1,7 @@
 import { type GetTagValuesRequest, type GetTagValuesResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import tool from "../../../src/tools/tags/list-tag-values";
 import { DEFAULT_LIMIT } from "../../../src/tools/structure/constants";
+import tool from "../../../src/tools/tags/list-tag-values";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,

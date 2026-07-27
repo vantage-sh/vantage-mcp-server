@@ -1,5 +1,6 @@
 // This file is auto-generated. Do not edit directly. Run npm run generate-tools-index to update.
 
+import "./anomalies";
 import "./billing-rules";
 import "./budgets";
 import "./business-metrics";
@@ -15,7 +16,6 @@ import "./dashboards";
 import "./delete-folder";
 import "./delete-report-notification";
 import "./financial-commitment-reports";
-import "./get-anomaly";
 import "./get-cost-provider-accounts";
 import "./get-financial-commitment-report";
 import "./get-folder";
@@ -23,7 +23,6 @@ import "./get-provider-resource";
 import "./get-report-notification";
 import "./get-team";
 import "./get-teams";
-import "./list-anomalies";
 import "./list-audit-logs";
 import "./list-cost-integrations";
 import "./list-cost-providers";
@@ -37,7 +36,6 @@ import "./recommendations";
 import "./resource-reports";
 import "./submit-user-feedback";
 import "./tags";
-import "./update-anomaly";
 import "./update-folder";
 import "./update-report-notification";
 import "./users";

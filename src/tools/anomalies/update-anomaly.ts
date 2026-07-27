@@ -1,7 +1,7 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod";
-import MCPUserError from "./structure/MCPUserError";
-import registerTool from "./structure/registerTool";
+import MCPUserError from "../structure/MCPUserError";
+import registerTool from "../structure/registerTool";
 
 const description = `
 Updates an existing anomaly alert by its token. Use this to change the status of an anomaly alert (e.g. to archive or ignore it) and optionally provide feedback.
