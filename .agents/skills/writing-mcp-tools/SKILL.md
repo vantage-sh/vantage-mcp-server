@@ -15,8 +15,10 @@ Every tool in this repo is a thin wrapper around a Vantage REST endpoint, regist
 src/tools/<resource>/
   index.ts                       # one `import "./<verb>-<resource>"` line per tool
   <verb>-<resource>.ts           # tool file (list, get, create, update, delete, …)
-  <verb>-<resource>.test.ts      # tests, co-located
   schemas.ts                     # shared zod objects when multiple tools in the folder reuse them
+
+test/tools/<resource>/
+  <verb>-<resource>.test.ts      # unit tests — mirrors the src layout under test/
 ```
 
 Create `src/tools/<resource>/index.ts` with one `import "./<verb>-<resource>"` line per tool, then run `npm run generate-tools-index`. That regenerates `src/tools/index.ts` to include the new directory — do not edit `src/tools/index.ts` by hand.
@@ -27,16 +29,16 @@ Create `src/tools/<resource>/index.ts` with one `import "./<verb>-<resource>"` l
 
 If you are adding a tool under `src/tools/<resource>/` and other tools for the same resource still live at `src/tools/<verb>-<resource>.ts` (or share the same resource noun in the filename, e.g. `list-cost-reports`, `get-cost-report`, `create-cost-report`), **move them all into `src/tools/<resource>/` in the same change** — not only the new file.
 
-1. **Identify the family** — same REST resource or shared noun (`cost-report`, `budget`, `recommendation-view`, …). Move every matching `*.ts` and `*.test.ts` from `src/tools/` into `src/tools/<resource>/`.
+1. **Identify the family** — same REST resource or shared noun (`cost-report`, `budget`, `recommendation-view`, …). Move every matching `*.ts` from `src/tools/` into `src/tools/<resource>/`, and move any matching `*.test.ts` from `test/tools/` into `test/tools/<resource>/`.
 2. **Fix imports** in every moved file — top-level paths become one level up:
    - `from "./structure/…"` → `from "../structure/…"`
    - `from "./utils/…"` → `from "../../utils/…"`
    - Tool imports stay sibling-relative: `import tool from "./list-cost-reports"`.
 3. **Update `src/tools/<resource>/index.ts`** — one `import "./<verb>-<resource>"` line per tool in the family (sorted is fine; the generator sorts the top-level index).
 4. **Regenerate the tools index** — `npm run generate-tools-index`. The top-level `src/tools/index.ts` should import `./<resource>` once, not each tool file. Remove any stale per-tool imports left over from before the move.
-5. **Verify** — `npm run type-check` and `npm test -- --run src/tools/<resource>/`.
+5. **Verify** — `npm run type-check` and `npm test -- --run test/tools/<resource>/`.
 
-Reference layout after a move: `src/tools/cost-reports/` (`create-`, `list-`, `get-`, `update-`, `delete-`, `get-*-forecast`, each with a co-located test).
+Reference layout after a move: `src/tools/cost-reports/` (`create-`, `list-`, `get-`, `update-`, `delete-`, `get-*-forecast`) with matching tests under `test/tools/cost-reports/`.
 
 Do **not** move top-level tools that belong to a different resource, even if the filename looks similar. Scope the move to one resource family per PR unless the user explicitly asks for a broader migration.
 
@@ -210,7 +212,9 @@ if (!!args.tag_key !== !!args.tag_value) {
 
 ## Tests
 
-Co-locate `<tool>.test.ts` next to the tool. Use the `testTool` helper from `../../utils/testing`. The shape:
+All unit tests live under `test/`, mirroring the `src/` directory layout. For a tool at `src/tools/<resource>/<verb>-<resource>.ts`, add `test/tools/<resource>/<verb>-<resource>.test.ts`. Import the tool and shared helpers from `src/` — do not keep tests next to source files.
+
+Use the `testTool` helper from `../../../src/utils/testing` (adjust `../` depth to match your test file's nesting). The shape:
 
 ```ts
 import { expect } from "vitest";
@@ -222,8 +226,8 @@ import {
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
-} from "../../utils/testing";
-import tool from "./list-widgets";
+} from "../../../src/utils/testing";
+import tool from "../../../src/tools/budgets/list-budgets";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
@@ -261,7 +265,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 testTool(tool, argumentSchemaTests, executionTests);
 ```
 
-`testTool` automatically verifies the tool registers with the right name/title/description/annotations, so you don't write that test by hand. Reference: `src/tools/budgets/list-budgets.test.ts`.
+`testTool` automatically verifies the tool registers with the right name/title/description/annotations, so you don't write that test by hand. Reference: `test/tools/budgets/list-budgets.test.ts`.
 
 Always include:
 - At least one schema test with valid input.
@@ -286,6 +290,6 @@ See **`.agents/skills/writing-evals/SKILL.md`** for the full guide: file templat
 - [ ] Description is one or two sentences plus only the non-obvious context the model needs.
 - [ ] Every zod field has a `.describe(...)` and uses the right helper (`dateValidator`, `pathEncode`, `DEFAULT_LIMIT`, `paginationData`, `MCPUserError`).
 - [ ] Delete tools return `{ token: args.<resource>_token }`.
-- [ ] Tests cover schema validation (valid + poisoned), success, and failure.
+- [ ] Tests live under `test/tools/<resource>/` and cover schema validation (valid + poisoned), success, and failure.
 - [ ] Eval checklist in `.agents/skills/writing-evals/SKILL.md` is complete.
 - [ ] `npm run type-check` and `npm test -- --run` are green.

@@ -1,8 +1,8 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod";
+import dateValidator from "../../utils/dateValidator";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import dateValidator from "../../utils/dateValidator";
 
 const description = `
 Updates an existing Billing Rule. You can update the title, dates, and type-specific fields.
