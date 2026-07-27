@@ -1,7 +1,7 @@
 import type { GetCostProviderAccountsResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import tool from "../../src/tools/get-cost-provider-accounts";
-import { DEFAULT_LIMIT } from "../../src/tools/structure/constants";
+import tool from "../../../src/tools/cost-providers/get-cost-provider-accounts";
+import { DEFAULT_LIMIT } from "../../../src/tools/structure/constants";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
@@ -9,7 +9,7 @@ import {
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
-} from "../../src/utils/testing";
+} from "../../../src/utils/testing";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
