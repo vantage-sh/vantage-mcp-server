@@ -1,7 +1,7 @@
-import { type GetTagValuesRequest, type GetTagValuesResponse, pathEncode } from "@vantage-sh/vantage-client";
+import type { GetTagsResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import tool from "../../src/tools/list-tag-values";
-import { DEFAULT_LIMIT } from "../../src/tools/structure/constants";
+import tool from "../../../src/tools/tags/list-tags";
+import { DEFAULT_LIMIT } from "../../../src/tools/structure/constants";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
@@ -10,13 +10,12 @@ import {
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
-} from "../../src/utils/testing";
+} from "../../../src/utils/testing";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
-  key: "environment",
   page: 1,
   search_query: undefined,
   providers: undefined,
@@ -24,26 +23,24 @@ const validArguments: InferValidators<Validators> = {
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
-    name: "blank string key",
+    name: "default page",
     data: {
-      key: "",
-      page: 1,
+      page: undefined,
       search_query: undefined,
       providers: undefined,
     },
-    expectedIssues: ["Too small: expected string to have >=1 characters"],
   },
   {
-    name: "valid arguments",
+    name: "valid page number",
     data: validArguments,
   },
 ];
 
-const successData: GetTagValuesResponse = {
-  tag_values: [
-    { tag_value: "production", providers: ["aws", "azure"] },
-    { tag_value: "staging", providers: ["aws"] },
-    { tag_value: "development", providers: ["aws", "gcp"] },
+const successData: GetTagsResponse = {
+  tags: [
+    { tag_key: "environment", hidden: false, preferred: false, providers: ["aws", "azure"] },
+    { tag_key: "project", hidden: false, preferred: false, providers: ["aws", "gcp"] },
+    { tag_key: "team", hidden: false, preferred: false, providers: ["aws"] },
   ],
   links: {},
 };
@@ -53,11 +50,13 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "successful call",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: `/v2/tags/${pathEncode(validArguments.key)}/values`,
+        endpoint: "/v2/tags",
         params: {
-          ...validArguments,
+          page: 1,
+          search_query: undefined,
+          providers: undefined,
           limit: DEFAULT_LIMIT,
-        } as GetTagValuesRequest,
+        },
         method: "GET",
         result: {
           ok: true,
@@ -68,7 +67,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess(validArguments);
       expect(res).toEqual({
-        tag_values: successData.tag_values,
+        tags: successData.tags,
         pagination: {
           hasNextPage: false,
           nextPage: 0,
@@ -80,23 +79,24 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "unsuccessful call",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: `/v2/tags/${pathEncode(validArguments.key)}/values`,
+        endpoint: "/v2/tags",
         params: {
-          ...validArguments,
           page: 1,
+          search_query: undefined,
+          providers: undefined,
           limit: DEFAULT_LIMIT,
-        } as GetTagValuesRequest,
+        },
         method: "GET",
         result: {
           ok: false,
-          errors: [{ message: "Tag not found" }],
+          errors: [{ message: "Access denied" }],
         },
       },
     ]),
     handler: async ({ callExpectingMCPUserError }) => {
       const err = await callExpectingMCPUserError(validArguments);
       expect(err.exception).toEqual({
-        errors: [{ message: "Tag not found" }],
+        errors: [{ message: "Access denied" }],
       });
     },
   },
