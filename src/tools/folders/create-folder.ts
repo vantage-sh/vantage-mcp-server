@@ -1,6 +1,6 @@
 import z from "zod";
-import MCPUserError from "./structure/MCPUserError";
-import registerTool from "./structure/registerTool";
+import MCPUserError from "../structure/MCPUserError";
+import registerTool from "../structure/registerTool";
 
 const description = `
 Create a Folder for organizing Cost Reports. Folders can be nested by specifying a parent_folder_token.
