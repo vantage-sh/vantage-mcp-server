@@ -55,8 +55,8 @@ export const costReportSettingsForCreate = z.object({
   unallocated: z.boolean().default(false).describe("Report will show unallocated costs."),
   aggregate_by: z
     .enum(["cost", "usage", "count"])
-    .default("cost")
-    .describe("Report will aggregate by cost, usage, or count."),
+    .optional()
+    .describe("Report will aggregate by cost, usage, or count. Defaults to cost when omitted."),
   show_previous_period: z
     .boolean()
     .default(true)

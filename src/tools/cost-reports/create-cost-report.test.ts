@@ -356,6 +356,64 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     },
   },
   {
+    name: "partial settings with count y-axis omits aggregate_by so API can sync modes",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/cost_reports",
+        params: {
+          title: "Count Report",
+          end_date: "2025-02-01",
+          previous_period_end_date: "2025-01-31",
+          settings: {
+            include_credits: true,
+            include_refunds: false,
+            include_discounts: true,
+            include_tax: true,
+            amortize: true,
+            unallocated: false,
+            show_previous_period: true,
+            complete_period: false,
+          },
+          chart_settings: {
+            y_axis_dimension: "count",
+          },
+        },
+        method: "POST",
+        result: {
+          ok: true,
+          data: {
+            ...minSuccess,
+            title: "Count Report",
+            chart_settings: {
+              y_axis_dimension: "count" as const,
+              x_axis_dimension: ["date"],
+            },
+          },
+        },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const res = await callExpectingSuccess({
+        ...undefineds,
+        title: "Count Report",
+        end_date: "2025-02-01",
+        previous_period_end_date: "2025-01-31",
+        settings: {
+          include_credits: true,
+        },
+        chart_settings: {
+          y_axis_dimension: "count",
+        },
+      });
+      expect(res).toMatchObject({
+        title: "Count Report",
+        chart_settings: {
+          y_axis_dimension: "count",
+        },
+      });
+    },
+  },
+  {
     name: "unsuccessful call",
     apiCallHandler: requestsInOrder([
       {
