@@ -1,6 +1,5 @@
 import type { GetCostsResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import tool from "./query-costs";
 import {
   dateValidatorPoisoner,
   type ExecutionTestTableItem,
@@ -11,6 +10,7 @@ import {
   type SchemaTestTableItem,
   testTool,
 } from "../utils/testing";
+import tool from "./query-costs";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
@@ -89,6 +89,13 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     },
   },
   {
+    name: "aggregate by count",
+    data: {
+      ...validInputArguments,
+      settings_aggregate_by: "count",
+    },
+  },
+  {
     name: "date_bin day",
     data: {
       ...validInputArguments,
@@ -131,6 +138,15 @@ const successData: GetCostsResponse = {
   },
   total_usage: {},
   links: {},
+};
+
+const countSuccessData: GetCostsResponse = {
+  ...successData,
+  total_count: 42,
+  counts: [
+    { accrued_at: "2023-01-01", count: 20 },
+    { accrued_at: "2023-02-01", count: 22 },
+  ],
 };
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
@@ -297,6 +313,41 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       });
       expect(res.costs).toEqual([]);
       expect(res.hint).toContain("No cost rows matched");
+    },
+  },
+  {
+    name: "aggregate by count returns total_count and counts",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/costs",
+        params: {
+          ...baseApiParams,
+          "settings[aggregate_by]": "count",
+        },
+        method: "GET",
+        result: {
+          ok: true,
+          data: countSuccessData,
+        },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const res = await callExpectingSuccess({
+        ...validInputArguments,
+        settings_aggregate_by: "count",
+      });
+      expect(res).toEqual({
+        costs: countSuccessData.costs,
+        total_cost: countSuccessData.total_cost,
+        total_count: 42,
+        counts: countSuccessData.counts,
+        notes:
+          "Costs records represent one month, the accrued_at field is the first day of the month. If your date range is less than one month, this record includes only data for that date range, not the full month.",
+        pagination: {
+          hasNextPage: false,
+          nextPage: 0,
+        },
+      });
     },
   },
   {

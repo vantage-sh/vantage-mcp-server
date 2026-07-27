@@ -1,5 +1,4 @@
 import { expect } from "vitest";
-import { DEFAULT_LIMIT } from "../structure/constants";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
@@ -9,6 +8,7 @@ import {
   type SchemaTestTableItem,
   testTool,
 } from "../../utils/testing";
+import { DEFAULT_LIMIT } from "../structure/constants";
 import tool from "./list-cost-reports";
 
 type Validators = ExtractValidators<typeof tool>;
@@ -41,13 +41,13 @@ const successData = {
       filter: "provider = aws",
       business_metric_tokens_with_metadata: [],
       created_at: "2023-01-15T10:30:00Z",
-      default_forecast: { kind: "baseline" },
+      default_forecast: { kind: "baseline" as const },
       workspace_token: "wrkspc_123",
-      date_interval: "this_month",
-      date_bin: "day",
-      chart_type: "line",
+      date_interval: "this_month" as const,
+      date_bin: "day" as const,
+      chart_type: "line" as const,
       chart_settings: {
-        y_axis_dimension: "cost",
+        y_axis_dimension: "cost" as const,
         x_axis_dimension: ["date"],
       },
     },
@@ -57,13 +57,13 @@ const successData = {
       filter: "provider = azure AND service = EC2",
       business_metric_tokens_with_metadata: [],
       created_at: "2023-01-15T10:30:00Z",
-      default_forecast: { kind: "baseline" },
+      default_forecast: { kind: "baseline" as const },
       workspace_token: "wrkspc_123",
-      date_interval: "this_month",
-      date_bin: "day",
-      chart_type: "line",
+      date_interval: "this_month" as const,
+      date_bin: "day" as const,
+      chart_type: "line" as const,
       chart_settings: {
-        y_axis_dimension: "cost",
+        y_axis_dimension: "cost" as const,
         x_axis_dimension: ["date"],
       },
     },

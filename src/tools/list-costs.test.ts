@@ -1,7 +1,5 @@
 import type { GetCostsResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import tool from "./list-costs";
-import { DEFAULT_LIMIT } from "./structure/constants";
 import {
   dateValidatorPoisoner,
   type ExecutionTestTableItem,
@@ -13,6 +11,8 @@ import {
   type SchemaTestTableItem,
   testTool,
 } from "../utils/testing";
+import tool from "./list-costs";
+import { DEFAULT_LIMIT } from "./structure/constants";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
@@ -77,6 +77,13 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       date_bin: "week",
     },
   },
+  {
+    name: "aggregate by count",
+    data: {
+      ...validArguments,
+      settings_aggregate_by: "count",
+    },
+  },
   poisonOneValue(validArguments, "start_date", dateValidatorPoisoner),
   poisonOneValue(validArguments, "end_date", dateValidatorPoisoner),
 ];
@@ -104,6 +111,15 @@ const successData: GetCostsResponse = {
   },
   total_usage: {},
   links: {},
+};
+
+const countSuccessData: GetCostsResponse = {
+  ...successData,
+  total_count: 42,
+  counts: [
+    { accrued_at: "2023-01-01", count: 20 },
+    { accrued_at: "2023-02-01", count: 22 },
+  ],
 };
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
@@ -208,6 +224,41 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         settings_include_credits: true,
       });
       expect(res.costs).toEqual(successData.costs);
+    },
+  },
+  {
+    name: "aggregate by count returns total_count and counts",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/costs",
+        params: {
+          ...baseApiParams,
+          "settings[aggregate_by]": "count",
+        },
+        method: "GET",
+        result: {
+          ok: true,
+          data: countSuccessData,
+        },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const res = await callExpectingSuccess({
+        ...validArguments,
+        settings_aggregate_by: "count",
+      });
+      expect(res).toEqual({
+        costs: countSuccessData.costs,
+        total_cost: countSuccessData.total_cost,
+        total_count: 42,
+        counts: countSuccessData.counts,
+        notes:
+          "Costs records represent one month, the accrued_at field is the first day of the month. If your date range is less than one month, this record includes only data for that date range, not the full month.",
+        pagination: {
+          hasNextPage: false,
+          nextPage: 0,
+        },
+      });
     },
   },
   {
