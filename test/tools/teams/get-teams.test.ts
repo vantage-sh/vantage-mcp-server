@@ -1,6 +1,6 @@
 import { expect } from "vitest";
-import tool from "../../src/tools/get-teams";
-import { DEFAULT_LIMIT } from "../../src/tools/structure/constants";
+import tool from "../../../src/tools/teams/get-teams";
+import { DEFAULT_LIMIT } from "../../../src/tools/structure/constants";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
@@ -9,7 +9,7 @@ import {
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
-} from "../../src/utils/testing";
+} from "../../../src/utils/testing";
 import { success } from "./get-team.test";
 
 type Validators = ExtractValidators<typeof tool>;
