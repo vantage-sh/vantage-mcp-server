@@ -1,7 +1,17 @@
-import { pathEncode } from "@vantage-sh/vantage-client";
+import { type GetFolderResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import tool from "../../src/tools/delete-folder";
-import { requestsInOrder, testTool } from "../../src/utils/testing";
+import tool from "../../../src/tools/folders/get-folder";
+import { requestsInOrder, testTool } from "../../../src/utils/testing";
+
+const success: GetFolderResponse = {
+  token: "fldr_123",
+  title: "Platform Team Reports",
+  type: "cost_reports",
+  saved_filter_tokens: [],
+  created_at: "2023-01-01T00:00:00Z",
+  updated_at: "2023-01-01T00:00:00Z",
+  workspace_token: "wrkspc_123",
+};
 
 testTool(
   tool,
@@ -20,16 +30,16 @@ testTool(
         {
           endpoint: `/v2/folders/${pathEncode("fldr_123")}`,
           params: {},
-          method: "DELETE",
+          method: "GET",
           result: {
             ok: true,
-            data: undefined,
+            data: success,
           },
         },
       ]),
       handler: async ({ callExpectingSuccess }) => {
         const res = await callExpectingSuccess({ folder_token: "fldr_123" });
-        expect(res).toEqual({ token: "fldr_123" });
+        expect(res).toEqual(success);
       },
     },
     {
@@ -38,7 +48,7 @@ testTool(
         {
           endpoint: `/v2/folders/${pathEncode("fldr_notfound")}`,
           params: {},
-          method: "DELETE",
+          method: "GET",
           result: {
             ok: false,
             errors: [{ message: "Folder not found" }],

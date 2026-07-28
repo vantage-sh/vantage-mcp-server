@@ -1,7 +1,7 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod";
-import MCPUserError from "./structure/MCPUserError";
-import registerTool from "./structure/registerTool";
+import MCPUserError from "../structure/MCPUserError";
+import registerTool from "../structure/registerTool";
 
 const description = `
 Updates a Folder for organizing Cost Reports. You can update its title, move it to a different parent Folder, or change its SavedFilter tokens.
