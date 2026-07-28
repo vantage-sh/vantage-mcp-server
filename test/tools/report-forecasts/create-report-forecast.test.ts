@@ -129,6 +129,44 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     },
   },
   {
+    name: "rejects empty scenario_model_tokens alone",
+    apiCallHandler: requestsInOrder([]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError({
+        ...undefineds,
+        cost_report_token: "rprt_82a0304aaf254804",
+        title: "Empty Models",
+        scenario_model_tokens: [],
+      });
+      expect(err.exception).toEqual({
+        errors: [
+          {
+            message: "At least one of scenario_model_tokens or business_metric_token must be provided",
+          },
+        ],
+      });
+    },
+  },
+  {
+    name: "rejects null business_metric_token alone",
+    apiCallHandler: requestsInOrder([]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError({
+        ...undefineds,
+        cost_report_token: "rprt_82a0304aaf254804",
+        title: "Null Metric",
+        business_metric_token: null,
+      });
+      expect(err.exception).toEqual({
+        errors: [
+          {
+            message: "At least one of scenario_model_tokens or business_metric_token must be provided",
+          },
+        ],
+      });
+    },
+  },
+  {
     name: "enterprise entitlement error",
     apiCallHandler: requestsInOrder([
       {

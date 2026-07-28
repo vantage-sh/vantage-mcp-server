@@ -30,7 +30,10 @@ export default registerTool({
     set_as_default: setAsDefault,
   },
   async execute(args, ctx) {
-    if (args.scenario_model_tokens === undefined && args.business_metric_token === undefined) {
+    const hasScenarioModels = args.scenario_model_tokens !== undefined && args.scenario_model_tokens.length > 0;
+    const hasBusinessMetric = args.business_metric_token !== undefined && args.business_metric_token !== null;
+
+    if (!hasScenarioModels && !hasBusinessMetric) {
       throw new MCPUserError({
         errors: [
           {
