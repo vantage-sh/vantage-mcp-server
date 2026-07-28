@@ -1,6 +1,6 @@
 import { type GetResourceResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import tool from "../../src/tools/get-provider-resource";
+import tool from "../../../src/tools/provider-resources/get-provider-resource";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
@@ -9,7 +9,7 @@ import {
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
-} from "../../src/utils/testing";
+} from "../../../src/utils/testing";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
