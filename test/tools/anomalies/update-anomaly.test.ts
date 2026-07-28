@@ -1,6 +1,6 @@
 import { pathEncode, type UpdateAnomalyAlertResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import tool from "../../src/tools/update-anomaly";
+import tool from "../../../src/tools/anomalies/update-anomaly";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
@@ -9,7 +9,7 @@ import {
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
-} from "../../src/utils/testing";
+} from "../../../src/utils/testing";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
