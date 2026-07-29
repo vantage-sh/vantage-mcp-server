@@ -15,7 +15,6 @@ import "./dashboards";
 import "./financial-commitment-reports";
 import "./folders";
 import "./get-cost-provider-accounts";
-import "./get-financial-commitment-report";
 import "./list-cost-integrations";
 import "./list-cost-providers";
 import "./list-cost-services";

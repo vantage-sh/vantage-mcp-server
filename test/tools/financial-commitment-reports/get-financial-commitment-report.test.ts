@@ -1,7 +1,7 @@
 import { type GetFinancialCommitmentReportResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import tool from "../../src/tools/get-financial-commitment-report";
-import { requestsInOrder, testTool } from "../../src/utils/testing";
+import tool from "../../../src/tools/financial-commitment-reports/get-financial-commitment-report";
+import { requestsInOrder, testTool } from "../../../src/utils/testing";
 
 const success: GetFinancialCommitmentReportResponse = {
   token: "fncl_cmnt_rprt_86a93126175f91ed",
