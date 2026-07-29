@@ -1,6 +1,6 @@
 ---
 name: writing-mcp-tools
-description: Author a new MCP tool for the Vantage MCP server — file layout, nesting/moving existing siblings into resource folders, registerTool template, annotation hints, description style, and tests. Use whenever adding, splitting, refactoring, or relocating a tool under `src/tools/`. For evals, see writing-evals.
+description: Author a new MCP tool for the Vantage MCP server — file layout under resource folders, registerTool template, annotation hints, description style, and tests. Use whenever adding, splitting, refactoring, or relocating a tool under `src/tools/`. For evals, see writing-evals.
 ---
 
 # Writing MCP tools
@@ -23,24 +23,7 @@ test/tools/<resource>/
 
 Create `src/tools/<resource>/index.ts` with one `import "./<verb>-<resource>"` line per tool, then run `npm run generate-tools-index`. That regenerates `src/tools/index.ts` to include the new directory — do not edit `src/tools/index.ts` by hand.
 
-> Many existing tools (e.g. `src/tools/create-cost-alert.ts`, `src/tools/list-costs.ts`) still live at the top level. **Don't add new top-level tools.** When you add or change a tool in a resource family, move any top-level siblings into that folder in the same PR (see below). Do not move unrelated top-level tools.
-
-### Moving existing siblings into the resource folder
-
-If you are adding a tool under `src/tools/<resource>/` and other tools for the same resource still live at `src/tools/<verb>-<resource>.ts` (or share the same resource noun in the filename, e.g. `list-cost-reports`, `get-cost-report`, `create-cost-report`), **move them all into `src/tools/<resource>/` in the same change** — not only the new file.
-
-1. **Identify the family** — same REST resource or shared noun (`cost-report`, `budget`, `recommendation-view`, …). Move every matching `*.ts` from `src/tools/` into `src/tools/<resource>/`, and move any matching `*.test.ts` from `test/tools/` into `test/tools/<resource>/`.
-2. **Fix imports** in every moved file — top-level paths become one level up:
-   - `from "./structure/…"` → `from "../structure/…"`
-   - `from "./utils/…"` → `from "../../utils/…"`
-   - Tool imports stay sibling-relative: `import tool from "./list-cost-reports"`.
-3. **Update `src/tools/<resource>/index.ts`** — one `import "./<verb>-<resource>"` line per tool in the family (sorted is fine; the generator sorts the top-level index).
-4. **Regenerate the tools index** — `npm run generate-tools-index`. The top-level `src/tools/index.ts` should import `./<resource>` once, not each tool file. Remove any stale per-tool imports left over from before the move.
-5. **Verify** — `npm run type-check` and `npm test -- --run test/tools/<resource>/`.
-
-Reference layout after a move: `src/tools/cost-reports/` (`create-`, `list-`, `get-`, `update-`, `delete-`, `get-*-forecast`) with matching tests under `test/tools/cost-reports/`.
-
-Do **not** move top-level tools that belong to a different resource, even if the filename looks similar. Scope the move to one resource family per PR unless the user explicitly asks for a broader migration.
+Do not add tool files at the top level of `src/tools/`. Every tool belongs under its resource directory.
 
 ### Shared schemas (`schemas.ts`)
 
@@ -95,7 +78,7 @@ Reference implementations to copy from:
 - get: `src/tools/budgets/get-budget.ts`
 - create: `src/tools/budgets/create-budget.ts`
 - update: `src/tools/budgets/update-budget.ts`
-- delete: `src/tools/delete-folder.ts` (see "Delete tools" below)
+- delete: `src/tools/folders/delete-folder.ts` (see "Delete tools" below)
 
 ## Discovering the API surface
 
@@ -196,7 +179,7 @@ return {
 
 ### Delete tools — return shape
 
-Return `{ token: args.<resource>_token }`. This confirms what was deleted without leaking extra fields. `src/shared.ts` handles HTTP 204 by returning `{ data: undefined, ok: true }`, so do **not** rely on `response.data` in a delete. See `src/tools/delete-folder.ts`.
+Return `{ token: args.<resource>_token }`. This confirms what was deleted without leaking extra fields. `src/shared.ts` handles HTTP 204 by returning `{ data: undefined, ok: true }`, so do **not** rely on `response.data` in a delete. See `src/tools/folders/delete-folder.ts`.
 
 ### Cross-field validation
 
@@ -281,11 +264,10 @@ See **`.agents/skills/writing-evals/SKILL.md`** for the full guide: file templat
 
 ## Checklist before opening a PR
 
-- [ ] Tool file lives under `src/tools/<resource>/`, not at the top level.
-- [ ] Any other top-level tools for the same resource were moved into `src/tools/<resource>/` with imports updated (see "Moving existing siblings").
+- [ ] Tool file lives under `src/tools/<resource>/`, not at the top level of `src/tools/`.
 - [ ] Duplicated zod across tools in the family lives in `schemas.ts`, not copy-pasted between files (see "Shared schemas").
 - [ ] `src/tools/<resource>/index.ts` imports every tool in the family.
-- [ ] `npm run generate-tools-index` has been run and `src/tools/index.ts` imports only `./<resource>` (no stale per-tool imports for that family).
+- [ ] `npm run generate-tools-index` has been run and `src/tools/index.ts` imports `./<resource>` (no stale per-tool imports for that family).
 - [ ] `annotations` follow the table above (especially: `create-*` is `destructive: false`).
 - [ ] Description is one or two sentences plus only the non-obvious context the model needs.
 - [ ] Every zod field has a `.describe(...)` and uses the right helper (`dateValidator`, `pathEncode`, `DEFAULT_LIMIT`, `paginationData`, `MCPUserError`).
