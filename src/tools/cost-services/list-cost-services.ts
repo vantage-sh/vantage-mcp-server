@@ -1,6 +1,6 @@
 import z from "zod";
-import MCPUserError from "./structure/MCPUserError";
-import registerTool from "./structure/registerTool";
+import MCPUserError from "../structure/MCPUserError";
+import registerTool from "../structure/registerTool";
 
 const description = `
 List cost service display names for a workspace. These names may NOT match VQL costs.service identifiers used in query-costs filters.
