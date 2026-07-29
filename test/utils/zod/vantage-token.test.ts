@@ -22,7 +22,14 @@ test("rejects a token with the wrong prefix", () => {
   if (result.success) {
     return;
   }
-  expect(result.error.issues[0]?.message).toBe("Must be a Workspace token starting with wrkspc_");
+  expect(result.error.issues[0]?.message).toBe("Must be a Workspace token (wrkspc_*)");
+});
+
+test("does not accept a Report Forecast token as a Cost Report token", () => {
+  const reportForecastToken = "rprt_frcst_5a727210453f6dbc";
+
+  expect(vantageToken("cost_report").safeParse(reportForecastToken).success).toBe(false);
+  expect(vantageToken("report_forecast").safeParse(reportForecastToken).success).toBe(true);
 });
 
 test("builds a describe string with the token format", () => {

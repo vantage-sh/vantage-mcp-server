@@ -55,7 +55,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "rejects a workspace token with the wrong prefix",
     data: { ...minimalArguments, workspace_token: "rprt_fb27faa25ef5ea72" },
-    expectedIssues: ["Must be a Workspace token starting with wrkspc_"],
+    expectedIssues: ["Must be a Workspace token (wrkspc_*)"],
   },
   {
     name: "rejects an empty title",
