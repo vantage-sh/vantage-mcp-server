@@ -1,7 +1,7 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import tool from "../../src/tools/get-team";
-import { requestsInOrder, testTool } from "../../src/utils/testing";
+import tool from "../../../src/tools/teams/get-team";
+import { requestsInOrder, testTool } from "../../../src/utils/testing";
 
 export const success = {
   token: "team_123",
