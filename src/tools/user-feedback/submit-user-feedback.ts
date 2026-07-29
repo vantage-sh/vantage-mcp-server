@@ -1,6 +1,6 @@
 import z from "zod";
-import MCPUserError from "./structure/MCPUserError";
-import registerTool from "./structure/registerTool";
+import MCPUserError from "../structure/MCPUserError";
+import registerTool from "../structure/registerTool";
 
 const description = `
 Submit feedback on using the Vantage MCP Server. Ask the user if they'd like to provide feedback any time you sense they might be frustrated.
