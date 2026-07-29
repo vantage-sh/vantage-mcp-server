@@ -1,5 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
-import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -8,7 +8,7 @@ Gets a specific recommendation view by its token.
 `.trim();
 
 const args = {
-  recommendation_view_token: z.string().describe("The token of the recommendation view to retrieve"),
+  recommendation_view_token: vantageToken("recommendation_view"),
 };
 
 export default registerTool({

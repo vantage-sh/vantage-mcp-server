@@ -2,6 +2,7 @@ import type { RequestBodyForPathAndMethod } from "@vantage-sh/vantage-client";
 import z from "zod";
 import { pastDateIntervalOptions } from "../../utils/dateIntervalOptions";
 import dateValidator from "../../utils/dateValidator";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import { groupingDescription, groupingSchema } from "./schemas";
@@ -40,10 +41,7 @@ export default registerTool({
     readOnly: false,
   },
   args: {
-    workspace_token: z
-      .string()
-      .min(1)
-      .describe("The token of the Workspace to add the Financial Commitment Report to."),
+    workspace_token: vantageToken("workspace"),
     title: z.string().min(1).describe("Title for the new Financial Commitment Report"),
     filter: z.string().optional().describe("VQL filter to apply to the Financial Commitment Report"),
     start_date: dateValidator(

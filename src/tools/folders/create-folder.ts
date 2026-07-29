@@ -1,4 +1,5 @@
 import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -18,17 +19,17 @@ export default registerTool({
   },
   args: {
     title: z.string().min(1).describe("The title of the Folder."),
-    parent_folder_token: z.string().optional().describe("The token of the parent Folder to nest this Folder under."),
+    parent_folder_token: vantageToken("folder", {
+      description: "Parent Folder to nest this Folder under.",
+    }).optional(),
     saved_filter_tokens: z
-      .array(z.string())
+      .array(vantageToken("saved_filter"))
       .optional()
       .describe("The tokens of SavedFilters to apply to any Cost Report contained within the Folder."),
-    workspace_token: z
-      .string()
-      .optional()
-      .describe(
-        "The token of the Workspace to add the Folder to. Ignored if 'parent_folder_token' is set. Required if the API token is associated with multiple Workspaces."
-      ),
+    workspace_token: vantageToken("workspace", {
+      description:
+        "Ignored if parent_folder_token is set. Required if the API token is associated with multiple Workspaces.",
+    }).optional(),
   },
   async execute(args, ctx) {
     const res = await ctx.callVantageApi("/v2/folders", args, "POST");

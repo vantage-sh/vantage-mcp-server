@@ -21,7 +21,7 @@ testTool(
       name: "successful call encodes and returns the report token",
       apiCallHandler: requestsInOrder([
         {
-          endpoint: `/v2/network_flow_reports/${pathEncode("ntflw_lg/rprt_123")}`,
+          endpoint: `/v2/network_flow_reports/${pathEncode("ntflw_lg_rprt_unsafe/123")}`,
           params: {},
           method: "DELETE",
           result: { ok: true, data: undefined },
@@ -29,9 +29,9 @@ testTool(
       ]),
       handler: async ({ callExpectingSuccess }) => {
         const result = await callExpectingSuccess({
-          network_flow_report_token: "ntflw_lg/rprt_123",
+          network_flow_report_token: "ntflw_lg_rprt_unsafe/123",
         });
-        expect(result).toEqual({ token: "ntflw_lg/rprt_123" });
+        expect(result).toEqual({ token: "ntflw_lg_rprt_unsafe/123" });
       },
     },
     {

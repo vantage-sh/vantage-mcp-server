@@ -23,14 +23,14 @@ const undefineds = {
 
 const minimalValidInputArguments: InferValidators<Validators> = {
   ...undefineds,
-  budget_token: "bgt_123",
+  budget_token: "bdgt_123",
 };
 
 const validInputArguments: InferValidators<Validators> = {
-  budget_token: "bgt_123",
+  budget_token: "bdgt_123",
   name: "Updated Budget",
-  cost_report_token: "crt_456",
-  child_budget_tokens: ["bgt_child1", "bgt_child2"],
+  cost_report_token: "rprt_456",
+  child_budget_tokens: ["bdgt_child1", "bdgt_child2"],
   periods: [
     {
       start_at: "2024-01-01",
@@ -66,7 +66,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     name: "period with negative amount",
     data: {
       ...undefineds,
-      budget_token: "bgt_123",
+      budget_token: "bdgt_123",
       periods: [
         {
           start_at: "2024-01-01",
@@ -80,7 +80,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     name: "period with zero amount",
     data: {
       ...undefineds,
-      budget_token: "bgt_123",
+      budget_token: "bdgt_123",
       periods: [
         {
           start_at: "2024-01-01",
@@ -93,7 +93,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     name: "invalid start_at date",
     data: {
       ...undefineds,
-      budget_token: "bgt_123",
+      budget_token: "bdgt_123",
       periods: [
         {
           start_at: "invalid-date",
@@ -107,7 +107,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     name: "invalid end_at date",
     data: {
       ...undefineds,
-      budget_token: "bgt_123",
+      budget_token: "bdgt_123",
       periods: [
         {
           start_at: "2024-01-01",
@@ -122,7 +122,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     name: "empty periods array",
     data: {
       ...undefineds,
-      budget_token: "bgt_123",
+      budget_token: "bdgt_123",
       periods: [],
     },
   },
@@ -130,19 +130,19 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     name: "empty child_budget_tokens array",
     data: {
       ...undefineds,
-      budget_token: "bgt_123",
+      budget_token: "bdgt_123",
       child_budget_tokens: [],
     },
   },
 ];
 
 const successData: UpdateBudgetResponse = {
-  token: "bgt_123",
+  token: "bdgt_123",
   name: "Updated Budget",
   workspace_token: "wrkspc_123",
-  cost_report_token: "crt_456",
+  cost_report_token: "rprt_456",
   budget_alert_tokens: [],
-  child_budget_tokens: ["bgt_child1", "bgt_child2"],
+  child_budget_tokens: ["bdgt_child1", "bdgt_child2"],
   created_at: "2023-01-01T00:00:00Z",
   periods: [
     {
@@ -163,11 +163,11 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "successful call",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: `/v2/budgets/${pathEncode("bgt_123")}`,
+        endpoint: `/v2/budgets/${pathEncode("bdgt_123")}`,
         params: {
           name: "Updated Budget",
-          cost_report_token: "crt_456",
-          child_budget_tokens: ["bgt_child1", "bgt_child2"],
+          cost_report_token: "rprt_456",
+          child_budget_tokens: ["bdgt_child1", "bdgt_child2"],
           periods: [
             { start_at: "2024-01-01", end_at: "2024-01-31", amount: 1000 },
             { start_at: "2024-02-01", end_at: "2024-02-29", amount: 1200 },
@@ -189,7 +189,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "unsuccessful call",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: `/v2/budgets/${pathEncode("bgt_123")}`,
+        endpoint: `/v2/budgets/${pathEncode("bdgt_123")}`,
         params: {},
         method: "PUT",
         result: {

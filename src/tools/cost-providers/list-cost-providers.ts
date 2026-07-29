@@ -1,5 +1,5 @@
-import z from "zod";
 import paginationData from "../../utils/paginationData";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -8,7 +8,7 @@ List of cost providers available to query for a given Workspace. Can be used to 
 `.trim();
 
 const args = {
-  workspace_token: z.string().describe("Workspace token to list cost providers for"),
+  workspace_token: vantageToken("workspace"),
 };
 
 export default registerTool({

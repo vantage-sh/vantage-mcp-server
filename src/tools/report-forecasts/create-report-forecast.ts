@@ -1,5 +1,6 @@
 import type { CreateReportForecastRequest } from "@vantage-sh/vantage-client";
 import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import { nullableBusinessMetricToken, scenarioModelTokens, setAsDefault } from "./schemas";
@@ -20,10 +21,7 @@ export default registerTool({
     readOnly: false,
   },
   args: {
-    cost_report_token: z
-      .string()
-      .min(1)
-      .describe("Cost Report token to attach the forecast to. Use list-cost-reports to discover tokens."),
+    cost_report_token: vantageToken("cost_report"),
     title: z.string().min(1).describe("Title for the new ReportForecast."),
     scenario_model_tokens: scenarioModelTokens,
     business_metric_token: nullableBusinessMetricToken,

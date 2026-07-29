@@ -1,6 +1,7 @@
 import z from "zod";
 import dateValidator from "../../utils/dateValidator";
 import paginationData from "../../utils/paginationData";
+import { vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
@@ -24,7 +25,7 @@ When aggregate_by is count, the response includes total_count and counts (date-b
 
 const args = {
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
-  cost_report_token: z.string().describe("The workspace token to scope the query to"),
+  cost_report_token: vantageToken("cost_report"),
   start_date: dateValidator("Start date to filter costs by, format=YYYY-MM-DD").optional(),
   end_date: dateValidator("End date to filter costs by, format=YYYY-MM-DD").optional(),
   date_bin: z

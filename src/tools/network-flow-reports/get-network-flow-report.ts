@@ -1,5 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
-import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -17,7 +17,7 @@ export default registerTool({
     readOnly: true,
   },
   args: {
-    network_flow_report_token: z.string().min(1).describe("Token of the Network Flow Report to retrieve."),
+    network_flow_report_token: vantageToken("network_flow_report"),
   },
   async execute(args, ctx) {
     const response = await ctx.callVantageApi(

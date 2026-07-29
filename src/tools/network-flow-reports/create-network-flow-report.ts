@@ -1,5 +1,5 @@
 import type { CreateNetworkFlowReportRequest } from "@vantage-sh/vantage-client";
-import z from "zod";
+import { nonempty, vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import {
@@ -27,8 +27,8 @@ export default registerTool({
     readOnly: false,
   },
   args: {
-    workspace_token: z.string().min(1).describe("Workspace token. Use get-myself to discover."),
-    title: z.string().min(1).describe("Title for the Network Flow Report."),
+    workspace_token: vantageToken("workspace"),
+    title: nonempty().describe("Title for the Network Flow Report."),
     filter: filterSchema,
     start_date: startDateSchema,
     end_date: endDateSchema,

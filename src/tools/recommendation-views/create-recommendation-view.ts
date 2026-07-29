@@ -1,6 +1,7 @@
 import type { RequestBodyForPathAndMethod } from "@vantage-sh/vantage-client";
 import z from "zod";
 import dateValidator from "../../utils/dateValidator";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -33,7 +34,7 @@ export default registerTool({
   },
   args: {
     title: z.string().min(1).describe("Title for the new Recommendation View."),
-    workspace_token: z.string().min(1).describe("The token of the Workspace to add the Recommendation View to."),
+    workspace_token: vantageToken("workspace"),
     provider_ids: z
       .array(z.string().min(1))
       .optional()

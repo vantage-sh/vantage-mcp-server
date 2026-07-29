@@ -18,7 +18,7 @@ const validArguments: InferValidators<Validators> = {
   page: 1,
   filter: "open",
   provider: "aws",
-  workspace_token: "wt_123",
+  workspace_token: "wrkspc_123",
   provider_account_id: "123456789",
   type: "aws",
   min_savings: 100,
@@ -191,7 +191,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 const successData = {
   recommendations: [
     {
-      token: "rec_123",
+      token: "rcmmndtn_123",
       type: "aws:ec2:rightsizing",
       category: "ec2_rightsizing_recommender",
       description: "Rightsize EC2 instances",
@@ -203,11 +203,11 @@ const successData = {
       resources_affected_count: 10,
       currency_code: "USD",
       currency_symbol: "$",
-      workspace_token: "wt_123",
+      workspace_token: "wrkspc_123",
       documentation_url: null,
     },
     {
-      token: "rec_456",
+      token: "rcmmndtn_456",
       type: "aws:ec2",
       category: "unused_financial_commitments",
       description: "Remove unused Reserved Instances",
@@ -219,7 +219,7 @@ const successData = {
       resources_affected_count: 10,
       currency_code: "USD",
       currency_symbol: "$",
-      workspace_token: "wt_123",
+      workspace_token: "wrkspc_123",
       documentation_url: null,
     },
   ],
@@ -503,7 +503,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: "/v2/recommendations",
         params: {
           page: 1,
-          workspace_token: "wt_123",
+          workspace_token: "wrkspc_123",
           tag_key: "department",
           tag_value: "engineering",
           limit: DEFAULT_LIMIT,
@@ -518,7 +518,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess({
         ...minimalArgs,
-        workspace_token: "wt_123",
+        workspace_token: "wrkspc_123",
         tag_key: "department",
         tag_value: "engineering",
       });
@@ -558,7 +558,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: "/v2/recommendations",
         params: {
           page: 1,
-          workspace_token: "wt_123",
+          workspace_token: "wrkspc_123",
           regions: ["us-east-1", "us-west-2"],
           limit: DEFAULT_LIMIT,
         },
@@ -572,7 +572,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess({
         ...minimalArgs,
-        workspace_token: "wt_123",
+        workspace_token: "wrkspc_123",
         regions: ["us-east-1", "us-west-2"],
       });
       expect(res).toEqual({
@@ -588,7 +588,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: "/v2/recommendations",
         params: {
           page: 1,
-          workspace_token: "wt_123",
+          workspace_token: "wrkspc_123",
           provider_ids: ["aws", "gcp"],
           limit: DEFAULT_LIMIT,
         },
@@ -602,7 +602,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess({
         ...minimalArgs,
-        workspace_token: "wt_123",
+        workspace_token: "wrkspc_123",
         provider_ids: ["Amazon Web Services", "Google Cloud"],
       });
       expect(res).toEqual({
@@ -618,7 +618,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: "/v2/recommendations",
         params: {
           page: 1,
-          workspace_token: "wt_123",
+          workspace_token: "wrkspc_123",
           account_ids: ["123456789", "987654321"],
           limit: DEFAULT_LIMIT,
         },
@@ -632,7 +632,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess({
         ...minimalArgs,
-        workspace_token: "wt_123",
+        workspace_token: "wrkspc_123",
         account_ids: ["123456789", "987654321"],
       });
       expect(res).toEqual({
@@ -648,7 +648,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: "/v2/recommendations",
         params: {
           page: 1,
-          workspace_token: "wt_123",
+          workspace_token: "wrkspc_123",
           billing_account_ids: ["ba_abc123"],
           limit: DEFAULT_LIMIT,
         },
@@ -662,7 +662,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess({
         ...minimalArgs,
-        workspace_token: "wt_123",
+        workspace_token: "wrkspc_123",
         billing_account_ids: ["ba_abc123"],
       });
       expect(res).toEqual({
@@ -678,7 +678,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: "/v2/recommendations",
         params: {
           page: 1,
-          workspace_token: "wt_123",
+          workspace_token: "wrkspc_123",
           start_date: "2024-01-01",
           end_date: "2024-12-31",
           limit: DEFAULT_LIMIT,
@@ -693,7 +693,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess({
         ...minimalArgs,
-        workspace_token: "wt_123",
+        workspace_token: "wrkspc_123",
         start_date: "2024-01-01",
         end_date: "2024-12-31",
       });
@@ -709,7 +709,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     handler: async ({ callExpectingMCPUserError }) => {
       const err = await callExpectingMCPUserError({
         ...minimalArgs,
-        workspace_token: "wt_123",
+        workspace_token: "wrkspc_123",
         start_date: "2024-01-01",
       });
       expect(err.exception).toEqual({
@@ -723,7 +723,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     handler: async ({ callExpectingMCPUserError }) => {
       const err = await callExpectingMCPUserError({
         ...minimalArgs,
-        workspace_token: "wt_123",
+        workspace_token: "wrkspc_123",
         end_date: "2024-12-31",
       });
       expect(err.exception).toEqual({

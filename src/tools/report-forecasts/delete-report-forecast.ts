@@ -1,5 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
-import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -18,7 +18,7 @@ export default registerTool({
     readOnly: false,
   },
   args: {
-    report_forecast_token: z.string().min(1).describe("The ReportForecast token to delete."),
+    report_forecast_token: vantageToken("report_forecast"),
   },
   async execute(args, ctx) {
     const response = await ctx.callVantageApi(

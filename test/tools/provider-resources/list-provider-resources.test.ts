@@ -16,7 +16,7 @@ type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
   page: 1,
-  resource_report_token: "rr_123",
+  resource_report_token: "prvdr_rsrc_rprt_123",
   filter: undefined,
   workspace_token: undefined,
   include_cost: false,
@@ -27,7 +27,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     name: "default page with resource report",
     data: {
       page: 1,
-      resource_report_token: "rr_123",
+      resource_report_token: "prvdr_rsrc_rprt_123",
       filter: undefined,
       workspace_token: undefined,
       include_cost: false,
@@ -39,7 +39,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       page: 1,
       resource_report_token: undefined,
       filter: "(resources.provider = 'aws' AND resources.type = 'EC2Instance')",
-      workspace_token: "wt_123",
+      workspace_token: "wrkspc_123",
       include_cost: false,
     },
   },
@@ -47,7 +47,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     name: "with cost breakdown",
     data: {
       page: 2,
-      resource_report_token: "rr_456",
+      resource_report_token: "prvdr_rsrc_rprt_456",
       filter: undefined,
       workspace_token: undefined,
       include_cost: true,
@@ -61,7 +61,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     name: "higher page number",
     data: {
       page: 5,
-      resource_report_token: "rr_789",
+      resource_report_token: "prvdr_rsrc_rprt_789",
       filter: undefined,
       workspace_token: undefined,
       include_cost: false,
@@ -122,9 +122,9 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     handler: async ({ callExpectingMCPUserError }) => {
       const err = await callExpectingMCPUserError({
         page: 1,
-        resource_report_token: "rr_123",
+        resource_report_token: "prvdr_rsrc_rprt_123",
         filter: "(resources.provider = 'aws')",
-        workspace_token: "wt_123",
+        workspace_token: "wrkspc_123",
         include_cost: false,
       });
       expect(err.exception).toEqual({
@@ -154,7 +154,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: "/v2/resources",
         params: {
           page: 1,
-          resource_report_token: "rr_123",
+          resource_report_token: "prvdr_rsrc_rprt_123",
           filter: undefined,
           workspace_token: undefined,
           include_cost: false,
@@ -169,7 +169,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess({
         page: 1,
-        resource_report_token: "rr_123",
+        resource_report_token: "prvdr_rsrc_rprt_123",
         filter: undefined,
         workspace_token: undefined,
         include_cost: false,
@@ -192,7 +192,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           page: 1,
           resource_report_token: undefined,
           filter: "invalid VQL syntax",
-          workspace_token: "wt_123",
+          workspace_token: "wrkspc_123",
           include_cost: false,
         },
         method: "GET",
@@ -207,7 +207,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         page: 1,
         resource_report_token: undefined,
         filter: "invalid VQL syntax",
-        workspace_token: "wt_123",
+        workspace_token: "wrkspc_123",
         include_cost: false,
       });
       expect(err.exception).toEqual({

@@ -45,15 +45,15 @@ const validInputArguments: InferValidators<Validators> = {
   title: "Updated Cost Report",
   groupings: ["provider", "service", "region"] as ["provider", "service", "region"],
   filter: "(costs.provider = 'aws')",
-  saved_filter_tokens: ["sf_123", "sf_456"] as ["sf_123", "sf_456"],
+  saved_filter_tokens: ["svd_fltr_123", "svd_fltr_456"] as ["svd_fltr_123", "svd_fltr_456"],
   business_metric_tokens_with_metadata: [
     {
-      business_metric_token: "bm_123",
+      business_metric_token: "bsnss_mtrc_123",
       unit_scale: "per_thousand" as const,
       label_filter: ["prod"] as ["prod"],
     },
   ],
-  folder_token: "folder_123",
+  folder_token: "fldr_123",
   settings: {
     include_credits: true,
     include_refunds: false,
@@ -110,11 +110,11 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 const successData: UpdateCostReportResponse = {
   token: "rprt_123",
   title: "Updated Cost Report",
-  folder_token: "folder_123",
-  saved_filter_tokens: ["sf_123", "sf_456"],
+  folder_token: "fldr_123",
+  saved_filter_tokens: ["svd_fltr_123", "svd_fltr_456"],
   business_metric_tokens_with_metadata: [
     {
-      business_metric_token: "bm_123",
+      business_metric_token: "bsnss_mtrc_123",
       unit_scale: "per_thousand",
       calculation_type: "unit_cost",
       label_filter: ["prod"],
@@ -133,7 +133,7 @@ const successData: UpdateCostReportResponse = {
     show_previous_period: true,
   },
   created_at: "2023-01-01T00:00:00Z",
-  workspace_token: "wt_123",
+  workspace_token: "wrkspc_123",
   previous_period_start_date: "2023-01-01",
   previous_period_end_date: "2023-01-31",
   start_date: "2023-02-01",
@@ -158,15 +158,15 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           title: "Updated Cost Report",
           groupings: "provider,service,region",
           filter: "(costs.provider = 'aws')",
-          saved_filter_tokens: ["sf_123", "sf_456"],
+          saved_filter_tokens: ["svd_fltr_123", "svd_fltr_456"],
           business_metric_tokens_with_metadata: [
             {
-              business_metric_token: "bm_123",
+              business_metric_token: "bsnss_mtrc_123",
               unit_scale: "per_thousand",
               label_filter: ["prod"],
             },
           ],
-          folder_token: "folder_123",
+          folder_token: "fldr_123",
           settings: {
             include_credits: true,
             include_refunds: false,

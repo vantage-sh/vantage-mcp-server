@@ -1,6 +1,7 @@
 import z from "zod";
 import dateValidator from "../../utils/dateValidator";
 import paginationData from "../../utils/paginationData";
+import { vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
@@ -65,7 +66,9 @@ const args = {
     .int()
     .optional()
     .describe("Filter by numeric user ID (the user's database id). Do not pass email addresses or user tokens."),
-  workspace_token: z.string().optional().describe("Filter by workspace token"),
+  workspace_token: vantageToken("workspace", {
+    description: "Filter audit logs to this Workspace.",
+  }).optional(),
   action: z.enum(AUDIT_LOG_ACTIONS).optional().describe("Filter by action type: create, update, or delete."),
   object_name: z.string().optional().describe("Filter by object name"),
   source: z
@@ -80,7 +83,9 @@ const args = {
     .describe(
       "Filter by object type: cost_report, virtual_tag, recommendation_commitment, or segment. Other types (e.g. dashboard, budget) are not supported."
     ),
-  token: z.string().optional().describe("Filter by audit log token"),
+  token: vantageToken("audit_log", {
+    description: "Filter by Audit Log token.",
+  }).optional(),
   object_token: z.string().optional().describe("Filter by object token (auditable_token)"),
   start_date: dateValidator("Filter by start date (YYYY-MM-DD, inclusive).").optional(),
   end_date: dateValidator("Filter by end date (YYYY-MM-DD, inclusive).").optional(),

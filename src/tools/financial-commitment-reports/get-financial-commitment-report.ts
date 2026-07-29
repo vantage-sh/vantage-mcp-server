@@ -1,5 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
-import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -12,7 +12,7 @@ date range, grouping, cost scope, and filter configuration.
 `.trim();
 
 const args = {
-  financial_commitment_report_token: z.string().min(1).describe("The financial commitment report token to retrieve"),
+  financial_commitment_report_token: vantageToken("financial_commitment_report"),
 };
 
 export default registerTool({

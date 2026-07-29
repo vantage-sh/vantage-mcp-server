@@ -1,5 +1,6 @@
 import { pathEncode, type UpdateScenarioModelRequest } from "@vantage-sh/vantage-client";
 import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import {
@@ -27,7 +28,7 @@ export default registerTool({
     readOnly: false,
   },
   args: {
-    scenario_model_token: z.string().min(1).describe("The ScenarioModel token to update."),
+    scenario_model_token: vantageToken("scenario_model"),
     title: z.string().min(1).optional().describe("Updated title for the ScenarioModel."),
     priority: nullablePriority,
     provider: nullableProvider,

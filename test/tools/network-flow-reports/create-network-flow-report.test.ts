@@ -53,6 +53,11 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     expectedIssues: ["Too small: expected string to have >=1 characters"],
   },
   {
+    name: "rejects a workspace token with the wrong prefix",
+    data: { ...minimalArguments, workspace_token: "rprt_fb27faa25ef5ea72" },
+    expectedIssues: ["Must be a Workspace token starting with wrkspc_"],
+  },
+  {
     name: "rejects an empty title",
     data: { ...minimalArguments, title: "" },
     expectedIssues: ["Too small: expected string to have >=1 characters"],

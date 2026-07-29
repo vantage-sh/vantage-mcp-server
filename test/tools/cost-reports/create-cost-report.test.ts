@@ -35,18 +35,18 @@ const undefineds = {
 
 const validInputArguments = {
   title: "Test Cost Report",
-  workspace_token: "wt_123",
+  workspace_token: "wrkspc_123",
   groupings: ["provider", "service", "region"] as ["provider", "service", "region"],
   filter: "(costs.provider = 'aws')",
-  saved_filter_tokens: ["sf_123", "sf_456"] as ["sf_123", "sf_456"],
+  saved_filter_tokens: ["svd_fltr_123", "svd_fltr_456"] as ["svd_fltr_123", "svd_fltr_456"],
   business_metric_tokens_with_metadata: [
     {
-      business_metric_token: "bm_123",
+      business_metric_token: "bsnss_mtrc_123",
       unit_scale: "per_unit" as const,
       label_filter: ["prod", "staging"] as ["prod", "staging"],
     },
   ],
-  folder_token: "folder_123",
+  folder_token: "fldr_123",
   settings: {
     include_credits: true,
     include_refunds: false,
@@ -195,7 +195,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       title: "Test Report",
       business_metric_tokens_with_metadata: [
         {
-          business_metric_token: "bm_123",
+          business_metric_token: "bsnss_mtrc_123",
           unit_scale: "per_thousand",
         },
       ],
@@ -208,7 +208,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       title: "Test Report",
       business_metric_tokens_with_metadata: [
         {
-          business_metric_token: "bm_123",
+          business_metric_token: "bsnss_mtrc_123",
           unit_scale: "per_million",
         },
       ],
@@ -221,7 +221,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       title: "Test Report",
       business_metric_tokens_with_metadata: [
         {
-          business_metric_token: "bm_123",
+          business_metric_token: "bsnss_mtrc_123",
           unit_scale: "per_billion",
         },
       ],
@@ -248,7 +248,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       title: "Test Report",
       business_metric_tokens_with_metadata: [
         {
-          business_metric_token: "bm_123",
+          business_metric_token: "bsnss_mtrc_123",
           unit_scale: "invalid" as any,
         },
       ],
@@ -309,7 +309,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 ];
 
 const minSuccess = {
-  token: "crt_456",
+  token: "rprt_456",
   title: "Minimal Report",
   business_metric_tokens_with_metadata: [],
   chart_settings: {
@@ -322,7 +322,7 @@ const minSuccess = {
   date_interval: "this_month" as const,
   default_forecast: { kind: "baseline" as const },
   filter: "(costs.provider = 'aws')",
-  workspace_token: "wt_123",
+  workspace_token: "wrkspc_123",
 };
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [

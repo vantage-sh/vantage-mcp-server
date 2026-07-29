@@ -22,7 +22,7 @@ const DEFAULT_GROUPINGS = "provider,service,account_id" as unknown as string[];
 // Non-settings fields expected in every /v2/costs request.
 const baseApiParams = {
   page: 1,
-  cost_report_token: "crt_123",
+  cost_report_token: "rprt_123",
   start_date: "2023-01-01",
   end_date: "2023-01-31",
   date_bin: "month" as const,
@@ -32,7 +32,7 @@ const baseApiParams = {
 
 const validArguments: InferValidators<Validators> = {
   page: 1,
-  cost_report_token: "crt_123",
+  cost_report_token: "rprt_123",
   start_date: "2023-01-01",
   end_date: "2023-01-31",
   date_bin: "month",
@@ -53,7 +53,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     data: {
       ...validArguments,
       page: 1,
-      cost_report_token: "crt_123",
+      cost_report_token: "rprt_123",
       start_date: undefined,
       end_date: undefined,
       date_bin: undefined,
@@ -283,7 +283,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       const err = await callExpectingMCPUserError({
         ...validArguments,
         page: 1,
-        cost_report_token: "crt_123",
+        cost_report_token: "rprt_123",
         start_date: undefined,
         end_date: undefined,
         date_bin: undefined,

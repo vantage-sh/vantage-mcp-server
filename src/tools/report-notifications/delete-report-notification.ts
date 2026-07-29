@@ -1,5 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
-import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -10,7 +10,7 @@ Use this tool when a user asks to delete, remove, disable, or stop a scheduled r
 `.trim();
 
 const args = {
-  report_notification_token: z.string().describe("Token of the report notification to delete"),
+  report_notification_token: vantageToken("report_notification"),
 };
 
 export default registerTool({

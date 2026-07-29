@@ -9,7 +9,7 @@ testTool(
     {
       name: "takes billing_rule_token",
       data: {
-        billing_rule_token: "blng_rl_fb27faa25ef5ea72",
+        billing_rule_token: "bllng_rule_fb27faa25ef5ea72",
       },
     },
   ],
@@ -18,7 +18,7 @@ testTool(
       name: "successful call",
       apiCallHandler: requestsInOrder([
         {
-          endpoint: `/v2/billing_rules/${pathEncode("blng_rl_fb27faa25ef5ea72")}`,
+          endpoint: `/v2/billing_rules/${pathEncode("bllng_rule_fb27faa25ef5ea72")}`,
           params: {},
           method: "DELETE",
           result: {
@@ -29,16 +29,16 @@ testTool(
       ]),
       handler: async ({ callExpectingSuccess }) => {
         const res = await callExpectingSuccess({
-          billing_rule_token: "blng_rl_fb27faa25ef5ea72",
+          billing_rule_token: "bllng_rule_fb27faa25ef5ea72",
         });
-        expect(res).toEqual({ token: "blng_rl_fb27faa25ef5ea72" });
+        expect(res).toEqual({ token: "bllng_rule_fb27faa25ef5ea72" });
       },
     },
     {
       name: "unsuccessful call",
       apiCallHandler: requestsInOrder([
         {
-          endpoint: `/v2/billing_rules/${pathEncode("blng_rl_nonexistent")}`,
+          endpoint: `/v2/billing_rules/${pathEncode("bllng_rule_nonexistent")}`,
           params: {},
           method: "DELETE",
           result: {
@@ -49,7 +49,7 @@ testTool(
       ]),
       handler: async ({ callExpectingMCPUserError }) => {
         const err = await callExpectingMCPUserError({
-          billing_rule_token: "blng_rl_nonexistent",
+          billing_rule_token: "bllng_rule_nonexistent",
         });
         expect(err.exception).toEqual({
           errors: [{ message: "Billing rule not found" }],

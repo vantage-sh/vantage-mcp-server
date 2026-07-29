@@ -1,5 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
-import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -8,7 +8,7 @@ Gets a specific Workspace by its token. Workspaces are isolated environments wit
 `.trim();
 
 const args = {
-  workspace_token: z.string().describe("The token of the workspace to retrieve"),
+  workspace_token: vantageToken("workspace"),
 };
 
 export default registerTool({

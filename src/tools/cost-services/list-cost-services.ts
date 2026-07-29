@@ -1,4 +1,4 @@
-import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -8,7 +8,7 @@ Do not copy names from this tool directly into VQL. Use vql_info or costs.servic
 `.trim();
 
 const args = {
-  workspace_token: z.string().describe("Workspace token to list cost services for"),
+  workspace_token: vantageToken("workspace"),
 };
 
 export default registerTool({

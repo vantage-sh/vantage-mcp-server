@@ -158,7 +158,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 ];
 
 const successData = {
-  token: "blng_rl_123",
+  token: "bllng_rule_123",
   title: "Exclude Support",
   type: "exclusion",
   charge_type: "Support",

@@ -1,6 +1,7 @@
 import z from "zod";
 import dateValidator from "../../utils/dateValidator";
 import paginationData from "../../utils/paginationData";
+import { vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
@@ -12,7 +13,9 @@ The report token can be used to link the user to the report in the Vantage Web U
 
 const args = {
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
-  cost_report_token: z.string().optional().describe("Cost report to filter anomalies by"),
+  cost_report_token: vantageToken("cost_report", {
+    description: "Filter anomalies to this Cost Report.",
+  }).optional(),
   service: z.string().optional().describe("Service to filter anomalies to"),
   provider: z.string().optional().describe("Provider to filter anomalies to"),
   cost_category: z.string().optional().describe("Cost category to filter anomalies to"),

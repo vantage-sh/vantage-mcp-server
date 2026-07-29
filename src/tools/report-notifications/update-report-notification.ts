@@ -1,5 +1,6 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -21,10 +22,10 @@ export default registerTool({
     readOnly: false,
   },
   args: {
-    report_notification_token: z.string().describe("The token of the report notification to update."),
+    report_notification_token: vantageToken("report_notification"),
     title: z.string().min(1).optional().describe("Updated title for the report notification."),
-    cost_report_token: z.string().optional().describe("Updated Cost Report token."),
-    user_tokens: z.array(z.string()).optional().describe("Updated user tokens that receive the notification."),
+    cost_report_token: vantageToken("cost_report").optional(),
+    user_tokens: z.array(vantageToken("user")).optional().describe("Updated users that receive the notification."),
     recipient_channels: z
       .array(z.string())
       .optional()

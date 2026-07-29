@@ -1,5 +1,6 @@
 import z from "zod";
 import dateValidator from "../../utils/dateValidator";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -24,7 +25,7 @@ const collapsedTagKeySchema = z.object({
 const valueSchema = z.object({
   filter: z.string().describe("The filter VQL for the Value."),
   name: z.string().describe("The name of the Value.").optional(),
-  business_metric_token: z.string().describe("The token of the associated BusinessMetric.").optional(),
+  business_metric_token: vantageToken("business_metric").optional(),
   cost_metric: z
     .object({
       filter: z.string().describe("The filter VQL for the cost metric."),

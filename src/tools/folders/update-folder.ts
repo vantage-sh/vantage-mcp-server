@@ -1,5 +1,6 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -17,11 +18,13 @@ export default registerTool({
     readOnly: false,
   },
   args: {
-    folder_token: z.string().describe("The token of the folder to update"),
+    folder_token: vantageToken("folder"),
     title: z.string().optional().describe("Updated title for the Folder"),
-    parent_folder_token: z.string().optional().describe("Updated parent folder token for nesting"),
+    parent_folder_token: vantageToken("folder", {
+      description: "Updated parent Folder for nesting.",
+    }).optional(),
     saved_filter_tokens: z
-      .array(z.string())
+      .array(vantageToken("saved_filter"))
       .optional()
       .describe("Updated tokens of SavedFilters to apply to any Cost Report contained within the Folder"),
   },

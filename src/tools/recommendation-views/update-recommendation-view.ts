@@ -1,6 +1,7 @@
 import { pathEncode, type UpdateRecommendationViewRequest } from "@vantage-sh/vantage-client";
 import z from "zod";
 import dateValidator from "../../utils/dateValidator";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -22,7 +23,7 @@ export default registerTool({
     readOnly: false,
   },
   args: {
-    recommendation_view_token: z.string().min(1).describe("Token of the Recommendation View to update."),
+    recommendation_view_token: vantageToken("recommendation_view"),
     title: z.string().min(1).optional().describe("Updated title for the Recommendation View."),
     provider_ids: z
       .array(z.string().min(1))

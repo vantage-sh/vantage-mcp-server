@@ -15,7 +15,7 @@ const success: GetAnomalyAlertResponse = {
   status: "active",
   resources: ["resource_123", "resource_456"],
   resource_tokens: ["resource_123", "resource_456"],
-  cost_report_token: "crt_123",
+  cost_report_token: "rprt_123",
 };
 
 testTool(

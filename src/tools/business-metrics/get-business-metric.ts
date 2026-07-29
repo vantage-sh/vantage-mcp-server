@@ -1,5 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
-import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -9,7 +9,7 @@ BusinessMetrics can be attached to Cost Reports for per-unit cost analysis, and 
 `.trim();
 
 const args = {
-  business_metric_token: z.string().describe("The BusinessMetric token to retrieve."),
+  business_metric_token: vantageToken("business_metric"),
 };
 
 export default registerTool({

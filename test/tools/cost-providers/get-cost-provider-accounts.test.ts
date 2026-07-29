@@ -18,7 +18,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "just workspace_token",
     data: {
-      workspace_token: "wt_123",
+      workspace_token: "wrkspc_123",
       account_id: undefined,
       provider: undefined,
       page: undefined,
@@ -28,7 +28,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "account_id provided",
     data: {
-      workspace_token: "wt_123",
+      workspace_token: "wrkspc_123",
       account_id: "acct_123",
       provider: undefined,
       page: undefined,
@@ -38,7 +38,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "provider provided",
     data: {
-      workspace_token: "wt_123",
+      workspace_token: "wrkspc_123",
       account_id: undefined,
       provider: "aws",
       page: undefined,
@@ -48,7 +48,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "all arguments provided",
     data: {
-      workspace_token: "wt_123",
+      workspace_token: "wrkspc_123",
       account_id: "acct_123",
       provider: "aws",
       page: 2,
@@ -93,7 +93,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       {
         endpoint: "/v2/cost_provider_accounts",
         params: {
-          workspace_token: "wt_123",
+          workspace_token: "wrkspc_123",
           account_id: undefined,
           provider: undefined,
           ...defaultPaginationParams,
@@ -107,7 +107,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     ]),
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess({
-        workspace_token: "wt_123",
+        workspace_token: "wrkspc_123",
         account_id: undefined,
         provider: undefined,
         page: undefined,
@@ -128,7 +128,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       {
         endpoint: "/v2/cost_provider_accounts",
         params: {
-          workspace_token: "wt_123",
+          workspace_token: "wrkspc_123",
           account_id: "acct_123",
           provider: undefined,
           ...defaultPaginationParams,
@@ -142,7 +142,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     ]),
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess({
-        workspace_token: "wt_123",
+        workspace_token: "wrkspc_123",
         account_id: "acct_123",
         provider: undefined,
         page: undefined,
@@ -163,7 +163,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       {
         endpoint: "/v2/cost_provider_accounts",
         params: {
-          workspace_token: "wt_123",
+          workspace_token: "wrkspc_123",
           account_id: undefined,
           provider: "aws",
           ...defaultPaginationParams,
@@ -177,7 +177,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     ]),
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess({
-        workspace_token: "wt_123",
+        workspace_token: "wrkspc_123",
         account_id: undefined,
         provider: "aws",
         page: undefined,
@@ -198,7 +198,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       {
         endpoint: "/v2/cost_provider_accounts",
         params: {
-          workspace_token: "wt_123",
+          workspace_token: "wrkspc_123",
           account_id: undefined,
           provider: undefined,
           ...({ page: 2, limit: 50 } as Record<string, unknown>),
@@ -212,7 +212,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     ]),
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess({
-        workspace_token: "wt_123",
+        workspace_token: "wrkspc_123",
         account_id: undefined,
         provider: undefined,
         page: 2,
@@ -233,7 +233,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       {
         endpoint: "/v2/cost_provider_accounts",
         params: {
-          workspace_token: "wt_123",
+          workspace_token: "wrkspc_123",
           account_id: undefined,
           provider: undefined,
           ...defaultPaginationParams,
@@ -247,7 +247,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     ]),
     handler: async ({ callExpectingMCPUserError }) => {
       const err = await callExpectingMCPUserError({
-        workspace_token: "wt_123",
+        workspace_token: "wrkspc_123",
         account_id: undefined,
         provider: undefined,
         page: undefined,

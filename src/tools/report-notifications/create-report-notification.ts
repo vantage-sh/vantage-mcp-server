@@ -1,4 +1,5 @@
 import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -21,14 +22,11 @@ export default registerTool({
   },
   args: {
     title: z.string().min(1).describe("The title of the report notification."),
-    cost_report_token: z.string().describe("The token of the Cost Report to send summaries for."),
-    workspace_token: z
-      .string()
-      .optional()
-      .describe(
-        "The token of the Workspace to add the report notification to. Required if the API token is associated with multiple Workspaces."
-      ),
-    user_tokens: z.array(z.string()).optional().describe("The tokens of the users that receive the notification."),
+    cost_report_token: vantageToken("cost_report"),
+    workspace_token: vantageToken("workspace", {
+      description: "Required if the API token is associated with multiple Workspaces.",
+    }).optional(),
+    user_tokens: z.array(vantageToken("user")).optional().describe("Users that receive the notification."),
     recipient_channels: z
       .array(z.string())
       .optional()

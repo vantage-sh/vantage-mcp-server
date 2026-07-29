@@ -1,5 +1,6 @@
 import z from "zod";
 import paginationData from "../../utils/paginationData";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -109,12 +110,11 @@ export default registerTool({
   },
   args: {
     page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
-    resource_report_token: z.string().optional().describe("The ResourceReport token to get resources from"),
+    resource_report_token: vantageToken("resource_report").optional(),
     filter: z.string().optional().describe("VQL query to filter resources (requires workspace_token)"),
-    workspace_token: z
-      .string()
-      .optional()
-      .describe("The Workspace token to scope the query to (required when using filter)"),
+    workspace_token: vantageToken("workspace", {
+      description: "Required when using filter.",
+    }).optional(),
     include_cost: z
       .boolean()
       .optional()

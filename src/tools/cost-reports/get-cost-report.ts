@@ -1,5 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
-import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -9,7 +9,7 @@ The same token can be used with the get-cost-report-forecast tool to retrieve fo
 `.trim();
 
 const args = {
-  cost_report_token: z.string().describe("The cost report token to retrieve"),
+  cost_report_token: vantageToken("cost_report"),
 };
 
 export default registerTool({

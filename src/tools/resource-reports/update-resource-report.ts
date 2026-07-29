@@ -1,5 +1,6 @@
 import { pathEncode, type UpdateResourceReportRequest } from "@vantage-sh/vantage-client";
 import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import { resourceReportColumns } from "./schemas";
@@ -20,7 +21,7 @@ export default registerTool({
     readOnly: false,
   },
   args: {
-    resource_report_token: z.string().min(1).describe("The token of the Resource Report to update."),
+    resource_report_token: vantageToken("resource_report"),
     title: z.string().min(1).optional().describe("Updated title for the Resource Report."),
     filter: z
       .string()
@@ -29,7 +30,9 @@ export default registerTool({
         "Updated VQL filter using resources and tags namespaces (e.g. resources.provider = 'aws' AND resources.type = 'aws_instance')."
       ),
     columns: resourceReportColumns,
-    folder_token: z.string().optional().describe("Updated Folder token to move the Resource Report into."),
+    folder_token: vantageToken("folder", {
+      description: "Move the Resource Report into this Folder.",
+    }).optional(),
   },
   async execute(args, ctx) {
     const { resource_report_token, ...body } = args;

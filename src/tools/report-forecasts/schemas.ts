@@ -1,17 +1,16 @@
 import z from "zod";
+import { vantageToken } from "../../utils/zod";
 
 export const scenarioModelTokens = z
-  .array(z.string().min(1))
+  .array(vantageToken("scenario_model"))
   .optional()
   .describe("ScenarioModel tokens to assign to the forecast. Use list-scenario-models to discover tokens.");
 
-export const nullableBusinessMetricToken = z
-  .string()
+export const nullableBusinessMetricToken = vantageToken("business_metric", {
+  description: "Send null to clear.",
+})
   .nullable()
-  .optional()
-  .describe(
-    "Optional BusinessMetric token for the forecast. Use list-business-metrics to discover tokens. Send null to clear."
-  );
+  .optional();
 
 export const setAsDefault = z
   .boolean()

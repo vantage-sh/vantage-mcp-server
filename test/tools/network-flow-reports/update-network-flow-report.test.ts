@@ -110,7 +110,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "successful call encodes the report token",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: `/v2/network_flow_reports/${pathEncode("ntflw_lg/rprt_123")}`,
+        endpoint: `/v2/network_flow_reports/${pathEncode("ntflw_lg_rprt_unsafe/123")}`,
         params: requestBody,
         method: "PUT",
         result: { ok: true, data: successData },
@@ -119,7 +119,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     handler: async ({ callExpectingSuccess }) => {
       const result = await callExpectingSuccess({
         ...validArguments,
-        network_flow_report_token: "ntflw_lg/rprt_123",
+        network_flow_report_token: "ntflw_lg_rprt_unsafe/123",
       });
       expect(result).toEqual(successData);
     },
