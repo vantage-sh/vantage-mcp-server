@@ -1,5 +1,5 @@
 import { expect } from "vitest";
-import tool from "../../src/tools/create-virtual-tag-config";
+import tool from "../../../src/tools/virtual-tag-configs/create-virtual-tag-config";
 import {
   dateValidatorPoisoner,
   type ExecutionTestTableItem,
@@ -10,7 +10,7 @@ import {
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
-} from "../../src/utils/testing";
+} from "../../../src/utils/testing";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
