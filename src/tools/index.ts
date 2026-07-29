@@ -15,7 +15,7 @@ import "./current-user";
 import "./dashboards";
 import "./financial-commitment-reports";
 import "./folders";
-import "./list-cost-integrations";
+import "./integrations";
 import "./network-flow-reports";
 import "./provider-resources";
 import "./recommendation-views";
