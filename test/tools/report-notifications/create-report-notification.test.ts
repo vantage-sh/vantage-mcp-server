@@ -1,6 +1,6 @@
-import { pathEncode, type UpdateReportNotificationResponse } from "@vantage-sh/vantage-client";
+import type { CreateReportNotificationResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
-import tool from "../../src/tools/update-report-notification";
+import tool from "../../../src/tools/report-notifications/create-report-notification";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
@@ -9,32 +9,32 @@ import {
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
-} from "../../src/utils/testing";
+} from "../../../src/utils/testing";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const undefineds = {
-  title: undefined,
-  cost_report_token: undefined,
+  workspace_token: undefined,
   user_tokens: undefined,
   recipient_channels: undefined,
-  frequency: undefined,
-  change: undefined,
 };
 
 const minimalValidArguments: InferValidators<Validators> = {
   ...undefineds,
-  report_notification_token: "rprt_ntfctn_123",
+  title: "Daily Spend Summary",
+  cost_report_token: "rprt_123",
+  frequency: "daily",
+  change: "percentage",
 };
 
 const validArguments: InferValidators<Validators> = {
-  report_notification_token: "rprt_ntfctn_123",
-  title: "Updated Spend Summary",
-  cost_report_token: "rprt_456",
-  user_tokens: ["usr_123", "usr_456"],
+  title: "Weekly Spend Summary",
+  cost_report_token: "rprt_123",
+  workspace_token: "wrkspc_123",
+  user_tokens: ["usr_123"],
   recipient_channels: ["#finance"],
-  frequency: "monthly",
+  frequency: "weekly",
   change: "dollars",
 };
 
@@ -73,13 +73,13 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   },
 ];
 
-const successData: UpdateReportNotificationResponse = {
+const successData: CreateReportNotificationResponse = {
   token: "rprt_ntfctn_123",
-  title: "Updated Spend Summary",
-  cost_report_token: "rprt_456",
-  user_tokens: ["usr_123", "usr_456"],
+  title: "Weekly Spend Summary",
+  cost_report_token: "rprt_123",
+  user_tokens: ["usr_123"],
   recipient_channels: ["#finance"],
-  frequency: "monthly",
+  frequency: "weekly",
   change: "dollars",
 };
 
@@ -88,16 +88,9 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "successful call",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: `/v2/report_notifications/${pathEncode("rprt_ntfctn_123")}`,
-        params: {
-          title: "Updated Spend Summary",
-          cost_report_token: "rprt_456",
-          user_tokens: ["usr_123", "usr_456"],
-          recipient_channels: ["#finance"],
-          frequency: "monthly",
-          change: "dollars",
-        },
-        method: "PUT",
+        endpoint: "/v2/report_notifications",
+        params: validArguments,
+        method: "POST",
         result: {
           ok: true,
           data: successData,
@@ -113,19 +106,30 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "unsuccessful call",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: `/v2/report_notifications/${pathEncode("rprt_ntfctn_123")}`,
-        params: {},
-        method: "PUT",
+        endpoint: "/v2/report_notifications",
+        params: {
+          title: "Invalid Report Notification",
+          cost_report_token: "rprt_invalid",
+          frequency: "daily",
+          change: "percentage",
+        },
+        method: "POST",
         result: {
           ok: false,
-          errors: [{ message: "Report notification not found" }],
+          errors: [{ message: "Cost report not found" }],
         },
       },
     ]),
     handler: async ({ callExpectingMCPUserError }) => {
-      const err = await callExpectingMCPUserError(minimalValidArguments);
+      const err = await callExpectingMCPUserError({
+        ...undefineds,
+        title: "Invalid Report Notification",
+        cost_report_token: "rprt_invalid",
+        frequency: "daily",
+        change: "percentage",
+      });
       expect(err.exception).toEqual({
-        errors: [{ message: "Report notification not found" }],
+        errors: [{ message: "Cost report not found" }],
       });
     },
   },
