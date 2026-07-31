@@ -1,6 +1,6 @@
 import { expect } from "vitest";
-import tool from "../../../src/tools/teams/get-teams";
 import { DEFAULT_LIMIT } from "../../../src/tools/structure/constants";
+import tool from "../../../src/tools/teams/get-teams";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,

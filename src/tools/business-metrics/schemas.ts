@@ -1,11 +1,12 @@
 import z from "zod";
 import dateValidator from "../../utils/dateValidator";
+import { vantageToken } from "../../utils/zod";
 
 export const BUSINESS_METRICS_LIST_LIMIT = 1000;
 export const BUSINESS_METRIC_DATA_LIMIT = 5000;
 
 export const businessMetricValueArgs = {
-  business_metric_token: z.string().describe("The BusinessMetric token to retrieve values for."),
+  business_metric_token: vantageToken("business_metric"),
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1."),
   start_date: dateValidator(
     "Query BusinessMetric values by the first date to filter from. Must be YYYY-MM-DD format."

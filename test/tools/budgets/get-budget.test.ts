@@ -14,28 +14,28 @@ type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const success: GetBudgetResponse = {
-  token: "bgt_123",
+  token: "bdgt_123",
   name: "Monthly AWS Budget",
   workspace_token: "wrkspc_123",
   created_at: "2023-01-15T10:30:00Z",
   budget_alert_tokens: [],
   child_budget_tokens: [],
   periods: [],
-  cost_report_token: "crt_123",
+  cost_report_token: "rprt_123",
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "takes budget_token",
     data: {
-      budget_token: "bgt_123",
+      budget_token: "bdgt_123",
       include_performance: undefined,
     },
   },
   {
     name: "with include_performance",
     data: {
-      budget_token: "bgt_123",
+      budget_token: "bdgt_123",
       include_performance: true,
     },
   },
@@ -46,7 +46,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "successful call without include_performance",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: `/v2/budgets/${pathEncode("bgt_123")}`,
+        endpoint: `/v2/budgets/${pathEncode("bdgt_123")}`,
         params: {},
         method: "GET",
         result: {
@@ -57,7 +57,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     ]),
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess({
-        budget_token: "bgt_123",
+        budget_token: "bdgt_123",
         include_performance: undefined,
       });
       expect(res).toEqual(success);
@@ -67,7 +67,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "successful call with include_performance",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: `/v2/budgets/${pathEncode("bgt_123")}`,
+        endpoint: `/v2/budgets/${pathEncode("bdgt_123")}`,
         params: { include_performance: true },
         method: "GET",
         result: {
@@ -78,7 +78,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     ]),
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess({
-        budget_token: "bgt_123",
+        budget_token: "bdgt_123",
         include_performance: true,
       });
       expect(res).toEqual(success);
@@ -88,7 +88,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "unsuccessful call",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: `/v2/budgets/${pathEncode("bgt_notfound")}`,
+        endpoint: `/v2/budgets/${pathEncode("bdgt_notfound")}`,
         params: {},
         method: "GET",
         result: {
@@ -99,7 +99,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     ]),
     handler: async ({ callExpectingMCPUserError }) => {
       const err = await callExpectingMCPUserError({
-        budget_token: "bgt_notfound",
+        budget_token: "bdgt_notfound",
         include_performance: undefined,
       });
       expect(err.exception).toEqual({

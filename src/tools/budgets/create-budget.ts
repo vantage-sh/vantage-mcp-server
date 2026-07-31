@@ -1,4 +1,5 @@
 import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import { budgetPeriod } from "./schemas";
@@ -19,10 +20,14 @@ export default registerTool({
   },
   args: {
     name: z.string().min(1).describe("The name of the Budget."),
-    workspace_token: z.string().optional().describe("The token of the Workspace to add the Budget to."),
-    cost_report_token: z.string().optional().describe("The CostReport token. Ignored for hierarchical Budgets."),
+    workspace_token: vantageToken("workspace", {
+      description: "Workspace to add the Budget to.",
+    }).optional(),
+    cost_report_token: vantageToken("cost_report", {
+      description: "Ignored for hierarchical Budgets.",
+    }).optional(),
     child_budget_tokens: z
-      .array(z.string())
+      .array(vantageToken("budget"))
       .optional()
       .describe("The tokens of any child Budgets when creating a hierarchical Budget."),
     periods: z

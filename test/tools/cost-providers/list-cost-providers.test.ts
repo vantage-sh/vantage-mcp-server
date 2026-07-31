@@ -14,7 +14,7 @@ type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
-  workspace_token: "wt_123",
+  workspace_token: "wrkspc_123",
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
@@ -38,7 +38,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       {
         endpoint: "/v2/cost_providers",
         params: {
-          workspace_token: "wt_123",
+          workspace_token: "wrkspc_123",
         },
         method: "GET",
         result: {
@@ -64,7 +64,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       {
         endpoint: "/v2/cost_providers",
         params: {
-          workspace_token: "wt_123",
+          workspace_token: "wrkspc_123",
         },
         method: "GET",
         result: {

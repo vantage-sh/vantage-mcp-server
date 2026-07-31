@@ -24,9 +24,9 @@ const undefineds = {
 
 const validInputArguments: InferValidators<Validators> = {
   name: "Test Budget",
-  workspace_token: "wt_123",
-  cost_report_token: "crt_456",
-  child_budget_tokens: ["cb_123", "cb_456"],
+  workspace_token: "wrkspc_123",
+  cost_report_token: "rprt_456",
+  child_budget_tokens: ["bdgt_123", "bdgt_456"],
   periods: [
     {
       start_at: "2024-01-01",
@@ -66,7 +66,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     data: {
       ...undefineds,
       name: "Workspace Budget",
-      workspace_token: "wt_789",
+      workspace_token: "wrkspc_789",
     },
   },
   {
@@ -74,7 +74,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     data: {
       ...undefineds,
       name: "Cost Report Budget",
-      cost_report_token: "crt_789",
+      cost_report_token: "rprt_789",
     },
   },
   {
@@ -82,7 +82,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     data: {
       ...undefineds,
       name: "Parent Budget",
-      child_budget_tokens: ["cb_111", "cb_222"],
+      child_budget_tokens: ["bdgt_111", "bdgt_222"],
     },
   },
   {
@@ -183,10 +183,10 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 ];
 
 const successData: CreateBudgetResponse = {
-  token: "bt_123",
+  token: "bdgt_123",
   name: "Test Budget",
-  workspace_token: "wt_123",
-  cost_report_token: "crt_456",
+  workspace_token: "wrkspc_123",
+  cost_report_token: "rprt_456",
   budget_alert_tokens: [],
   child_budget_tokens: [],
   created_at: "2023-01-01T00:00:00Z",
@@ -225,7 +225,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: "/v2/budgets",
         params: {
           name: "Budget with Invalid Report",
-          cost_report_token: "crt_nonexistent",
+          cost_report_token: "rprt_nonexistent",
         },
         method: "POST",
         result: {
@@ -238,7 +238,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       const err = await callExpectingMCPUserError({
         ...undefineds,
         name: "Budget with Invalid Report",
-        cost_report_token: "crt_nonexistent",
+        cost_report_token: "rprt_nonexistent",
       });
       expect(err.exception).toEqual({
         errors: [{ message: "Cost report not found" }],

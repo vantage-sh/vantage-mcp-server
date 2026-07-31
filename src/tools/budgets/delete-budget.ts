@@ -1,5 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
-import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -17,7 +17,7 @@ export default registerTool({
     readOnly: false,
   },
   args: {
-    budget_token: z.string().describe("The token of the Budget to delete."),
+    budget_token: vantageToken("budget"),
   },
   async execute(args, ctx) {
     const response = await ctx.callVantageApi(`/v2/budgets/${pathEncode(args.budget_token)}`, {}, "DELETE");

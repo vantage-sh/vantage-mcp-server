@@ -1,5 +1,6 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -17,7 +18,7 @@ export default registerTool({
     readOnly: false,
   },
   args: {
-    anomaly_alert_token: z.string().describe("The token of the anomaly alert to update."),
+    anomaly_alert_token: vantageToken("anomaly_alert"),
     status: z.enum(["active", "archived", "ignored"]).describe("The new status of the anomaly alert."),
     feedback: z
       .string()

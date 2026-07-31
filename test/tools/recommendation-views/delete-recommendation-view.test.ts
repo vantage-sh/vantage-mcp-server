@@ -9,7 +9,7 @@ testTool(
     {
       name: "takes recommendation_view_token",
       data: {
-        recommendation_view_token: "rcmvw_123",
+        recommendation_view_token: "rec_vw_123",
       },
     },
   ],
@@ -18,7 +18,7 @@ testTool(
       name: "successful call",
       apiCallHandler: requestsInOrder([
         {
-          endpoint: `/v2/recommendation_views/${pathEncode("rcmvw_123")}`,
+          endpoint: `/v2/recommendation_views/${pathEncode("rec_vw_123")}`,
           params: {},
           method: "DELETE",
           result: {
@@ -29,16 +29,16 @@ testTool(
       ]),
       handler: async ({ callExpectingSuccess }) => {
         const res = await callExpectingSuccess({
-          recommendation_view_token: "rcmvw_123",
+          recommendation_view_token: "rec_vw_123",
         });
-        expect(res).toEqual({ token: "rcmvw_123" });
+        expect(res).toEqual({ token: "rec_vw_123" });
       },
     },
     {
       name: "unsuccessful call",
       apiCallHandler: requestsInOrder([
         {
-          endpoint: `/v2/recommendation_views/${pathEncode("rcmvw_notfound")}`,
+          endpoint: `/v2/recommendation_views/${pathEncode("rec_vw_notfound")}`,
           params: {},
           method: "DELETE",
           result: {
@@ -49,7 +49,7 @@ testTool(
       ]),
       handler: async ({ callExpectingMCPUserError }) => {
         const err = await callExpectingMCPUserError({
-          recommendation_view_token: "rcmvw_notfound",
+          recommendation_view_token: "rec_vw_notfound",
         });
         expect(err.exception).toEqual({
           errors: [{ message: "Recommendation view not found" }],

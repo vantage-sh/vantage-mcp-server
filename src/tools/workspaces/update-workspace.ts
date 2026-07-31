@@ -1,5 +1,6 @@
 import { pathEncode, type UpdateWorkspaceRequest } from "@vantage-sh/vantage-client";
 import z from "zod";
+import { nonempty, vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -17,8 +18,8 @@ export default registerTool({
     readOnly: false,
   },
   args: {
-    workspace_token: z.string().describe("The token of the workspace to update"),
-    name: z.string().optional().describe("New name for the workspace"),
+    workspace_token: vantageToken("workspace"),
+    name: nonempty().optional().describe("New name for the workspace"),
     enable_currency_conversion: z.boolean().optional().describe("Enable currency conversion for the workspace"),
     currency: z.string().optional().describe('Currency code for the workspace (e.g., "USD")'),
     exchange_rate_date: z

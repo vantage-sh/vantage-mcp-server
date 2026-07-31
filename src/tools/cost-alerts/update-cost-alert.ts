@@ -1,5 +1,6 @@
 import { pathEncode, type UpdateCostAlertRequest } from "@vantage-sh/vantage-client";
 import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import {
@@ -27,7 +28,7 @@ export default registerTool({
     readOnly: false,
   },
   args: {
-    cost_alert_token: z.string().min(1).describe("The token of the Cost Alert to update."),
+    cost_alert_token: vantageToken("cost_alert"),
     title: costAlertTitle.optional().describe("Updated title for the Cost Alert."),
     email_recipients: z
       .array(z.string())

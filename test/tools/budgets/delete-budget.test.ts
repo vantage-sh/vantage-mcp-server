@@ -9,7 +9,7 @@ testTool(
     {
       name: "takes budget_token",
       data: {
-        budget_token: "bgt_fb27faa25ef5ea72",
+        budget_token: "bdgt_fb27faa25ef5ea72",
       },
     },
   ],
@@ -18,7 +18,7 @@ testTool(
       name: "successful call",
       apiCallHandler: requestsInOrder([
         {
-          endpoint: `/v2/budgets/${pathEncode("bgt_fb27faa25ef5ea72")}`,
+          endpoint: `/v2/budgets/${pathEncode("bdgt_fb27faa25ef5ea72")}`,
           params: {},
           method: "DELETE",
           result: {
@@ -29,16 +29,16 @@ testTool(
       ]),
       handler: async ({ callExpectingSuccess }) => {
         const res = await callExpectingSuccess({
-          budget_token: "bgt_fb27faa25ef5ea72",
+          budget_token: "bdgt_fb27faa25ef5ea72",
         });
-        expect(res).toEqual({ token: "bgt_fb27faa25ef5ea72" });
+        expect(res).toEqual({ token: "bdgt_fb27faa25ef5ea72" });
       },
     },
     {
       name: "unsuccessful call",
       apiCallHandler: requestsInOrder([
         {
-          endpoint: `/v2/budgets/${pathEncode("bgt_nonexistent")}`,
+          endpoint: `/v2/budgets/${pathEncode("bdgt_nonexistent")}`,
           params: {},
           method: "DELETE",
           result: {
@@ -49,7 +49,7 @@ testTool(
       ]),
       handler: async ({ callExpectingMCPUserError }) => {
         const err = await callExpectingMCPUserError({
-          budget_token: "bgt_nonexistent",
+          budget_token: "bdgt_nonexistent",
         });
         expect(err.exception).toEqual({
           errors: [{ message: "Budget not found" }],

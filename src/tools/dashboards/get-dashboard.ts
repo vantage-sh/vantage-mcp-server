@@ -1,5 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
-import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -8,7 +8,7 @@ Gets a specific dashboard by its token. The token of a dashboard can be used to 
 `.trim();
 
 const args = {
-  dashboard_token: z.string().describe("The dashboard token to retrieve"),
+  dashboard_token: vantageToken("dashboard"),
 };
 
 export default registerTool({

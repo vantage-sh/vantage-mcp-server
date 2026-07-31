@@ -2,6 +2,7 @@ import { pathEncode, type UpdateCostReportRequest } from "@vantage-sh/vantage-cl
 import z from "zod";
 import { dateIntervalOptions } from "../../utils/dateIntervalOptions";
 import dateValidator from "../../utils/dateValidator";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import {
@@ -28,7 +29,7 @@ export default registerTool({
     readOnly: false,
   },
   args: {
-    cost_report_token: z.string().min(1).describe("The token of the Cost Report to update."),
+    cost_report_token: vantageToken("cost_report"),
     title: z.string().min(1).optional().describe("Updated title for the Cost Report."),
     groupings: z
       .array(z.string())
@@ -42,17 +43,16 @@ export default registerTool({
       .optional()
       .describe("Updated VQL filter. Use list-cost-providers and list-cost-services for valid names."),
     saved_filter_tokens: z
-      .array(z.string())
+      .array(vantageToken("saved_filter"))
       .optional()
       .describe("Updated SavedFilter tokens to apply to the Cost Report."),
     business_metric_tokens_with_metadata: z
       .array(businessMetricTokenForUpdate)
       .optional()
       .describe("Updated BusinessMetric tokens and unit scale metadata."),
-    folder_token: z
-      .string()
-      .optional()
-      .describe("Updated Folder token. Determines the Workspace the report is assigned to."),
+    folder_token: vantageToken("folder", {
+      description: "Determines the Workspace the report is assigned to.",
+    }).optional(),
     settings: costReportSettingsForUpdate.optional().describe("Updated report settings."),
     previous_period_start_date: dateValidator(
       "Updated previous period start date. ISO 8601 formatted (YYYY-MM-DD)."

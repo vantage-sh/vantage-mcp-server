@@ -1,5 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
-import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -8,7 +8,7 @@ Gets a specific anomaly alert by its token.
 `.trim();
 
 const args = {
-  anomaly_alert_token: z.string().describe("The anomaly alert token to retrieve"),
+  anomaly_alert_token: vantageToken("anomaly_alert"),
 };
 
 export default registerTool({

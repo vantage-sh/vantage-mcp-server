@@ -18,7 +18,7 @@ type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
-  cost_report_token: "crt_123",
+  cost_report_token: "rprt_123",
   page: 1,
   provider: "aws",
   service: "AmazonEC2",
@@ -42,7 +42,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "successful call",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: `/v2/cost_reports/${pathEncode("crt_123")}/forecasted_costs`,
+        endpoint: `/v2/cost_reports/${pathEncode("rprt_123")}/forecasted_costs`,
         params: {
           ...validArguments,
           limit: DEFAULT_LIMIT,
@@ -91,7 +91,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "unsuccessful call",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: `/v2/cost_reports/${pathEncode("crt_123")}/forecasted_costs`,
+        endpoint: `/v2/cost_reports/${pathEncode("rprt_123")}/forecasted_costs`,
         params: {
           ...validArguments,
           limit: DEFAULT_LIMIT,

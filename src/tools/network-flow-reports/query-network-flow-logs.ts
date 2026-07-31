@@ -2,6 +2,7 @@ import type { GetNetworkFlowLogsRequest } from "@vantage-sh/vantage-client";
 import z from "zod";
 import dateValidator from "../../utils/dateValidator";
 import paginationData from "../../utils/paginationData";
+import { vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
@@ -26,16 +27,10 @@ export default registerTool({
     readOnly: true,
   },
   args: {
-    network_flow_report_token: z
-      .string()
-      .min(1)
-      .optional()
-      .describe("Saved Network Flow Report token. Use list-network-flow-reports to discover."),
-    workspace_token: z
-      .string()
-      .min(1)
-      .optional()
-      .describe("Workspace token. Required for ad hoc queries; use get-myself to discover."),
+    network_flow_report_token: vantageToken("network_flow_report").optional(),
+    workspace_token: vantageToken("workspace", {
+      description: "Required for ad hoc queries.",
+    }).optional(),
     filter: z
       .string()
       .min(1)

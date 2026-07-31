@@ -1,5 +1,6 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -17,7 +18,7 @@ export default registerTool({
     readOnly: false,
   },
   args: {
-    canvas_token: z.string().describe("The token of the Canvas to update."),
+    canvas_token: vantageToken("canvas"),
     title: z.string().min(1).optional().describe("The updated title of the Canvas."),
     prompt: z.string().min(1).optional().describe("The updated prompt used to generate the Canvas."),
   },

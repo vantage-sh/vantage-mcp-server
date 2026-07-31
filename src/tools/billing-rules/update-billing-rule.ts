@@ -1,6 +1,7 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod";
 import dateValidator from "../../utils/dateValidator";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -23,7 +24,7 @@ export default registerTool({
     readOnly: false,
   },
   args: {
-    billing_rule_token: z.string().describe("The token of the Billing Rule to update."),
+    billing_rule_token: vantageToken("billing_rule"),
     title: z.string().min(1).optional().describe("The updated title of the Billing Rule."),
     start_date: dateValidator("The updated start date in ISO 8601 format (YYYY-MM-DD).").optional(),
     end_date: dateValidator("The updated end date in ISO 8601 format (YYYY-MM-DD).").optional(),

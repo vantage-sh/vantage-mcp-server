@@ -3,7 +3,7 @@ import tool from "../../../src/tools/current-user/get-myself";
 import { requestsInOrder, testTool } from "../../../src/utils/testing";
 
 const workspace = {
-  token: "ws_123",
+  token: "wrkspc_123",
   name: "Workspace 1",
   created_at: "2023-01-01T00:00:00Z",
   enable_currency_conversion: true,
@@ -12,7 +12,7 @@ const workspace = {
 };
 
 const successData = {
-  default_workspace_token: "ws_123",
+  default_workspace_token: "wrkspc_123",
   workspaces: [workspace],
   bearer_token: {
     created_at: "2023-01-01T00:00:00Z",

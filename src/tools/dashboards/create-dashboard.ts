@@ -1,4 +1,5 @@
 import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import { dateBinSchema, dateIntervalSchema, endDateSchema, startDateSchema, widgetSchema } from "./schemas";
@@ -31,10 +32,10 @@ export default registerTool({
   description,
   args: {
     title: z.string().min(1).describe("The title of the dashboard"),
-    workspace_token: z.string().min(1).describe("The token of the Workspace to add the Dashboard to."),
+    workspace_token: vantageToken("workspace"),
     widgets: z.array(widgetSchema).describe("The widgets to add to the dashboard").optional(),
     saved_filter_tokens: z
-      .array(z.string())
+      .array(vantageToken("saved_filter"))
       .describe("The tokens of the Saved Filters used in the Dashboard")
       .optional(),
     date_bin: dateBinSchema,

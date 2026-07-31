@@ -34,7 +34,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 const successData = {
   billing_rules: [
     {
-      token: "blng_rl_123",
+      token: "bllng_rule_123",
       title: "Exclude Support Charges",
       type: "exclusion",
       charge_type: "Support",
@@ -43,7 +43,7 @@ const successData = {
       created_at: "2023-01-15T10:30:00Z",
     },
     {
-      token: "blng_rl_456",
+      token: "bllng_rule_456",
       title: "75% Adjustment",
       type: "adjustment",
       percentage: "75.0",

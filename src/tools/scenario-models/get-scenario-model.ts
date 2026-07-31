@@ -1,5 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
-import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -11,7 +11,7 @@ Requires Scenario Models (Enterprise). A 403 means the account is not entitled.
 `.trim();
 
 const args = {
-  scenario_model_token: z.string().min(1).describe("The ScenarioModel token to retrieve."),
+  scenario_model_token: vantageToken("scenario_model"),
 };
 
 export default registerTool({

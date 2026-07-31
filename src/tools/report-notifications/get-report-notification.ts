@@ -1,5 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
-import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -12,7 +12,7 @@ Do not use this for Cost Alerts, budget alerts, threshold alerts, or spend-limit
 `.trim();
 
 const args = {
-  report_notification_token: z.string().describe("The report notification token to retrieve"),
+  report_notification_token: vantageToken("report_notification"),
 };
 
 export default registerTool({

@@ -16,7 +16,7 @@ type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
-  recommendation_token: "rec_123",
+  recommendation_token: "rcmmndtn_123",
   page: 1,
 };
 
@@ -74,7 +74,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "successful call",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: `/v2/recommendations/${pathEncode("rec_123")}/resources`,
+        endpoint: `/v2/recommendations/${pathEncode("rcmmndtn_123")}/resources`,
         params: {
           page: 1,
           limit: DEFAULT_LIMIT,
@@ -101,7 +101,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "unsuccessful call",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: `/v2/recommendations/${pathEncode("rec_123")}/resources`,
+        endpoint: `/v2/recommendations/${pathEncode("rcmmndtn_123")}/resources`,
         params: {
           page: 1,
           limit: DEFAULT_LIMIT,

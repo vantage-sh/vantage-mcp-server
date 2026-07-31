@@ -24,13 +24,13 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "valid recommendation_token",
     data: {
-      recommendation_token: "rec_123",
+      recommendation_token: "rcmmndtn_123",
     },
   },
 ];
 
 const successData: GetRecommendationResponse = {
-  token: "rec_123",
+  token: "rcmmndtn_123",
   description: "This is a test recommendation",
   category: "ec2_rightsizing_recommender",
   created_at: "2023-01-01T00:00:00Z",
@@ -39,7 +39,7 @@ const successData: GetRecommendationResponse = {
   provider_account_id: "123456789",
   service: "EC2",
   resources_affected_count: 10,
-  workspace_token: "wt_123",
+  workspace_token: "wrkspc_123",
   type: "suggestion",
   documentation_url: null,
 };
@@ -49,7 +49,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "successful call",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: `/v2/recommendations/${pathEncode("rec_123")}`,
+        endpoint: `/v2/recommendations/${pathEncode("rcmmndtn_123")}`,
         params: {},
         method: "GET",
         result: {
@@ -60,7 +60,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     ]),
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess({
-        recommendation_token: "rec_123",
+        recommendation_token: "rcmmndtn_123",
       });
       expect(res).toEqual(successData);
     },
@@ -69,7 +69,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "unsuccessful call",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: `/v2/recommendations/${pathEncode("rec_123")}`,
+        endpoint: `/v2/recommendations/${pathEncode("rcmmndtn_123")}`,
         params: {},
         method: "GET",
         result: {
@@ -80,7 +80,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     ]),
     handler: async ({ callExpectingMCPUserError }) => {
       const err = await callExpectingMCPUserError({
-        recommendation_token: "rec_123",
+        recommendation_token: "rcmmndtn_123",
       });
       expect(err.exception).toEqual({
         errors: [{ message: "Not found" }],

@@ -1,5 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
-import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -8,7 +8,7 @@ Gets a specific team with its token.
 `.trim();
 
 const args = {
-  token: z.string().describe("The team token to retrieve"),
+  token: vantageToken("team"),
 };
 
 export default registerTool({

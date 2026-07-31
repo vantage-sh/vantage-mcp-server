@@ -30,11 +30,11 @@ const undefineds = {
 
 const minimalValidInputArguments: InferValidators<Validators> = {
   ...undefineds,
-  billing_rule_token: "blng_rl_123",
+  billing_rule_token: "bllng_rule_123",
 };
 
 const validInputArguments: InferValidators<Validators> = {
-  billing_rule_token: "blng_rl_123",
+  billing_rule_token: "bllng_rule_123",
   title: "Updated Rule",
   start_date: "2024-01-01",
   end_date: "2024-12-31",
@@ -100,7 +100,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 ];
 
 const successData = {
-  token: "blng_rl_123",
+  token: "bllng_rule_123",
   title: "Updated Rule",
   type: "exclusion",
   charge_type: "Support",
@@ -116,7 +116,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "successful call",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: `/v2/billing_rules/${pathEncode("blng_rl_123")}`,
+        endpoint: `/v2/billing_rules/${pathEncode("bllng_rule_123")}`,
         params: {
           title: "Updated Rule",
           start_date: "2024-01-01",
@@ -146,7 +146,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "unsuccessful call",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: `/v2/billing_rules/${pathEncode("blng_rl_123")}`,
+        endpoint: `/v2/billing_rules/${pathEncode("bllng_rule_123")}`,
         params: {},
         method: "PUT",
         result: {

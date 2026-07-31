@@ -36,7 +36,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 const successData = {
   cost_reports: [
     {
-      token: "crt_123",
+      token: "rprt_123",
       title: "Monthly AWS Costs",
       filter: "provider = aws",
       business_metric_tokens_with_metadata: [],
@@ -52,7 +52,7 @@ const successData = {
       },
     },
     {
-      token: "crt_456",
+      token: "rprt_456",
       title: "Azure EC2 Costs",
       filter: "provider = azure AND service = EC2",
       business_metric_tokens_with_metadata: [],

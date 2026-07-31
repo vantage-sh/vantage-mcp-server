@@ -1,6 +1,7 @@
 import z from "zod";
 import dateValidator from "../../utils/dateValidator";
 import paginationData from "../../utils/paginationData";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -54,7 +55,7 @@ const args = {
   filter: z.string().describe("A VQL query to run against your vantage account"),
   start_date: dateValidator("Start date to filter costs by, format=YYYY-MM-DD").optional(),
   end_date: dateValidator("End date to filter costs by, format=YYYY-MM-DD").optional(),
-  workspace_token: z.string().min(1).describe("The workspace token to scope the query to"),
+  workspace_token: vantageToken("workspace"),
   date_bin: z
     .enum(["day", "week", "month"])
     .optional()

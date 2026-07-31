@@ -1,5 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
-import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -23,7 +23,7 @@ The recommendation token can also be used with get-recommendation-resources to s
 `.trim();
 
 const args = {
-  recommendation_token: z.string().min(1).describe("The token of the recommendation to get details for"),
+  recommendation_token: vantageToken("recommendation"),
 };
 
 export default registerTool({

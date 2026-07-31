@@ -1,5 +1,6 @@
 import z from "zod";
 import paginationData from "../../utils/paginationData";
+import { vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
@@ -16,7 +17,7 @@ export default registerTool({
   title: "Get Cost Provider Accounts",
   description,
   args: {
-    workspace_token: z.string().describe("Workspace token to list cost provider accounts for"),
+    workspace_token: vantageToken("workspace"),
     account_id: z.string().optional().describe("Filter by a specific account ID"),
     provider: z.string().optional().describe("Provider to filter provider accounts to"),
     page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),

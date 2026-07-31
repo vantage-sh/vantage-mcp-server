@@ -1,5 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
-import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -8,7 +8,7 @@ Gets a specific resource report by its token. The token of a report can be used 
 `.trim();
 
 const args = {
-  resource_report_token: z.string().describe("The resource report token to retrieve"),
+  resource_report_token: vantageToken("resource_report"),
 };
 
 export default registerTool({

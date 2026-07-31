@@ -19,7 +19,7 @@ type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
   page: 1,
-  cost_report_token: "crt_123",
+  cost_report_token: "rprt_123",
   service: "AmazonEC2",
   provider: "aws",
   cost_category: "compute",
@@ -61,7 +61,7 @@ function makeAnomalyAlert(token: string) {
     status: "open",
     resources: ["resource_123", "resource_456"],
     resource_tokens: ["resource_123", "resource_456"],
-    cost_report_token: "crt_123",
+    cost_report_token: "rprt_123",
   };
 }
 

@@ -14,7 +14,7 @@ type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const successData = {
-  token: "blng_rl_123",
+  token: "bllng_rule_123",
   title: "Exclude Support Charges",
   type: "exclusion",
   charge_type: "Support",
@@ -27,7 +27,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "takes billing_rule_token",
     data: {
-      billing_rule_token: "blng_rl_123",
+      billing_rule_token: "bllng_rule_123",
     },
   },
 ];
@@ -37,7 +37,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "successful call",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: `/v2/billing_rules/${pathEncode("blng_rl_123")}`,
+        endpoint: `/v2/billing_rules/${pathEncode("bllng_rule_123")}`,
         params: {},
         method: "GET",
         result: {
@@ -48,7 +48,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     ]),
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess({
-        billing_rule_token: "blng_rl_123",
+        billing_rule_token: "bllng_rule_123",
       });
       expect(res).toEqual(successData);
     },
@@ -57,7 +57,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     name: "unsuccessful call",
     apiCallHandler: requestsInOrder([
       {
-        endpoint: `/v2/billing_rules/${pathEncode("blng_rl_notfound")}`,
+        endpoint: `/v2/billing_rules/${pathEncode("bllng_rule_notfound")}`,
         params: {},
         method: "GET",
         result: {
@@ -68,7 +68,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     ]),
     handler: async ({ callExpectingMCPUserError }) => {
       const err = await callExpectingMCPUserError({
-        billing_rule_token: "blng_rl_notfound",
+        billing_rule_token: "bllng_rule_notfound",
       });
       expect(err.exception).toEqual({
         errors: [{ message: "Billing rule not found" }],

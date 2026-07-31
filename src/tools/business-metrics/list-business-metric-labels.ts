@@ -1,6 +1,7 @@
 import { type GetBusinessMetricLabelsRequest, pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod";
 import paginationData from "../../utils/paginationData";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import { BUSINESS_METRIC_DATA_LIMIT } from "./schemas";
@@ -12,10 +13,7 @@ This endpoint is paginated. If the user needs the complete set of labels, keep c
 `.trim();
 
 const args = {
-  business_metric_token: z
-    .string()
-    .min(1)
-    .describe("The BusinessMetric token to list label values for. Use list-business-metrics to discover."),
+  business_metric_token: vantageToken("business_metric"),
   page: z.number().int().min(1).optional().default(1).describe("The page number to return, defaults to 1."),
 };
 

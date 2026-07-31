@@ -1,5 +1,6 @@
 import z from "zod";
 import dateValidator from "../../utils/dateValidator";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 
 export const amountType = z.enum(["dollar", "percent"]).describe("Whether the amount is in dollars or percent.");
@@ -34,13 +35,9 @@ export const nullableService = z
     "Optional service filter. Use list-cost-services to discover values. Requires workspace_token when set or cleared. Send null to clear."
   );
 
-export const workspaceTokenForFilters = z
-  .string()
-  .min(1)
-  .optional()
-  .describe(
-    "Workspace token required when provider or service is set or cleared. Use get-myself to discover workspaces."
-  );
+export const workspaceTokenForFilters = vantageToken("workspace", {
+  description: "Required when provider or service is set or cleared.",
+}).optional();
 
 export function validateProviderServiceWorkspace(args: {
   provider?: string | null;

@@ -17,7 +17,7 @@ type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
-  cost_report_token: "crt_123",
+  cost_report_token: "rprt_123",
   page: 1,
   start_date: "2023-01-01",
   end_date: "2023-01-31",
@@ -29,7 +29,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "minimal valid arguments",
     data: {
-      cost_report_token: "crt_123",
+      cost_report_token: "rprt_123",
       page: 1,
       start_date: undefined,
       end_date: undefined,
@@ -121,7 +121,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       {
         endpoint: "/v2/unit_costs",
         params: {
-          cost_report_token: "crt_123",
+          cost_report_token: "rprt_123",
           page: 1,
           start_date: undefined,
           end_date: undefined,
@@ -138,7 +138,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     ]),
     handler: async ({ callExpectingMCPUserError }) => {
       const err = await callExpectingMCPUserError({
-        cost_report_token: "crt_123",
+        cost_report_token: "rprt_123",
         page: 1,
         start_date: undefined,
         end_date: undefined,

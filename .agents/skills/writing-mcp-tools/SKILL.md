@@ -140,12 +140,15 @@ Zod is doing most of the work. Make each field carry its weight:
 ```ts
 args: {
   page: z.number().int().min(1).optional().default(1).describe("Page number, defaults to 1"),
-  workspace_token: z.string().min(1).describe("Workspace token. Use get-myself to discover."),
+  workspace_token: vantageToken("workspace"),
+  title: nonempty().describe("Budget title"),
   start_date: dateValidator("Start date, YYYY-MM-DD").optional(),
 }
 ```
 
 Patterns to use:
+- `vantageToken("…")` from `../../utils/zod` for any Vantage `*_token` arg. Validates the prefix and builds the describe string (`Workspace token (\`wrkspc_*\`).`). Pass `{ description }` for contextual prose. Prefixes live in `../../utils/zod/token-kinds.ts` and are limited to token kinds accepted by public routes and request fields in `@vantage-sh/vantage-client` — do not add internal-only tokenizable models.
+- `nonempty()` from `../../utils/zod` instead of `z.string().min(1)` for free-text fields (trims before checking length).
 - `dateValidator("…")` from `../../utils/dateValidator` for any `YYYY-MM-DD` field.
 - `DEFAULT_LIMIT` from `../structure/constants` when paginating.
 - `paginationData(response.data)` from `../../utils/paginationData` to compute `{ hasNextPage, nextPage }` for list tools.
@@ -153,7 +156,7 @@ Patterns to use:
 - Request body types: `RequestBodyForPathAndMethod<"/v2/…", "POST">` from `@vantage-sh/vantage-client` when you need to assert the body shape (see `create-recommendation-view.ts`).
 - Shared sub-schemas go in `src/tools/<resource>/schemas.ts` when used by more than one tool in that folder (see "Shared schemas"). Import with `from "./schemas"`.
 
-In `.describe()` strings: name the thing, give the format, and point at the tool that can discover valid values ("Use list-cost-providers to discover valid provider names"). Don't restate types — `z.number()` already says it's a number.
+In `.describe()` strings: name the thing, give the format, and point at the tool that can discover valid values ("Use list-cost-providers to discover valid provider names"). Don't restate types — `z.number()` already says it's a number. For tokens, prefer `vantageToken` over hand-written describes.
 
 ## Execute
 

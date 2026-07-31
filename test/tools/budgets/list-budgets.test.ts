@@ -41,7 +41,7 @@ const successData = {
       budget_alert_tokens: [],
       child_budget_tokens: [],
       periods: [],
-      cost_report_token: "crt_123",
+      cost_report_token: "rprt_123",
     },
     {
       token: "budget_456",
@@ -51,7 +51,7 @@ const successData = {
       budget_alert_tokens: [],
       child_budget_tokens: [],
       periods: [],
-      cost_report_token: "crt_456",
+      cost_report_token: "rprt_456",
     },
   ],
   links: {},

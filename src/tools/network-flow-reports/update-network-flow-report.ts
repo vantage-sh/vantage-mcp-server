@@ -1,5 +1,6 @@
 import { pathEncode, type UpdateNetworkFlowReportRequest } from "@vantage-sh/vantage-client";
 import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import {
@@ -27,7 +28,7 @@ export default registerTool({
     readOnly: false,
   },
   args: {
-    network_flow_report_token: z.string().min(1).describe("Token of the Network Flow Report to update."),
+    network_flow_report_token: vantageToken("network_flow_report"),
     title: z.string().min(1).optional().describe("Updated title for the Network Flow Report."),
     filter: filterSchema,
     start_date: startDateSchema,

@@ -1,6 +1,7 @@
 import z from "zod";
 import dateValidator from "../../utils/dateValidator";
 import paginationData from "../../utils/paginationData";
+import { vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
@@ -166,7 +167,9 @@ For users to view and manage recommendations in the Vantage Web UI, they can vis
 
 const args = {
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
-  workspace_token: z.string().optional().describe("Filter recommendations to a specific workspace"),
+  workspace_token: vantageToken("workspace", {
+    description: "Filter recommendations to this Workspace.",
+  }).optional(),
   provider: z
     .preprocess(normalizeProvider, z.enum(SUPPORTED_PROVIDERS).optional())
     .optional()

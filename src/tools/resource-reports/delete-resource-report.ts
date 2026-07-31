@@ -1,5 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
-import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -8,7 +8,7 @@ Deletes a resource report by its token. This action is irreversible.
 `.trim();
 
 const args = {
-  resource_report_token: z.string().describe("Token of the resource report to delete"),
+  resource_report_token: vantageToken("resource_report"),
 };
 
 export default registerTool({

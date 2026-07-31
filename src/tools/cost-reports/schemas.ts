@@ -1,4 +1,5 @@
 import z from "zod";
+import { vantageToken } from "../../utils/zod";
 
 export const chartTypes = ["area", "line", "bar", "multi_bar", "pie"] as const;
 
@@ -23,7 +24,7 @@ const businessMetricUnitScale = z.enum(["per_unit", "per_hundred", "per_thousand
 const businessMetricCalcuationType = z.enum(["unit_cost", "gross_margin", "usage_unit_cost", "raw_business_metric"]);
 
 export const businessMetricTokenForCreate = z.object({
-  business_metric_token: z.string().min(1).describe("The token of the BusinessMetric to attach to the CostReport."),
+  business_metric_token: vantageToken("business_metric"),
   unit_scale: businessMetricUnitScale
     .default("per_unit")
     .describe("Determines the scale of the BusinessMetric's values within the CostReport."),
@@ -35,7 +36,7 @@ export const businessMetricTokenForCreate = z.object({
 });
 
 export const businessMetricTokenForUpdate = z.object({
-  business_metric_token: z.string().min(1).describe("The token of the BusinessMetric to attach to the CostReport."),
+  business_metric_token: vantageToken("business_metric"),
   unit_scale: businessMetricUnitScale
     .optional()
     .describe("Determines the scale of the BusinessMetric's values within the CostReport."),
