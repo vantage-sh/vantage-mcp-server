@@ -33,8 +33,8 @@ const percentageSchema = z.object({
 });
 
 const dateRangeSchema = z.object({
-  start_date: dateValidator("Inclusive start date, YYYY-MM-DD.").optional(),
-  end_date: dateValidator("Inclusive end date, YYYY-MM-DD.").optional(),
+  start_date: dateValidator("Inclusive start date, YYYY-MM-DD, or null for no lower bound.").nullable().optional(),
+  end_date: dateValidator("Inclusive end date, YYYY-MM-DD, or null for no upper bound.").nullable().optional(),
 });
 
 export const virtualTagConfigValueSchema = z.object({

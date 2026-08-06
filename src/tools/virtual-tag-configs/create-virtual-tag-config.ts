@@ -1,3 +1,4 @@
+import type { CreateVirtualTagConfigRequest } from "@vantage-sh/vantage-client";
 import z from "zod";
 import dateValidator from "../../utils/dateValidator";
 import { nonempty } from "../../utils/zod";
@@ -46,7 +47,11 @@ export default registerTool({
     readOnly: false,
   },
   async execute(args, ctx) {
-    const response = await ctx.callVantageApi("/v2/virtual_tag_configs", args, "POST");
+    const response = await ctx.callVantageApi(
+      "/v2/virtual_tag_configs",
+      args as unknown as CreateVirtualTagConfigRequest,
+      "POST"
+    );
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }

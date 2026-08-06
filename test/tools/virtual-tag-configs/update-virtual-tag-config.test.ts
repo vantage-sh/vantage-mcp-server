@@ -1,4 +1,8 @@
-import { pathEncode, type UpdateVirtualTagConfigResponse } from "@vantage-sh/vantage-client";
+import {
+  pathEncode,
+  type UpdateVirtualTagConfigRequest,
+  type UpdateVirtualTagConfigResponse,
+} from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/virtual-tag-configs/update-virtual-tag-config";
 import {
@@ -44,7 +48,7 @@ const requestBody = {
   backfill_until: validArguments.backfill_until,
   collapsed_tag_keys: validArguments.collapsed_tag_keys,
   values: validArguments.values,
-};
+} as unknown as UpdateVirtualTagConfigRequest;
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
@@ -60,6 +64,20 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "replaces values in the supplied order",
     data: validArguments,
+  },
+  {
+    name: "accepts open-ended value date ranges from get responses",
+    data: {
+      ...undefineds,
+      virtual_tag_config_token: "vtag_123",
+      values: [
+        {
+          filter: "costs.provider = 'aws'",
+          name: "Platform",
+          date_ranges: [{ start_date: null, end_date: "2026-12-31" }],
+        },
+      ],
+    },
   },
   {
     name: "rejects an invalid nested date",
