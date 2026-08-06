@@ -12,6 +12,7 @@ test("prefixes match public API token examples", () => {
   expect(TOKEN_KINDS.canvas.prefix).toBe("cnvs");
   expect(TOKEN_KINDS.anomaly_alert.prefix).toBe("anmly_alrt");
   expect(TOKEN_KINDS.virtual_tag_config.prefix).toBe("vtag");
+  expect(TOKEN_KINDS.virtual_tag_config_value.prefix).toBe("vtag_val");
   expect(TOKEN_KINDS.cost_report.prefix).toBe("rprt");
   expect(TOKEN_KINDS.report_forecast.prefix).toBe("rprt_frcst");
   expect(TOKEN_KINDS.scenario_model.prefix).toBe("frcst_mdl");

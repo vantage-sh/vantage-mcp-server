@@ -28,5 +28,6 @@ import "./tags";
 import "./teams";
 import "./user-feedback";
 import "./users";
+import "./virtual-tag-config-values";
 import "./virtual-tag-configs";
 import "./workspaces";
