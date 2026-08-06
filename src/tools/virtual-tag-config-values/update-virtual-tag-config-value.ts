@@ -12,7 +12,7 @@ import {
 } from "./schemas";
 
 const description = `
-Edits one value in an existing Virtual Tag Config. Only supplied fields are changed; omitted fields and the value's order are preserved.
+Partially edits one mapping/value in an existing Virtual Tag Config. Omitted fields remain unchanged, display_name set to null clears it, and this tool cannot reorder values.
 `.trim();
 
 export default registerTool({

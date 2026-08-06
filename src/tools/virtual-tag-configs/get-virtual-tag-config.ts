@@ -4,7 +4,7 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
 const description = `
-Returns an existing Virtual Tag Config with all of its values. Use this to inspect the tag and discover value tokens before adding, editing, or removing individual values.
+Returns one existing Virtual Tag (Virtual Tag Config) with its complete ordered mappings/values. Use this to show all values on a tag and discover value tokens before editing or reordering.
 `.trim();
 
 export default registerTool({

@@ -4,7 +4,7 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
 const description = `
-Deletes an entire Virtual Tag Config and all of its values. To remove only one value, use delete-virtual-tag-config-value instead.
+Deletes an entire Virtual Tag Config and all of its mappings/values. To remove only one mapping, use delete-virtual-tag-config-value instead.
 `.trim();
 
 export default registerTool({

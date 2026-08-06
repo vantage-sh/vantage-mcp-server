@@ -7,7 +7,7 @@ import registerTool from "../structure/registerTool";
 import { collapsedTagKeySchema, virtualTagConfigValueSchema } from "./schemas";
 
 const description = `
-Updates an existing Virtual Tag Config's key, settings, collapsed tags, or complete ordered values list. Use the individual Virtual Tag Config Value tools for single-value edits; supplying values here replaces the full list and determines its order.
+Updates an existing Virtual Tag's config-level settings or complete ordered mappings/values. Supplying values replaces the entire list in that order, and an empty array clears it; use the value-level tools to append, partially edit, or delete one mapping.
 `.trim();
 
 const mutableFields = ["key", "overridable", "backfill_until", "collapsed_tag_keys", "values"] as const;
@@ -38,7 +38,7 @@ export default registerTool({
       .array(virtualTagConfigValueSchema)
       .optional()
       .describe(
-        "Complete ordered replacement list of values. Use get-virtual-tag-config first and include every value that should remain."
+        "Complete ordered replacement list of values. Use get-virtual-tag-config first and include every value that should remain; an empty array clears all values."
       ),
   },
   async execute(args, ctx) {

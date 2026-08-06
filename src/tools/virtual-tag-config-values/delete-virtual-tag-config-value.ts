@@ -4,7 +4,7 @@ import registerTool from "../structure/registerTool";
 import { virtualTagConfigToken, virtualTagConfigValueToken } from "./schemas";
 
 const description = `
-Removes one value from an existing Virtual Tag Config. Use this when editing a Virtual Tag by deleting a value without replacing or reordering the remaining values.
+Deletes exactly one mapping/value from an existing Virtual Tag Config, not the containing tag. Remaining values are preserved without replacement or reordering.
 `.trim();
 
 export default registerTool({

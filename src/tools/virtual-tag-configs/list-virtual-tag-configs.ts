@@ -3,7 +3,7 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
 const description = `
-Returns all Virtual Tag Configs the current API token can access, including their values. Use this to discover config and value tokens; optionally search by tag key.
+Lists or searches the Virtual Tags (Virtual Tag Configs) the current API token can access, including every mapping/value. Use this to discover config and value tokens or find a tag by key.
 `.trim();
 
 export default registerTool({

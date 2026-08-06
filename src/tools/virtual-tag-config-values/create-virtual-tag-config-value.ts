@@ -9,7 +9,7 @@ import {
 } from "./schemas";
 
 const description = `
-Adds a value to an existing Virtual Tag Config. Use this when editing a Virtual Tag by adding a value without replacing its full values list; new values append after existing values.
+Adds a new mapping/value to an existing Virtual Tag Config without replacing its other values. Use this to append a mapping while editing a Virtual Tag; new values are added after existing values.
 `.trim();
 
 export default registerTool({

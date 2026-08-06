@@ -6,7 +6,7 @@ import registerTool from "../structure/registerTool";
 import { collapsedTagKeySchema, virtualTagConfigValueSchema } from "./schemas";
 
 const description = `
-Create a Virtual Tag Config in Vantage.
+Creates a new Virtual Tag (Virtual Tag Config) in Vantage.
 Do not use this to edit an existing Virtual Tag Config; use update-virtual-tag-config for config settings or value order, and the Virtual Tag Config Value tools for individual values.
 
 Virtual Tag Configs define a derived (virtual) tag key and a set of values determined by VQL filters.
