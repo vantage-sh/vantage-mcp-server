@@ -2,8 +2,7 @@ import { type CreateVirtualTagConfigValueRequest, pathEncode } from "@vantage-sh
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import {
-  countDefinedFields,
-  valueTypeFields,
+  countProvidedValueTypes,
   virtualTagConfigToken,
   virtualTagConfigValueFilter,
   virtualTagConfigValueOptionalArgs,
@@ -28,7 +27,7 @@ export default registerTool({
     ...virtualTagConfigValueOptionalArgs,
   },
   async execute(args, ctx) {
-    if (countDefinedFields(args, valueTypeFields) !== 1) {
+    if (countProvidedValueTypes(args) !== 1) {
       throw new MCPUserError({
         errors: [
           {

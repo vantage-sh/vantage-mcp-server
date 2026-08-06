@@ -118,13 +118,14 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     },
   },
   {
-    name: "requires exactly one value type field",
+    name: "requires a non-empty value type field",
     apiCallHandler: requestsInOrder([]),
     handler: async ({ callExpectingMCPUserError }) => {
       const error = await callExpectingMCPUserError({
         ...undefineds,
         virtual_tag_config_token: "vtag_123",
         filter: "costs.provider = 'aws'",
+        percentages: [],
       });
       expect(error.exception).toEqual({
         errors: [

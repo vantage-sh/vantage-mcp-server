@@ -3,7 +3,7 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import {
   countDefinedFields,
-  valueTypeFields,
+  countProvidedValueTypes,
   valueUpdateFields,
   virtualTagConfigToken,
   virtualTagConfigValueFilter,
@@ -36,7 +36,7 @@ export default registerTool({
         errors: [{ message: "At least one Virtual Tag Config Value field must be provided." }],
       });
     }
-    if (countDefinedFields(args, valueTypeFields) > 1) {
+    if (countProvidedValueTypes(args) > 1) {
       throw new MCPUserError({
         errors: [
           {

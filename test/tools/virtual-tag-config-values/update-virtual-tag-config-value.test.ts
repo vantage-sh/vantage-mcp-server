@@ -32,6 +32,8 @@ const validArguments: InferValidators<Validators> = {
   virtual_tag_config_token: "vtag_123",
   virtual_tag_config_value_token: "vtag_val_456",
   filter: "costs.provider = 'gcp'",
+  name: "Cloud",
+  percentages: [],
 };
 
 const requestBody = {

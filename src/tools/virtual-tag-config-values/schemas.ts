@@ -71,3 +71,10 @@ export const valueUpdateFields = [
 export function countDefinedFields(args: Record<string, unknown>, fields: readonly string[]): number {
   return fields.filter((field) => args[field] !== undefined).length;
 }
+
+export function countProvidedValueTypes(args: Record<string, unknown>): number {
+  return valueTypeFields.filter((field) => {
+    const value = args[field];
+    return field === "percentages" ? Array.isArray(value) && value.length > 0 : value !== undefined;
+  }).length;
+}
