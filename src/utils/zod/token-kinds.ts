@@ -146,6 +146,10 @@ export const TOKEN_KINDS = {
     prefix: "vtag",
     label: "Virtual Tag Config",
   },
+  virtual_tag_config_value: {
+    prefix: "vtag_val",
+    label: "Virtual Tag Config Value",
+  },
   workspace: {
     prefix: "wrkspc",
     label: "Workspace",

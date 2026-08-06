@@ -1,3 +1,4 @@
+import type { CreateVirtualTagConfigRequest } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/virtual-tag-configs/create-virtual-tag-config";
 import {
@@ -96,7 +97,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     apiCallHandler: requestsInOrder([
       {
         endpoint: "/v2/virtual_tag_configs",
-        params: validInputArguments,
+        params: validInputArguments as unknown as CreateVirtualTagConfigRequest,
         method: "POST",
         result: {
           ok: true,
@@ -114,7 +115,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     apiCallHandler: requestsInOrder([
       {
         endpoint: "/v2/virtual_tag_configs",
-        params: minimalValidInputArguments,
+        params: minimalValidInputArguments as unknown as CreateVirtualTagConfigRequest,
         method: "POST",
         result: {
           ok: false,
