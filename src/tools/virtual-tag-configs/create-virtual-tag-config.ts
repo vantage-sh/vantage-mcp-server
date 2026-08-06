@@ -1,12 +1,13 @@
 import z from "zod";
 import dateValidator from "../../utils/dateValidator";
-import { vantageToken } from "../../utils/zod";
+import { nonempty } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { collapsedTagKeySchema, virtualTagConfigValueSchema } from "./schemas";
 
 const description = `
 Create a Virtual Tag Config in Vantage.
-Do not use this to edit an existing Virtual Tag Config; use the Virtual Tag Config Value tools to add, inspect, edit, or remove individual values.
+Do not use this to edit an existing Virtual Tag Config; use update-virtual-tag-config for config settings or value order, and the Virtual Tag Config Value tools for individual values.
 
 Virtual Tag Configs define a derived (virtual) tag key and a set of values determined by VQL filters.
 This is useful for normalizing cost attribution (e.g., mapping multiple provider tag formats into a
@@ -18,39 +19,26 @@ You can optionally:
 - values: define named values via VQL filters, optionally linked to Business Metrics and/or cost metrics
 `.trim();
 
-const collapsedTagKeySchema = z.object({
-  key: z.string().describe("The tag key to collapse values for."),
-  providers: z.array(z.string()).describe("The providers this collapsed tag key applies to.").optional(),
-});
-
-const valueSchema = z.object({
-  filter: z.string().describe("The filter VQL for the Value."),
-  name: z.string().describe("The name of the Value.").optional(),
-  business_metric_token: vantageToken("business_metric").optional(),
-  cost_metric: z
-    .object({
-      filter: z.string().describe("The filter VQL for the cost metric."),
-      aggregation: z.object({
-        tag: z.string().describe("The tag to aggregate on."),
-      }),
-    })
-    .optional(),
-});
-
 export default registerTool({
   name: "create-virtual-tag-config",
   title: "Create Virtual Tag Config",
   description,
   args: {
-    key: z.string().min(1).describe("The key of the VirtualTagConfig"),
+    key: nonempty().describe("The key of the VirtualTagConfig"),
     overridable: z
       .boolean()
       .describe("Whether the VirtualTagConfig can override a provider-supplied tag on a matching Cost."),
     backfill_until: dateValidator(
       "The earliest month the VirtualTagConfig should be backfilled to. ISO 8601 Formatted."
     ).optional(),
-    collapsed_tag_keys: z.array(collapsedTagKeySchema).optional(),
-    values: z.array(valueSchema).optional(),
+    collapsed_tag_keys: z
+      .array(collapsedTagKeySchema)
+      .optional()
+      .describe("Tag keys whose values should be collapsed."),
+    values: z
+      .array(virtualTagConfigValueSchema)
+      .optional()
+      .describe("Ordered values to create for the Virtual Tag Config."),
   },
   annotations: {
     destructive: false,
