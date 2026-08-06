@@ -12,7 +12,7 @@ import {
 } from "./schemas";
 
 const description = `
-Partially updates one Virtual Tag Config value while preserving omitted fields and its existing order.
+Edits one value in an existing Virtual Tag Config. Only supplied fields are changed; omitted fields and the value's order are preserved.
 `.trim();
 
 export default registerTool({

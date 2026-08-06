@@ -10,7 +10,7 @@ import {
 } from "./schemas";
 
 const description = `
-Creates an individual value within a Virtual Tag Config without replacing its full values list. New values append after existing values.
+Adds a value to an existing Virtual Tag Config. Use this when editing a Virtual Tag by adding a value without replacing its full values list; new values append after existing values.
 `.trim();
 
 export default registerTool({

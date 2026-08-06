@@ -6,6 +6,7 @@ import registerTool from "../structure/registerTool";
 
 const description = `
 Create a Virtual Tag Config in Vantage.
+Do not use this to edit an existing Virtual Tag Config; use the Virtual Tag Config Value tools to add, inspect, edit, or remove individual values.
 
 Virtual Tag Configs define a derived (virtual) tag key and a set of values determined by VQL filters.
 This is useful for normalizing cost attribution (e.g., mapping multiple provider tag formats into a

@@ -4,7 +4,7 @@ import registerTool from "../structure/registerTool";
 import { virtualTagConfigToken, virtualTagConfigValueToken } from "./schemas";
 
 const description = `
-Returns one value from a Virtual Tag Config, including its filter and allocation settings.
+Returns one value from an existing Virtual Tag Config, including its filter and allocation settings. Use this to inspect a value before editing it.
 `.trim();
 
 export default registerTool({
