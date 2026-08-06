@@ -69,6 +69,20 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     },
   },
   {
+    name: "rejects a null display name",
+    data: {
+      ...undefineds,
+      virtual_tag_config_token: "vtag_123",
+      filter: "costs.provider = 'aws'",
+      cost_metric: {
+        filter: "costs.provider = 'aws'",
+        aggregation: { tag: "team" },
+      },
+      display_name: null as never,
+    },
+    expectedIssues: ["Invalid input: expected string, received null"],
+  },
+  {
     name: "valid percentage value",
     data: {
       ...undefineds,

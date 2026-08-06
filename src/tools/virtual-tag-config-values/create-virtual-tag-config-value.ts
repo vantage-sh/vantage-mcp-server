@@ -4,8 +4,8 @@ import registerTool from "../structure/registerTool";
 import {
   countProvidedValueTypes,
   virtualTagConfigToken,
+  virtualTagConfigValueCreateOptionalArgs,
   virtualTagConfigValueFilter,
-  virtualTagConfigValueOptionalArgs,
 } from "./schemas";
 
 const description = `
@@ -24,7 +24,7 @@ export default registerTool({
   args: {
     virtual_tag_config_token: virtualTagConfigToken,
     filter: virtualTagConfigValueFilter,
-    ...virtualTagConfigValueOptionalArgs,
+    ...virtualTagConfigValueCreateOptionalArgs,
   },
   async execute(args, ctx) {
     if (countProvidedValueTypes(args) !== 1) {

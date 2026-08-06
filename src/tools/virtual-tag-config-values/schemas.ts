@@ -36,7 +36,7 @@ const dateRange = z.object({
   end_date: dateValidator("Inclusive end date, YYYY-MM-DD, or null for no upper bound.").nullable().optional(),
 });
 
-export const virtualTagConfigValueOptionalArgs = {
+export const virtualTagConfigValueCreateOptionalArgs = {
   name: nonempty().optional().describe("Name for a simple Virtual Tag Config Value."),
   business_metric_token: vantageToken("business_metric", {
     description: "Associates this value with a Business Metric.",
@@ -46,14 +46,19 @@ export const virtualTagConfigValueOptionalArgs = {
     .array(z.string())
     .optional()
     .describe("Business Metric label values. An empty array includes every value for the label key."),
-  display_name: nonempty()
-    .nullable()
-    .optional()
-    .describe("Display name for a cost metric or percentage allocation value. Use null to clear it."),
+  display_name: nonempty().optional().describe("Display name for a cost metric or percentage allocation value."),
   label_transforms: z.array(labelTransform).optional().describe("Transforms applied to Business Metric labels."),
   cost_metric: costMetric.optional().describe("Cost metric used for dynamic allocation."),
   percentages: z.array(percentage).optional().describe("Fixed percentage allocations for matching costs."),
   date_ranges: z.array(dateRange).optional().describe("Date ranges that restrict when this value applies."),
+};
+
+export const virtualTagConfigValueUpdateOptionalArgs = {
+  ...virtualTagConfigValueCreateOptionalArgs,
+  display_name: nonempty()
+    .nullable()
+    .optional()
+    .describe("Display name for a cost metric or percentage allocation value. Use null to clear it."),
 };
 
 export const valueTypeFields = ["name", "business_metric_token", "cost_metric", "percentages"] as const;

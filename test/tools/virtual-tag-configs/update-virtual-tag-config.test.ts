@@ -62,6 +62,15 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     },
   },
   {
+    name: "rejects null overridable",
+    data: {
+      ...undefineds,
+      virtual_tag_config_token: "vtag_123",
+      overridable: null as never,
+    },
+    expectedIssues: ["Invalid input: expected boolean, received null"],
+  },
+  {
     name: "replaces values in the supplied order",
     data: validArguments,
   },

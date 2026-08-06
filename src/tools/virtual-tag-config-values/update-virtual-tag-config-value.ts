@@ -7,8 +7,8 @@ import {
   valueUpdateFields,
   virtualTagConfigToken,
   virtualTagConfigValueFilter,
-  virtualTagConfigValueOptionalArgs,
   virtualTagConfigValueToken,
+  virtualTagConfigValueUpdateOptionalArgs,
 } from "./schemas";
 
 const description = `
@@ -28,7 +28,7 @@ export default registerTool({
     virtual_tag_config_token: virtualTagConfigToken,
     virtual_tag_config_value_token: virtualTagConfigValueToken,
     filter: virtualTagConfigValueFilter.optional(),
-    ...virtualTagConfigValueOptionalArgs,
+    ...virtualTagConfigValueUpdateOptionalArgs,
   },
   async execute(args, ctx) {
     if (countDefinedFields(args, valueUpdateFields) === 0) {

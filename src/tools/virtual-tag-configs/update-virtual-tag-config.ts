@@ -24,11 +24,7 @@ export default registerTool({
   args: {
     virtual_tag_config_token: vantageToken("virtual_tag_config"),
     key: nonempty().optional().describe("New key for the Virtual Tag Config."),
-    overridable: z
-      .boolean()
-      .nullable()
-      .optional()
-      .describe("Whether the config can override a matching provider-supplied tag."),
+    overridable: z.boolean().optional().describe("Whether the config can override a matching provider-supplied tag."),
     backfill_until: dateValidator("Earliest backfill month, YYYY-MM-DD. Use null to clear.").nullable().optional(),
     collapsed_tag_keys: z
       .array(collapsedTagKeySchema)
