@@ -184,6 +184,38 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     },
   },
   {
+    name: "forwards resource types unchanged and returns API suggestions",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/resources",
+        params: {
+          page: 1,
+          resource_report_token: undefined,
+          filter: "(resources.provider = 'aws' AND resources.type = 'aws_ec2_instance')",
+          workspace_token: "wrkspc_123",
+          include_cost: false,
+        },
+        method: "GET",
+        result: {
+          ok: false,
+          errors: ["Invalid resource type: aws_ec2_instance. Did you mean aws_instance?"],
+        },
+      },
+    ]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError({
+        page: 1,
+        resource_report_token: undefined,
+        filter: "(resources.provider = 'aws' AND resources.type = 'aws_ec2_instance')",
+        workspace_token: "wrkspc_123",
+        include_cost: false,
+      });
+      expect(err.exception).toEqual({
+        errors: ["Invalid resource type: aws_ec2_instance. Did you mean aws_instance?"],
+      });
+    },
+  },
+  {
     name: "unsuccessful call",
     apiCallHandler: requestsInOrder([
       {

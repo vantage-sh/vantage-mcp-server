@@ -84,21 +84,6 @@ Resources include metadata specific to their type (EC2 instances show instance t
 Each resource has a unique token that can be used to get more details or link to the Vantage Web UI.
 `.trim();
 
-// Common LLM hallucinations: Terraform-style names instead of correct VQL types
-const RESOURCE_TYPE_CORRECTIONS: Record<string, string> = {
-  aws_ec2_instance: "aws_instance",
-  aws_rds_instance: "aws_db_instance",
-  aws_rds_snapshot: "aws_db_snapshot",
-  aws_ebs_snapshot: "aws_instance_snapshot",
-};
-
-function correctResourceTypes(filter: string): string {
-  for (const [wrong, correct] of Object.entries(RESOURCE_TYPE_CORRECTIONS)) {
-    filter = filter.replaceAll(wrong, correct);
-  }
-  return filter;
-}
-
 export default registerTool({
   name: "list-provider-resources",
   title: "List Provider Resources",
@@ -136,9 +121,6 @@ export default registerTool({
       throw new MCPUserError({
         errors: [{ message: "workspace_token is required when filter is provided" }],
       });
-    }
-    if (args.filter) {
-      args.filter = correctResourceTypes(args.filter);
     }
     const response = await ctx.callVantageApi("/v2/resources", args, "GET");
     if (!response.ok) {
