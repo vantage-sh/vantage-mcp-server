@@ -17,6 +17,8 @@ type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
   page: 1,
+  q: "AWS commitments",
+  workspace_token: "wrkspc_123",
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
@@ -24,6 +26,8 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     name: "default page",
     data: {
       page: undefined,
+      q: undefined,
+      workspace_token: undefined,
     },
   },
   {
@@ -67,6 +71,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         params: {
           page: 1,
           limit: DEFAULT_LIMIT,
+          q: "AWS commitments",
+          workspace_token: "wrkspc_123",
         },
         method: "GET",
         result: {
@@ -103,7 +109,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       },
     ]),
     handler: async ({ callExpectingSuccess }) => {
-      const res = await callExpectingSuccess({ page: undefined });
+      const res = await callExpectingSuccess({ page: undefined, q: undefined, workspace_token: undefined });
       expect(res).toEqual({
         financial_commitment_reports: successData.financial_commitment_reports,
         pagination: {
@@ -121,6 +127,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         params: {
           page: 1,
           limit: DEFAULT_LIMIT,
+          q: "AWS commitments",
+          workspace_token: "wrkspc_123",
         },
         method: "GET",
         result: {

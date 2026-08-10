@@ -1,5 +1,6 @@
 import z from "zod";
 import paginationData from "../../utils/paginationData";
+import { nonempty, vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
@@ -14,6 +15,10 @@ Do not use this for Cost Alerts, budget alerts, threshold alerts, or spend-limit
 
 const args = {
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
+  q: nonempty().optional().describe("Search Report Notifications by title."),
+  workspace_token: vantageToken("workspace", {
+    description: "Only return Report Notifications in this Workspace.",
+  }).optional(),
 };
 
 export default registerTool({

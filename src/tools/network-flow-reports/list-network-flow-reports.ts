@@ -1,5 +1,6 @@
 import z from "zod";
 import paginationData from "../../utils/paginationData";
+import { nonempty, vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
@@ -18,7 +19,10 @@ export default registerTool({
     readOnly: true,
   },
   args: {
-    q: z.string().min(1).optional().describe("Search reports by title."),
+    q: nonempty().optional().describe("Search Network Flow Reports by title."),
+    workspace_token: vantageToken("workspace", {
+      description: "Only return Network Flow Reports in this Workspace.",
+    }).optional(),
     page: z.number().int().min(1).optional().default(1).describe("Page number, defaults to 1"),
     limit: z.number().int().min(1).max(1000).optional().default(DEFAULT_LIMIT).describe("Number of reports per page"),
   },

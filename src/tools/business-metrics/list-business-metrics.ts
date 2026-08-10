@@ -1,5 +1,6 @@
 import z from "zod";
 import paginationData from "../../utils/paginationData";
+import { nonempty } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import { BUSINESS_METRICS_LIST_LIMIT } from "./schemas";
@@ -13,6 +14,7 @@ The token of a BusinessMetric can be used with get-business-metric, list-busines
 
 const args = {
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1."),
+  q: nonempty().optional().describe("Search Business Metrics by title."),
 };
 
 export default registerTool({

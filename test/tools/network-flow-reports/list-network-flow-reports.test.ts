@@ -17,6 +17,7 @@ type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
   q: "cross-az",
+  workspace_token: "wrkspc_123",
   page: 2,
   limit: 25,
 };
@@ -24,7 +25,7 @@ const validArguments: InferValidators<Validators> = {
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "uses pagination defaults",
-    data: { q: undefined, page: undefined, limit: undefined },
+    data: { q: undefined, workspace_token: undefined, page: undefined, limit: undefined },
   },
   {
     name: "accepts valid pagination",
@@ -32,12 +33,12 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   },
   {
     name: "rejects page zero",
-    data: { q: undefined, page: 0, limit: 25 },
+    data: { q: undefined, workspace_token: undefined, page: 0, limit: 25 },
     expectedIssues: ["Too small: expected number to be >=1"],
   },
   {
     name: "rejects a limit over the API maximum",
-    data: { q: undefined, page: 1, limit: 1001 },
+    data: { q: undefined, workspace_token: undefined, page: 1, limit: 1001 },
     expectedIssues: ["Too big: expected number to be <=1000"],
   },
 ];
@@ -91,6 +92,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: "/v2/network_flow_reports",
         params: {
           q: undefined,
+          workspace_token: undefined,
           page: 1,
           limit: DEFAULT_LIMIT,
         } as GetNetworkFlowReportsRequest,
@@ -99,7 +101,12 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       },
     ]),
     handler: async ({ callExpectingSuccess }) => {
-      const result = await callExpectingSuccess({ q: undefined, page: undefined, limit: undefined });
+      const result = await callExpectingSuccess({
+        q: undefined,
+        workspace_token: undefined,
+        page: undefined,
+        limit: undefined,
+      });
       expect(result).toEqual({
         network_flow_reports: [],
         pagination: { hasNextPage: false, nextPage: 0 },

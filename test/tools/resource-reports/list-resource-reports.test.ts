@@ -15,6 +15,8 @@ type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
+  q: "AWS Resources",
+  workspace_token: "wrkspc_123",
   page: 1,
   limit: DEFAULT_LIMIT,
 };
@@ -23,6 +25,8 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "default page",
     data: {
+      q: undefined,
+      workspace_token: undefined,
       page: undefined,
       limit: DEFAULT_LIMIT,
     },
@@ -65,6 +69,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       {
         endpoint: "/v2/resource_reports",
         params: {
+          q: "AWS Resources",
+          workspace_token: "wrkspc_123",
           page: 1,
           limit: DEFAULT_LIMIT,
         },
@@ -92,6 +98,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       {
         endpoint: "/v2/resource_reports",
         params: {
+          q: "AWS Resources",
+          workspace_token: "wrkspc_123",
           page: 1,
           limit: DEFAULT_LIMIT,
         },
