@@ -1,17 +1,7 @@
 import z from "zod";
 import paginationData from "../../utils/paginationData";
-
-<<<<<<< HEAD
-
-import { vantageToken } from "../../utils/zod/vantage-token";
-import { DEFAULT_LIMIT } from "../structure/constants";
-
-=======
-
 import { nonempty, vantageToken } from "../../utils/zod";
-
->>>>>>> 03839e7 (feat: Add searching and filtering to a bunch of tools.)
-
+import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -33,7 +23,7 @@ const args = {
     .optional()
     .default(DEFAULT_LIMIT)
     .describe(`Number of Cost Alerts per page, defaults to ${DEFAULT_LIMIT} and has a maximum of 5000`),
-  q: z.string().optional().describe("Search cost alerts by title"),
+  q: nonempty().optional().describe("Search cost alerts by title"),
   workspace_token: vantageToken("workspace", {
     description: "When provided, return only Cost Alerts in this Workspace.",
   }).optional(),
