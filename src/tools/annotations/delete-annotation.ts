@@ -20,11 +20,7 @@ export default registerTool({
     annotation_token: vantageToken("annotation"),
   },
   async execute(args, ctx) {
-    const response = await ctx.callVantageApi(
-      `/v2/annotations/${pathEncode(args.annotation_token)}`,
-      {},
-      "DELETE"
-    );
+    const response = await ctx.callVantageApi(`/v2/annotations/${pathEncode(args.annotation_token)}`, {}, "DELETE");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }
