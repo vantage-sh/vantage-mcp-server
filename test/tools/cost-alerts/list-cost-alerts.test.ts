@@ -15,20 +15,51 @@ import {
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
+const noArguments: InferValidators<Validators> = {
+  page: undefined,
+  limit: undefined,
+  q: undefined,
+  workspace_token: undefined,
+};
+
 const validArguments: InferValidators<Validators> = {
+  page: 2,
+  limit: 5000,
+  q: "production",
+  workspace_token: "wrkspc_123",
+};
+
+const defaultRequestArguments = {
   page: 1,
+  limit: DEFAULT_LIMIT,
+  q: undefined,
+  workspace_token: undefined,
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
-    name: "default page",
-    data: {
-      page: undefined,
-    },
+    name: "no filters",
+    data: noArguments,
   },
   {
-    name: "valid page number",
+    name: "search and workspace filters",
     data: validArguments,
+  },
+  {
+    name: "limit above API maximum",
+    data: {
+      ...validArguments,
+      limit: 5001,
+    },
+    expectedIssues: ["Too big: expected number to be <=5000"],
+  },
+  {
+    name: "non-workspace token",
+    data: {
+      ...validArguments,
+      workspace_token: "rprt_123",
+    },
+    expectedIssues: ["Must be a Workspace token (wrkspc_*)"],
   },
 ];
 
@@ -57,14 +88,11 @@ const successData: GetCostAlertsResponse = {
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   {
-    name: "successful call",
+    name: "successful call with filters and pagination",
     apiCallHandler: requestsInOrder([
       {
         endpoint: "/v2/cost_alerts",
-        params: {
-          page: 1,
-          limit: DEFAULT_LIMIT,
-        },
+        params: validArguments,
         method: "GET",
         result: {
           ok: true,
@@ -84,14 +112,40 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     },
   },
   {
+    name: "successful call with pagination defaults",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/cost_alerts",
+        params: defaultRequestArguments,
+        method: "GET",
+        result: {
+          ok: true,
+          data: {
+            ...successData,
+            links: {
+              next: "https://api.vantage.sh/v2/cost_alerts?page=2",
+            },
+          },
+        },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const res = await callExpectingSuccess(noArguments);
+      expect(res).toEqual({
+        cost_alerts: successData.cost_alerts,
+        pagination: {
+          hasNextPage: true,
+          nextPage: 2,
+        },
+      });
+    },
+  },
+  {
     name: "unsuccessful call",
     apiCallHandler: requestsInOrder([
       {
         endpoint: "/v2/cost_alerts",
-        params: {
-          page: 1,
-          limit: DEFAULT_LIMIT,
-        },
+        params: validArguments,
         method: "GET",
         result: {
           ok: false,

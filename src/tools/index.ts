@@ -1,5 +1,6 @@
 // This file is auto-generated. Do not edit directly. Run npm run generate-tools-index to update.
 
+import "./annotations";
 import "./anomalies";
 import "./audit-logs";
 import "./billing-rules";
