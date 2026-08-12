@@ -7,11 +7,12 @@ const validArguments = {
   annotation_token: "issue_123",
   date: "2026-08-14",
   message: "Infrastructure migration rescheduled",
+  report_token: "rprt_456",
 };
 
 const annotation = {
   token: "issue_123",
-  report_tokens: ["rprt_123"],
+  report_tokens: ["rprt_456"],
   date: "2026-08-14",
   message: "Infrastructure migration rescheduled",
 };
@@ -29,6 +30,16 @@ testTool(
         annotation_token: "issue_123",
         date: undefined,
         message: "Updated message",
+        report_token: undefined,
+      },
+    },
+    {
+      name: "takes only a replacement Report token",
+      data: {
+        annotation_token: "issue_123",
+        date: undefined,
+        message: undefined,
+        report_token: "rprt_456",
       },
     },
     {
@@ -38,6 +49,14 @@ testTool(
         annotation_token: "rprt_123",
       },
       expectedIssues: ["Must be a Annotation token (issue_*)"],
+    },
+    {
+      name: "rejects an invalid Report token",
+      data: {
+        ...validArguments,
+        report_token: "issue_123",
+      },
+      expectedIssues: ["Must be a Cost Report token (rprt_*)"],
     },
     {
       name: "rejects an invalid date",
@@ -65,6 +84,7 @@ testTool(
           params: {
             date: "2026-08-14",
             message: "Infrastructure migration rescheduled",
+            report_token: "rprt_456",
           },
           method: "PUT",
           result: {
@@ -98,6 +118,7 @@ testTool(
           annotation_token: "issue_missing",
           date: undefined,
           message: "Updated message",
+          report_token: undefined,
         });
         expect(error.exception).toEqual({
           errors: [{ message: "Annotation not found" }],
