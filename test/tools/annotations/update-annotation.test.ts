@@ -5,14 +5,16 @@ import { requestsInOrder, testTool } from "../../../src/utils/testing";
 
 const validArguments = {
   annotation_token: "issue_123",
+  title: "Migration rescheduled",
   date: "2026-08-14",
   message: "Infrastructure migration rescheduled",
-  report_token: "rprt_456",
+  report_tokens: ["rprt_456", "rprt_789"],
 };
 
 const annotation = {
   token: "issue_123",
-  report_tokens: ["rprt_456"],
+  title: "Migration rescheduled",
+  report_tokens: ["rprt_456", "rprt_789"],
   date: "2026-08-14",
   message: "Infrastructure migration rescheduled",
 };
@@ -21,25 +23,37 @@ testTool(
   tool,
   [
     {
-      name: "takes an Annotation token, date, and message",
+      name: "takes an Annotation token, title, date, message, and Report tokens",
       data: validArguments,
     },
     {
       name: "takes only a message",
       data: {
         annotation_token: "issue_123",
+        title: undefined,
         date: undefined,
         message: "Updated message",
-        report_token: undefined,
+        report_tokens: undefined,
       },
     },
     {
-      name: "takes only a replacement Report token",
+      name: "takes only replacement Report tokens",
       data: {
         annotation_token: "issue_123",
+        title: undefined,
         date: undefined,
         message: undefined,
-        report_token: "rprt_456",
+        report_tokens: ["rprt_456", "rprt_789"],
+      },
+    },
+    {
+      name: "takes only a title",
+      data: {
+        annotation_token: "issue_123",
+        title: "Updated title",
+        date: undefined,
+        message: undefined,
+        report_tokens: undefined,
       },
     },
     {
@@ -54,9 +68,25 @@ testTool(
       name: "rejects an invalid Report token",
       data: {
         ...validArguments,
-        report_token: "issue_123",
+        report_tokens: ["rprt_456", "issue_123"],
       },
       expectedIssues: ["Must be a Cost Report token (rprt_*)"],
+    },
+    {
+      name: "rejects an empty Report token list",
+      data: {
+        ...validArguments,
+        report_tokens: [],
+      },
+      expectedIssues: ["Too small: expected array to have >=1 items"],
+    },
+    {
+      name: "rejects an empty title",
+      data: {
+        ...validArguments,
+        title: "",
+      },
+      expectedIssues: ["Too small: expected string to have >=1 characters"],
     },
     {
       name: "rejects an invalid date",
@@ -82,9 +112,10 @@ testTool(
         {
           endpoint: `/v2/annotations/${pathEncode("issue_123")}`,
           params: {
+            title: "Migration rescheduled",
             date: "2026-08-14",
             message: "Infrastructure migration rescheduled",
-            report_token: "rprt_456",
+            report_tokens: ["rprt_456", "rprt_789"],
           },
           method: "PUT",
           result: {
@@ -116,9 +147,10 @@ testTool(
       handler: async ({ callExpectingMCPUserError }) => {
         const error = await callExpectingMCPUserError({
           annotation_token: "issue_missing",
+          title: undefined,
           date: undefined,
           message: "Updated message",
-          report_token: undefined,
+          report_tokens: undefined,
         });
         expect(error.exception).toEqual({
           errors: [{ message: "Annotation not found" }],

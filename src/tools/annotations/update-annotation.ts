@@ -6,7 +6,7 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
 const description = `
-Update the date, message, or associated Cost Report of an existing Annotation. Use list-annotations to find the annotation_token.
+Update the title, date, message, or associated Cost Reports of an existing Annotation. Use list-annotations to find the annotation_token.
 `.trim();
 
 export default registerTool({
@@ -20,11 +20,18 @@ export default registerTool({
   },
   args: {
     annotation_token: vantageToken("annotation"),
+    title: z.string().min(1).optional().describe("Updated Annotation title."),
     date: dateValidator("Updated Annotation date in ISO 8601 format (YYYY-MM-DD).").optional(),
     message: z.string().min(1).optional().describe("Updated message for the Annotation."),
-    report_token: vantageToken("cost_report", {
-      description: "Replacement Cost Report for the Annotation.",
-    }).optional(),
+    report_tokens: z
+      .array(
+        vantageToken("cost_report", {
+          description: "Replacement Cost Report for the Annotation.",
+        })
+      )
+      .min(1)
+      .optional()
+      .describe("Replacement Cost Reports for the Annotation."),
   },
   async execute(args, ctx) {
     const { annotation_token, ...body } = args;

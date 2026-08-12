@@ -52,12 +52,14 @@ const successData = {
   annotations: [
     {
       token: "annotation_123",
+      title: "Deployment completed",
       report_tokens: ["rprt_fb27faa25ef5ea72"],
       date: "2026-08-12",
       message: "Deployment completed",
     },
     {
       token: "annotation_456",
+      title: "Pricing update",
       report_tokens: ["rprt_fb27faa25ef5ea72", "rprt_123"],
       date: null,
       message: null,
