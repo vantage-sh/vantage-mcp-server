@@ -6,7 +6,7 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
 const description = `
-Update the title, date, message, or associated Cost Reports of an existing Annotation. Use list-annotations to find the annotation_token.
+Update the title, date, message, or associated Cost Reports of an existing Annotation. Providing report_tokens replaces all existing Report associations. Use list-annotations to find the annotation_token.
 `.trim();
 
 export default registerTool({
