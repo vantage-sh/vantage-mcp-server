@@ -1,7 +1,6 @@
 import type { GetCostAlertsResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/cost-alerts/list-cost-alerts";
-import { DEFAULT_LIMIT } from "../../../src/tools/structure/constants";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
@@ -16,19 +15,29 @@ type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
-  page: 1,
+  q: "production",
+  workspace_token: "wrkspc_123",
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
-    name: "default page",
+    name: "no filters",
     data: {
-      page: undefined,
+      q: undefined,
+      workspace_token: undefined,
     },
   },
   {
-    name: "valid page number",
+    name: "search and workspace filters",
     data: validArguments,
+  },
+  {
+    name: "non-workspace token",
+    data: {
+      ...validArguments,
+      workspace_token: "rprt_123",
+    },
+    expectedIssues: ["Must be a Workspace token (wrkspc_*)"],
   },
 ];
 
@@ -61,10 +70,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     apiCallHandler: requestsInOrder([
       {
         endpoint: "/v2/cost_alerts",
-        params: {
-          page: 1,
-          limit: DEFAULT_LIMIT,
-        },
+        params: validArguments,
         method: "GET",
         result: {
           ok: true,
@@ -76,10 +82,6 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       const res = await callExpectingSuccess(validArguments);
       expect(res).toEqual({
         cost_alerts: successData.cost_alerts,
-        pagination: {
-          hasNextPage: false,
-          nextPage: 0,
-        },
       });
     },
   },
@@ -88,10 +90,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     apiCallHandler: requestsInOrder([
       {
         endpoint: "/v2/cost_alerts",
-        params: {
-          page: 1,
-          limit: DEFAULT_LIMIT,
-        },
+        params: validArguments,
         method: "GET",
         result: {
           ok: false,
