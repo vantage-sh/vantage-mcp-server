@@ -16,6 +16,8 @@ type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
+  q: "AWS",
+  workspace_token: "wrkspc_123",
   page: 1,
   limit: 10,
 };
@@ -24,6 +26,8 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "default pagination arguments",
     data: {
+      q: undefined,
+      workspace_token: undefined,
       page: undefined,
       limit: undefined,
     },
@@ -35,6 +39,8 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "invalid page below minimum",
     data: {
+      q: undefined,
+      workspace_token: undefined,
       page: 0,
       limit: undefined,
     },
@@ -43,6 +49,8 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "invalid fractional page",
     data: {
+      q: undefined,
+      workspace_token: undefined,
       page: 1.5,
       limit: undefined,
     },
@@ -51,6 +59,8 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "invalid limit below minimum",
     data: {
+      q: undefined,
+      workspace_token: undefined,
       page: undefined,
       limit: 0,
     },
@@ -59,6 +69,8 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "invalid limit above maximum",
     data: {
+      q: undefined,
+      workspace_token: undefined,
       page: undefined,
       limit: 1001,
     },
@@ -115,6 +127,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     ]),
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess({
+        q: undefined,
+        workspace_token: undefined,
         page: undefined,
         limit: undefined,
       });
@@ -169,6 +183,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     ]),
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess({
+        q: undefined,
+        workspace_token: undefined,
         page: 2,
         limit: 10,
       });

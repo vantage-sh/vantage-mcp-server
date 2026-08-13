@@ -1,5 +1,6 @@
 import z from "zod";
 import paginationData from "../../utils/paginationData";
+import { nonempty, vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
@@ -13,6 +14,10 @@ The workspace token, date range, providers, accounts, regions, and tag fields pr
 `.trim();
 
 const args = {
+  q: nonempty().optional().describe("Search Recommendation Views by title."),
+  workspace_token: vantageToken("workspace", {
+    description: "Only return Recommendation Views in this Workspace.",
+  }).optional(),
   page: z.number().int().min(1).optional().default(1).describe("The page number to return, defaults to 1"),
   limit: z
     .number()

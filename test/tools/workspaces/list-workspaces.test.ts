@@ -17,6 +17,7 @@ type OutputSchema = ExtractOutputSchema<typeof tool>;
 const noArguments = {} as InferValidators<Validators>;
 
 const validArguments: InferValidators<Validators> = {
+  q: "Production",
   page: 1,
   limit: DEFAULT_LIMIT,
 };
@@ -61,6 +62,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       {
         endpoint: "/v2/workspaces",
         params: {
+          q: "Production",
           page: 1,
           limit: DEFAULT_LIMIT,
         },
@@ -72,7 +74,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       },
     ]),
     handler: async ({ callExpectingSuccess }) => {
-      const res = await callExpectingSuccess(noArguments);
+      const res = await callExpectingSuccess(validArguments);
       expect(res).toEqual({
         workspaces: successData.workspaces,
         pagination: {

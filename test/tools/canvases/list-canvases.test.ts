@@ -16,6 +16,8 @@ type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
   page: 1,
+  q: "Monthly Costs",
+  workspace_token: "wrkspc_123",
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
@@ -23,6 +25,8 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     name: "default page",
     data: {
       page: undefined,
+      q: undefined,
+      workspace_token: undefined,
     },
   },
   {
@@ -57,6 +61,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         params: {
           page: 1,
           limit: DEFAULT_LIMIT,
+          q: "Monthly Costs",
+          workspace_token: "wrkspc_123",
         },
         method: "GET",
         result: {
@@ -84,6 +90,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         params: {
           page: 1,
           limit: DEFAULT_LIMIT,
+          q: "Monthly Costs",
+          workspace_token: "wrkspc_123",
         },
         method: "GET",
         result: {

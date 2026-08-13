@@ -17,6 +17,8 @@ type OutputSchema = ExtractOutputSchema<typeof tool>;
 const validArguments: InferValidators<Validators> = {
   page: 1,
   folder_token: "fldr_123",
+  q: "Monthly AWS",
+  workspace_token: "wrkspc_123",
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
@@ -25,6 +27,8 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     data: {
       page: undefined,
       folder_token: undefined,
+      q: undefined,
+      workspace_token: undefined,
     },
   },
   {
@@ -81,6 +85,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           page: 1,
           limit: DEFAULT_LIMIT,
           folder_token: "fldr_123",
+          q: "Monthly AWS",
+          workspace_token: "wrkspc_123",
         },
         method: "GET",
         result: {
@@ -109,6 +115,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           page: 1,
           limit: DEFAULT_LIMIT,
           folder_token: "fldr_123",
+          q: "Monthly AWS",
+          workspace_token: "wrkspc_123",
         },
         method: "GET",
         result: {

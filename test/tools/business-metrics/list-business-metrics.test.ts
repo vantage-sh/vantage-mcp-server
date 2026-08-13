@@ -17,6 +17,7 @@ type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
   page: 1,
+  q: "requests",
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
@@ -24,6 +25,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     name: "default page",
     data: {
       page: undefined,
+      q: undefined,
     },
   },
   {
@@ -70,6 +72,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         params: {
           page: 1,
           limit: BUSINESS_METRICS_LIST_LIMIT,
+          q: "requests",
         },
         method: "GET",
         result: {
@@ -97,6 +100,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         params: {
           page: 1,
           limit: BUSINESS_METRICS_LIST_LIMIT,
+          q: "requests",
         },
         method: "GET",
         result: {
