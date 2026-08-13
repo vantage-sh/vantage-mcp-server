@@ -1,6 +1,7 @@
 import type { GetCostAlertsResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/cost-alerts/list-cost-alerts";
+import { DEFAULT_LIMIT } from "../../../src/tools/structure/constants";
 import {
   type ExecutionTestTableItem,
   type ExtractOutputSchema,
