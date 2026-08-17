@@ -7,7 +7,7 @@ import registerTool from "../structure/registerTool";
 import { folderType } from "./schemas";
 
 const description = `
-List Cost Report and Resource Report Folders, optionally filtered by Folder type. Folder tokens link to https://console.vantage.sh/go/<token>.
+List folders for Cost Reports or Resource Reports, optionally filtering by title, Workspace, or folder type. Use CostFolder for Cost Report folders and ProviderResourceFolder for Resource Report folders; folder tokens link to https://console.vantage.sh/go/<token>.
 `.trim();
 
 const args = {
@@ -16,7 +16,9 @@ const args = {
   workspace_token: vantageToken("workspace", {
     description: "Only return Folders in this Workspace.",
   }).optional(),
-  type: folderType.optional().describe("Filter by Folder type."),
+  type: folderType
+    .optional()
+    .describe("Only return Cost Report folders (CostFolder) or Resource Report folders (ProviderResourceFolder)."),
 };
 
 export default registerTool({

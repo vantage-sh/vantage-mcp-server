@@ -5,7 +5,7 @@ import registerTool from "../structure/registerTool";
 import { folderType } from "./schemas";
 
 const description = `
-Create a Folder for organizing Cost Reports or Resource Reports. Use ProviderResourceFolder for Resource Reports; otherwise the API defaults to CostFolder.
+Create a folder for organizing Cost Reports or Resource Reports. Set type to ProviderResourceFolder for Resource Reports; omit it to create the default CostFolder.
 `.trim();
 
 export default registerTool({
@@ -21,7 +21,7 @@ export default registerTool({
     title: z.string().min(1).describe("The title of the Folder."),
     type: folderType
       .optional()
-      .describe("The Folder type. Use ProviderResourceFolder for Resource Reports. Defaults to CostFolder."),
+      .describe("Folder type. Set to ProviderResourceFolder for Resource Reports; omit for the default CostFolder."),
     parent_folder_token: vantageToken("folder", {
       description: "Parent Folder to nest this Folder under.",
     }).optional(),
