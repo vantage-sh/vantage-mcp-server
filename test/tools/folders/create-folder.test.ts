@@ -14,7 +14,6 @@ type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const undefineds = {
-  type: undefined,
   parent_folder_token: undefined,
   saved_filter_tokens: undefined,
   workspace_token: undefined,
@@ -23,6 +22,7 @@ const undefineds = {
 const minimalValidInputArguments: InferValidators<Validators> = {
   ...undefineds,
   title: "My Folder",
+  type: "CostFolder",
 };
 
 const validInputArguments: InferValidators<Validators> = {
@@ -35,12 +35,20 @@ const validInputArguments: InferValidators<Validators> = {
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
-    name: "minimal valid arguments",
+    name: "cost report folder",
     data: minimalValidInputArguments,
   },
   {
     name: "provider resource folder",
     data: validInputArguments,
+  },
+  {
+    name: "folder type is required",
+    data: {
+      ...undefineds,
+      title: "My Folder",
+    } as any,
+    expectedIssues: ['Invalid option: expected one of "CostFolder"|"ProviderResourceFolder"'],
   },
   {
     name: "invalid folder type",
