@@ -36,7 +36,7 @@ export default registerTool({
       .optional()
       .transform((v) => (v === undefined ? undefined : v.join(",")))
       .describe(
-        "Updated grouping values. Valid groupings: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, tag:<tag_value>."
+        "Updated grouping values. Valid groupings: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, usage_unit, tag:<tag_value>."
       ),
     filter: z
       .string()
@@ -53,6 +53,15 @@ export default registerTool({
     folder_token: vantageToken("folder", {
       description: "Determines the Workspace the report is assigned to.",
     }).optional(),
+    default_forecast: z
+      .object({
+        kind: z.enum(["baseline", "report_forecast"]).describe("Updated default forecast selection kind."),
+        report_forecast_token: vantageToken("report_forecast", {
+          description: "Set when kind is report_forecast.",
+        }).optional(),
+      })
+      .optional()
+      .describe("Updated default forecast selection for the Cost Report."),
     settings: costReportSettingsForUpdate.optional().describe("Updated report settings."),
     previous_period_start_date: dateValidator(
       "Updated previous period start date. ISO 8601 formatted (YYYY-MM-DD)."

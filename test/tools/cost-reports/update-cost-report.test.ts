@@ -23,6 +23,7 @@ const undefineds = {
   saved_filter_tokens: undefined,
   business_metric_tokens_with_metadata: undefined,
   folder_token: undefined,
+  default_forecast: undefined,
   settings: undefined,
   previous_period_start_date: undefined,
   previous_period_end_date: undefined,
@@ -51,9 +52,17 @@ const validInputArguments: InferValidators<Validators> = {
       business_metric_token: "bsnss_mtrc_123",
       unit_scale: "per_thousand" as const,
       label_filter: ["prod"] as ["prod"],
+      label_filters: {
+        team: ["platform", "finops"],
+        environment: ["production"],
+      },
     },
   ],
   folder_token: "fldr_123",
+  default_forecast: {
+    kind: "report_forecast" as const,
+    report_forecast_token: "rprt_frcst_123",
+  },
   settings: {
     include_credits: true,
     include_refunds: false,
@@ -63,6 +72,7 @@ const validInputArguments: InferValidators<Validators> = {
     unallocated: false,
     aggregate_by: "cost" as const,
     show_previous_period: true,
+    complete_period: true,
   },
   previous_period_start_date: "2023-01-01",
   previous_period_end_date: "2023-01-31",
@@ -100,6 +110,36 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       cost_report_token: "rprt_123",
       date_interval: "last_30_days",
     },
+  },
+  {
+    name: "rejects null boolean settings",
+    data: {
+      ...minimalValidInputArguments,
+      settings: {
+        include_credits: null as never,
+      },
+    },
+    expectedIssues: ["Invalid input: expected boolean, received null"],
+  },
+  {
+    name: "rejects null aggregate_by",
+    data: {
+      ...minimalValidInputArguments,
+      settings: {
+        aggregate_by: null as never,
+      },
+    },
+    expectedIssues: ['Invalid option: expected one of "cost"|"usage"|"count"'],
+  },
+  {
+    name: "invalid default forecast kind",
+    data: {
+      ...minimalValidInputArguments,
+      default_forecast: {
+        kind: "unsupported" as never,
+      },
+    },
+    expectedIssues: ['Invalid option: expected one of "baseline"|"report_forecast"'],
   },
   poisonOneValue(validInputArguments, "start_date", dateValidatorPoisoner),
   poisonOneValue(validInputArguments, "end_date", dateValidatorPoisoner),
@@ -164,9 +204,17 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
               business_metric_token: "bsnss_mtrc_123",
               unit_scale: "per_thousand",
               label_filter: ["prod"],
+              label_filters: {
+                team: ["platform", "finops"],
+                environment: ["production"],
+              },
             },
           ],
           folder_token: "fldr_123",
+          default_forecast: {
+            kind: "report_forecast",
+            report_forecast_token: "rprt_frcst_123",
+          },
           settings: {
             include_credits: true,
             include_refunds: false,
@@ -176,6 +224,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
             unallocated: false,
             aggregate_by: "cost",
             show_previous_period: true,
+            complete_period: true,
           },
           previous_period_start_date: "2023-01-01",
           previous_period_end_date: "2023-01-31",
