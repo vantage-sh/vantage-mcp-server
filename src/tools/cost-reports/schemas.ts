@@ -41,6 +41,10 @@ export const businessMetricTokenForUpdate = z.object({
     .optional()
     .describe("Determines the scale of the BusinessMetric's values within the CostReport."),
   label_filter: z.array(z.string()).optional().describe("Include only values with these labels in the CostReport."),
+  label_filters: z
+    .record(z.string(), z.array(z.string()))
+    .optional()
+    .describe("Include only BusinessMetric values matching every label key and one of its values."),
   label: z.string().optional().describe("An optional label for this business metric on this report."),
   calculation_type: businessMetricCalcuationType
     .optional()
@@ -80,4 +84,5 @@ export const costReportSettingsForUpdate = z.object({
     .boolean()
     .optional()
     .describe("Report will show previous period cost, usage, or count comparison."),
+  complete_period: z.boolean().optional().describe("Report will restrict date ranges to completed periods only."),
 });
