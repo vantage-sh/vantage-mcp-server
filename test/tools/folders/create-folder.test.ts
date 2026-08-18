@@ -22,10 +22,12 @@ const undefineds = {
 const minimalValidInputArguments: InferValidators<Validators> = {
   ...undefineds,
   title: "My Folder",
+  type: "CostFolder",
 };
 
 const validInputArguments: InferValidators<Validators> = {
-  title: "Platform Team Reports",
+  title: "Infrastructure Resources",
+  type: "ProviderResourceFolder",
   parent_folder_token: "fldr_123",
   saved_filter_tokens: ["svd_fltr_abc", "svd_fltr_def"],
   workspace_token: "wrkspc_123",
@@ -33,18 +35,35 @@ const validInputArguments: InferValidators<Validators> = {
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
-    name: "minimal valid arguments",
+    name: "cost report folder",
     data: minimalValidInputArguments,
   },
   {
-    name: "all valid arguments",
+    name: "provider resource folder",
     data: validInputArguments,
+  },
+  {
+    name: "folder type is required",
+    data: {
+      ...undefineds,
+      title: "My Folder",
+    } as any,
+    expectedIssues: ['Invalid option: expected one of "CostFolder"|"ProviderResourceFolder"'],
+  },
+  {
+    name: "invalid folder type",
+    data: {
+      ...minimalValidInputArguments,
+      type: "DashboardFolder" as any,
+    },
+    expectedIssues: ['Invalid option: expected one of "CostFolder"|"ProviderResourceFolder"'],
   },
   {
     name: "empty title",
     data: {
       ...undefineds,
       title: "",
+      type: "CostFolder",
     },
     expectedIssues: ["Too small: expected string to have >=1 characters"],
   },
@@ -52,8 +71,8 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 
 const successData = {
   token: "fldr_789",
-  title: "Platform Team Reports",
-  type: "cost_reports",
+  title: "Infrastructure Resources",
+  type: "ProviderResourceFolder",
   parent_folder_token: "fldr_123",
   saved_filter_tokens: ["svd_fltr_abc", "svd_fltr_def"],
   workspace_token: "wrkspc_123",
@@ -63,7 +82,7 @@ const successData = {
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   {
-    name: "successful call",
+    name: "creates a provider resource folder",
     apiCallHandler: requestsInOrder([
       {
         endpoint: "/v2/folders",

@@ -2,10 +2,10 @@ import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { folderType } from "./schemas";
 
 const description = `
-Create a Folder for organizing Cost Reports. Folders can be nested by specifying a parent_folder_token.
-SavedFilters can be applied to the Folder so that any Cost Report within it inherits those filters.
+Create a folder for organizing Cost Reports or Resource Reports. Set type to CostFolder for Cost Reports or ProviderResourceFolder for Resource Reports.
 `.trim();
 
 export default registerTool({
@@ -19,6 +19,9 @@ export default registerTool({
   },
   args: {
     title: z.string().min(1).describe("The title of the Folder."),
+    type: folderType.describe(
+      "Folder type. Set to CostFolder for Cost Reports or ProviderResourceFolder for Resource Reports."
+    ),
     parent_folder_token: vantageToken("folder", {
       description: "Parent Folder to nest this Folder under.",
     }).optional(),

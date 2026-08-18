@@ -4,13 +4,10 @@ import { nonempty, vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { folderType } from "./schemas";
 
 const description = `
-List all Folders for organizing Cost Reports. Folders can be nested within other Folders via the parent_folder_token field.
-When you first call this function, use the "page" parameter of 1.
-The 'title' of a Folder describes its purpose.
-The 'saved_filter_tokens' field contains tokens of SavedFilters applied to Cost Reports within the Folder.
-The 'token' of a Folder can be used to generate a link in the Vantage Web UI: https://console.vantage.sh/go/<token>
+List folders for Cost Reports or Resource Reports, optionally filtering by title, Workspace, or folder type. Use CostFolder for Cost Report folders and ProviderResourceFolder for Resource Report folders; folder tokens link to https://console.vantage.sh/go/<token>.
 `.trim();
 
 const args = {
@@ -19,6 +16,9 @@ const args = {
   workspace_token: vantageToken("workspace", {
     description: "Only return Folders in this Workspace.",
   }).optional(),
+  type: folderType
+    .optional()
+    .describe("Only return Cost Report folders (CostFolder) or Resource Report folders (ProviderResourceFolder)."),
 };
 
 export default registerTool({

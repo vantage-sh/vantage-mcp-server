@@ -4,7 +4,7 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
 const description = `
-Deletes a Folder. Cost Reports within the Folder will not be deleted.
+Deletes a Folder. Reports within the Folder will not be deleted.
 `.trim();
 
 export default registerTool({

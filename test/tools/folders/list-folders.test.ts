@@ -18,6 +18,7 @@ const validArguments: InferValidators<Validators> = {
   page: 1,
   q: "Finance",
   workspace_token: "wrkspc_123",
+  type: "ProviderResourceFolder",
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
@@ -27,11 +28,22 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       page: undefined,
       q: undefined,
       workspace_token: undefined,
+      type: undefined,
     },
   },
   {
-    name: "valid page number",
+    name: "provider resource folder filter",
     data: validArguments,
+  },
+  {
+    name: "invalid folder type",
+    data: {
+      page: 1,
+      q: undefined,
+      workspace_token: undefined,
+      type: "DashboardFolder" as any,
+    },
+    expectedIssues: ['Invalid option: expected one of "CostFolder"|"ProviderResourceFolder"'],
   },
 ];
 
@@ -39,23 +51,13 @@ const successData = {
   folders: [
     {
       token: "fldr_123",
-      title: "Platform Team Reports",
-      type: "cost_reports",
+      title: "Infrastructure Resources",
+      type: "ProviderResourceFolder",
       parent_folder_token: undefined,
       saved_filter_tokens: [],
       workspace_token: "wrkspc_123",
       created_at: "2024-01-01T00:00:00Z",
       updated_at: "2024-01-01T00:00:00Z",
-    },
-    {
-      token: "fldr_456",
-      title: "Sub Folder",
-      type: "cost_reports",
-      parent_folder_token: "fldr_123",
-      saved_filter_tokens: ["svd_fltr_abc"],
-      workspace_token: "wrkspc_123",
-      created_at: "2024-01-02T00:00:00Z",
-      updated_at: "2024-01-02T00:00:00Z",
     },
   ],
   links: {},
@@ -63,12 +65,13 @@ const successData = {
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   {
-    name: "successful call",
+    name: "filters provider resource folders",
     apiCallHandler: requestsInOrder([
       {
         endpoint: "/v2/folders",
         params: {
           page: 1,
+          type: "ProviderResourceFolder",
           limit: DEFAULT_LIMIT,
           q: "Finance",
           workspace_token: "wrkspc_123",
@@ -98,6 +101,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         endpoint: "/v2/folders",
         params: {
           page: 1,
+          type: "ProviderResourceFolder",
           limit: DEFAULT_LIMIT,
           q: "Finance",
           workspace_token: "wrkspc_123",
