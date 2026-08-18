@@ -63,6 +63,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     data: {
       ...undefineds,
       title: "",
+      type: "CostFolder",
     },
     expectedIssues: ["Too small: expected string to have >=1 characters"],
   },
