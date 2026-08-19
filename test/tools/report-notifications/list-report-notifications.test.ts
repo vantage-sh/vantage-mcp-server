@@ -43,6 +43,7 @@ const successData: GetReportNotificationsResponse = {
       title: "Weekly Spend Summary",
       cost_report_token: "rprt_123",
       user_tokens: ["usr_123"],
+      recipient_emails: ["finance@example.com"],
       recipient_channels: ["#finance"],
       frequency: "weekly",
       change: "percentage",

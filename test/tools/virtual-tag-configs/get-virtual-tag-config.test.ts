@@ -11,6 +11,8 @@ const successData: GetVirtualTagConfigResponse = {
   token: "vtag_123",
   created_by_token: null,
   key: "team",
+  hidden: false,
+  preferred: false,
   overridable: true,
   backfill_until: "2026-01-01",
   collapsed_tag_keys: [],

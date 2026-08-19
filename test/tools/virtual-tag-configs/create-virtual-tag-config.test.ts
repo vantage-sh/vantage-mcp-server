@@ -85,6 +85,8 @@ const successData = {
   token: "vtag_1234",
   created_by_token: null,
   key: "cost_center",
+  hidden: false,
+  preferred: false,
   overridable: true,
   backfill_until: "2024-01-01",
   collapsed_tag_keys: [],
