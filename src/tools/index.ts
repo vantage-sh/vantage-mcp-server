@@ -4,6 +4,7 @@ import "./annotations";
 import "./anomalies";
 import "./audit-logs";
 import "./billing-rules";
+import "./budget-alerts";
 import "./budgets";
 import "./business-metrics";
 import "./canvases";

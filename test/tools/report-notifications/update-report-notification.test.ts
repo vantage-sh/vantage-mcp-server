@@ -78,6 +78,7 @@ const successData: UpdateReportNotificationResponse = {
   title: "Updated Spend Summary",
   cost_report_token: "rprt_456",
   user_tokens: ["usr_123", "usr_456"],
+  recipient_emails: ["finance@example.com"],
   recipient_channels: ["#finance"],
   frequency: "monthly",
   change: "dollars",
