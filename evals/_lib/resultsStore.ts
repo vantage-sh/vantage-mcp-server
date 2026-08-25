@@ -140,11 +140,63 @@ export async function writeOutputFile(path: string, output: OutputFile): Promise
   await writeFile(path, `${JSON.stringify(output, null, 2)}\n`, "utf8");
 }
 
-export function resultFilePath(modelId: string, resource: string, tool: string): string {
-  return join(RESULTS_DIR, modelId, resource, `${tool}.json`);
+export function resultFilePath(modelId: string, resource: string, tool: string, resultsDir = RESULTS_DIR): string {
+  return join(resultsDir, modelId, resource, `${tool}.json`);
 }
 
-export async function splitOutputIntoToolFiles(output: OutputFile): Promise<string[]> {
+export function resultCellIdentity(result: EvaluateResult): string {
+  return JSON.stringify([
+    result.provider.id ?? result.provider.label ?? null,
+    resourceFromResult(result),
+    toolFromResult(result),
+    result.testCase.metadata?.phrasing ?? null,
+    result.vars?.prompt ?? result.testCase.description ?? result.description ?? null,
+  ]);
+}
+
+export function mergeResultCells(stored: EvaluateResult[], rerun: EvaluateResult[]): EvaluateResult[] {
+  const replacements = new Map<string, EvaluateResult[]>();
+  for (const result of rerun) {
+    const key = resultCellIdentity(result);
+    const group = replacements.get(key) ?? [];
+    group.push(result);
+    replacements.set(key, group);
+  }
+
+  const consumed = new Set<EvaluateResult>();
+  const merged = stored.map((result) => {
+    const replacement = replacements.get(resultCellIdentity(result))?.shift();
+    if (!replacement) {
+      return result;
+    }
+    consumed.add(replacement);
+    return replacement;
+  });
+
+  merged.push(...rerun.filter((result) => !consumed.has(result)));
+  return merged;
+}
+
+type SplitOutputOptions = {
+  mergeExisting?: boolean;
+  resultsDir?: string;
+};
+
+async function readOutputFileIfPresent(path: string): Promise<OutputFile | undefined> {
+  try {
+    return await readOutputFile(path);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+      return undefined;
+    }
+    throw error;
+  }
+}
+
+export async function splitOutputIntoToolFiles(
+  output: OutputFile,
+  options: SplitOutputOptions = {}
+): Promise<string[]> {
   const groups = new Map<string, EvaluateResult[]>();
   for (const result of extractResults(output)) {
     const key = `${modelIdFromResult(result)}/${resourceFromResult(result)}/${toolFromResult(result)}`;
@@ -156,8 +208,10 @@ export async function splitOutputIntoToolFiles(output: OutputFile): Promise<stri
   const written: string[] = [];
   for (const [key, results] of groups) {
     const [modelId, resource, tool] = key.split("/");
-    const path = resultFilePath(modelId, resource, tool);
-    await writeOutputFile(path, asOutputFile(results, { config: output.config, metadata: output.metadata }));
+    const path = resultFilePath(modelId, resource, tool, options.resultsDir);
+    const storedOutput = options.mergeExisting ? await readOutputFileIfPresent(path) : undefined;
+    const resultsToWrite = storedOutput ? mergeResultCells(extractResults(storedOutput), results) : results;
+    await writeOutputFile(path, asOutputFile(resultsToWrite, { config: output.config, metadata: output.metadata }));
     written.push(path);
   }
   return written;

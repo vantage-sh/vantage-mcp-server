@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
 import { mkdir, unlink } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { parseEvalArgs, validateEvalScope } from "./evalArgs";
+import { hasPartialResultFilter, parseEvalArgs, validateEvalScope } from "./evalArgs";
 import { finalizeEvalRun } from "./evalRunLifecycle";
 import { formatApprovedModels, parseModelSpec } from "./models";
 import { CONFIG_PATH, EVALS_ROOT, readOutputFile, splitOutputIntoToolFiles } from "./resultsStore";
@@ -23,6 +23,8 @@ The normal command requires --tool. Use eval:all for an intentional full refresh
 --model is always required. Effort is optional when the model supports it
 (gpt-5.6-sol uses the provider default; gpt-5.6-sol-high sets high).
 Every invocation makes fresh model calls; committed result JSON is the retained baseline.
+Unfiltered runs replace selected result files. Partial promptfoo filters merge rerun
+cells into those files and preserve cells omitted by the filter.
 
 Examples:
   npm run eval -- --tool get-myself --model gpt-5.6-sol-high
@@ -72,6 +74,7 @@ async function main(): Promise<void> {
   }
 
   const { tool, model, passthrough } = parsed;
+  const mergeExistingResults = hasPartialResultFilter(passthrough);
   if (!model) {
     console.error(`Error: --model is required.\n\n${formatApprovedModels()}`);
     process.exit(1);
@@ -98,7 +101,7 @@ async function main(): Promise<void> {
     code,
     async () => {
       const output = await readOutputFile(tmpOutputPath);
-      return splitOutputIntoToolFiles(output);
+      return splitOutputIntoToolFiles(output, { mergeExisting: mergeExistingResults });
     },
     cleanupTmpOutput
   );

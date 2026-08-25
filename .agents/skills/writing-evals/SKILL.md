@@ -22,7 +22,7 @@ Unit tests prove a tool wires up and the API call shape is right. **Evals prove 
 
 `--model` is required. The slug is an approved model id, optionally plus an effort suffix (`gpt-5.6-sol-high`). Models that do not expose effort (today: `claude-haiku-4-5`) take the bare id. Effort is optional even when the model supports it — `gpt-5.6-sol` uses the provider default. Dotted forms like `gpt-5.6.sol-high` are accepted and stored as `gpt-5.6-sol-high`. The catalog lives in `evals/_lib/models.ts`.
 
-promptfoo loads `.env`; set `ANTHROPIC_API_KEY` and `OPENAI_API_KEY` before the first run. Every eval invocation makes fresh model calls and replaces the selected result JSON; promptfoo's response cache is disabled. The committed JSON is the retained baseline.
+promptfoo loads `.env`; set `ANTHROPIC_API_KEY` and `OPENAI_API_KEY` before the first run. Every eval invocation makes fresh model calls; promptfoo's response cache is disabled. An unfiltered run replaces the selected result JSON. A run using a partial promptfoo filter merges rerun cells into the retained baseline and preserves cells the filter omitted.
 
 Extra promptfoo flags pass through: `--filter-failing <file>`, `--filter-metadata phrasing=direct`.
 
@@ -39,6 +39,7 @@ evals/
 
 - **Adding a tool:** write `evals/cases/<resource>/<tool>.eval.ts`, then `npm run eval -- --tool <tool> --model gpt-5.6-sol-high`. That writes `evals/results/<model>/<resource>/<tool>.json` for that model and leaves every other tool's files untouched. Run `npm run eval:site` and commit the new JSON.
 - **Editing an existing tool:** re-run that tool the same way. The per-tool JSON is replaced.
+- **Filtered rerun:** partial filters such as `--filter-failing` and `--filter-metadata` replace matching cells by provider and case identity while preserving every stored cell the filter omitted.
 - **Full-model refresh:** the normal `eval` command rejects a missing `--tool`. Use `npm run eval:all -- --model <model>` only when you intentionally want to refresh every case for that model.
 - **Do not commit** `evals/results/merged.json` or `evals/site/` — both are generated.
 - **Merge conflicts** on a JSON file: take one side, re-run that tool, commit the result.

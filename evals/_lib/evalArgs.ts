@@ -7,6 +7,25 @@ export type ParsedEvalArgs = {
   passthrough: string[];
 };
 
+const PARTIAL_RESULT_FILTERS = [
+  "--filter-errors-only",
+  "--filter-failing",
+  "--filter-failing-only",
+  "--filter-first-n",
+  "--filter-metadata",
+  "--filter-pattern",
+  "--filter-prompts",
+  "--filter-providers",
+  "--filter-range",
+  "--filter-sample",
+  "--filter-targets",
+  "-n",
+] as const;
+
+export function hasPartialResultFilter(args: readonly string[]): boolean {
+  return args.some((arg) => PARTIAL_RESULT_FILTERS.some((filter) => arg === filter || arg.startsWith(`${filter}=`)));
+}
+
 export function parseEvalArgs(argv: string[]): ParsedEvalArgs {
   const parsed: ParsedEvalArgs = {
     all: false,
