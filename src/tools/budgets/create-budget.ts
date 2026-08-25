@@ -1,4 +1,3 @@
-import type { RequestBodyForPathAndMethod } from "@vantage-sh/vantage-client";
 import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
@@ -9,8 +8,6 @@ const description = `
 Creates a budget based on the parameters specified. This is useful if you have been tasked with managing budgets
 or you are building a cost report with budgets in mind.
 `.trim();
-
-type CreateBudgetRequest = RequestBodyForPathAndMethod<"/v2/budgets", "POST">;
 
 export default registerTool({
   name: "create-budget",
@@ -46,8 +43,7 @@ export default registerTool({
       ),
   },
   async execute(args, ctx) {
-    // period_cadence is on the V2 API but not yet in @vantage-sh/vantage-client types.
-    const res = await ctx.callVantageApi("/v2/budgets", args as CreateBudgetRequest, "POST");
+    const res = await ctx.callVantageApi("/v2/budgets", args, "POST");
     if (!res.ok) {
       throw new MCPUserError({ errors: res.errors });
     }

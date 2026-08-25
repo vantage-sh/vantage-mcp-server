@@ -44,6 +44,11 @@ const successData = {
       created_at: "2023-01-15T10:30:00Z",
       budget_alert_tokens: [],
       child_budget_tokens: [],
+      period_cadence: {
+        starts_at: null,
+        interval_count: 1,
+        interval_unit: "month",
+      },
       periods: [],
       cost_report_token: "rprt_123",
     },
@@ -54,6 +59,11 @@ const successData = {
       created_at: "2023-01-15T10:30:00Z",
       budget_alert_tokens: [],
       child_budget_tokens: [],
+      period_cadence: {
+        starts_at: null,
+        interval_count: 1,
+        interval_unit: "month",
+      },
       periods: [],
       cost_report_token: "rprt_456",
     },

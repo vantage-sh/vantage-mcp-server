@@ -1,9 +1,4 @@
-import {
-  type NoSlashString,
-  pathEncode,
-  type RequestBodyForPathAndMethod,
-  type UpdateBudgetResponse,
-} from "@vantage-sh/vantage-client";
+import { pathEncode, type UpdateBudgetResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/budgets/update-budget";
 import {
@@ -18,7 +13,6 @@ import {
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
-type UpdateBudgetRequest = RequestBodyForPathAndMethod<`/v2/budgets/${NoSlashString}`, "PUT">;
 
 const undefineds = {
   name: undefined,
@@ -206,6 +200,11 @@ const successData: UpdateBudgetResponse = {
   budget_alert_tokens: [],
   child_budget_tokens: ["bdgt_child1", "bdgt_child2"],
   created_at: "2023-01-01T00:00:00Z",
+  period_cadence: {
+    starts_at: "2024-01-01",
+    interval_count: 1,
+    interval_unit: "month",
+  },
   periods: [
     {
       start_at: "2024-01-01",
@@ -239,7 +238,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
             { start_at: "2024-01-01", end_at: "2024-01-31", amount: 1000 },
             { start_at: "2024-02-01", end_at: "2024-02-29", amount: 1200 },
           ],
-        } as unknown as UpdateBudgetRequest,
+        },
         method: "PUT",
         result: {
           ok: true,

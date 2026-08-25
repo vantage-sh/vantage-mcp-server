@@ -1,4 +1,4 @@
-import { type NoSlashString, pathEncode, type RequestBodyForPathAndMethod } from "@vantage-sh/vantage-client";
+import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
@@ -8,8 +8,6 @@ import { budgetPeriod, periodCadence } from "./schemas";
 const description = `
 Updates an existing Budget. You can update the name, linked Cost Report, child Budget tokens for hierarchical budgets, period cadence, or budget periods.
 `.trim();
-
-type UpdateBudgetRequest = RequestBodyForPathAndMethod<`/v2/budgets/${NoSlashString}`, "PUT">;
 
 export default registerTool({
   name: "update-budget",
@@ -44,12 +42,7 @@ export default registerTool({
   },
   async execute(args, ctx) {
     const { budget_token, ...body } = args;
-    // period_cadence is on the V2 API but not yet in @vantage-sh/vantage-client types.
-    const response = await ctx.callVantageApi(
-      `/v2/budgets/${pathEncode(budget_token)}`,
-      body as UpdateBudgetRequest,
-      "PUT"
-    );
+    const response = await ctx.callVantageApi(`/v2/budgets/${pathEncode(budget_token)}`, body, "PUT");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }

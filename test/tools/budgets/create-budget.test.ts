@@ -265,6 +265,11 @@ const successData: CreateBudgetResponse = {
   budget_alert_tokens: [],
   child_budget_tokens: [],
   created_at: "2023-01-01T00:00:00Z",
+  period_cadence: {
+    starts_at: "2024-01-01",
+    interval_count: 1,
+    interval_unit: "month",
+  },
   periods: [
     {
       start_at: "2024-01-01",
