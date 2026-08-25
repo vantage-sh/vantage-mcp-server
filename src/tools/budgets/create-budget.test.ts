@@ -19,6 +19,7 @@ const undefineds = {
   workspace_token: undefined,
   cost_report_token: undefined,
   child_budget_tokens: undefined,
+  period_cadence: undefined,
   periods: undefined,
 };
 
@@ -27,6 +28,11 @@ const validInputArguments: InferValidators<Validators> = {
   workspace_token: "wt_123",
   cost_report_token: "crt_456",
   child_budget_tokens: ["cb_123", "cb_456"],
+  period_cadence: {
+    starts_at: "2024-01-01",
+    interval_count: 1,
+    interval_unit: "month",
+  },
   periods: [
     {
       start_at: "2024-01-01",
@@ -177,6 +183,75 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
           end_at: "invalid-date",
         },
       ],
+    },
+    expectedIssues: ["Invalid date input, must be YYYY-MM-DD format and a reasonable date."],
+  },
+  {
+    name: "budget with weekly period_cadence",
+    data: {
+      ...undefineds,
+      name: "Weekly Budget",
+      period_cadence: {
+        starts_at: "2026-01-01",
+        interval_count: 2,
+        interval_unit: "week",
+      },
+      periods: [
+        {
+          start_at: "2026-01-01",
+          amount: 500,
+        },
+      ],
+    },
+  },
+  {
+    name: "period_cadence with null starts_at",
+    data: {
+      ...undefineds,
+      name: "Cleared Anchor Budget",
+      period_cadence: {
+        starts_at: null,
+        interval_count: 1,
+        interval_unit: "month",
+      },
+    },
+  },
+  {
+    name: "period_cadence with invalid interval_unit",
+    data: {
+      ...undefineds,
+      name: "Invalid Cadence Budget",
+      period_cadence: {
+        starts_at: "2026-01-01",
+        interval_count: 1,
+        interval_unit: "fortnight" as "month",
+      },
+    },
+    expectedIssues: ['Invalid option: expected one of "day"|"week"|"month"|"year"'],
+  },
+  {
+    name: "period_cadence with zero interval_count",
+    data: {
+      ...undefineds,
+      name: "Invalid Count Budget",
+      period_cadence: {
+        starts_at: "2026-01-01",
+        interval_count: 0,
+        interval_unit: "month",
+      },
+    },
+    expectedIssues: ["Too small: expected number to be >=1"],
+  },
+  {
+    name: "period_cadence with invalid starts_at",
+    data: {
+      ...undefineds,
+      name: "Invalid Anchor Budget",
+      period_cadence: {
+        starts_at: "invalid-date",
+        interval_count: 1,
+        interval_unit: "month",
+      },
     },
     expectedIssues: ["Invalid date input, must be YYYY-MM-DD format and a reasonable date."],
   },

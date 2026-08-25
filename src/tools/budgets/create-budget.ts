@@ -1,12 +1,15 @@
+import type { RequestBodyForPathAndMethod } from "@vantage-sh/vantage-client";
 import z from "zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { budgetPeriod } from "./schemas";
+import { budgetPeriod, periodCadence } from "./schemas";
 
 const description = `
 Creates a budget based on the parameters specified. This is useful if you have been tasked with managing budgets
 or you are building a cost report with budgets in mind.
 `.trim();
+
+type CreateBudgetRequest = RequestBodyForPathAndMethod<"/v2/budgets", "POST">;
 
 export default registerTool({
   name: "create-budget",
@@ -25,6 +28,11 @@ export default registerTool({
       .array(z.string())
       .optional()
       .describe("The tokens of any child Budgets when creating a hierarchical Budget."),
+    period_cadence: periodCadence
+      .optional()
+      .describe(
+        "Interval cadence for budget periods (starts_at, interval_count, interval_unit). Requires flexible_budget_periods. Ignored for hierarchical Budgets."
+      ),
     periods: z
       .array(budgetPeriod)
       .optional()
@@ -33,7 +41,8 @@ export default registerTool({
       ),
   },
   async execute(args, ctx) {
-    const res = await ctx.callVantageApi("/v2/budgets", args, "POST");
+    // period_cadence is on the V2 API but not yet in @vantage-sh/vantage-client types.
+    const res = await ctx.callVantageApi("/v2/budgets", args as CreateBudgetRequest, "POST");
     if (!res.ok) {
       throw new MCPUserError({ errors: res.errors });
     }

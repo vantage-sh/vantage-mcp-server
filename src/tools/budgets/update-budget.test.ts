@@ -1,4 +1,9 @@
-import { pathEncode, type UpdateBudgetResponse } from "@vantage-sh/vantage-client";
+import {
+  type NoSlashString,
+  pathEncode,
+  type RequestBodyForPathAndMethod,
+  type UpdateBudgetResponse,
+} from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import {
   type ExecutionTestTableItem,
@@ -13,11 +18,13 @@ import tool from "./update-budget";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
+type UpdateBudgetRequest = RequestBodyForPathAndMethod<`/v2/budgets/${NoSlashString}`, "PUT">;
 
 const undefineds = {
   name: undefined,
   cost_report_token: undefined,
   child_budget_tokens: undefined,
+  period_cadence: undefined,
   periods: undefined,
 };
 
@@ -31,6 +38,11 @@ const validInputArguments: InferValidators<Validators> = {
   name: "Updated Budget",
   cost_report_token: "crt_456",
   child_budget_tokens: ["bgt_child1", "bgt_child2"],
+  period_cadence: {
+    starts_at: "2024-01-01",
+    interval_count: 1,
+    interval_unit: "month",
+  },
   periods: [
     {
       start_at: "2024-01-01",
@@ -134,6 +146,56 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       child_budget_tokens: [],
     },
   },
+  {
+    name: "period_cadence only",
+    data: {
+      ...undefineds,
+      budget_token: "bgt_123",
+      period_cadence: {
+        starts_at: "2026-01-01",
+        interval_count: 2,
+        interval_unit: "week",
+      },
+    },
+  },
+  {
+    name: "period_cadence with null starts_at",
+    data: {
+      ...undefineds,
+      budget_token: "bgt_123",
+      period_cadence: {
+        starts_at: null,
+        interval_count: 1,
+        interval_unit: "year",
+      },
+    },
+  },
+  {
+    name: "period_cadence with invalid interval_unit",
+    data: {
+      ...undefineds,
+      budget_token: "bgt_123",
+      period_cadence: {
+        starts_at: "2026-01-01",
+        interval_count: 1,
+        interval_unit: "quarter" as "month",
+      },
+    },
+    expectedIssues: ['Invalid option: expected one of "day"|"week"|"month"|"year"'],
+  },
+  {
+    name: "period_cadence with zero interval_count",
+    data: {
+      ...undefineds,
+      budget_token: "bgt_123",
+      period_cadence: {
+        starts_at: "2026-01-01",
+        interval_count: 0,
+        interval_unit: "month",
+      },
+    },
+    expectedIssues: ["Too small: expected number to be >=1"],
+  },
 ];
 
 const successData: UpdateBudgetResponse = {
@@ -168,11 +230,16 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           name: "Updated Budget",
           cost_report_token: "crt_456",
           child_budget_tokens: ["bgt_child1", "bgt_child2"],
+          period_cadence: {
+            starts_at: "2024-01-01",
+            interval_count: 1,
+            interval_unit: "month",
+          },
           periods: [
             { start_at: "2024-01-01", end_at: "2024-01-31", amount: 1000 },
             { start_at: "2024-02-01", end_at: "2024-02-29", amount: 1200 },
           ],
-        },
+        } as unknown as UpdateBudgetRequest,
         method: "PUT",
         result: {
           ok: true,
