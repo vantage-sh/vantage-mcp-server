@@ -3,10 +3,7 @@ import assertToolCalls, { scoreToolCalls } from "../../evals/_lib/assertToolCall
 
 describe("scoreToolCalls", () => {
   it("passes when exactly the expected tool and args are present", () => {
-    const result = scoreToolCalls(
-      [{ toolName: "get-myself", input: {} }],
-      [{ toolName: "get-myself", input: {} }]
-    );
+    const result = scoreToolCalls([{ toolName: "get-myself", input: {} }], [{ toolName: "get-myself", input: {} }]);
 
     expect(result.pass).toBe(true);
     expect(result.score).toBe(1);
