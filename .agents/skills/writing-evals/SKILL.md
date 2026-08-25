@@ -14,17 +14,17 @@ Unit tests prove a tool wires up and the API call shape is right. **Evals prove 
 | Command | Purpose |
 | ------- | ------- |
 | `npm run eval -- --tool <name> --model gpt-5.6-sol-high` | Run one tool against one approved model (normal workflow) |
-| `npm run eval -- --model gpt-5.6-sol-high` | Run every case against that model |
+| `npm run eval:all -- --model gpt-5.6-sol-high` | Deliberately refresh every case against one model |
 | `npm run eval -- --list-models` | Print the approved model × effort catalog |
-| `npm run eval -- --filter-failing evals/results/<model>/<resource>/<tool>.json --model gpt-5.6-sol-high` | Re-run failures only |
+| `npm run eval -- --tool <name> --filter-failing evals/results/<model>/<resource>/<tool>.json --model gpt-5.6-sol-high` | Re-run failures only |
 | `npm run eval:site` | Merge stored JSON → `evals/site/index.html` |
 | `npm run eval:view` | promptfoo's local viewer |
 
 `--model` is required. The slug is an approved model id, optionally plus an effort suffix (`gpt-5.6-sol-high`). Models that do not expose effort (today: `claude-haiku-4-5`) take the bare id. Effort is optional even when the model supports it — `gpt-5.6-sol` uses the provider default. Dotted forms like `gpt-5.6.sol-high` are accepted and stored as `gpt-5.6-sol-high`. The catalog lives in `evals/_lib/models.ts`.
 
-promptfoo loads `.env`; set `ANTHROPIC_API_KEY` and `OPENAI_API_KEY` before the first run. Responses are cached under `evals/.promptfoo/` (gitignored). The provider id includes a hash of every registered tool's description + schema, so editing a tool busts cache for affected cells.
+promptfoo loads `.env`; set `ANTHROPIC_API_KEY` and `OPENAI_API_KEY` before the first run. Every eval invocation makes fresh model calls and replaces the selected result JSON; promptfoo's response cache is disabled. The committed JSON is the retained baseline.
 
-Extra promptfoo flags pass through: `--no-cache`, `--filter-failing <file>`, `--filter-metadata phrasing=direct`.
+Extra promptfoo flags pass through: `--filter-failing <file>`, `--filter-metadata phrasing=direct`.
 
 ## Persistence and what to run
 
@@ -39,7 +39,7 @@ evals/
 
 - **Adding a tool:** write `evals/cases/<resource>/<tool>.eval.ts`, then `npm run eval -- --tool <tool> --model gpt-5.6-sol-high`. That writes `evals/results/<model>/<resource>/<tool>.json` for that model and leaves every other tool's files untouched. Run `npm run eval:site` and commit the new JSON.
 - **Editing an existing tool:** re-run that tool the same way. The per-tool JSON is replaced.
-- **Avoid `npm run eval` with no `--tool`** during normal development — it re-executes every case. Use it only when refreshing the whole baseline for one model.
+- **Full-model refresh:** the normal `eval` command rejects a missing `--tool`. Use `npm run eval:all -- --model <model>` only when you intentionally want to refresh every case for that model.
 - **Do not commit** `evals/results/merged.json` or `evals/site/` — both are generated.
 - **Merge conflicts** on a JSON file: take one side, re-run that tool, commit the result.
 - **Browsing results:** `npm run eval:site && open evals/site/index.html`. GitHub Pages at <https://vantage-sh.github.io/vantage-mcp-server/> regenerates HTML from committed JSON on every push to `main` that touches `evals/results/`. No model API keys in CI.
@@ -49,8 +49,9 @@ evals/
 ```
 evals/
   _lib/
+    evalArgs.ts           # CLI parsing + targeted/full-run safety guard
     models.ts             # approved models × effort levels; --model slug parser
-    distractors.ts        # 5-tool pool for "mixed" mode + pickTools(target, mode)
+    distractors.ts        # registered-tool sampler for mixed mode + optional named distractors
     buildAiSdkTools.ts    # reads from the live registerTool registry → AI SDK tool() defs
     runToolSelection.ts   # { prompt, model, toolNames } → { toolCalls, text }
     provider.ts           # promptfoo custom provider (selected model × isolated|mixed)
@@ -88,6 +89,8 @@ export default function generateTests() {
   return buildToolCases({
     target: TARGET,
     resource: "<resource>",
+    // Optional: always include high-signal siblings; remaining mixed-mode slots are sampled.
+    distractors: ["<sibling-tool>"],
     directPrompts: [
       { input: "<prompt naming the concept directly>", expected: [{ toolName: TARGET, input: {/* expected args */} }] },
       // 3–6 entries
@@ -113,12 +116,20 @@ The scorer is **flexible** — order doesn't matter, only that the right tool wa
 
 ## Distractors
 
-`_lib/distractors.ts` defines a fixed 5-tool pool — `pickTools(target, "mixed")` returns the target + 4 others (the target is filtered out of the pool first, so you always get exactly 4 distractors). The defaults are deliberately broad — they catch "is the description distinct from completely unrelated tools," not "is the description distinct from a sibling tool." If your tool has close neighbours (e.g. `list-budgets` vs. `list-folders` vs. `list-cost-reports`), the default pool won't apply enough pressure. Two options:
+`pickTools(target, "mixed")` returns the target plus four distractors sampled from every other tool in the live registry. The target-derived shuffle is deterministic: the sample is broad without changing between reruns. Adding or removing registered tools can change the sample.
 
-1. Pick siblings as the "distractors" inline in the eval — call `runToolSelection` with `toolNames: [TARGET, "list-folders", "list-cost-reports", ...]` instead of going through `pickTools`.
-2. Add a tool-specific distractor list inside the eval file and use it for the "mixed" mode.
+When a tool has close neighbours (for example `list-budgets`, `list-folders`, and `list-cost-reports`), name the high-signal siblings on the eval definition:
 
-Either way, document the choice in a comment at the top of the case file so the next person knows what the mixed mode is actually testing.
+```ts
+return buildToolCases({
+  target: TARGET,
+  resource: "budgets",
+  distractors: ["list-folders", "list-cost-reports"],
+  // prompts...
+});
+```
+
+Named distractors are loaded first and the remaining slots are sampled automatically. Provide at most four unique, registered tool names; do not include the target itself.
 
 ## Reading failures
 

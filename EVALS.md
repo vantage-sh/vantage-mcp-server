@@ -24,6 +24,9 @@ the model has a large tool list. Failures in isolated usually mean the descripti
 schema does not name the concept. Failures only in mixed usually mean a neighbor's description
 is winning the comparison.
 
+Mixed-mode distractors are sampled reproducibly from every other registered tool. A case can name
+high-signal sibling tools explicitly; those are kept and any remaining slots are sampled automatically.
+
 Prompts are written in two styles so the same two modes cover both obvious and realistic wording:
 
 - **Direct** — the user names the concept ("get the current user", "list my budgets").
@@ -43,6 +46,9 @@ generated from those files and is disposable.
 
 That is how we avoid re-running the entire suite: new work is "this tool, this model." Overwriting
 is the same command; it replaces that one JSON file.
+
+Eval runs always make fresh model calls. The committed JSON is the retained baseline; promptfoo's local
+response cache is disabled so "run this eval" unambiguously means "refresh this result."
 
 ## GitHub Pages
 
@@ -122,7 +128,11 @@ in the case file. You do not need to re-run every model unless you want those ba
 
 Useful flags:
 
-- `--no-cache` — ignore promptfoo's local cache (the provider id already busts cache when any registered tool's description or schema changes).
-- `--filter-failing evals/results/<model>/<resource>/<tool>.json` — re-run only the failing cells from a previous file. Still pass `--model`.
+- `--filter-failing evals/results/<model>/<resource>/<tool>.json` — re-run only the failing cells from a previous file. Still pass `--tool` and `--model`.
 
-Do not run `npm run eval -- --model …` without `--tool` unless you intend to refresh every case against that model.
+The normal `eval` command requires `--tool` and rejects an implicit full-suite run. To deliberately
+refresh every case for a model—for example, when establishing a baseline for a newly approved model—run:
+
+```bash
+npm run eval:all -- --model gpt-5.6-sol-high
+```

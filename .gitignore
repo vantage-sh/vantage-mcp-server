@@ -180,7 +180,7 @@ local-package
 
 tmp/*
 
-# promptfoo local cache / viewer state and generated artifacts
+# promptfoo local viewer state and generated artifacts
 evals/.promptfoo/
 evals/.tmp-eval.json
 evals/results/merged.json

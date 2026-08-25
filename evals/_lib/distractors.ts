@@ -1,22 +1,83 @@
-/**
- * Five-tool pool used for the "mixed" loading mode. The target tool is filtered
- * out before exposing, so a "mixed" run always loads target + 4 distractors.
- * Picked to span verbs and domains so most targets land next to unrelated
- * neighbours — revisit per-eval if these aren't confusable enough for a given
- * tool.
- */
-export const DISTRACTOR_POOL = [
-  "get-myself",
-  "list-cost-providers",
-  "query-costs",
-  "list-anomalies",
-  "submit-user-feedback",
-] as const;
+import "../../src/tools";
+import { getRegisteredToolNames } from "../../src/tools/structure/registerTool";
+
+export const MIXED_DISTRACTOR_COUNT = 4;
 
 export type LoadingMode = "isolated" | "mixed";
 
-export function pickTools(target: string, mode: LoadingMode): string[] {
-  if (mode === "isolated") return [target];
-  const distractors = DISTRACTOR_POOL.filter((t) => t !== target).slice(0, 4);
-  return [target, ...distractors];
+function seededRandom(seed: string): () => number {
+  let state = 2166136261;
+  for (let i = 0; i < seed.length; i += 1) {
+    state ^= seed.charCodeAt(i);
+    state = Math.imul(state, 16777619);
+  }
+
+  return () => {
+    state += 0x6d2b79f5;
+    let value = state;
+    value = Math.imul(value ^ (value >>> 15), value | 1);
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function shuffled<T>(values: readonly T[], seed: string): T[] {
+  const result = [...values];
+  const random = seededRandom(seed);
+  for (let i = result.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
+function validateNamedDistractors(
+  target: string,
+  namedDistractors: readonly string[],
+  availableTools: ReadonlySet<string>
+): void {
+  if (namedDistractors.length > MIXED_DISTRACTOR_COUNT) {
+    throw new Error(`At most ${MIXED_DISTRACTOR_COUNT} named distractors may be provided for ${target}.`);
+  }
+
+  const seen = new Set<string>();
+  for (const name of namedDistractors) {
+    if (name === target) {
+      throw new Error(`Target tool ${target} cannot also be a distractor.`);
+    }
+    if (seen.has(name)) {
+      throw new Error(`Duplicate distractor: ${name}.`);
+    }
+    if (!availableTools.has(name)) {
+      throw new Error(`Distractor tool is not registered: ${name}.`);
+    }
+    seen.add(name);
+  }
+}
+
+/**
+ * Returns the tools exposed to one eval cell. Mixed mode always keeps named
+ * distractors, then fills the remaining slots from every other registered tool.
+ * The target-derived shuffle is deterministic so stored evals remain reproducible
+ * while different targets receive different samples.
+ */
+export function pickTools(target: string, mode: LoadingMode, namedDistractors: readonly string[] = []): string[] {
+  const registeredTools = getRegisteredToolNames().sort();
+  const availableTools = new Set(registeredTools);
+
+  if (!availableTools.has(target)) {
+    throw new Error(`Target tool is not registered: ${target}. Did src/tools/index.ts forget to import it?`);
+  }
+  if (mode === "isolated") {
+    return [target];
+  }
+
+  validateNamedDistractors(target, namedDistractors, availableTools);
+  const excluded = new Set([target, ...namedDistractors]);
+  const sampled = shuffled(
+    registeredTools.filter((name) => !excluded.has(name)),
+    `vantage-eval-distractors-v1:${target}`
+  ).slice(0, MIXED_DISTRACTOR_COUNT - namedDistractors.length);
+
+  return [target, ...namedDistractors, ...sampled];
 }

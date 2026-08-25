@@ -10,6 +10,8 @@ export type ToolEvalDefinition = {
   target: string;
   /** Resource folder under `src/tools/<resource>/`, mirrored in cases and results. */
   resource: string;
+  /** Optional high-signal tools to include before sampling the remaining mixed-mode distractors. */
+  distractors?: readonly string[];
   directPrompts: PromptCase[];
   inferredPrompts: PromptCase[];
 };
@@ -27,6 +29,7 @@ export function buildToolCases(definition: ToolEvalDefinition): TestCase[] {
         prompt: prompt.input,
         target: definition.target,
         expected: prompt.expected,
+        ...(definition.distractors ? { distractors: definition.distractors } : {}),
       },
       metadata: {
         tool: definition.target,

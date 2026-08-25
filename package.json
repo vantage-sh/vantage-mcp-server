@@ -13,6 +13,7 @@
     "type-check": "tsc --noEmit",
     "test": "vitest",
     "eval": "tsx evals/_lib/run-eval.ts",
+    "eval:all": "tsx evals/_lib/run-eval.ts --all",
     "eval:site": "tsx evals/_lib/generate-site.ts",
     "eval:view": "promptfoo view",
     "generate-tools-index": "tsx src/tools/bin/generate-tools-index.ts",
