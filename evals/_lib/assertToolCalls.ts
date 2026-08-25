@@ -50,37 +50,43 @@ function sameInput(actual: unknown, expected: unknown): boolean {
 }
 
 /**
- * Flexible tool-call match: every expected call must appear in actual
- * (name + args). Order and extra actual calls do not matter.
+ * Exact single-tool match: the model must make one call with the expected
+ * tool name and args. Missing and additional calls fail.
  */
 export function scoreToolCalls(actualCalls: ToolCallRecord[], expectedCalls: ToolCallRecord[]): ToolCallScore {
-  if (expectedCalls.length === 0) {
-    return { pass: false, score: 0, reason: "Eval case is missing expected tool calls." };
+  if (expectedCalls.length !== 1) {
+    return { pass: false, score: 0, reason: "Eval case must expect exactly one tool call." };
   }
+
+  const expected = expectedCalls[0];
 
   if (actualCalls.length === 0) {
-    const expected = expectedCalls.map((call) => call.toolName).join(", ");
-    return { pass: false, score: 0, reason: `Model did not call a tool. Expected: ${expected}.` };
-  }
-
-  const missing = expectedCalls.filter(
-    (expected) =>
-      !actualCalls.some((actual) => actual.toolName === expected.toolName && sameInput(actual.input, expected.input))
-  );
-
-  if (missing.length === 0) {
-    return { pass: true, score: 1, reason: "Expected tool call(s) matched." };
+    return { pass: false, score: 0, reason: `Model did not call a tool. Expected: ${expected.toolName}.` };
   }
 
   const actualSummary = actualCalls
     .map((call) => `${call.toolName}(${JSON.stringify(normalize(call.input))})`)
     .join(", ");
-  const missingSummary = missing.map((call) => `${call.toolName}(${JSON.stringify(normalize(call.input))})`).join(", ");
+
+  if (actualCalls.length !== 1) {
+    return {
+      pass: false,
+      score: 0,
+      reason: `Model called ${actualCalls.length} tools. Expected exactly one: ${expected.toolName}. Actual: ${actualSummary}.`,
+    };
+  }
+
+  const actual = actualCalls[0];
+  if (actual.toolName === expected.toolName && sameInput(actual.input, expected.input)) {
+    return { pass: true, score: 1, reason: "Expected tool call matched." };
+  }
+
+  const expectedSummary = `${expected.toolName}(${JSON.stringify(normalize(expected.input))})`;
 
   return {
     pass: false,
     score: 0,
-    reason: `Missing ${missingSummary}. Actual: ${actualSummary}.`,
+    reason: `Expected ${expectedSummary}. Actual: ${actualSummary}.`,
   };
 }
 

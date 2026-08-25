@@ -3,7 +3,7 @@ import type { ToolCallRecord } from "./assertToolCalls";
 
 export type PromptCase = {
   input: string;
-  expected: ToolCallRecord[];
+  expected: [ToolCallRecord];
 };
 
 export type ToolEvalDefinition = {

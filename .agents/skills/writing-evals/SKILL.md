@@ -106,12 +106,13 @@ export default function generateTests() {
 
 `buildToolCases` tags every case with `metadata.tool` and `metadata.resource` so `--tool` / `--filter-metadata tool=` works and results land under `evals/results/<model>/<resource>/`. Loading mode is a provider variant (`gpt-5.6-sol-high · isolated`, `gpt-5.6-sol-high · mixed`, …), not a test-case dimension.
 
-The scorer is **flexible** — order doesn't matter, only that the right tool was called with the right args. Extra tool calls do not fail the cell.
+The scorer requires **exactly one** tool call with the expected name and args. Missing calls, extra calls, and multiple expected calls fail the cell. The v1 eval matrix does not cover abstention, negative, or multi-tool prompts.
 
 ## Writing prompts
 
 - **Direct prompts** name the concept the tool covers — "list my budgets", "show recommendation views", "delete cost report crt_xyz". They test that the description's first sentence carries the load.
 - **Inferred prompts** describe the user's *goal*, not the tool — "I want to make sure we don't blow past $50k this quarter" → `create-budget`. They test description coverage and any disambiguating context.
+- Every prompt expects exactly one tool call. Negative, abstention, and multi-tool cases are outside the v1 eval scope.
 - Write prompts a Vantage MCP user would *actually* send. Generic phrasings with no product context (e.g. `"Who am I?"`) put unfair pressure on the description — models may read them as general knowledge questions, not Vantage account queries. Drop or rephrase prompts like that rather than padding the tool description to catch them.
 - 3–6 prompts per suite is plenty. More cells = more API spend on every model rev, not more signal.
 
@@ -157,6 +158,7 @@ The rule is: **don't write to the eval.** The eval validates the description and
 ## Checklist
 
 - [ ] `evals/cases/<resource>/<tool>.eval.ts` exists with both `direct` and `inferred` suites.
+- [ ] Every prompt expects exactly one tool call with exact args.
 - [ ] 3–6 prompts per suite; each prompt is something a Vantage MCP user would actually send.
 - [ ] Mixed-mode distractors documented if the default pool is too weak for sibling tools.
 - [ ] `npm run eval -- --tool <tool> --model gpt-5.6-sol-high` is green.
