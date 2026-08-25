@@ -68,4 +68,4 @@ Before opening a PR:
 - `npm run type-check`, `npm run lint`, and `npm test -- --run`
 - If you touched tool layout: `npm run generate-tools-index` (Vitest also asserts the index is current)
 - If you touched resources: `npm run generate-resources-index`
-- For a new tool: add an eval, run only that eval — `npm run eval -- ./evals/<...>/<tool>.eval.ts` — and commit the updated `evalite.db` alongside the change. For an existing tool, rerun its eval when changing the description or schema; do not backfill evals for legacy tools unless asked. See `.agents/skills/writing-evals/SKILL.md` for the full workflow.
+- For a new tool: add `evals/cases/<resource>/<tool>.eval.ts`, run only that tool — `npm run eval -- --tool <name> --model gpt-5.6-sol-high` — and commit the new JSON under `evals/results/<model>/<resource>/`. Then `npm run eval:site`. For an existing tool, rerun that tool's cases when changing the description or schema; do not backfill evals for legacy tools unless asked. See `.agents/skills/writing-evals/SKILL.md` for the full workflow.

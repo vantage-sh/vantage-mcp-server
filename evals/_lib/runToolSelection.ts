@@ -1,5 +1,6 @@
 import { generateText, type LanguageModel } from "ai";
 import { buildAiSdkTools } from "./buildAiSdkTools";
+import type { ProviderCallOptions } from "./models";
 
 export type ToolCallRecord = {
   toolName: string;
@@ -15,6 +16,7 @@ export async function runToolSelection(opts: {
   prompt: string;
   model: LanguageModel;
   toolNames: readonly string[];
+  providerOptions?: ProviderCallOptions;
 }): Promise<RunToolSelectionResult> {
   const tools = buildAiSdkTools(opts.toolNames);
 
@@ -22,6 +24,7 @@ export async function runToolSelection(opts: {
     model: opts.model,
     tools,
     prompt: opts.prompt,
+    providerOptions: opts.providerOptions,
   });
 
   return {

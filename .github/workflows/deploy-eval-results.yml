@@ -5,8 +5,9 @@ on:
     branches:
       - main
     paths:
-      - "evals/evalite.db"
-      - "evalite.config.ts"
+      - "evals/results/**"
+      - "evals/_lib/generate-site.ts"
+      - "evals/_lib/resultsStore.ts"
       - ".github/workflows/deploy-eval-results.yml"
   workflow_dispatch:
 
@@ -32,14 +33,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Export evalite static UI
-        run: npx evalite export --output ./evalite-export --basePath /vantage-mcp-server
+      - name: Generate eval report from stored JSON
+        run: npm run eval:site
 
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: ./evalite-export
+          path: ./evals/site
 
   deploy:
     needs: build

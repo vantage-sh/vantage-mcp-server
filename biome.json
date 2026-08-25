@@ -14,7 +14,8 @@
       "!src/resources/index.ts",
       "*.{ts,js}",
       "!**/*.d.ts",
-      "test/**/*.{ts,js}"
+      "test/**/*.{ts,js}",
+      "evals/**/*.{ts,js}"
     ],
     "ignoreUnknown": true
   },

@@ -261,9 +261,9 @@ Always include:
 
 ## Evals
 
-Every new tool needs an eval file under `evals/`. Evals verify that the description and zod schema are enough for a model to select and call the tool from natural language — they are not optional for new tools.
+Every new tool needs an eval file at `evals/cases/<resource>/<tool>.eval.ts`. Evals verify that the description and zod schema are enough for a model to select and call the tool from natural language — they are not optional for new tools.
 
-See **`.agents/skills/writing-evals/SKILL.md`** for the full guide: file template, prompt matrix, distractors, failure diagnosis, and `evalite.db` workflow.
+See **`.agents/skills/writing-evals/SKILL.md`** for the full guide: file template, prompt matrix, distractors, failure diagnosis, and the `evals/results/<model>/` JSON workflow.
 
 ## Checklist before opening a PR
 
