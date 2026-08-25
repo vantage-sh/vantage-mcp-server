@@ -3,6 +3,7 @@ import { mkdir, unlink } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseEvalArgs, validateEvalScope } from "./evalArgs";
+import { finalizeEvalRun } from "./evalRunLifecycle";
 import { formatApprovedModels, parseModelSpec } from "./models";
 import { CONFIG_PATH, EVALS_ROOT, readOutputFile, splitOutputIntoToolFiles } from "./resultsStore";
 
@@ -49,6 +50,10 @@ function runPromptfoo(args: string[], extraEnv: NodeJS.ProcessEnv = {}): Promise
   });
 }
 
+async function cleanupTmpOutput(): Promise<void> {
+  await unlink(tmpOutputPath).catch(() => undefined);
+}
+
 async function main(): Promise<void> {
   const parsed = parseEvalArgs(process.argv.slice(2));
   if (parsed.help) {
@@ -81,6 +86,7 @@ async function main(): Promise<void> {
   }
 
   await mkdir(EVALS_ROOT, { recursive: true });
+  await cleanupTmpOutput();
 
   const args = ["eval", "-c", CONFIG_PATH, "-o", tmpOutputPath, "--no-cache", ...passthrough];
   if (tool) {
@@ -88,18 +94,26 @@ async function main(): Promise<void> {
   }
 
   const code = await runPromptfoo(args, { EVAL_MODEL: selected.id });
-  if (code !== 0) {
-    process.exit(code);
-  }
+  const written = await finalizeEvalRun(
+    code,
+    async () => {
+      const output = await readOutputFile(tmpOutputPath);
+      return splitOutputIntoToolFiles(output);
+    },
+    cleanupTmpOutput
+  );
 
-  const output = await readOutputFile(tmpOutputPath);
-  const written = await splitOutputIntoToolFiles(output);
-  await unlink(tmpOutputPath).catch(() => undefined);
+  if (!written) {
+    process.exitCode = code;
+    return;
+  }
 
   console.log(`Wrote ${written.length} result file(s):`);
   for (const path of written) {
     console.log(`  ${path}`);
   }
+
+  process.exitCode = code;
 }
 
 main().catch((error: unknown) => {
