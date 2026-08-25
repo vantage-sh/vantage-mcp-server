@@ -201,7 +201,7 @@ const fetchHandler = async (request: Request, env: AppEnv, ctx: ExecutionContext
       release: versionId,
       // Adds request headers and IP for users, for more info visit:
       // https://docs.sentry.io/platforms/javascript/guides/cloudflare/configuration/options/#sendDefaultPii
-      sendDefaultPii: true,
+      sendDefaultPii: false,
 
       // Set tracesSampleRate to 1.0 to capture 100% of spans for tracing.
       // Learn more at

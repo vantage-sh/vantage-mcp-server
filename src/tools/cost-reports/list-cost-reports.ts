@@ -1,8 +1,9 @@
 import z from "zod";
+import paginationData from "../../utils/paginationData";
+import { nonempty, vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import paginationData from "../utils/paginationData";
 
 const description = `
 List all cost reports available. Cost reports are already created reports authored by a user in Vantage. If the user isn't asking about a specific report, it's better to use the query-costs tool.
@@ -15,10 +16,13 @@ Vantage offers data related to a cost report: Forecasts. The same report token c
 
 const args = {
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
-  folder_token: z
-    .string()
-    .optional()
-    .describe("The token of a folder to filter cost reports by. Only reports within that folder will be returned."),
+  folder_token: vantageToken("folder", {
+    description: "Only return Cost Reports within this Folder.",
+  }).optional(),
+  q: nonempty().optional().describe("Search Cost Reports by title."),
+  workspace_token: vantageToken("workspace", {
+    description: "Only return Cost Reports in this Workspace.",
+  }).optional(),
 };
 
 export default registerTool({

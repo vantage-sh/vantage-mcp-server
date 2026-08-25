@@ -1,5 +1,6 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -18,7 +19,7 @@ export default registerTool({
     readOnly: true,
   },
   args: {
-    budget_token: z.string().describe("The token of the Budget to retrieve."),
+    budget_token: vantageToken("budget"),
     include_performance: z
       .boolean()
       .optional()

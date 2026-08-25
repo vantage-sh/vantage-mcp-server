@@ -1,8 +1,9 @@
 import z from "zod";
+import { dateIntervalOptions } from "../../utils/dateIntervalOptions";
+import dateValidator from "../../utils/dateValidator";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { dateIntervalOptions } from "../utils/dateIntervalOptions";
-import dateValidator from "../utils/dateValidator";
 import {
   businessMetricTokenForCreate,
   chartSettings,
@@ -49,12 +50,9 @@ export default registerTool({
   },
   args: {
     title: z.string().min(1).describe("Title for the new Cost Report"),
-    workspace_token: z
-      .string()
-      .optional()
-      .describe(
-        "The token of the Workspace to add the Cost Report to. Ignored if 'folder_token' is set. Required if the API token is associated with multiple Workspaces."
-      ),
+    workspace_token: vantageToken("workspace", {
+      description: "Ignored if folder_token is set. Required if the API token is associated with multiple Workspaces.",
+    }).optional(),
     groupings: z
       .array(z.string())
       .optional()
@@ -64,19 +62,16 @@ export default registerTool({
       ),
     filter: z.string().optional().describe("VQL filter to apply to the Cost Report"),
     saved_filter_tokens: z
-      .array(z.string())
+      .array(vantageToken("saved_filter"))
       .optional()
       .describe("The tokens of the SavedFilters to apply to the CostReport."),
     business_metric_tokens_with_metadata: z
       .array(businessMetricTokenForCreate)
       .optional()
       .describe("The tokens for any BusinessMetrics to attach to the CostReport, and the unit scale."),
-    folder_token: z
-      .string()
-      .optional()
-      .describe(
-        "The token of the Folder to add the CostReport to. Determines the Workspace the report is assigned to."
-      ),
+    folder_token: vantageToken("folder", {
+      description: "Determines the Workspace the report is assigned to.",
+    }).optional(),
     settings: costReportSettingsForCreate.optional().describe("Report settings."),
     previous_period_start_date: dateValidator(
       "The previous period start date of the CostReport. ISO 8601 Formatted."

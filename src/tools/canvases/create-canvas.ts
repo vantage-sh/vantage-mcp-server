@@ -1,4 +1,5 @@
 import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -19,12 +20,9 @@ export default registerTool({
   args: {
     title: z.string().min(1).describe("The title of the Canvas."),
     prompt: z.string().min(1).describe("The prompt used to generate the Canvas."),
-    workspace_token: z
-      .string()
-      .optional()
-      .describe(
-        "The token of the Workspace to add the Canvas to. Required if the API token is associated with multiple Workspaces."
-      ),
+    workspace_token: vantageToken("workspace", {
+      description: "Required if the API token is associated with multiple Workspaces.",
+    }).optional(),
   },
   async execute(args, ctx) {
     const res = await ctx.callVantageApi("/v2/canvases", args, "POST");

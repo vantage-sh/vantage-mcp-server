@@ -1,9 +1,10 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod";
+import paginationData from "../../utils/paginationData";
+import { vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import paginationData from "../utils/paginationData";
 
 const description = `
 Get a paginated list of all infrastructure resources affected by a specific cost optimization recommendation.
@@ -27,7 +28,7 @@ Use pagination (page parameter) to navigate through large numbers of affected re
 `.trim();
 
 const args = {
-  recommendation_token: z.string().min(1).describe("The token of the recommendation to get resources for"),
+  recommendation_token: vantageToken("recommendation"),
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
 };
 

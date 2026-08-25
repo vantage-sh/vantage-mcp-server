@@ -1,5 +1,6 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import { endDateSchema, startDateSchema, updateDateBinSchema, updateDateIntervalSchema, widgetSchema } from "./schemas";
@@ -18,17 +19,20 @@ export default registerTool({
     readOnly: false,
   },
   args: {
-    dashboard_token: z.string().describe("The token of the Dashboard to update."),
+    dashboard_token: vantageToken("dashboard"),
     title: z.string().min(1).optional().describe("The updated title of the dashboard."),
     widgets: z.array(widgetSchema).describe("The updated widgets for the dashboard.").optional(),
     saved_filter_tokens: z
-      .array(z.string())
+      .array(vantageToken("saved_filter"))
       .describe("The updated tokens of the Saved Filters used in the Dashboard.")
       .optional(),
     date_bin: updateDateBinSchema,
     start_date: startDateSchema,
     end_date: endDateSchema,
     date_interval: updateDateIntervalSchema,
+    workspace_token: vantageToken("workspace", {
+      description: "Move the Dashboard to a different Workspace.",
+    }).optional(),
   },
   async execute(args, ctx) {
     const { dashboard_token, ...body } = args;

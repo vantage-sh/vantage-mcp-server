@@ -1,5 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
-import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -8,7 +8,7 @@ Deletes a financial commitment report by its token. This action is irreversible.
 `.trim();
 
 const args = {
-  financial_commitment_report_token: z.string().describe("Token of the financial commitment report to delete"),
+  financial_commitment_report_token: vantageToken("financial_commitment_report"),
 };
 
 export default registerTool({

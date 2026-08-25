@@ -1,4 +1,5 @@
 import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import {
@@ -32,7 +33,7 @@ export default registerTool({
     interval: costAlertInterval.describe("The interval for the cost alert."),
     threshold: costAlertThreshold.describe("The threshold amount that triggers the alert. Must be greater than 0."),
     unit_type: costAlertUnitType.describe("The unit type for the threshold."),
-    workspace_token: z.string().describe("The token of the Workspace to add the cost alert to."),
+    workspace_token: vantageToken("workspace"),
     report_tokens: costAlertReportTokens.describe(
       "The tokens of the cost reports to monitor. Between 1 and 10 report tokens."
     ),

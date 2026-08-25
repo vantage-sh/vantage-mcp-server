@@ -1,5 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
-import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -17,7 +17,7 @@ export default registerTool({
     readOnly: false,
   },
   args: {
-    cost_alert_token: z.string().min(1).describe("The token of the Cost Alert to delete."),
+    cost_alert_token: vantageToken("cost_alert"),
   },
   async execute(args, ctx) {
     const response = await ctx.callVantageApi(`/v2/cost_alerts/${pathEncode(args.cost_alert_token)}`, {}, "DELETE");

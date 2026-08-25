@@ -1,10 +1,11 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod";
+import dateValidator from "../../utils/dateValidator";
+import paginationData from "../../utils/paginationData";
+import { vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import dateValidator from "../utils/dateValidator";
-import paginationData from "../utils/paginationData";
 
 const description = `
 Given a Cost Report Token, Vantage can forecast the costs for a given time range. Vantage will return costs that are *predicted*, but have not yet been actually incurred.
@@ -13,7 +14,7 @@ The report token can be used to link the user to the report in the Vantage Web U
 `.trim();
 
 const args = {
-  cost_report_token: z.string().min(1).describe("Cost report to limit costs to"),
+  cost_report_token: vantageToken("cost_report"),
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
   start_date: dateValidator("Start date to filter costs by, format=YYYY-MM-DD").optional(),
   end_date: dateValidator("End date to filter costs by, format=YYYY-MM-DD").optional(),

@@ -1,8 +1,9 @@
 import z from "zod";
+import paginationData from "../../utils/paginationData";
+import { nonempty } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import paginationData from "../utils/paginationData";
 
 const description = `
 List all Workspaces available to the authenticated API token. Workspaces are isolated environments within Vantage for organizing cost data and access control across teams.
@@ -11,6 +12,7 @@ Use get-myself to see the user's default workspace. Use get-workspace to retriev
 `.trim();
 
 const args = {
+  q: nonempty().optional().describe("Search Workspaces by name."),
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
   limit: z
     .number()

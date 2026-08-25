@@ -1,6 +1,6 @@
 import z from "zod";
-import { dateIntervalOptions } from "../utils/dateIntervalOptions";
-import dateValidator from "../utils/dateValidator";
+import { dateIntervalOptions } from "../../utils/dateIntervalOptions";
+import dateValidator from "../../utils/dateValidator";
 
 export const widgetSchema = z.object({
   widgetable_token: z.string().describe("The token of the represented Resource."),

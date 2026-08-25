@@ -1,9 +1,10 @@
 import { pathEncode, type UpdateFinancialCommitmentReportRequest } from "@vantage-sh/vantage-client";
 import z from "zod";
+import { pastDateIntervalOptions } from "../../utils/dateIntervalOptions";
+import dateValidator from "../../utils/dateValidator";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { pastDateIntervalOptions } from "../utils/dateIntervalOptions";
-import dateValidator from "../utils/dateValidator";
 import { groupingDescription, groupingSchema } from "./schemas";
 
 const description = `
@@ -28,10 +29,7 @@ export default registerTool({
     readOnly: false,
   },
   args: {
-    financial_commitment_report_token: z
-      .string()
-      .min(1)
-      .describe("Token of the Financial Commitment Report to update."),
+    financial_commitment_report_token: vantageToken("financial_commitment_report"),
     title: z.string().min(1).optional().describe("Updated title for the Financial Commitment Report."),
     filter: z
       .string()

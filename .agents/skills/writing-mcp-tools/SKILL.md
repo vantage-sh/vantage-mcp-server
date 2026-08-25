@@ -1,6 +1,6 @@
 ---
 name: writing-mcp-tools
-description: Author a new MCP tool for the Vantage MCP server — file layout, nesting/moving existing siblings into resource folders, registerTool template, annotation hints, description style, and tests. Use whenever adding, splitting, refactoring, or relocating a tool under `src/tools/`. For evals, see writing-evals.
+description: Author a new MCP tool for the Vantage MCP server — file layout under resource folders, registerTool template, annotation hints, description style, and tests. Use whenever adding, splitting, refactoring, or relocating a tool under `src/tools/`. For evals, see writing-evals.
 ---
 
 # Writing MCP tools
@@ -15,30 +15,15 @@ Every tool in this repo is a thin wrapper around a Vantage REST endpoint, regist
 src/tools/<resource>/
   index.ts                       # one `import "./<verb>-<resource>"` line per tool
   <verb>-<resource>.ts           # tool file (list, get, create, update, delete, …)
-  <verb>-<resource>.test.ts      # tests, co-located
   schemas.ts                     # shared zod objects when multiple tools in the folder reuse them
+
+test/tools/<resource>/
+  <verb>-<resource>.test.ts      # unit tests — mirrors the src layout under test/
 ```
 
 Create `src/tools/<resource>/index.ts` with one `import "./<verb>-<resource>"` line per tool, then run `npm run generate-tools-index`. That regenerates `src/tools/index.ts` to include the new directory — do not edit `src/tools/index.ts` by hand.
 
-> Many existing tools (e.g. `src/tools/create-cost-alert.ts`, `src/tools/list-costs.ts`) still live at the top level. **Don't add new top-level tools.** When you add or change a tool in a resource family, move any top-level siblings into that folder in the same PR (see below). Do not move unrelated top-level tools.
-
-### Moving existing siblings into the resource folder
-
-If you are adding a tool under `src/tools/<resource>/` and other tools for the same resource still live at `src/tools/<verb>-<resource>.ts` (or share the same resource noun in the filename, e.g. `list-cost-reports`, `get-cost-report`, `create-cost-report`), **move them all into `src/tools/<resource>/` in the same change** — not only the new file.
-
-1. **Identify the family** — same REST resource or shared noun (`cost-report`, `budget`, `recommendation-view`, …). Move every matching `*.ts` and `*.test.ts` from `src/tools/` into `src/tools/<resource>/`.
-2. **Fix imports** in every moved file — top-level paths become one level up:
-   - `from "./structure/…"` → `from "../structure/…"`
-   - `from "./utils/…"` → `from "../utils/…"`
-   - Tool imports stay sibling-relative: `import tool from "./list-cost-reports"`.
-3. **Update `src/tools/<resource>/index.ts`** — one `import "./<verb>-<resource>"` line per tool in the family (sorted is fine; the generator sorts the top-level index).
-4. **Regenerate the tools index** — `npm run generate-tools-index`. The top-level `src/tools/index.ts` should import `./<resource>` once, not each tool file. Remove any stale per-tool imports left over from before the move.
-5. **Verify** — `npm run type-check` and `npm test -- --run src/tools/<resource>/`.
-
-Reference layout after a move: `src/tools/cost-reports/` (`create-`, `list-`, `get-`, `update-`, `delete-`, `get-*-forecast`, each with a co-located test).
-
-Do **not** move top-level tools that belong to a different resource, even if the filename looks similar. Scope the move to one resource family per PR unless the user explicitly asks for a broader migration.
+Do not add tool files at the top level of `src/tools/`. Every tool belongs under its resource directory.
 
 ### Shared schemas (`schemas.ts`)
 
@@ -93,7 +78,7 @@ Reference implementations to copy from:
 - get: `src/tools/budgets/get-budget.ts`
 - create: `src/tools/budgets/create-budget.ts`
 - update: `src/tools/budgets/update-budget.ts`
-- delete: `src/tools/delete-folder.ts` (see "Delete tools" below)
+- delete: `src/tools/folders/delete-folder.ts` (see "Delete tools" below)
 
 ## Discovering the API surface
 
@@ -155,20 +140,23 @@ Zod is doing most of the work. Make each field carry its weight:
 ```ts
 args: {
   page: z.number().int().min(1).optional().default(1).describe("Page number, defaults to 1"),
-  workspace_token: z.string().min(1).describe("Workspace token. Use get-myself to discover."),
+  workspace_token: vantageToken("workspace"),
+  title: nonempty().describe("Budget title"),
   start_date: dateValidator("Start date, YYYY-MM-DD").optional(),
 }
 ```
 
 Patterns to use:
-- `dateValidator("…")` from `../utils/dateValidator` for any `YYYY-MM-DD` field.
+- `vantageToken("…")` from `../../utils/zod` for any Vantage `*_token` arg. Validates the prefix and builds the describe string (`Workspace token (\`wrkspc_*\`).`). Pass `{ description }` for contextual prose. Prefixes live in `../../utils/zod/token-kinds.ts` and are limited to token kinds accepted by public routes and request fields in `@vantage-sh/vantage-client` — do not add internal-only tokenizable models.
+- `nonempty()` from `../../utils/zod` instead of `z.string().min(1)` for free-text fields (trims before checking length).
+- `dateValidator("…")` from `../../utils/dateValidator` for any `YYYY-MM-DD` field.
 - `DEFAULT_LIMIT` from `../structure/constants` when paginating.
-- `paginationData(response.data)` from `../utils/paginationData` to compute `{ hasNextPage, nextPage }` for list tools.
+- `paginationData(response.data)` from `../../utils/paginationData` to compute `{ hasNextPage, nextPage }` for list tools.
 - `pathEncode` from `@vantage-sh/vantage-client` for any token interpolated into a URL path.
 - Request body types: `RequestBodyForPathAndMethod<"/v2/…", "POST">` from `@vantage-sh/vantage-client` when you need to assert the body shape (see `create-recommendation-view.ts`).
 - Shared sub-schemas go in `src/tools/<resource>/schemas.ts` when used by more than one tool in that folder (see "Shared schemas"). Import with `from "./schemas"`.
 
-In `.describe()` strings: name the thing, give the format, and point at the tool that can discover valid values ("Use list-cost-providers to discover valid provider names"). Don't restate types — `z.number()` already says it's a number.
+In `.describe()` strings: name the thing, give the format, and point at the tool that can discover valid values ("Use list-cost-providers to discover valid provider names"). Don't restate types — `z.number()` already says it's a number. For tokens, prefer `vantageToken` over hand-written describes.
 
 ## Execute
 
@@ -194,7 +182,7 @@ return {
 
 ### Delete tools — return shape
 
-Return `{ token: args.<resource>_token }`. This confirms what was deleted without leaking extra fields. `src/shared.ts` handles HTTP 204 by returning `{ data: undefined, ok: true }`, so do **not** rely on `response.data` in a delete. See `src/tools/delete-folder.ts`.
+Return `{ token: args.<resource>_token }`. This confirms what was deleted without leaking extra fields. `src/shared.ts` handles HTTP 204 by returning `{ data: undefined, ok: true }`, so do **not** rely on `response.data` in a delete. See `src/tools/folders/delete-folder.ts`.
 
 ### Cross-field validation
 
@@ -210,7 +198,9 @@ if (!!args.tag_key !== !!args.tag_value) {
 
 ## Tests
 
-Co-locate `<tool>.test.ts` next to the tool. Use the `testTool` helper from `../utils/testing`. The shape:
+All unit tests live under `test/`, mirroring the `src/` directory layout. For a tool at `src/tools/<resource>/<verb>-<resource>.ts`, add `test/tools/<resource>/<verb>-<resource>.test.ts`. Import the tool and shared helpers from `src/` — do not keep tests next to source files.
+
+Use the `testTool` helper from `../../../src/utils/testing` (adjust `../` depth to match your test file's nesting). The shape:
 
 ```ts
 import { expect } from "vitest";
@@ -222,8 +212,8 @@ import {
   requestsInOrder,
   type SchemaTestTableItem,
   testTool,
-} from "../utils/testing";
-import tool from "./list-widgets";
+} from "../../../src/utils/testing";
+import tool from "../../../src/tools/budgets/list-budgets";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
@@ -261,7 +251,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
 testTool(tool, argumentSchemaTests, executionTests);
 ```
 
-`testTool` automatically verifies the tool registers with the right name/title/description/annotations, so you don't write that test by hand. Reference: `src/tools/budgets/list-budgets.test.ts`.
+`testTool` automatically verifies the tool registers with the right name/title/description/annotations, so you don't write that test by hand. Reference: `test/tools/budgets/list-budgets.test.ts`.
 
 Always include:
 - At least one schema test with valid input.
@@ -277,15 +267,14 @@ See **`.agents/skills/writing-evals/SKILL.md`** for the full guide: file templat
 
 ## Checklist before opening a PR
 
-- [ ] Tool file lives under `src/tools/<resource>/`, not at the top level.
-- [ ] Any other top-level tools for the same resource were moved into `src/tools/<resource>/` with imports updated (see "Moving existing siblings").
+- [ ] Tool file lives under `src/tools/<resource>/`, not at the top level of `src/tools/`.
 - [ ] Duplicated zod across tools in the family lives in `schemas.ts`, not copy-pasted between files (see "Shared schemas").
 - [ ] `src/tools/<resource>/index.ts` imports every tool in the family.
-- [ ] `npm run generate-tools-index` has been run and `src/tools/index.ts` imports only `./<resource>` (no stale per-tool imports for that family).
+- [ ] `npm run generate-tools-index` has been run and `src/tools/index.ts` imports `./<resource>` (no stale per-tool imports for that family).
 - [ ] `annotations` follow the table above (especially: `create-*` is `destructive: false`).
 - [ ] Description is one or two sentences plus only the non-obvious context the model needs.
 - [ ] Every zod field has a `.describe(...)` and uses the right helper (`dateValidator`, `pathEncode`, `DEFAULT_LIMIT`, `paginationData`, `MCPUserError`).
 - [ ] Delete tools return `{ token: args.<resource>_token }`.
-- [ ] Tests cover schema validation (valid + poisoned), success, and failure.
+- [ ] Tests live under `test/tools/<resource>/` and cover schema validation (valid + poisoned), success, and failure.
 - [ ] Eval checklist in `.agents/skills/writing-evals/SKILL.md` is complete.
 - [ ] `npm run type-check` and `npm test -- --run` are green.

@@ -1,19 +1,32 @@
 import z from "zod";
+import paginationData from "../../utils/paginationData";
+import { nonempty, vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import paginationData from "../utils/paginationData";
 
 const description = `
 List Cost Alerts available in the Vantage account. Cost Alerts are threshold-based spending alerts for Cost Reports.
 
-Use this tool when a user asks to list, show, view, or find cost alerts, spending alerts, budget alerts, threshold alerts, or spend-limit notifications. Use the page value of 1 to start.
+Use this tool when a user asks to list, show, view, or find cost alerts, spending alerts, budget alerts, threshold alerts, or spend-limit notifications.
 
 Do not use this for Report Notifications, scheduled report summaries, or recurring Cost Report delivery.
 `.trim();
 
 const args = {
-  page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
+  page: z.number().int().min(1).optional().default(1).describe("Page number, defaults to 1"),
+  limit: z
+    .number()
+    .int()
+    .min(1)
+    .max(5000)
+    .optional()
+    .default(DEFAULT_LIMIT)
+    .describe(`Number of Cost Alerts per page, defaults to ${DEFAULT_LIMIT} and has a maximum of 5000`),
+  q: nonempty().optional().describe("Search cost alerts by title"),
+  workspace_token: vantageToken("workspace", {
+    description: "When provided, return only Cost Alerts in this Workspace.",
+  }).optional(),
 };
 
 export default registerTool({
@@ -27,8 +40,7 @@ export default registerTool({
   },
   args,
   async execute(args, ctx) {
-    const requestParams = { ...args, limit: DEFAULT_LIMIT };
-    const response = await ctx.callVantageApi("/v2/cost_alerts", requestParams, "GET");
+    const response = await ctx.callVantageApi("/v2/cost_alerts", args, "GET");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }

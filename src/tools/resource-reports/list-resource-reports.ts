@@ -1,8 +1,9 @@
 import z from "zod";
+import paginationData from "../../utils/paginationData";
+import { nonempty, vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import paginationData from "../utils/paginationData";
 
 const description = `
 List all resource reports available. Resource reports are already created reports authored by a user in Vantage.
@@ -14,6 +15,10 @@ If a user wants to see a report, you can link them like this: https://console.va
 `.trim();
 
 const args = {
+  q: nonempty().optional().describe("Search Resource Reports by title."),
+  workspace_token: vantageToken("workspace", {
+    description: "Only return Resource Reports in this Workspace.",
+  }).optional(),
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
   limit: z
     .number()

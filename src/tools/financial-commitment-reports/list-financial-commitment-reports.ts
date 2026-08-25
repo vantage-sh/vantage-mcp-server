@@ -1,8 +1,9 @@
 import z from "zod";
+import paginationData from "../../utils/paginationData";
+import { nonempty, vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import paginationData from "../utils/paginationData";
 
 const description = `
 List all financial commitment reports available in the Vantage account.
@@ -11,6 +12,10 @@ Use the page value of 1 to start.
 
 const args = {
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
+  q: nonempty().optional().describe("Search Financial Commitment Reports by title."),
+  workspace_token: vantageToken("workspace", {
+    description: "Only return Financial Commitment Reports in this Workspace.",
+  }).optional(),
 };
 
 export default registerTool({

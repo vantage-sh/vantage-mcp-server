@@ -1,5 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
-import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -28,8 +28,8 @@ You must have both the recommendation token (from list-recommendations) and the 
 `.trim();
 
 const args = {
-  recommendation_token: z.string().min(1).describe("The token of the recommendation"),
-  resource_token: z.string().min(1).describe("The token of the specific resource to get details for"),
+  recommendation_token: vantageToken("recommendation"),
+  resource_token: vantageToken("provider_resource"),
 };
 
 export default registerTool({

@@ -1,5 +1,6 @@
 import { type NoSlashString, pathEncode, type RequestBodyForPathAndMethod } from "@vantage-sh/vantage-client";
 import z from "zod";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import { budgetPeriod, periodCadence } from "./schemas";
@@ -20,14 +21,13 @@ export default registerTool({
     readOnly: false,
   },
   args: {
-    budget_token: z.string().describe("The token of the Budget to update."),
+    budget_token: vantageToken("budget"),
     name: z.string().min(1).optional().describe("The updated name of the Budget."),
-    cost_report_token: z
-      .string()
-      .optional()
-      .describe("The updated CostReport token. Ignored for hierarchical Budgets."),
+    cost_report_token: vantageToken("cost_report", {
+      description: "Ignored for hierarchical Budgets.",
+    }).optional(),
     child_budget_tokens: z
-      .array(z.string())
+      .array(vantageToken("budget"))
       .optional()
       .describe("The updated tokens of child Budgets for a hierarchical Budget."),
     period_cadence: periodCadence

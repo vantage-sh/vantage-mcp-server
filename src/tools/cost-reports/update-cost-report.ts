@@ -1,9 +1,10 @@
 import { pathEncode, type UpdateCostReportRequest } from "@vantage-sh/vantage-client";
 import z from "zod";
+import { dateIntervalOptions } from "../../utils/dateIntervalOptions";
+import dateValidator from "../../utils/dateValidator";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { dateIntervalOptions } from "../utils/dateIntervalOptions";
-import dateValidator from "../utils/dateValidator";
 import {
   businessMetricTokenForUpdate,
   chartSettings,
@@ -28,31 +29,39 @@ export default registerTool({
     readOnly: false,
   },
   args: {
-    cost_report_token: z.string().min(1).describe("The token of the Cost Report to update."),
+    cost_report_token: vantageToken("cost_report"),
     title: z.string().min(1).optional().describe("Updated title for the Cost Report."),
     groupings: z
       .array(z.string())
       .optional()
       .transform((v) => (v === undefined ? undefined : v.join(",")))
       .describe(
-        "Updated grouping values. Valid groupings: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, tag:<tag_value>."
+        "Updated grouping values. Valid groupings: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, usage_unit, tag:<tag_value>."
       ),
     filter: z
       .string()
       .optional()
       .describe("Updated VQL filter. Use list-cost-providers and list-cost-services for valid names."),
     saved_filter_tokens: z
-      .array(z.string())
+      .array(vantageToken("saved_filter"))
       .optional()
       .describe("Updated SavedFilter tokens to apply to the Cost Report."),
     business_metric_tokens_with_metadata: z
       .array(businessMetricTokenForUpdate)
       .optional()
       .describe("Updated BusinessMetric tokens and unit scale metadata."),
-    folder_token: z
-      .string()
+    folder_token: vantageToken("folder", {
+      description: "Determines the Workspace the report is assigned to.",
+    }).optional(),
+    default_forecast: z
+      .object({
+        kind: z.enum(["baseline", "report_forecast"]).describe("Updated default forecast selection kind."),
+        report_forecast_token: vantageToken("report_forecast", {
+          description: "Set when kind is report_forecast.",
+        }).optional(),
+      })
       .optional()
-      .describe("Updated Folder token. Determines the Workspace the report is assigned to."),
+      .describe("Updated default forecast selection for the Cost Report."),
     settings: costReportSettingsForUpdate.optional().describe("Updated report settings."),
     previous_period_start_date: dateValidator(
       "Updated previous period start date. ISO 8601 formatted (YYYY-MM-DD)."

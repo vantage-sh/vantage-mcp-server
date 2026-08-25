@@ -1,9 +1,10 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod";
+import paginationData from "../../utils/paginationData";
+import { vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import paginationData from "../utils/paginationData";
 
 const description = `
 List events for a Cost Alert. Events are individual alert trigger records and can be filtered by Cost Report token.
@@ -19,8 +20,10 @@ export default registerTool({
     readOnly: true,
   },
   args: {
-    cost_alert_token: z.string().min(1).describe("The token of the Cost Alert whose events should be listed."),
-    report_token: z.string().optional().describe("Filter events by Cost Report token."),
+    cost_alert_token: vantageToken("cost_alert"),
+    report_token: vantageToken("cost_report", {
+      description: "Filter events to this Cost Report.",
+    }).optional(),
     page: z.number().optional().default(1).describe("The page number to return, defaults to 1."),
     limit: z
       .number()
