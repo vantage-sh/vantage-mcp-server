@@ -19,7 +19,7 @@ function resultPhrasing(result: EvaluateResult): string {
 function cellText(result: EvaluateResult): string {
   const output = parseToolSelectionOutput(result.response?.output);
   if (output.toolCalls.length === 0) {
-    return result.error || output.text || "(no tool call)";
+    return output.text || result.error || "(no tool call)";
   }
   return output.toolCalls.map((call) => `${call.toolName}(${JSON.stringify(call.input ?? {})})`).join(" · ");
 }

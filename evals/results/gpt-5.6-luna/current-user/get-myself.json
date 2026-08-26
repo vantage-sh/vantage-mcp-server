@@ -1,0 +1,693 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-08-26T00:21:34.706Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "4ad97c42-10de-4559-b55c-ddd52f15415e",
+        "latencyMs": 1754,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use get-myself to inspect the current Vantage credentials.",
+          "label": "{{prompt}}",
+          "config": {}
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 1,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:mixed",
+          "label": "gpt-5.6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "get-myself",
+                "input": {}
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "mixed",
+            "target": "get-myself",
+            "toolNames": [
+              "get-myself",
+              "create-report-forecast",
+              "list-business-metrics",
+              "create-virtual-tag-config-value",
+              "list-provider-resources"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "get-myself",
+                "input": {}
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "get-myself · direct · Use get-myself to inspect the current Vantage credentials.",
+          "vars": {
+            "prompt": "Use get-myself to inspect the current Vantage credentials.",
+            "target": "get-myself",
+            "expected": [
+              {
+                "toolName": "get-myself",
+                "input": {}
+              }
+            ]
+          },
+          "metadata": {
+            "tool": "get-myself",
+            "resource": "current-user",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ],
+          "options": {}
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use get-myself to inspect the current Vantage credentials.",
+          "target": "get-myself",
+          "expected": [
+            {
+              "toolName": "get-myself",
+              "input": {}
+            }
+          ]
+        },
+        "metadata": {
+          "tool": "get-myself",
+          "resource": "current-user",
+          "phrasing": "direct",
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed",
+          "target": "get-myself",
+          "toolNames": [
+            "get-myself",
+            "create-report-forecast",
+            "list-business-metrics",
+            "create-virtual-tag-config-value",
+            "list-provider-resources"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "get-myself",
+              "input": {}
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "97838098-22d3-4652-900d-00e7ccf760bb",
+        "latencyMs": 1941,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use get-myself to inspect the current Vantage credentials.",
+          "label": "{{prompt}}",
+          "config": {}
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:isolated",
+          "label": "gpt-5.6-luna · isolated"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "get-myself",
+                "input": {}
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "isolated",
+            "target": "get-myself",
+            "toolNames": [
+              "get-myself"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "get-myself",
+                "input": {}
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "get-myself · direct · Use get-myself to inspect the current Vantage credentials.",
+          "vars": {
+            "prompt": "Use get-myself to inspect the current Vantage credentials.",
+            "target": "get-myself",
+            "expected": [
+              {
+                "toolName": "get-myself",
+                "input": {}
+              }
+            ]
+          },
+          "metadata": {
+            "tool": "get-myself",
+            "resource": "current-user",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ],
+          "options": {}
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use get-myself to inspect the current Vantage credentials.",
+          "target": "get-myself",
+          "expected": [
+            {
+              "toolName": "get-myself",
+              "input": {}
+            }
+          ]
+        },
+        "metadata": {
+          "tool": "get-myself",
+          "resource": "current-user",
+          "phrasing": "direct",
+          "modelId": "gpt-5.6-luna",
+          "mode": "isolated",
+          "target": "get-myself",
+          "toolNames": [
+            "get-myself"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "get-myself",
+              "input": {}
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "a999412c-2e2c-4f8e-886c-437726ffa099",
+        "latencyMs": 1533,
+        "namedScores": {},
+        "prompt": {
+          "raw": "What is my default workspace?",
+          "label": "{{prompt}}",
+          "config": {}
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:isolated",
+          "label": "gpt-5.6-luna · isolated"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "get-myself",
+                "input": {}
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "isolated",
+            "target": "get-myself",
+            "toolNames": [
+              "get-myself"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "get-myself",
+                "input": {}
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "get-myself · inferred · What is my default workspace?",
+          "vars": {
+            "prompt": "What is my default workspace?",
+            "target": "get-myself",
+            "expected": [
+              {
+                "toolName": "get-myself",
+                "input": {}
+              }
+            ]
+          },
+          "metadata": {
+            "tool": "get-myself",
+            "resource": "current-user",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ],
+          "options": {}
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "What is my default workspace?",
+          "target": "get-myself",
+          "expected": [
+            {
+              "toolName": "get-myself",
+              "input": {}
+            }
+          ]
+        },
+        "metadata": {
+          "tool": "get-myself",
+          "resource": "current-user",
+          "phrasing": "inferred",
+          "modelId": "gpt-5.6-luna",
+          "mode": "isolated",
+          "target": "get-myself",
+          "toolNames": [
+            "get-myself"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "get-myself",
+              "input": {}
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "02061107-9330-4f12-95c6-e158087f23b5",
+        "latencyMs": 1653,
+        "namedScores": {},
+        "prompt": {
+          "raw": "What is my default workspace?",
+          "label": "{{prompt}}",
+          "config": {}
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 1,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:mixed",
+          "label": "gpt-5.6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "get-myself",
+                "input": {}
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "mixed",
+            "target": "get-myself",
+            "toolNames": [
+              "get-myself",
+              "create-report-forecast",
+              "list-business-metrics",
+              "create-virtual-tag-config-value",
+              "list-provider-resources"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "get-myself",
+                "input": {}
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "get-myself · inferred · What is my default workspace?",
+          "vars": {
+            "prompt": "What is my default workspace?",
+            "target": "get-myself",
+            "expected": [
+              {
+                "toolName": "get-myself",
+                "input": {}
+              }
+            ]
+          },
+          "metadata": {
+            "tool": "get-myself",
+            "resource": "current-user",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ],
+          "options": {}
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "What is my default workspace?",
+          "target": "get-myself",
+          "expected": [
+            {
+              "toolName": "get-myself",
+              "input": {}
+            }
+          ]
+        },
+        "metadata": {
+          "tool": "get-myself",
+          "resource": "current-user",
+          "phrasing": "inferred",
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed",
+          "target": "get-myself",
+          "toolNames": [
+            "get-myself",
+            "create-report-forecast",
+            "list-business-metrics",
+            "create-virtual-tag-config-value",
+            "list-provider-resources"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "get-myself",
+              "input": {}
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 4,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 4,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-5.6-luna · isolated",
+        "config": {
+          "modelId": "gpt-5.6-luna",
+          "mode": "isolated"
+        }
+      },
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-5.6-luna · mixed",
+        "config": {
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/current-user/get-myself.eval.ts"
+    ],
+    "env": {},
+    "outputPath": [
+      "/Users/jeremykreutzbender/Developer/vantage/vantage-mcp-server/evals/.tmp-eval.json"
+    ],
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-08-26T00:21:34.397Z",
+    "evaluationCreatedAt": "2026-08-26T00:21:32.402Z"
+  }
+}

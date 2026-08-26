@@ -23,9 +23,14 @@ describe("scoreToolCalls", () => {
   });
 
   it("fails when no tool is called", () => {
-    const result = scoreToolCalls([], [{ toolName: "get-myself", input: {} }]);
+    const result = scoreToolCalls(
+      [],
+      [{ toolName: "get-myself", input: {} }],
+      "Use the default workspace token associated with your account."
+    );
     expect(result.pass).toBe(false);
     expect(result.reason).toMatch(/did not call a tool/i);
+    expect(result.reason).toContain("Use the default workspace token associated with your account.");
   });
 
   it("fails when args do not match", () => {

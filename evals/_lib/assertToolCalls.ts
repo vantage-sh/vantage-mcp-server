@@ -53,7 +53,11 @@ function sameInput(actual: unknown, expected: unknown): boolean {
  * Exact single-tool match: the model must make one call with the expected
  * tool name and args. Missing and additional calls fail.
  */
-export function scoreToolCalls(actualCalls: ToolCallRecord[], expectedCalls: ToolCallRecord[]): ToolCallScore {
+export function scoreToolCalls(
+  actualCalls: ToolCallRecord[],
+  expectedCalls: ToolCallRecord[],
+  modelText = ""
+): ToolCallScore {
   if (expectedCalls.length !== 1) {
     return { pass: false, score: 0, reason: "Eval case must expect exactly one tool call." };
   }
@@ -61,7 +65,12 @@ export function scoreToolCalls(actualCalls: ToolCallRecord[], expectedCalls: Too
   const expected = expectedCalls[0];
 
   if (actualCalls.length === 0) {
-    return { pass: false, score: 0, reason: `Model did not call a tool. Expected: ${expected.toolName}.` };
+    const textSummary = modelText.length > 0 ? ` Model response: ${JSON.stringify(modelText)}.` : "";
+    return {
+      pass: false,
+      score: 0,
+      reason: `Model did not call a tool. Expected: ${expected.toolName}.${textSummary}`,
+    };
   }
 
   const actualSummary = actualCalls
@@ -96,5 +105,6 @@ export default function assertToolCalls(output: unknown, context: { vars?: Recor
     return { pass: false, score: 0, reason: "Test vars.expected must be an array of tool calls." };
   }
 
-  return scoreToolCalls(parseToolSelectionOutput(output).toolCalls, expected as ToolCallRecord[]);
+  const actual = parseToolSelectionOutput(output);
+  return scoreToolCalls(actual.toolCalls, expected as ToolCallRecord[], actual.text);
 }

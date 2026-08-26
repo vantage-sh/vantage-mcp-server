@@ -15,7 +15,7 @@
     "eval": "tsx evals/_lib/run-eval.ts",
     "eval:all": "tsx evals/_lib/run-eval.ts --all",
     "eval:site": "tsx evals/_lib/generate-site.ts",
-    "eval:view": "promptfoo view",
+    "eval:view": "PROMPTFOO_CONFIG_DIR=evals/.promptfoo promptfoo view",
     "generate-tools-index": "tsx src/tools/bin/generate-tools-index.ts",
     "generate-resources-index": "tsx src/resources/bootstrapping/bin/generate-resources-index.ts",
     "prepare": "husky",
