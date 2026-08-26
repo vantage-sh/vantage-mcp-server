@@ -22,14 +22,14 @@ If the user asks to run an eval but does not select a model, ask which approved 
 
 [promptfoo](https://www.promptfoo.dev) + Vercel AI SDK v6 + `@ai-sdk/anthropic` + `@ai-sdk/openai`. The custom provider loads tools from the live `registerTool` registry and asks the model to select one.
 
-| Command | Purpose |
-| ------- | ------- |
-| `npm run eval -- --tool <name> --model gpt-5.6-sol-high` | Run one tool against one approved model after explicit approval |
-| `npm run eval:all -- --model gpt-5.6-sol-high` | Deliberately refresh every case against one model |
-| `npm run eval -- --list-models` | Print the approved model × effort catalog |
-| `npm run eval -- --tool <name> --filter-failing evals/results/<model>/<resource>/<tool>.json --model gpt-5.6-sol-high` | Re-run failures only |
-| `npm run eval:site` | Merge stored JSON → `evals/site/index.html` |
-| `npm run eval:view` | promptfoo's local viewer |
+| Command                                                                                                                | Purpose                                                         |
+| ---------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| `npm run eval -- --tool <name> --model gpt-5.6-sol-high`                                                               | Run one tool against one approved model after explicit approval |
+| `npm run eval:all -- --model gpt-5.6-sol-high`                                                                         | Deliberately refresh every case against one model               |
+| `npm run eval -- --list-models`                                                                                        | Print the approved model × effort catalog                       |
+| `npm run eval -- --tool <name> --filter-failing evals/results/<model>/<resource>/<tool>.json --model gpt-5.6-sol-high` | Re-run failures only                                            |
+| `npm run eval:site`                                                                                                    | Merge stored JSON → `evals/site/index.html`                     |
+| `npm run eval:view`                                                                                                    | promptfoo's local viewer                                        |
 
 `--model` is required. The slug is an approved model id, optionally plus an effort suffix (`gpt-5.6-sol-high`). Models that do not expose effort (today: `claude-haiku-4-5`) take the bare id. Effort is optional even when the model supports it — `gpt-5.6-sol` uses the provider default. Dotted forms like `gpt-5.6.sol-high` are accepted and stored as `gpt-5.6-sol-high`. The catalog lives in `evals/_lib/models.ts`.
 
@@ -52,7 +52,6 @@ evals/
 - **Editing an existing tool:** update the case file. Re-run that tool only when the user explicitly asks; its per-tool JSON is replaced.
 - **Filtered rerun:** partial filters such as `--filter-failing` and `--filter-metadata` replace matching cells by provider and case identity while preserving every stored cell the filter omitted.
 - **Full-model refresh:** the normal `eval` command rejects a missing `--tool`. Use `npm run eval:all -- --model <model>` only when you intentionally want to refresh every case for that model.
-- **Do not commit** `evals/results/merged.json` or `evals/site/` — both are generated.
 - **Merge conflicts** on a JSON file: take one side, re-run that tool, commit the result.
 - **Browsing results:** `npm run eval:site && open evals/site/index.html`. GitHub Pages at <https://vantage-sh.github.io/vantage-mcp-server/> regenerates HTML from committed JSON on every push to `main` that touches `evals/results/`. No model API keys in CI.
 
@@ -81,10 +80,10 @@ Case files live under `evals/cases/<resource>/` so they stay out of Vitest's pat
 
 Every tool's case file contains exactly **two prompts** — one direct and one inferred/indirect — and each prompt runs against the **one** `--model` you pass, in both loading modes. That's four cells total:
 
-|             | **Isolated** (only the target tool loaded)    | **Mixed** (target + 4 distractors)                      |
-| ----------- | --------------------------------------------- | ------------------------------------------------------- |
-| **Direct**  | Can the model call the tool when the user explicitly names its registered identifier and nothing competes? | Same explicit request, but with 4 unrelated neighbours loaded. |
-| **Inferred** | Does the description cover the indirect phrasing well enough to fire at all? | Both pressures combined — the realistic deployment case. |
+|              | **Isolated** (only the target tool loaded)                                                                 | **Mixed** (target + 4 distractors)                             |
+| ------------ | ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| **Direct**   | Can the model call the tool when the user explicitly names its registered identifier and nothing competes? | Same explicit request, but with 4 unrelated neighbours loaded. |
+| **Inferred** | Does the description cover the indirect phrasing well enough to fire at all?                               | Both pressures combined — the realistic deployment case.       |
 
 Each cell is what diagnoses a failure (see "Reading failures" below). The one direct and one inferred prompt produce four cells per tool against one model. To compare models, run the same `--tool` again with a different `--model`; each slug gets its own JSON under `evals/results/<model>/`.
 
@@ -120,9 +119,9 @@ The scorer requires **exactly one** tool call with the expected name and args. M
 ## Writing prompts
 
 - **Direct prompts** explicitly include the target's exact registered tool identifier — for example, "Use `get-myself` to inspect the current Vantage credentials." Naming only the concept, title, or resource is not direct enough. These prompts test explicit invocation and argument extraction.
-- **Inferred prompts** describe the user's *goal* without naming the tool — "I want to make sure we don't blow past $50k this quarter" → `create-budget`. They test description coverage and any disambiguating context.
+- **Inferred prompts** describe the user's _goal_ without naming the tool — "I want to make sure we don't blow past $50k this quarter" → `create-budget`. They test description coverage and any disambiguating context.
 - Every prompt expects exactly one tool call. Negative, abstention, and multi-tool cases are outside the v1 eval scope.
-- Write prompts a Vantage MCP user would *actually* send. Generic phrasings with no product context (e.g. `"Who am I?"`) put unfair pressure on the description — models may read them as general knowledge questions, not Vantage account queries. Drop or rephrase prompts like that rather than padding the tool description to catch them.
+- Write prompts a Vantage MCP user would _actually_ send. Generic phrasings with no product context (e.g. `"Who am I?"`) put unfair pressure on the description — models may read them as general knowledge questions, not Vantage account queries. Drop or rephrase prompts like that rather than padding the tool description to catch them.
 - Use exactly one direct prompt and one inferred prompt per tool. Each additional prompt doubles into isolated and mixed cells, increasing API spend.
 
 ## Distractors
@@ -144,16 +143,16 @@ Named distractors are loaded first and the remaining slots are sampled automatic
 
 ## Reading failures
 
-The matrix tells you *what to fix*:
+The matrix tells you _what to fix_:
 
-| Failure pattern                              | Most likely cause                                                            | Fix                                                                                  |
-| -------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| **Direct + isolated** fails                  | The prompt does not use the exact registered name, or required arguments are unclear. | Correct the tool identifier in the prompt; tighten zod argument descriptions.        |
-| **Direct + mixed** fails but isolated passes | A distractor wins despite the explicit tool name.                             | Check that the registered name and description agree; inspect the mixed distractors for a naming collision. |
-| **Inferred + isolated** fails                | Description doesn't cover the indirect phrasing. The arg names alone weren't a hint. | Add one sentence connecting the goal to the tool (cap: one sentence).                 |
-| **Inferred + mixed** fails but isolated passes | Description covers the concept but a sibling tool covers it too well.       | Disambiguate (same pattern as the second row).                                       |
-| Only the smallest model fails one prompt     | Often a prompt-fairness issue, not a description issue.                       | Drop or rephrase the prompt. Don't grow the description to win a single weak-model row. |
-| Wrong args (right tool)                      | A zod field is missing a useful `.describe()`, or a required field looks optional. | Tighten `.describe()` strings; add `.default()` if the value is genuinely defaultable. |
+| Failure pattern                                | Most likely cause                                                                     | Fix                                                                                                         |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Direct + isolated** fails                    | The prompt does not use the exact registered name, or required arguments are unclear. | Correct the tool identifier in the prompt; tighten zod argument descriptions.                               |
+| **Direct + mixed** fails but isolated passes   | A distractor wins despite the explicit tool name.                                     | Check that the registered name and description agree; inspect the mixed distractors for a naming collision. |
+| **Inferred + isolated** fails                  | Description doesn't cover the indirect phrasing. The arg names alone weren't a hint.  | Add one sentence connecting the goal to the tool (cap: one sentence).                                       |
+| **Inferred + mixed** fails but isolated passes | Description covers the concept but a sibling tool covers it too well.                 | Disambiguate (same pattern as the second row).                                                              |
+| Only the smallest model fails one prompt       | Often a prompt-fairness issue, not a description issue.                               | Drop or rephrase the prompt. Don't grow the description to win a single weak-model row.                     |
+| Wrong args (right tool)                        | A zod field is missing a useful `.describe()`, or a required field looks optional.    | Tighten `.describe()` strings; add `.default()` if the value is genuinely defaultable.                      |
 
 **Iteration order when an eval fails:**
 

@@ -9,7 +9,6 @@ const here = dirname(fileURLToPath(import.meta.url));
 export const EVALS_ROOT = join(here, "..");
 export const RESULTS_DIR = join(EVALS_ROOT, "results");
 export const SITE_DIR = join(EVALS_ROOT, "site");
-export const MERGED_RESULTS_PATH = join(RESULTS_DIR, "merged.json");
 export const CONFIG_PATH = join(EVALS_ROOT, "promptfooconfig.ts");
 
 function emptyStats(): EvaluateStats {

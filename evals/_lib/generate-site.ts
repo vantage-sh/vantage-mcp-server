@@ -2,7 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { EvaluateResult, OutputFile } from "promptfoo";
 import { parseToolSelectionOutput } from "./assertToolCalls";
-import { MERGED_RESULTS_PATH, mergeStoredResults, SITE_DIR, writeOutputFile } from "./resultsStore";
+import { mergeStoredResults, SITE_DIR } from "./resultsStore";
 
 function escapeHtml(value: string): string {
   return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
@@ -153,14 +153,12 @@ function renderReport(output: OutputFile): string {
 
 async function main(): Promise<void> {
   const merged = await mergeStoredResults();
-  await writeOutputFile(MERGED_RESULTS_PATH, merged);
   await mkdir(SITE_DIR, { recursive: true });
   const html = renderReport(merged);
   await writeFile(join(SITE_DIR, "report.html"), html, "utf8");
   await writeFile(join(SITE_DIR, "index.html"), html, "utf8");
   const total = merged.results.stats.successes + merged.results.stats.failures + merged.results.stats.errors;
-  console.log(`Merged ${total} result(s) → ${MERGED_RESULTS_PATH}`);
-  console.log(`Wrote ${join(SITE_DIR, "index.html")} and report.html`);
+  console.log(`Rendered ${total} result(s) → ${join(SITE_DIR, "index.html")} and report.html`);
 }
 
 main().catch((error: unknown) => {
