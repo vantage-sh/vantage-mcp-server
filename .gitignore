@@ -179,3 +179,9 @@ dist
 local-package
 
 tmp/*
+
+# promptfoo local viewer state and generated artifacts
+evals/.promptfoo/
+evals/.tmp-eval.json
+evals/results/merged.json
+evals/site/

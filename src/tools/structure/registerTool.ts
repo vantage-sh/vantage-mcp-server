@@ -51,8 +51,23 @@ export type ToolProperties<Input extends z.ZodRawShape, Output extends z.ZodRawS
 
 const toolSetups = new Map<string, (server: McpServer, generateContext: () => ToolCallContext) => void>();
 
+export type ToolMetadata = Pick<
+  ToolProperties<z.ZodRawShape, z.ZodRawShape | undefined>,
+  "name" | "title" | "description" | "annotations" | "args" | "outputSchema"
+>;
+const toolDefinitions = new Map<string, ToolMetadata>();
+
 export function clearRegisteredToolsForTesting() {
   toolSetups.clear();
+  toolDefinitions.clear();
+}
+
+export function getRegisteredTool(name: string): ToolMetadata | undefined {
+  return toolDefinitions.get(name);
+}
+
+export function getRegisteredToolNames(): string[] {
+  return Array.from(toolDefinitions.keys());
 }
 
 export default function registerTool<Input extends z.ZodRawShape>(
@@ -147,6 +162,7 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
   }
 
   toolSetups.set(toolProps.name, serverSetup);
+  toolDefinitions.set(toolProps.name, toolProps);
 
   return toolProps;
 }

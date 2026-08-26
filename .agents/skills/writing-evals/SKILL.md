@@ -1,139 +1,160 @@
 ---
 name: writing-evals
-description: Write and iterate on tool-selection evals for the Vantage MCP server — evalite setup, prompt matrix, distractors, failure diagnosis, and db workflow. Use when adding or updating evals under `evals/` or when an eval run fails after changing a tool description or zod schema.
+description: Write and iterate on opt-in tool-selection evals for the Vantage MCP server — promptfoo setup, prompt matrix, distractors, failure diagnosis, and JSON/Pages workflow. Use after the user chooses to include evals, or when working on an eval they explicitly requested.
 ---
 
 # Writing evals
 
 Unit tests prove a tool wires up and the API call shape is right. **Evals prove the description + zod schema are good enough that a model can find and call the tool from a natural-language prompt.** Tool authoring conventions (description style, zod `.describe()` strings) live in `.agents/skills/writing-mcp-tools/SKILL.md`; this skill covers the eval harness and how to iterate when rows fail.
 
+## Opt-in and execution approval
+
+Evals are not a default part of adding or changing a tool. If the user has not already explicitly requested evals, ask whether they want them included. If they opt in, also ask whether the provider API key for the model they intend to use is configured in the ignored `.env` file. If they decline, do not add or modify eval case files, result JSON, or the generated site.
+
+Opting in to eval authoring does **not** authorize running an eval. Model-backed evals make fresh API calls, may incur cost, and can create or replace result JSON. Unless the user explicitly asks to execute the eval:
+
+- Write or update only the case file under `evals/cases/`.
+- Do not run `npm run eval`, `npm run eval:all`, or a filtered rerun.
+- Do not create or modify files under `evals/results/` or regenerate the eval site as a consequence of the authoring task.
+- At handoff, provide the exact targeted command the user can run and mention `npm run eval -- --list-models` for the approved model catalog. You may also offer to run it, but wait for an explicit follow-up.
+
+If the user wants evals but says the required key is not configured, author the case file only and explain the missing setup at handoff. If the user asks to run an eval but has not confirmed credential setup, ask whether the required provider key is configured in `.env`. If they have not selected a model, ask which approved model and effort they want before executing it. Explain that promptfoo loads credentials from `.env` and that every invocation makes fresh, uncached model calls. A repository requirement to produce a baseline before a PR is a pending verification step to report, not authorization to spend API credits.
+
 ## Stack and commands
 
-[evalite v1](https://v1.evalite.dev) + Vercel AI SDK v6 + `@ai-sdk/anthropic` + `@ai-sdk/openai`.
+[promptfoo](https://www.promptfoo.dev) + Vercel AI SDK v6 + `@ai-sdk/anthropic` + `@ai-sdk/openai`. The custom provider loads tools from the live `registerTool` registry and asks the model to select one.
 
-| Command | Purpose |
-| ------- | ------- |
-| `npm run eval -- ./evals/<path>.eval.ts` | Run one eval file (normal workflow) |
-| `npm run eval` | Run every eval file — only when refreshing the whole baseline |
-| `npm run eval:dev` | Watch mode + UI on `localhost:3006` |
-| `npm run eval:export` | Static HTML from current `evalite.db` (no re-execution) |
+| Command                                                                                                                | Purpose                                                         |
+| ---------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| `npm run eval -- --tool <name> --model gpt-5.6-sol-high`                                                               | Run one tool against one approved model after explicit approval |
+| `npm run eval:all -- --model gpt-5.6-sol-high`                                                                         | Deliberately refresh every case against one model               |
+| `npm run eval -- --list-models`                                                                                        | Print the approved model × effort catalog                       |
+| `npm run eval -- --tool <name> --filter-failing evals/results/<model>/<resource>/<tool>.json --model gpt-5.6-sol-high` | Re-run failures only                                            |
+| `npm run eval:site`                                                                                                    | Merge stored JSON → `evals/site/index.html`                     |
+| `npm run eval:view`                                                                                                    | promptfoo's local viewer                                        |
 
-Evalite auto-loads `.env`; set `ANTHROPIC_API_KEY` and `OPENAI_API_KEY` before the first run. Model outputs are cached by default, so iterating on a description only repays LLM cost for changed cells.
+`--model` is required. The slug is an approved model id, optionally plus an effort suffix (`gpt-5.6-sol-high`). Models that do not expose effort (today: `claude-haiku-4-5`) take the bare id. Effort is optional even when the model supports it — `gpt-5.6-sol` uses the provider default. Dotted forms like `gpt-5.6.sol-high` are accepted and stored as `gpt-5.6-sol-high`. The catalog lives in `evals/_lib/models.ts`.
 
-`evalite.config.ts` sets `forceRerunTriggers: ["src/tools/**/*.ts", "evals/_lib/**/*.ts"]` — editing a tool or shared eval lib invalidates cache for affected runs. That is intentional when using `eval:dev`.
+promptfoo loads the ignored `.env` file; set `ANTHROPIC_API_KEY` or `OPENAI_API_KEY` there for the selected model's provider before the first run. Do not infer permission to run from the presence of a key. Every eval invocation makes fresh model calls; promptfoo's response cache is disabled. An unfiltered run replaces the selected result JSON. A run using a partial promptfoo filter merges rerun cells into the retained baseline and preserves cells the filter omitted.
+
+Extra promptfoo flags pass through: `--filter-failing <file>`, `--filter-metadata phrasing=direct`.
 
 ## Persistence and what to run
 
-Results are stored in `evals/evalite.db` (SQLite, committed to the repo as a shared baseline). The workflow is **explicit, not automatic** — evalite does not detect which tools have changed and re-run their evals for you. Every cell carries a `created_at` timestamp; treat it as the audit trail for "when did this eval last run vs. when did the tool last change."
+JSON under `evals/results/<model>/<resource>/<tool>.json` is the durable store. HTML is disposable.
 
-- **Adding a tool:** run only the new eval file: `npm run eval -- ./evals/<...>/<your-tool>.eval.ts`. Existing tools' rows stay untouched. Commit the updated `evalite.db` alongside the tool change.
-- **Editing an existing tool:** re-run that tool's eval file the same way. The new rows append; older rows remain for history.
-- **Avoid `npm run eval` with no path** during normal development — it re-executes every eval file and appends a fresh row set for each. Use it only when intentionally refreshing the whole baseline.
-- **WAL sidecars** (`evalite.db-wal`, `-shm`, `-journal`) are ignored in `.gitignore`. Only the `.db` file is tracked. Don't try to commit the sidecars — they're per-process state and will corrupt the db for the next reader.
-- **Merge conflicts** on the `.db` are binary and can't be auto-resolved. If two branches both updated it, the simplest fix is to take one side, re-run the affected eval files on the merged branch, and commit the result.
-- **Browsing results:** a live UI of the committed db is published to GitHub Pages at <https://vantage-sh.github.io/vantage-mcp-server/> on every push to `main` that touches `evals/evalite.db`. Locally, `npm run eval:export` produces the same static bundle under `./evalite-export/` without re-executing anything.
+```
+evals/
+  cases/<resource>/<tool>.eval.ts             # mirrors src/tools/<resource>/
+  results/<model>/<resource>/<tool>.json      # committed per-model slice
+  site/                                       # generated report.html → GitHub Pages (not committed)
+```
+
+- **Adding a tool:** after the user opts in to evals, write `evals/cases/<resource>/<tool>.eval.ts`. Unless the user explicitly asked for execution and confirmed the required API key is configured, stop there and provide `npm run eval -- --tool <tool> --model <approved-model>` as the next-step command. When explicitly authorized, the run writes `evals/results/<model>/<resource>/<tool>.json` and leaves every other tool's files untouched; then run `npm run eval:site` and commit the new JSON.
+- **Editing an existing tool:** update the case file only when the user opts in to eval work. Re-run that tool only when the user explicitly asks and confirms credential setup; its per-tool JSON is replaced.
+- **Filtered rerun:** partial filters such as `--filter-failing` and `--filter-metadata` replace matching cells by provider and case identity while preserving every stored cell the filter omitted.
+- **Full-model refresh:** the normal `eval` command rejects a missing `--tool`. Use `npm run eval:all -- --model <model>` only when you intentionally want to refresh every case for that model.
+- **Merge conflicts** on a JSON file: take one side, re-run that tool, commit the result.
+- **Browsing results:** `npm run eval:site && open evals/site/index.html`. GitHub Pages at <https://vantage-sh.github.io/vantage-mcp-server/> regenerates HTML from committed JSON on every push to `main` that touches `evals/results/`. No model API keys in CI.
 
 ## Layout
 
 ```
 evals/
   _lib/
-    models.ts             # haiku 4.5, sonnet 4.6, gpt-5-mini, gpt-5 (wrapped with wrapAISDKModel)
-    distractors.ts        # 5-tool pool for "mixed" mode + pickTools(target, mode)
-    variants.ts           # cartesian product of {model} × {isolated, mixed} = 8 variants
+    evalArgs.ts           # CLI parsing + targeted/full-run safety guard
+    models.ts             # approved models × effort levels; --model slug parser
+    distractors.ts        # registered-tool sampler for mixed mode + optional named distractors
     buildAiSdkTools.ts    # reads from the live registerTool registry → AI SDK tool() defs
     runToolSelection.ts   # { prompt, model, toolNames } → { toolCalls, text }
-  <resource>/<tool>.eval.ts             # mirrors src/tools/<resource>/
-evalite.config.ts
+    provider.ts           # promptfoo custom provider (selected model × isolated|mixed)
+    assertToolCalls.ts    # flexible tool-call match
+    buildCases.ts         # cartesian product of prompts × phrasing
+    run-eval.ts           # CLI: promptfoo eval + split into results/<model>/<resource>/<tool>.json
+    generate-site.ts      # merge JSON → evals/site/index.html
+  cases/<resource>/<tool>.eval.ts
+  promptfooconfig.ts
 ```
 
-Eval files live under `evals/<resource>/` so they stay out of Vitest's path. The adapter imports `src/tools` once and reads tools out of the live `registerTool` registry — adding a new tool to the codebase makes it available to evals automatically; you just need to write its eval file.
+Case files live under `evals/cases/<resource>/` so they stay out of Vitest's path and match `src/tools/<resource>/`. Use the `.eval.ts` suffix so they are distinct from the tool file and the unit test. `promptfooconfig.ts` picks up every `**/*.eval.ts` file automatically. The adapter imports `src/tools` once and reads tools out of the live `registerTool` registry — adding a new tool to the codebase makes it available to evals automatically; you just need to write its case file.
 
 ## The matrix
 
-Every tool's eval file contains **two suites** — one for direct phrasing, one for inferred phrasing — and each suite runs against **8 variants** (4 models × 2 loading modes). That's a 4-quadrant matrix per prompt:
+Every tool's case file contains exactly **two prompts** — one direct and one inferred/indirect — and each prompt runs against the **one** `--model` you pass, in both loading modes. That's four cells total:
 
-|             | **Isolated** (only the target tool loaded)    | **Mixed** (target + 4 distractors)                      |
-| ----------- | --------------------------------------------- | ------------------------------------------------------- |
-| **Direct**  | Can the model pick the tool when the user names the concept and nothing competes?       | Same wording, but is the description distinct enough that 4 unrelated neighbours don't pull it astray? |
-| **Inferred** | Does the description cover the indirect phrasing well enough to fire at all? | Both pressures combined — the realistic deployment case. |
+|              | **Isolated** (only the target tool loaded)                                                                 | **Mixed** (target + 4 distractors)                             |
+| ------------ | ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| **Direct**   | Can the model call the tool when the user explicitly names its registered identifier and nothing competes? | Same explicit request, but with 4 unrelated neighbours loaded. |
+| **Inferred** | Does the description cover the indirect phrasing well enough to fire at all?                               | Both pressures combined — the realistic deployment case.       |
 
-Each cell is what diagnoses a failure (see "Reading failures" below). Caps out at 64 cells per tool with 4 prompts per suite, which is what `evals/get-myself.eval.ts` runs in ~10s on a warm cache.
+Each cell is what diagnoses a failure (see "Reading failures" below). The one direct and one inferred prompt produce four cells per tool against one model. To compare models, run the same `--tool` again with a different `--model`; each slug gets its own JSON under `evals/results/<model>/`.
 
 ## File template
 
-`evals/get-myself.eval.ts` is the canonical reference. The shape per tool:
+`evals/cases/current-user/get-myself.eval.ts` is the canonical reference. The shape per tool:
 
 ```ts
-import { evalite } from "evalite";
-import { toolCallAccuracy } from "evalite/scorers";
-import { pickTools } from "./_lib/distractors";
-import { runToolSelection } from "./_lib/runToolSelection";
-import { TOOL_EVAL_VARIANTS } from "./_lib/variants";
+import { buildToolCases } from "../../_lib/buildCases";
 
 const TARGET = "<tool-name>";
 
-const directPrompts = [
-  { input: "<prompt naming the concept directly>", expected: [{ toolName: TARGET, input: {/* expected args */} }] },
-  // 3–6 entries
-];
-
-const inferredPrompts = [
-  { input: "<prompt where intent has to be inferred>", expected: [{ toolName: TARGET, input: {/* expected args */} }] },
-  // 3–6 entries
-];
-
-evalite.each(TOOL_EVAL_VARIANTS)(`${TARGET} · direct phrasing`, {
-  data: () => directPrompts,
-  task: (prompt, variant) =>
-    runToolSelection({
-      prompt,
-      model: variant.model,
-      toolNames: pickTools(TARGET, variant.mode),
-    }),
-  scorers: [
-    ({ output, expected }) =>
-      toolCallAccuracy({
-        actualCalls: output.toolCalls,
-        expectedCalls: expected ?? [],
-        mode: "flexible",
-      }),
-  ],
-});
-
-// repeat with inferredPrompts and "inferred phrasing" suite name
+export default function generateTests() {
+  return buildToolCases({
+    target: TARGET,
+    resource: "<resource>",
+    // Optional: always include high-signal siblings; remaining mixed-mode slots are sampled.
+    distractors: ["<sibling-tool>"],
+    directPrompts: [
+      { input: "Use <tool-name> to <perform its purpose>.", expected: [{ toolName: TARGET, input: {/* expected args */} }] },
+    ],
+    inferredPrompts: [
+      { input: "<prompt where intent has to be inferred>", expected: [{ toolName: TARGET, input: {/* expected args */} }] },
+    ],
+  });
+}
 ```
 
-Use `toolCallAccuracy` in **`flexible` mode** for selection — order doesn't matter, only that the right tool was called with the right args. Reserve `exact` mode for multi-step workflow evals where call sequence matters.
+`buildToolCases` tags every case with `metadata.tool` and `metadata.resource` so `--tool` / `--filter-metadata tool=` works and results land under `evals/results/<model>/<resource>/`. Loading mode is a provider variant (`gpt-5.6-sol-high · isolated`, `gpt-5.6-sol-high · mixed`, …), not a test-case dimension.
+
+The scorer requires **exactly one** tool call with the expected name and args. Missing calls, extra calls, and multiple expected calls fail the cell. The v1 eval matrix does not cover abstention, negative, or multi-tool prompts.
 
 ## Writing prompts
 
-- **Direct prompts** name the concept the tool covers — "list my budgets", "show recommendation views", "delete cost report crt_xyz". They test that the description's first sentence carries the load.
-- **Inferred prompts** describe the user's *goal*, not the tool — "I want to make sure we don't blow past $50k this quarter" → `create-budget`. They test description coverage and any disambiguating context.
-- Write prompts a Vantage MCP user would *actually* send. Generic phrasings with no product context (e.g. `"Who am I?"`) put unfair pressure on the description — models may read them as general knowledge questions, not Vantage account queries. Drop or rephrase prompts like that rather than padding the tool description to catch them.
-- 3–6 prompts per suite is plenty. More cells = more API spend on every model rev, not more signal.
+- **Direct prompts** explicitly include the target's exact registered tool identifier — for example, "Use `get-myself` to inspect the current Vantage credentials." Naming only the concept, title, or resource is not direct enough. These prompts test explicit invocation and argument extraction.
+- **Inferred prompts** describe the user's _goal_ without naming the tool — "I want to make sure we don't blow past $50k this quarter" → `create-budget`. They test description coverage and any disambiguating context.
+- Every prompt expects exactly one tool call. Negative, abstention, and multi-tool cases are outside the v1 eval scope.
+- Write prompts a Vantage MCP user would _actually_ send. Generic phrasings with no product context (e.g. `"Who am I?"`) put unfair pressure on the description — models may read them as general knowledge questions, not Vantage account queries. Drop or rephrase prompts like that rather than padding the tool description to catch them.
+- Use exactly one direct prompt and one inferred prompt per tool. Each additional prompt doubles into isolated and mixed cells, increasing API spend.
 
 ## Distractors
 
-`_lib/distractors.ts` defines a fixed 5-tool pool — `pickTools(target, "mixed")` returns the target + 4 others (the target is filtered out of the pool first, so you always get exactly 4 distractors). The defaults are deliberately broad — they catch "is the description distinct from completely unrelated tools," not "is the description distinct from a sibling tool." If your tool has close neighbours (e.g. `list-budgets` vs. `list-folders` vs. `list-cost-reports`), the default pool won't apply enough pressure. Two options:
+`pickTools(target, "mixed")` returns the target plus four distractors sampled from every other tool in the live registry. The target-derived shuffle is deterministic: the sample is broad without changing between reruns. Adding or removing registered tools can change the sample.
 
-1. Pick siblings as the "distractors" inline in the eval — call `runToolSelection` with `toolNames: [TARGET, "list-folders", "list-cost-reports", ...]` instead of going through `pickTools`.
-2. Add a tool-specific distractor list inside the eval file and use it for the "mixed" mode.
+When a tool has close neighbours (for example `list-budgets`, `list-folders`, and `list-cost-reports`), name the high-signal siblings on the eval definition:
 
-Either way, document the choice in a comment at the top of the eval file so the next person knows what the mixed mode is actually testing.
+```ts
+return buildToolCases({
+  target: TARGET,
+  resource: "budgets",
+  distractors: ["list-folders", "list-cost-reports"],
+  // prompts...
+});
+```
+
+Named distractors are loaded first and the remaining slots are sampled automatically. Provide at most four unique, registered tool names; do not include the target itself.
 
 ## Reading failures
 
-The matrix tells you *what to fix*:
+The matrix tells you _what to fix_:
 
-| Failure pattern                              | Most likely cause                                                            | Fix                                                                                  |
-| -------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| **Direct + isolated** fails                  | First sentence of description doesn't name the concept, or zod arg name buries it. | Edit description; rename/re-describe the arg.                                        |
-| **Direct + mixed** fails but isolated passes | A distractor's description is winning the comparison.                        | Add a one-line "Do not use for X" to either tool — usually the *distractor*. (See `create-cost-alert.ts` for the pattern.) |
-| **Inferred + isolated** fails                | Description doesn't cover the indirect phrasing. The arg names alone weren't a hint. | Add one sentence connecting the goal to the tool (cap: one sentence).                 |
-| **Inferred + mixed** fails but isolated passes | Description covers the concept but a sibling tool covers it too well.       | Disambiguate (same pattern as the second row).                                       |
-| Only the smallest model fails one prompt     | Often a prompt-fairness issue, not a description issue.                       | Drop or rephrase the prompt. Don't grow the description to win a single weak-model row. |
-| Wrong args (right tool)                      | A zod field is missing a useful `.describe()`, or a required field looks optional. | Tighten `.describe()` strings; add `.default()` if the value is genuinely defaultable. |
+| Failure pattern                                | Most likely cause                                                                     | Fix                                                                                                         |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Direct + isolated** fails                    | The prompt does not use the exact registered name, or required arguments are unclear. | Correct the tool identifier in the prompt; tighten zod argument descriptions.                               |
+| **Direct + mixed** fails but isolated passes   | A distractor wins despite the explicit tool name.                                     | Check that the registered name and description agree; inspect the mixed distractors for a naming collision. |
+| **Inferred + isolated** fails                  | Description doesn't cover the indirect phrasing. The arg names alone weren't a hint.  | Add one sentence connecting the goal to the tool (cap: one sentence).                                       |
+| **Inferred + mixed** fails but isolated passes | Description covers the concept but a sibling tool covers it too well.                 | Disambiguate (same pattern as the second row).                                                              |
+| Only the smallest model fails one prompt       | Often a prompt-fairness issue, not a description issue.                               | Drop or rephrase the prompt. Don't grow the description to win a single weak-model row.                     |
+| Wrong args (right tool)                        | A zod field is missing a useful `.describe()`, or a required field looks optional.    | Tighten `.describe()` strings; add `.default()` if the value is genuinely defaultable.                      |
 
 **Iteration order when an eval fails:**
 
@@ -146,8 +167,14 @@ The rule is: **don't write to the eval.** The eval validates the description and
 
 ## Checklist
 
-- [ ] `evals/<...>/<tool>.eval.ts` exists with both `direct` and `inferred` suites.
-- [ ] 3–6 prompts per suite; each prompt is something a Vantage MCP user would actually send.
+- [ ] The user explicitly opted in to evals; otherwise no files under `evals/` were added or modified.
+- [ ] The user was asked whether the provider API key they intend to use is configured in `.env`.
+- [ ] `evals/cases/<resource>/<tool>.eval.ts` contains exactly one direct prompt and one inferred prompt.
+- [ ] The direct prompt contains the exact registered tool identifier; the inferred prompt does not name the tool.
+- [ ] Every prompt expects exactly one tool call with exact args.
+- [ ] Both prompts are things a Vantage MCP user would actually send.
 - [ ] Mixed-mode distractors documented if the default pool is too weak for sibling tools.
-- [ ] `npm run eval -- ./evals/<...>/<tool>.eval.ts` is green.
-- [ ] `evals/evalite.db` is staged alongside the tool change (new rows appended; commit as baseline).
+- [ ] If execution was not explicitly requested, no model-backed eval was run and the handoff includes the targeted command plus model-selection instructions.
+- [ ] If execution was explicitly requested, the user confirmed credential setup and selected the model and effort before the run.
+- [ ] After an authorized run, `npm run eval -- --tool <tool> --model <selected-model>` is green and the new result JSON is staged as the baseline.
+- [ ] After an authorized run, `npm run eval:site` has been run locally if you want to inspect the report before push.

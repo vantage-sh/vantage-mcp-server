@@ -239,15 +239,32 @@ Wrangler serves the worker at `http://localhost:8787` (default). Setting `VANTAG
 
 ## Running Evals
 
-**New tools** must ship with an eval file under `evals/<tool>.eval.ts` (or `evals/<resource>/<tool>.eval.ts`). See `.agents/skills/writing-evals/SKILL.md` (tool authoring: `.agents/skills/writing-mcp-tools/SKILL.md`).
+Each tool is scored two ways — **1:1** (only that tool loaded) and **1:5** (that tool plus four distractors) — then replayed across models. Outcomes are committed as JSON so we do not re-run the whole suite; GitHub Pages rebuilds the report from those files. The approach and full workflow are in [evals.md](evals.md).
+
+**New tools** must ship with cases under `evals/cases/<resource>/<tool>.eval.ts`. Authoring conventions: [`.agents/skills/writing-evals/SKILL.md`](.agents/skills/writing-evals/SKILL.md).
+
+### View outcomes locally
 
 ```bash
-npm run eval -- ./evals/<...>/<your-tool>.eval.ts
+npm run eval:site
+open evals/site/index.html
 ```
 
-Commit the updated `evals/evalite.db` alongside the tool change. Evals are not run in CI.
+No model API keys required. The published report is at <https://vantage-sh.github.io/vantage-mcp-server/>.
 
-Browse results locally: `npm run eval:export && open ./evalite-export/index.html`. A live UI is published at <https://vantage-sh.github.io/vantage-mcp-server/>.
+### Run a new eval
+
+Set `ANTHROPIC_API_KEY` and/or `OPENAI_API_KEY` in `.env`, then:
+
+```bash
+npm run eval -- --tool <your-tool> --model gpt-5.6-sol-high
+```
+
+`--model` is required (`npm run eval -- --list-models` prints the catalog). That writes `evals/results/<model>/<resource>/<tool>.json` and leaves every other result file untouched. Commit the new JSON.
+
+### Overwrite an eval
+
+Re-run the same `--tool` and `--model`. The JSON for that pair is replaced. Do this after changing a tool's description, schema, or prompts — you do not need to re-run every model unless you want those baselines refreshed too.
 
 ---
 
@@ -262,9 +279,9 @@ Browse results locally: `npm run eval:export && open ./evalite-export/index.html
 - `npm run cf-typegen` — Generate Cloudflare Worker types
 - `npm run generate-tools-index` — Regenerate `src/tools/index.ts` after tool changes
 - `npm run generate-resources-index` — Regenerate `src/resources/index.ts` after resource changes
-- `npm run eval` — Run evals (`npm run eval -- ./evals/<path>` for one file)
-- `npm run eval:dev` — Evalite watch mode with UI on `localhost:3006`
-- `npm run eval:export` — Static HTML bundle from `evals/evalite.db`
+- `npm run eval` — Run tool-selection evals (`npm run eval -- --tool <name> --model gpt-5.6-sol-high`)
+- `npm run eval:site` — Merge stored JSON and write `evals/site/index.html`
+- `npm run eval:view` — Open promptfoo's local results viewer
 
 ---
 
