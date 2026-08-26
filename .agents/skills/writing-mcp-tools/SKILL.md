@@ -1,6 +1,6 @@
 ---
 name: writing-mcp-tools
-description: Author a new MCP tool for the Vantage MCP server — file layout under resource folders, registerTool template, annotation hints, description style, and tests. Use whenever adding, splitting, refactoring, or relocating a tool under `src/tools/`. For evals, see writing-evals.
+description: Author a new MCP tool for the Vantage MCP server — file layout under resource folders, registerTool template, annotation hints, description style, and tests. Use whenever adding, splitting, refactoring, or relocating a tool under `src/tools/`. Evals are optional; see writing-evals when the user opts in.
 ---
 
 # Writing MCP tools
@@ -131,7 +131,7 @@ Cut:
 - Describing the response shape — the model sees the result.
 - Long onboarding paragraphs ("This tool is useful when…"). If the trigger condition needs explaining, one sentence is the cap.
 
-We measure description quality with **evals** — see `.agents/skills/writing-evals/SKILL.md`. A description is "good" when an eval can drive correct tool selection and correct argument shape from minimal prose. If an eval is failing, fix the description or the zod schema before reaching for more prose — and reach for the schema first.
+When the user opts in, **evals** can measure description quality — see `.agents/skills/writing-evals/SKILL.md`. A description is "good" when an eval can drive correct tool selection and correct argument shape from minimal prose. If an eval is failing, fix the description or the zod schema before reaching for more prose — and reach for the schema first.
 
 ## Args / zod
 
@@ -259,11 +259,16 @@ Always include:
 - A successful-execution test that asserts both the request params (via `requestsInOrder`) and the returned shape.
 - An unsuccessful-execution test that asserts the `MCPUserError` exception shape.
 
-## Evals
+## Optional evals
 
-Every new tool needs an eval file under `evals/`. Evals verify that the description and zod schema are enough for a model to select and call the tool from natural language — they are not optional for new tools.
+Evals are opt-in. When adding or changing a tool, ask the user:
 
-See **`.agents/skills/writing-evals/SKILL.md`** for the full guide: file template, prompt matrix, distractors, failure diagnosis, and `evalite.db` workflow.
+1. Whether they want evals included in the change.
+2. If so, whether the provider API key for the model they intend to use is configured in the ignored `.env` file.
+
+If the user declines evals, do not add or modify eval case files, result JSON, or the generated site. If they want evals but do not have the required API key configured, the case file may still be authored, but do not run it; explain the missing setup at handoff. Never infer permission to include or run evals from an existing case file or the presence of credentials.
+
+After the user opts in, see **`.agents/skills/writing-evals/SKILL.md`** for the full guide: file template, prompt matrix, distractors, failure diagnosis, and the `evals/results/<model>/` JSON workflow.
 
 ## Checklist before opening a PR
 
@@ -276,5 +281,6 @@ See **`.agents/skills/writing-evals/SKILL.md`** for the full guide: file templat
 - [ ] Every zod field has a `.describe(...)` and uses the right helper (`dateValidator`, `pathEncode`, `DEFAULT_LIMIT`, `paginationData`, `MCPUserError`).
 - [ ] Delete tools return `{ token: args.<resource>_token }`.
 - [ ] Tests live under `test/tools/<resource>/` and cover schema validation (valid + poisoned), success, and failure.
-- [ ] Eval checklist in `.agents/skills/writing-evals/SKILL.md` is complete.
+- [ ] The user was asked whether to include evals and, if they opted in, whether the provider API key they intend to use is configured in `.env`.
+- [ ] If evals were included, the applicable checklist in `.agents/skills/writing-evals/SKILL.md` is complete.
 - [ ] `npm run type-check` and `npm test -- --run` are green.

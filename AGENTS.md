@@ -13,7 +13,7 @@ Working notes for agents in this repo. The README covers setup and deployment; t
 | Adding or changing MCP resources (VQL docs) | `src/resources/README.md` |
 | Setup, client config, worker deployment | `README.md` |
 
-**New tools** must ship with a matching unit test under `test/` (`testTool`) and an eval file. Treat the writing-mcp-tools and writing-evals skills as a pair. Existing tools mostly predate evals — do not backfill evals unless asked. If an existing tool already has an eval, rerun it when changing that tool's description or schema.
+**New tools** must ship with a matching unit test under `test/` (`testTool`). Evals are opt-in: ask whether the user wants them included and, if so, whether the provider API key they intend to use is configured in the ignored `.env` file. Use the writing-evals skill only after the user opts in. Existing tools mostly predate evals — do not backfill or update evals unless asked. Opting in to eval authoring does not authorize a model-backed run; execution requires explicit approval and confirmation that the required API key is configured.
 
 ## What this file does not cover
 
@@ -68,4 +68,4 @@ Before opening a PR:
 - `npm run type-check`, `npm run lint`, and `npm test -- --run`
 - If you touched tool layout: `npm run generate-tools-index` (Vitest also asserts the index is current)
 - If you touched resources: `npm run generate-resources-index`
-- For a new tool: add an eval, run only that eval — `npm run eval -- ./evals/<...>/<tool>.eval.ts` — and commit the updated `evalite.db` alongside the change. For an existing tool, rerun its eval when changing the description or schema; do not backfill evals for legacy tools unless asked. See `.agents/skills/writing-evals/SKILL.md` for the full workflow.
+- If the user opts in to evals for a new or existing tool, add or update `evals/cases/<resource>/<tool>.eval.ts`. Run it only when the user separately authorizes execution and confirms the selected provider's API key is configured in `.env`: `npm run eval -- --tool <name> --model gpt-5.6-sol-high`. Commit the resulting JSON under `evals/results/<model>/<resource>/`, then run `npm run eval:site`. If the user wants an eval case but does not have the required key configured, author the case file without running it. See `.agents/skills/writing-evals/SKILL.md` for the full workflow.

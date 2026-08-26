@@ -1,0 +1,53 @@
+name: Deploy Eval Results to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "evals/results/**"
+      - "evals/_lib/generate-site.ts"
+      - "evals/_lib/resultsStore.ts"
+      - ".github/workflows/deploy-eval-results.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate eval report from stored JSON
+        run: npm run eval:site
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./evals/site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
