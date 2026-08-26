@@ -75,10 +75,13 @@ export function summarizeResults(results: EvaluateResult[], timestamp = new Date
 }
 
 export function asOutputFile(results: EvaluateResult[], extras: Partial<OutputFile> = {}): OutputFile {
+  const config = { ...extras.config };
+  delete config.outputPath;
+
   return {
     evalId: extras.evalId ?? null,
     results: summarizeResults(results),
-    config: extras.config ?? {},
+    config,
     shareableUrl: extras.shareableUrl ?? null,
     metadata: extras.metadata,
   };

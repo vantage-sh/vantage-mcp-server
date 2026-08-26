@@ -672,9 +672,6 @@
       "file://cases/current-user/get-myself.eval.ts"
     ],
     "env": {},
-    "outputPath": [
-      "/Users/jeremykreutzbender/Developer/vantage/vantage-mcp-server/evals/.tmp-eval.json"
-    ],
     "extensions": [],
     "metadata": {},
     "evaluateOptions": {
