@@ -1,22 +1,24 @@
 ---
 name: writing-evals
-description: Write and iterate on tool-selection evals for the Vantage MCP server — promptfoo setup, prompt matrix, distractors, failure diagnosis, and JSON/Pages workflow. Use when adding or updating evals under `evals/` or when an eval run fails after changing a tool description or zod schema.
+description: Write and iterate on opt-in tool-selection evals for the Vantage MCP server — promptfoo setup, prompt matrix, distractors, failure diagnosis, and JSON/Pages workflow. Use after the user chooses to include evals, or when working on an eval they explicitly requested.
 ---
 
 # Writing evals
 
 Unit tests prove a tool wires up and the API call shape is right. **Evals prove the description + zod schema are good enough that a model can find and call the tool from a natural-language prompt.** Tool authoring conventions (description style, zod `.describe()` strings) live in `.agents/skills/writing-mcp-tools/SKILL.md`; this skill covers the eval harness and how to iterate when rows fail.
 
-## Execution requires explicit user approval
+## Opt-in and execution approval
 
-Writing, adding, or updating an eval does **not** authorize running it. Model-backed evals make fresh API calls, may incur cost, and can create or replace result JSON. Unless the user explicitly asks to execute the eval:
+Evals are not a default part of adding or changing a tool. If the user has not already explicitly requested evals, ask whether they want them included. If they opt in, also ask whether the provider API key for the model they intend to use is configured in the ignored `.env` file. If they decline, do not add or modify eval case files, result JSON, or the generated site.
+
+Opting in to eval authoring does **not** authorize running an eval. Model-backed evals make fresh API calls, may incur cost, and can create or replace result JSON. Unless the user explicitly asks to execute the eval:
 
 - Write or update only the case file under `evals/cases/`.
 - Do not run `npm run eval`, `npm run eval:all`, or a filtered rerun.
 - Do not create or modify files under `evals/results/` or regenerate the eval site as a consequence of the authoring task.
 - At handoff, provide the exact targeted command the user can run and mention `npm run eval -- --list-models` for the approved model catalog. You may also offer to run it, but wait for an explicit follow-up.
 
-If the user asks to run an eval but does not select a model, ask which approved model and effort they want before executing it. Explain that promptfoo loads credentials from the ignored `.env` file and that every invocation makes fresh, uncached model calls. A repository requirement to produce a baseline before a PR is a pending verification step to report, not authorization to spend API credits.
+If the user wants evals but says the required key is not configured, author the case file only and explain the missing setup at handoff. If the user asks to run an eval but has not confirmed credential setup, ask whether the required provider key is configured in `.env`. If they have not selected a model, ask which approved model and effort they want before executing it. Explain that promptfoo loads credentials from `.env` and that every invocation makes fresh, uncached model calls. A repository requirement to produce a baseline before a PR is a pending verification step to report, not authorization to spend API credits.
 
 ## Stack and commands
 
@@ -33,7 +35,7 @@ If the user asks to run an eval but does not select a model, ask which approved 
 
 `--model` is required. The slug is an approved model id, optionally plus an effort suffix (`gpt-5.6-sol-high`). Models that do not expose effort (today: `claude-haiku-4-5`) take the bare id. Effort is optional even when the model supports it — `gpt-5.6-sol` uses the provider default. Dotted forms like `gpt-5.6.sol-high` are accepted and stored as `gpt-5.6-sol-high`. The catalog lives in `evals/_lib/models.ts`.
 
-promptfoo loads the ignored `.env` file; set `ANTHROPIC_API_KEY` and `OPENAI_API_KEY` there before the first run. Do not infer permission to run from the presence of a key. Every eval invocation makes fresh model calls; promptfoo's response cache is disabled. An unfiltered run replaces the selected result JSON. A run using a partial promptfoo filter merges rerun cells into the retained baseline and preserves cells the filter omitted.
+promptfoo loads the ignored `.env` file; set `ANTHROPIC_API_KEY` or `OPENAI_API_KEY` there for the selected model's provider before the first run. Do not infer permission to run from the presence of a key. Every eval invocation makes fresh model calls; promptfoo's response cache is disabled. An unfiltered run replaces the selected result JSON. A run using a partial promptfoo filter merges rerun cells into the retained baseline and preserves cells the filter omitted.
 
 Extra promptfoo flags pass through: `--filter-failing <file>`, `--filter-metadata phrasing=direct`.
 
@@ -48,8 +50,8 @@ evals/
   site/                                       # generated report.html → GitHub Pages (not committed)
 ```
 
-- **Adding a tool:** write `evals/cases/<resource>/<tool>.eval.ts`. Unless the user explicitly asked for execution, stop there and provide `npm run eval -- --tool <tool> --model <approved-model>` as the next-step command. When explicitly authorized, the run writes `evals/results/<model>/<resource>/<tool>.json` and leaves every other tool's files untouched; then run `npm run eval:site` and commit the new JSON.
-- **Editing an existing tool:** update the case file. Re-run that tool only when the user explicitly asks; its per-tool JSON is replaced.
+- **Adding a tool:** after the user opts in to evals, write `evals/cases/<resource>/<tool>.eval.ts`. Unless the user explicitly asked for execution and confirmed the required API key is configured, stop there and provide `npm run eval -- --tool <tool> --model <approved-model>` as the next-step command. When explicitly authorized, the run writes `evals/results/<model>/<resource>/<tool>.json` and leaves every other tool's files untouched; then run `npm run eval:site` and commit the new JSON.
+- **Editing an existing tool:** update the case file only when the user opts in to eval work. Re-run that tool only when the user explicitly asks and confirms credential setup; its per-tool JSON is replaced.
 - **Filtered rerun:** partial filters such as `--filter-failing` and `--filter-metadata` replace matching cells by provider and case identity while preserving every stored cell the filter omitted.
 - **Full-model refresh:** the normal `eval` command rejects a missing `--tool`. Use `npm run eval:all -- --model <model>` only when you intentionally want to refresh every case for that model.
 - **Merge conflicts** on a JSON file: take one side, re-run that tool, commit the result.
@@ -165,12 +167,14 @@ The rule is: **don't write to the eval.** The eval validates the description and
 
 ## Checklist
 
+- [ ] The user explicitly opted in to evals; otherwise no files under `evals/` were added or modified.
+- [ ] The user was asked whether the provider API key they intend to use is configured in `.env`.
 - [ ] `evals/cases/<resource>/<tool>.eval.ts` contains exactly one direct prompt and one inferred prompt.
 - [ ] The direct prompt contains the exact registered tool identifier; the inferred prompt does not name the tool.
 - [ ] Every prompt expects exactly one tool call with exact args.
 - [ ] Both prompts are things a Vantage MCP user would actually send.
 - [ ] Mixed-mode distractors documented if the default pool is too weak for sibling tools.
 - [ ] If execution was not explicitly requested, no model-backed eval was run and the handoff includes the targeted command plus model-selection instructions.
-- [ ] If execution was explicitly requested, the user selected the model and effort before the run.
+- [ ] If execution was explicitly requested, the user confirmed credential setup and selected the model and effort before the run.
 - [ ] After an authorized run, `npm run eval -- --tool <tool> --model <selected-model>` is green and the new result JSON is staged as the baseline.
 - [ ] After an authorized run, `npm run eval:site` has been run locally if you want to inspect the report before push.
