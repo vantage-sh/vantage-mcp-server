@@ -255,6 +255,28 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     },
     expectedIssues: ["Invalid date input, must be YYYY-MM-DD format and a reasonable date."],
   },
+  {
+    name: "period_cadence missing starts_at",
+    data: {
+      ...undefineds,
+      name: "Missing Anchor Budget",
+      period_cadence: {
+        interval_count: 1,
+        interval_unit: "month",
+      } as any,
+    },
+    expectedIssues: ["Invalid input: expected string, received undefined"],
+  },
+  {
+    name: "period_cadence with starts_at only",
+    data: {
+      ...undefineds,
+      name: "Anchor Only Budget",
+      period_cadence: {
+        starts_at: "2026-01-01",
+      },
+    },
+  },
 ];
 
 const successData: CreateBudgetResponse = {

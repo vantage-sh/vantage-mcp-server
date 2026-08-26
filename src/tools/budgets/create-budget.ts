@@ -33,7 +33,7 @@ export default registerTool({
     period_cadence: periodCadence
       .optional()
       .describe(
-        "Interval cadence for budget periods (starts_at, interval_count, interval_unit). Requires flexible_budget_periods. Ignored for hierarchical Budgets."
+        "Interval cadence for budget periods. When set, starts_at is required (YYYY-MM-DD, or null to clear). interval_count and interval_unit may be omitted on updates. Rejected for hierarchical Budgets."
       ),
     periods: z
       .array(budgetPeriod)

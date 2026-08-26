@@ -190,6 +190,28 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     },
     expectedIssues: ["Too small: expected number to be >=1"],
   },
+  {
+    name: "period_cadence missing starts_at",
+    data: {
+      ...undefineds,
+      budget_token: "bdgt_123",
+      period_cadence: {
+        interval_count: 1,
+        interval_unit: "month",
+      } as any,
+    },
+    expectedIssues: ["Invalid input: expected string, received undefined"],
+  },
+  {
+    name: "period_cadence with starts_at only",
+    data: {
+      ...undefineds,
+      budget_token: "bdgt_123",
+      period_cadence: {
+        starts_at: "2026-01-01",
+      },
+    },
+  },
 ];
 
 const successData: UpdateBudgetResponse = {
