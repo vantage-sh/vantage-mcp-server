@@ -69,7 +69,11 @@ export function validateEvalScope(args: Pick<ParsedEvalArgs, "all" | "tool">): s
     return "Choose either --tool <name> or the eval:all command, not both.";
   }
   if (!args.all && !args.tool) {
-    return "--tool <name> is required. To deliberately refresh every tool, use npm run eval:all -- --model <id[-effort]>.";
+    return [
+      "--tool <name> is required.",
+      "Pass flags after `--` so npm forwards them to the script, e.g. npm run eval -- --tool get-myself --model gpt-5.6-sol-high.",
+      "To deliberately refresh every tool, use npm run eval:all -- --model <id[-effort]>.",
+    ].join(" ");
   }
   return undefined;
 }

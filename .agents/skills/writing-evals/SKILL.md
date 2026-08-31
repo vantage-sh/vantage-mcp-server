@@ -76,6 +76,7 @@ evals/
   promptfooconfig.ts
 ```
 
+OpenAI tools are built with `strict: false`. The Responses API otherwise fills omitted optional args with `""` / placeholders (`x`, `.*`, …), which makes exact arg scoring fail even when tool selection is correct. Do not switch OpenAI evals to Chat Completions solely to avoid that — some models (e.g. `gpt-5.6-luna`) reject function tools on `/v1/chat/completions` unless `reasoning_effort` is `none`.
 Case files live under `evals/cases/<resource>/` so they stay out of Vitest's path and match `src/tools/<resource>/`. Use the `.eval.ts` suffix so they are distinct from the tool file and the unit test. `promptfooconfig.ts` picks up every `**/*.eval.ts` file automatically. The adapter imports `src/tools` once and reads tools out of the live `registerTool` registry — adding a new tool to the codebase makes it available to evals automatically; you just need to write its case file.
 
 ## The matrix
@@ -141,7 +142,8 @@ return buildToolCases({
 });
 ```
 
-Named distractors are loaded first and the remaining slots are sampled automatically. Provide at most four unique, registered tool names; do not include the target itself.
+- Named distractors are loaded first and the remaining slots are sampled automatically. Provide at most four unique, registered tool names; do not include the target itself.
+- `buildToolCases` sets `options.disableVarExpansion: true` so promptfoo does not expand the `distractors` / `expected` arrays into separate test cases.
 
 ## Reading failures
 

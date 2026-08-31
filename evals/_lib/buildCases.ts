@@ -31,6 +31,11 @@ export function buildToolCases(definition: ToolEvalDefinition): TestCase[] {
         expected: prompt.expected,
         ...(definition.distractors ? { distractors: definition.distractors } : {}),
       },
+      // Keep array vars (expected, distractors) intact. Without this, promptfoo
+      // expands string arrays into a cartesian product of separate test cases.
+      options: {
+        disableVarExpansion: true,
+      },
       metadata: {
         tool: definition.target,
         resource: definition.resource,

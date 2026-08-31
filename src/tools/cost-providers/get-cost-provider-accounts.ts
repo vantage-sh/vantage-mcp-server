@@ -1,15 +1,13 @@
+import { VANTAGE_PROVIDERS } from "@vantage-sh/vantage-client";
 import z from "zod";
 import paginationData from "../../utils/paginationData";
-import { vantageToken } from "../../utils/zod";
-import { DEFAULT_LIMIT } from "../structure/constants";
+import { nonempty, vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
 const description = `
-Get the list of Cost Provider Accounts that the current user has access to in their workspace and their names.
-This is useful for mapping IDs you have gotten from other endpoints to human-readable names, or if you need to get the
-ID of a Cost Provider Account to use in places. The account_id in this result can be passed as the account_id in VQL queries.
-When possible, use the provider or account_id filters to narrow results. Results are paginated for large accounts.
+Get Cost Provider Accounts in a workspace with human-readable titles.
+Useful for mapping account IDs to names, or looking up an account_id for VQL.
 `.trim();
 
 export default registerTool({
@@ -18,10 +16,13 @@ export default registerTool({
   description,
   args: {
     workspace_token: vantageToken("workspace"),
-    account_id: z.string().optional().describe("Filter by a specific account ID"),
-    provider: z.string().optional().describe("Provider to filter provider accounts to"),
-    page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
-    limit: z.number().optional().default(DEFAULT_LIMIT).describe("The number of results to return per page"),
+    account_id: nonempty().optional().describe("Filter by a specific account ID."),
+    account_name: nonempty().optional().describe("Filter by account name (exact match)."),
+    provider: z
+      .enum(VANTAGE_PROVIDERS)
+      .optional()
+      .describe("Provider to filter provider accounts to. Use list-cost-providers to discover connected providers."),
+    q: nonempty().optional().describe("Search Cost Provider Accounts by title."),
   },
   annotations: {
     destructive: false,
@@ -29,15 +30,7 @@ export default registerTool({
     readOnly: true,
   },
   async execute(args, ctx) {
-    const response = await ctx.callVantageApi(
-      "/v2/cost_provider_accounts",
-      {
-        ...args,
-        // @ts-expect-error: This is a workaround so we don't have to keep patching the type here
-        provider: args.provider,
-      },
-      "GET"
-    );
+    const response = await ctx.callVantageApi("/v2/cost_provider_accounts", args, "GET");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }
