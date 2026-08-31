@@ -22,7 +22,9 @@ describe("eval command arguments", () => {
 
   it("rejects an implicit full eval", () => {
     const parsed = parseEvalArgs(["--model", "gpt-5.6-sol-high"]);
-    expect(validateEvalScope(parsed)).toMatch(/--tool <name> is required/);
+    const error = validateEvalScope(parsed);
+    expect(error).toMatch(/--tool <name> is required/);
+    expect(error).toMatch(/npm run eval -- --tool/);
   });
 
   it("rejects combining a targeted and full eval", () => {
