@@ -1,6 +1,5 @@
 import { VANTAGE_PROVIDERS } from "@vantage-sh/vantage-client";
 import z from "zod";
-import paginationData from "../../utils/paginationData";
 import { nonempty, vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
@@ -34,9 +33,6 @@ export default registerTool({
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }
-    return {
-      cost_provider_accounts: response.data.cost_provider_accounts,
-      pagination: paginationData(response.data),
-    };
+    return response.data;
   },
 });

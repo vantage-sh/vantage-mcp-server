@@ -133,13 +133,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         provider: undefined,
         q: undefined,
       });
-      expect(res).toEqual({
-        cost_provider_accounts: successData.cost_provider_accounts,
-        pagination: {
-          hasNextPage: false,
-          nextPage: 0,
-        },
-      });
+      expect(res).toEqual(successData);
     },
   },
   {
@@ -169,13 +163,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         provider: undefined,
         q: undefined,
       });
-      expect(res).toEqual({
-        cost_provider_accounts: successData.cost_provider_accounts,
-        pagination: {
-          hasNextPage: false,
-          nextPage: 0,
-        },
-      });
+      expect(res).toEqual(successData);
     },
   },
   {
@@ -205,13 +193,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         provider: "aws",
         q: undefined,
       });
-      expect(res).toEqual({
-        cost_provider_accounts: successData.cost_provider_accounts,
-        pagination: {
-          hasNextPage: false,
-          nextPage: 0,
-        },
-      });
+      expect(res).toEqual(successData);
     },
   },
   {
@@ -241,13 +223,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         provider: undefined,
         q: "prod",
       });
-      expect(res).toEqual({
-        cost_provider_accounts: successData.cost_provider_accounts,
-        pagination: {
-          hasNextPage: false,
-          nextPage: 0,
-        },
-      });
+      expect(res).toEqual(successData);
     },
   },
   {
