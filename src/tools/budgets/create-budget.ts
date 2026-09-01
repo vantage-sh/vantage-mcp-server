@@ -2,7 +2,7 @@ import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { budgetPeriod } from "./schemas";
+import { budgetPeriod, periodCadence } from "./schemas";
 
 const description = `
 Creates a budget based on the parameters specified. This is useful if you have been tasked with managing budgets
@@ -30,6 +30,11 @@ export default registerTool({
       .array(vantageToken("budget"))
       .optional()
       .describe("The tokens of any child Budgets when creating a hierarchical Budget."),
+    period_cadence: periodCadence
+      .optional()
+      .describe(
+        "Interval cadence for budget periods. When set, starts_at is required (YYYY-MM-DD, or null to clear). interval_count and interval_unit may be omitted on updates. Rejected for hierarchical Budgets."
+      ),
     periods: z
       .array(budgetPeriod)
       .optional()

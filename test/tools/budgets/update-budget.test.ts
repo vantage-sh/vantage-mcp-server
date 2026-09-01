@@ -18,6 +18,7 @@ const undefineds = {
   name: undefined,
   cost_report_token: undefined,
   child_budget_tokens: undefined,
+  period_cadence: undefined,
   periods: undefined,
 };
 
@@ -31,6 +32,11 @@ const validInputArguments: InferValidators<Validators> = {
   name: "Updated Budget",
   cost_report_token: "rprt_456",
   child_budget_tokens: ["bdgt_child1", "bdgt_child2"],
+  period_cadence: {
+    starts_at: "2024-01-01",
+    interval_count: 1,
+    interval_unit: "month",
+  },
   periods: [
     {
       start_at: "2024-01-01",
@@ -134,6 +140,78 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       child_budget_tokens: [],
     },
   },
+  {
+    name: "period_cadence only",
+    data: {
+      ...undefineds,
+      budget_token: "bdgt_123",
+      period_cadence: {
+        starts_at: "2026-01-01",
+        interval_count: 2,
+        interval_unit: "week",
+      },
+    },
+  },
+  {
+    name: "period_cadence with null starts_at",
+    data: {
+      ...undefineds,
+      budget_token: "bdgt_123",
+      period_cadence: {
+        starts_at: null,
+        interval_count: 1,
+        interval_unit: "year",
+      },
+    },
+  },
+  {
+    name: "period_cadence with invalid interval_unit",
+    data: {
+      ...undefineds,
+      budget_token: "bdgt_123",
+      period_cadence: {
+        starts_at: "2026-01-01",
+        interval_count: 1,
+        interval_unit: "quarter" as "month",
+      },
+    },
+    expectedIssues: ['Invalid option: expected one of "day"|"week"|"month"|"year"'],
+  },
+  {
+    name: "period_cadence with zero interval_count",
+    data: {
+      ...undefineds,
+      budget_token: "bdgt_123",
+      period_cadence: {
+        starts_at: "2026-01-01",
+        interval_count: 0,
+        interval_unit: "month",
+      },
+    },
+    expectedIssues: ["Too small: expected number to be >=1"],
+  },
+  {
+    name: "period_cadence missing starts_at",
+    data: {
+      ...undefineds,
+      budget_token: "bdgt_123",
+      period_cadence: {
+        interval_count: 1,
+        interval_unit: "month",
+      } as any,
+    },
+    expectedIssues: ["Invalid input: expected string, received undefined"],
+  },
+  {
+    name: "period_cadence with starts_at only",
+    data: {
+      ...undefineds,
+      budget_token: "bdgt_123",
+      period_cadence: {
+        starts_at: "2026-01-01",
+      },
+    },
+  },
 ];
 
 const successData: UpdateBudgetResponse = {
@@ -144,6 +222,11 @@ const successData: UpdateBudgetResponse = {
   budget_alert_tokens: [],
   child_budget_tokens: ["bdgt_child1", "bdgt_child2"],
   created_at: "2023-01-01T00:00:00Z",
+  period_cadence: {
+    starts_at: "2024-01-01",
+    interval_count: 1,
+    interval_unit: "month",
+  },
   periods: [
     {
       start_at: "2024-01-01",
@@ -168,6 +251,11 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           name: "Updated Budget",
           cost_report_token: "rprt_456",
           child_budget_tokens: ["bdgt_child1", "bdgt_child2"],
+          period_cadence: {
+            starts_at: "2024-01-01",
+            interval_count: 1,
+            interval_unit: "month",
+          },
           periods: [
             { start_at: "2024-01-01", end_at: "2024-01-31", amount: 1000 },
             { start_at: "2024-02-01", end_at: "2024-02-29", amount: 1200 },

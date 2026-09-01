@@ -3,10 +3,10 @@ import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { budgetPeriod } from "./schemas";
+import { budgetPeriod, periodCadence } from "./schemas";
 
 const description = `
-Updates an existing Budget. You can update the name, linked Cost Report, child Budget tokens for hierarchical budgets, or budget periods.
+Updates an existing Budget. You can update the name, linked Cost Report, child Budget tokens for hierarchical budgets, period cadence, or budget periods.
 `.trim();
 
 export default registerTool({
@@ -28,6 +28,11 @@ export default registerTool({
       .array(vantageToken("budget"))
       .optional()
       .describe("The updated tokens of child Budgets for a hierarchical Budget."),
+    period_cadence: periodCadence
+      .optional()
+      .describe(
+        "Updated interval cadence for budget periods. When set, starts_at is required (YYYY-MM-DD, or null to clear). interval_count and interval_unit may be omitted. Rejected for hierarchical Budgets."
+      ),
     periods: z
       .array(budgetPeriod)
       .optional()
