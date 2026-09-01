@@ -11,9 +11,11 @@ describe("buildToolCases", () => {
       inferredPrompts: [],
     });
 
+    expect(cases).toHaveLength(1);
     expect(cases[0].vars).toMatchObject({
       target: "get-myself",
       distractors: ["list-workspaces"],
     });
+    expect(cases[0].options).toEqual({ disableVarExpansion: true });
   });
 });

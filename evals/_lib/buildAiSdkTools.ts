@@ -13,6 +13,9 @@ export function buildAiSdkTools(names: readonly string[]): ToolSet {
     out[name] = tool({
       description: props.description,
       inputSchema: z.object(props.args),
+      // OpenAI Responses API fills omitted optionals with "" / placeholders unless
+      // strict is explicitly false. Chat Completions omits them correctly either way.
+      strict: false,
       execute: async () => ({}),
     });
   }
