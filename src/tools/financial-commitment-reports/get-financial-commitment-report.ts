@@ -8,7 +8,8 @@ Gets a specific financial commitment report by its token.
 
 Use this tool when you already have a financial commitment report token, such as one returned by
 Vantage or referenced in the Vantage console. The response includes the report's title, workspace,
-date range, grouping, cost scope, and filter configuration.
+date range, grouping, cost scope, and filter configuration. Use query-financial-commitment-report-costs
+with the same token to retrieve cost data for the report.
 `.trim();
 
 const args = {
