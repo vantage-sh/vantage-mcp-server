@@ -1,9 +1,7 @@
 import "../../src/tools";
 import { getRegisteredToolNames } from "../../src/tools/structure/registerTool";
 
-export const MIXED_DISTRACTOR_COUNT = 4;
-
-export type LoadingMode = "isolated" | "mixed";
+export const DISTRACTOR_COUNT = 4;
 
 function seededRandom(seed: string): () => number {
   let state = 2166136261;
@@ -36,8 +34,8 @@ function validateNamedDistractors(
   namedDistractors: readonly string[],
   availableTools: ReadonlySet<string>
 ): void {
-  if (namedDistractors.length > MIXED_DISTRACTOR_COUNT) {
-    throw new Error(`At most ${MIXED_DISTRACTOR_COUNT} named distractors may be provided for ${target}.`);
+  if (namedDistractors.length > DISTRACTOR_COUNT) {
+    throw new Error(`At most ${DISTRACTOR_COUNT} named distractors may be provided for ${target}.`);
   }
 
   const seen = new Set<string>();
@@ -56,28 +54,24 @@ function validateNamedDistractors(
 }
 
 /**
- * Returns the tools exposed to one eval cell. Mixed mode always keeps named
- * distractors, then fills the remaining slots from every other registered tool.
+ * Returns the tools exposed to one eval cell. Every cell keeps named distractors,
+ * then fills the remaining slots from every other registered tool.
  * The target-derived shuffle is deterministic so stored evals remain reproducible
  * while different targets receive different samples.
  */
-export function pickTools(target: string, mode: LoadingMode, namedDistractors: readonly string[] = []): string[] {
+export function pickTools(target: string, namedDistractors: readonly string[] = []): string[] {
   const registeredTools = getRegisteredToolNames().sort();
   const availableTools = new Set(registeredTools);
 
   if (!availableTools.has(target)) {
     throw new Error(`Target tool is not registered: ${target}. Did src/tools/index.ts forget to import it?`);
   }
-  if (mode === "isolated") {
-    return [target];
-  }
-
   validateNamedDistractors(target, namedDistractors, availableTools);
   const excluded = new Set([target, ...namedDistractors]);
   const sampled = shuffled(
     registeredTools.filter((name) => !excluded.has(name)),
     `vantage-eval-distractors-v1:${target}`
-  ).slice(0, MIXED_DISTRACTOR_COUNT - namedDistractors.length);
+  ).slice(0, DISTRACTOR_COUNT - namedDistractors.length);
 
   return [target, ...namedDistractors, ...sampled];
 }

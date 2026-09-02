@@ -9,8 +9,7 @@ import registerTool from "../structure/registerTool";
 import { costGroupingDescription, costGroupingSchema } from "./schemas";
 
 const description = `
-Query cost data for a Financial Commitment Report. Use get-financial-commitment-report or
-list-financial-commitment-reports to obtain a report token. Omit date_bin, groupings, filter, and
+Query cost data for a Financial Commitment Report. Omit date_bin, groupings, filter, and
 on_demand_costs_scope to use the report's saved configuration.
 
 DateBin controls time granularity. When DateBin=day each record represents one day; week and month
@@ -32,9 +31,7 @@ const args = {
   groupings: z
     .array(costGroupingSchema)
     .optional()
-    .describe(
-      `${costGroupingDescription} If omitted, the report's configured groupings are used.`
-    ),
+    .describe(`${costGroupingDescription} If omitted, the report's configured groupings are used.`),
   filter: z
     .string()
     .optional()
@@ -44,9 +41,7 @@ const args = {
   on_demand_costs_scope: z
     .enum(["discountable", "all"])
     .optional()
-    .describe(
-      "Scope for on-demand costs: discountable or all. If omitted, the report's configured scope is used."
-    ),
+    .describe("Scope for on-demand costs: discountable or all. If omitted, the report's configured scope is used."),
   order: z.enum(["asc", "desc"]).optional().describe("Order costs by date ascending or descending"),
 };
 

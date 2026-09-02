@@ -47,8 +47,6 @@ export type ModelHandle = {
   effort?: EffortLevel;
 };
 
-export const LOADING_MODES = ["isolated", "mixed"] as const;
-
 export type ProviderCallOptions = {
   openai?: { reasoningEffort: OpenAIEffort };
   anthropic?: { effort: AnthropicEffort };

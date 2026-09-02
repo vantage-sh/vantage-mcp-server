@@ -1,7 +1,4 @@
-import {
-  type GetFinancialCommitmentReportCostsResponse,
-  pathEncode,
-} from "@vantage-sh/vantage-client";
+import { type GetFinancialCommitmentReportCostsResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/financial-commitment-reports/query-financial-commitment-report-costs";
 import { DEFAULT_LIMIT } from "../../../src/tools/structure/constants";
@@ -117,7 +114,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         costs: successData.costs,
         total_amount: successData.total_amount,
         total_gross_amount: successData.total_gross_amount,
-        notes: "Costs records represent one month; accrued_at is the first day of the month. If your date range is shorter than a month, the record covers only that range.",
+        notes:
+          "Costs records represent one month; accrued_at is the first day of the month. If your date range is shorter than a month, the record covers only that range.",
         pagination: {
           hasNextPage: false,
           nextPage: 0,

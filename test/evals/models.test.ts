@@ -79,6 +79,6 @@ describe("providerOptionsFor", () => {
 
 describe("modelIdFromLabel", () => {
   it("reads the combo slug from a provider label", () => {
-    expect(modelIdFromLabel("gpt-5.6-sol-high · isolated")).toBe("gpt-5.6-sol-high");
+    expect(modelIdFromLabel("gpt-5.6-sol-high · mixed")).toBe("gpt-5.6-sol-high");
   });
 });

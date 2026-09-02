@@ -1,0 +1,473 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-09-02T21:57:11.826Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "9d441c63-3e1e-4462-8c86-440f30c8d140",
+        "latencyMs": 2903,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use query-financial-commitment-report-costs to fetch cost data for financial commitment report fncl_cmnt_rprt_abc123 from 2024-03-01 through 2024-03-31, grouped by cost_type and service.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:mixed",
+          "label": "gpt-5.6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "query-financial-commitment-report-costs",
+                "input": {
+                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
+                  "page": 1,
+                  "start_date": "2024-03-01",
+                  "end_date": "2024-03-31",
+                  "groupings": [
+                    "cost_type",
+                    "service"
+                  ]
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "mixed",
+            "target": "query-financial-commitment-report-costs",
+            "toolNames": [
+              "query-financial-commitment-report-costs",
+              "get-financial-commitment-report",
+              "list-financial-commitment-reports",
+              "list-costs",
+              "query-costs"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "query-financial-commitment-report-costs",
+                "input": {
+                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
+                  "page": 1,
+                  "start_date": "2024-03-01",
+                  "end_date": "2024-03-31",
+                  "groupings": [
+                    "cost_type",
+                    "service"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "query-financial-commitment-report-costs · direct · Use query-financial-commitment-report-costs to fetch cost data for financial commitment report fncl_cmnt_rprt_abc123 from 2024-03-01 through 2024-03-31, grouped by cost_type and service.",
+          "vars": {
+            "prompt": "Use query-financial-commitment-report-costs to fetch cost data for financial commitment report fncl_cmnt_rprt_abc123 from 2024-03-01 through 2024-03-31, grouped by cost_type and service.",
+            "target": "query-financial-commitment-report-costs",
+            "expected": [
+              {
+                "toolName": "query-financial-commitment-report-costs",
+                "input": {
+                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
+                  "start_date": "2024-03-01",
+                  "end_date": "2024-03-31",
+                  "groupings": [
+                    "cost_type",
+                    "service"
+                  ],
+                  "page": 1
+                }
+              }
+            ],
+            "distractors": [
+              "get-financial-commitment-report",
+              "list-financial-commitment-reports",
+              "list-costs",
+              "query-costs"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "query-financial-commitment-report-costs",
+            "resource": "financial-commitment-reports",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use query-financial-commitment-report-costs to fetch cost data for financial commitment report fncl_cmnt_rprt_abc123 from 2024-03-01 through 2024-03-31, grouped by cost_type and service.",
+          "target": "query-financial-commitment-report-costs",
+          "expected": [
+            {
+              "toolName": "query-financial-commitment-report-costs",
+              "input": {
+                "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
+                "start_date": "2024-03-01",
+                "end_date": "2024-03-31",
+                "groupings": [
+                  "cost_type",
+                  "service"
+                ],
+                "page": 1
+              }
+            }
+          ],
+          "distractors": [
+            "get-financial-commitment-report",
+            "list-financial-commitment-reports",
+            "list-costs",
+            "query-costs"
+          ]
+        },
+        "metadata": {
+          "tool": "query-financial-commitment-report-costs",
+          "resource": "financial-commitment-reports",
+          "phrasing": "direct",
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed",
+          "target": "query-financial-commitment-report-costs",
+          "toolNames": [
+            "query-financial-commitment-report-costs",
+            "get-financial-commitment-report",
+            "list-financial-commitment-reports",
+            "list-costs",
+            "query-costs"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "query-financial-commitment-report-costs",
+              "input": {
+                "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
+                "page": 1,
+                "start_date": "2024-03-01",
+                "end_date": "2024-03-31",
+                "groupings": [
+                  "cost_type",
+                  "service"
+                ]
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "38043950-6c9a-42c7-9b61-316c6c94b9ce",
+        "latencyMs": 3481,
+        "namedScores": {},
+        "prompt": {
+          "raw": "I have financial commitment report fncl_cmnt_rprt_abc123 and need the committed vs on-demand cost rows for that report — use its saved date range and filters.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:mixed",
+          "label": "gpt-5.6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "query-financial-commitment-report-costs",
+                "input": {
+                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
+                  "page": 1
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "mixed",
+            "target": "query-financial-commitment-report-costs",
+            "toolNames": [
+              "query-financial-commitment-report-costs",
+              "get-financial-commitment-report",
+              "list-financial-commitment-reports",
+              "list-costs",
+              "query-costs"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "query-financial-commitment-report-costs",
+                "input": {
+                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
+                  "page": 1
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "query-financial-commitment-report-costs · inferred · I have financial commitment report fncl_cmnt_rprt_abc123 and need the committed vs on-demand cost rows for that report — use its saved date range and filters.",
+          "vars": {
+            "prompt": "I have financial commitment report fncl_cmnt_rprt_abc123 and need the committed vs on-demand cost rows for that report — use its saved date range and filters.",
+            "target": "query-financial-commitment-report-costs",
+            "expected": [
+              {
+                "toolName": "query-financial-commitment-report-costs",
+                "input": {
+                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
+                  "page": 1
+                }
+              }
+            ],
+            "distractors": [
+              "get-financial-commitment-report",
+              "list-financial-commitment-reports",
+              "list-costs",
+              "query-costs"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "query-financial-commitment-report-costs",
+            "resource": "financial-commitment-reports",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "I have financial commitment report fncl_cmnt_rprt_abc123 and need the committed vs on-demand cost rows for that report — use its saved date range and filters.",
+          "target": "query-financial-commitment-report-costs",
+          "expected": [
+            {
+              "toolName": "query-financial-commitment-report-costs",
+              "input": {
+                "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
+                "page": 1
+              }
+            }
+          ],
+          "distractors": [
+            "get-financial-commitment-report",
+            "list-financial-commitment-reports",
+            "list-costs",
+            "query-costs"
+          ]
+        },
+        "metadata": {
+          "tool": "query-financial-commitment-report-costs",
+          "resource": "financial-commitment-reports",
+          "phrasing": "inferred",
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed",
+          "target": "query-financial-commitment-report-costs",
+          "toolNames": [
+            "query-financial-commitment-report-costs",
+            "get-financial-commitment-report",
+            "list-financial-commitment-reports",
+            "list-costs",
+            "query-costs"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "query-financial-commitment-report-costs",
+              "input": {
+                "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
+                "page": 1
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 2,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-5.6-luna · mixed",
+        "config": {
+          "modelId": "gpt-5.6-luna"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/cost-providers/get-cost-provider-accounts.eval.ts",
+      "file://cases/current-user/get-myself.eval.ts",
+      "file://cases/financial-commitment-reports/query-financial-commitment-report-costs.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-09-02T21:57:11.492Z",
+    "evaluationCreatedAt": "2026-09-02T21:57:07.924Z"
+  }
+}

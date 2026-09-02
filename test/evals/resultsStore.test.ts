@@ -30,7 +30,7 @@ function result(overrides: Partial<EvaluateResult> = {}): EvaluateResult {
     testIdx: 0,
     testCase: { metadata: { tool: "get-myself", resource: "current-user" } },
     promptId: "p1",
-    provider: { id: "tool-selection:gpt-5.6-sol-high:isolated", label: "gpt-5.6-sol-high · isolated" },
+    provider: { id: "tool-selection:gpt-5.6-sol-high:mixed", label: "gpt-5.6-sol-high · mixed" },
     prompt: { raw: "Call get-myself", label: "Call get-myself" },
     vars: { prompt: "Call get-myself", target: "get-myself" },
     failureReason: 0 as EvaluateResult["failureReason"],
@@ -70,7 +70,8 @@ describe("resultsStore helpers", () => {
   it("merges rerun cells without dropping cells that were filtered out", () => {
     const storedFailure = result({ success: false, score: 0 });
     const storedOtherCell = result({
-      provider: { id: "tool-selection:gpt-5.6-sol-high:mixed", label: "gpt-5.6-sol-high · mixed" },
+      testCase: { metadata: { tool: "get-myself", resource: "current-user", phrasing: "inferred" } },
+      vars: { prompt: "Inspect my Vantage identity", target: "get-myself" },
     });
     const rerunPass = result({
       id: "new-run-id",
@@ -91,7 +92,8 @@ describe("resultsStore helpers", () => {
     tempDirs.push(resultsDir);
     const path = resultFilePath("gpt-5.6-sol-high", "current-user", "get-myself", resultsDir);
     const storedOtherCell = result({
-      provider: { id: "tool-selection:gpt-5.6-sol-high:mixed", label: "gpt-5.6-sol-high · mixed" },
+      testCase: { metadata: { tool: "get-myself", resource: "current-user", phrasing: "inferred" } },
+      vars: { prompt: "Inspect my Vantage identity", target: "get-myself" },
     });
     await writeOutputFile(path, asOutputFile([result({ success: false, score: 0 }), storedOtherCell]));
 

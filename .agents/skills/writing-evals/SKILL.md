@@ -64,10 +64,10 @@ evals/
   _lib/
     evalArgs.ts           # CLI parsing + targeted/full-run safety guard
     models.ts             # approved models × effort levels; --model slug parser
-    distractors.ts        # registered-tool sampler for mixed mode + optional named distractors
+    distractors.ts        # registered-tool sampler + optional named distractors
     buildAiSdkTools.ts    # reads from the live registerTool registry → AI SDK tool() defs
     runToolSelection.ts   # { prompt, model, toolNames } → { toolCalls, text }
-    provider.ts           # promptfoo custom provider (selected model × isolated|mixed)
+    provider.ts           # promptfoo custom provider for the selected model
     assertToolCalls.ts    # flexible tool-call match
     buildCases.ts         # cartesian product of prompts × phrasing
     run-eval.ts           # CLI: promptfoo eval + split into results/<model>/<resource>/<tool>.json
@@ -79,16 +79,15 @@ evals/
 OpenAI tools are built with `strict: false`. The Responses API otherwise fills omitted optional args with `""` / placeholders (`x`, `.*`, …), which makes exact arg scoring fail even when tool selection is correct. Do not switch OpenAI evals to Chat Completions solely to avoid that — some models (e.g. `gpt-5.6-luna`) reject function tools on `/v1/chat/completions` unless `reasoning_effort` is `none`.
 Case files live under `evals/cases/<resource>/` so they stay out of Vitest's path and match `src/tools/<resource>/`. Use the `.eval.ts` suffix so they are distinct from the tool file and the unit test. `promptfooconfig.ts` picks up every `**/*.eval.ts` file automatically. The adapter imports `src/tools` once and reads tools out of the live `registerTool` registry — adding a new tool to the codebase makes it available to evals automatically; you just need to write its case file.
 
-## The matrix
+## The cases
 
-Every tool's case file contains exactly **two prompts** — one direct and one inferred/indirect — and each prompt runs against the **one** `--model` you pass, in both loading modes. That's four cells total:
+Every tool's case file contains exactly **two prompts** — one direct and one inferred/indirect — and each prompt runs against the **one** `--model` you pass with the target plus four distractors loaded. That's two cells total:
 
-|              | **Isolated** (only the target tool loaded)                                                                 | **Mixed** (target + 4 distractors)                             |
-| ------------ | ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| **Direct**   | Can the model call the tool when the user explicitly names its registered identifier and nothing competes? | Same explicit request, but with 4 unrelated neighbours loaded. |
-| **Inferred** | Does the description cover the indirect phrasing well enough to fire at all?                               | Both pressures combined — the realistic deployment case.       |
+| **Direct**   | Can the model call the tool when the user explicitly names its registered identifier while four other tools compete? |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| **Inferred** | Does the description cover the indirect phrasing well enough to beat four competing tools?                             |
 
-Each cell is what diagnoses a failure (see "Reading failures" below). The one direct and one inferred prompt produce four cells per tool against one model. To compare models, run the same `--tool` again with a different `--model`; each slug gets its own JSON under `evals/results/<model>/`.
+To compare models, run the same `--tool` again with a different `--model`; each slug gets its own JSON under `evals/results/<model>/`.
 
 ## File template
 
@@ -103,7 +102,7 @@ export default function generateTests() {
   return buildToolCases({
     target: TARGET,
     resource: "<resource>",
-    // Optional: always include high-signal siblings; remaining mixed-mode slots are sampled.
+    // Optional: always include high-signal siblings; remaining slots are sampled.
     distractors: ["<sibling-tool>"],
     directPrompts: [
       { input: "Use <tool-name> to <perform its purpose>.", expected: [{ toolName: TARGET, input: {/* expected args */} }] },
@@ -115,7 +114,7 @@ export default function generateTests() {
 }
 ```
 
-`buildToolCases` tags every case with `metadata.tool` and `metadata.resource` so `--tool` / `--filter-metadata tool=` works and results land under `evals/results/<model>/<resource>/`. Loading mode is a provider variant (`gpt-5.6-sol-high · isolated`, `gpt-5.6-sol-high · mixed`, …), not a test-case dimension.
+`buildToolCases` tags every case with `metadata.tool` and `metadata.resource` so `--tool` / `--filter-metadata tool=` works and results land under `evals/results/<model>/<resource>/`.
 
 The scorer requires **exactly one** tool call with the expected name and args. Missing calls, extra calls, and multiple expected calls fail the cell. The v1 eval matrix does not cover abstention, negative, or multi-tool prompts.
 
@@ -125,11 +124,11 @@ The scorer requires **exactly one** tool call with the expected name and args. M
 - **Inferred prompts** describe the user's _goal_ without naming the tool — "I want to make sure we don't blow past $50k this quarter" → `create-budget`. They test description coverage and any disambiguating context.
 - Every prompt expects exactly one tool call. Negative, abstention, and multi-tool cases are outside the v1 eval scope.
 - Write prompts a Vantage MCP user would _actually_ send. Generic phrasings with no product context (e.g. `"Who am I?"`) put unfair pressure on the description — models may read them as general knowledge questions, not Vantage account queries. Drop or rephrase prompts like that rather than padding the tool description to catch them.
-- Use exactly one direct prompt and one inferred prompt per tool. Each additional prompt doubles into isolated and mixed cells, increasing API spend.
+- Use exactly one direct prompt and one inferred prompt per tool. Each additional prompt creates another model call and increases API spend.
 
 ## Distractors
 
-`pickTools(target, "mixed")` returns the target plus four distractors sampled from every other tool in the live registry. The target-derived shuffle is deterministic: the sample is broad without changing between reruns. Adding or removing registered tools can change the sample.
+`pickTools(target)` returns the target plus four distractors sampled from every other tool in the live registry. The target-derived shuffle is deterministic: the sample is broad without changing between reruns. Adding or removing registered tools can change the sample.
 
 When a tool has close neighbours (for example `list-budgets`, `list-folders`, and `list-cost-reports`), name the high-signal siblings on the eval definition:
 
@@ -147,16 +146,15 @@ return buildToolCases({
 
 ## Reading failures
 
-The matrix tells you _what to fix_:
+The failing prompt tells you _what to fix_:
 
-| Failure pattern                                | Most likely cause                                                                     | Fix                                                                                                         |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| **Direct + isolated** fails                    | The prompt does not use the exact registered name, or required arguments are unclear. | Correct the tool identifier in the prompt; tighten zod argument descriptions.                               |
-| **Direct + mixed** fails but isolated passes   | A distractor wins despite the explicit tool name.                                     | Check that the registered name and description agree; inspect the mixed distractors for a naming collision. |
-| **Inferred + isolated** fails                  | Description doesn't cover the indirect phrasing. The arg names alone weren't a hint.  | Add one sentence connecting the goal to the tool (cap: one sentence).                                       |
-| **Inferred + mixed** fails but isolated passes | Description covers the concept but a sibling tool covers it too well.                 | Disambiguate (same pattern as the second row).                                                              |
-| Only the smallest model fails one prompt       | Often a prompt-fairness issue, not a description issue.                               | Drop or rephrase the prompt. Don't grow the description to win a single weak-model row.                     |
-| Wrong args (right tool)                        | A zod field is missing a useful `.describe()`, or a required field looks optional.    | Tighten `.describe()` strings; add `.default()` if the value is genuinely defaultable.                      |
+| Failure pattern                          | Most likely cause                                                                  | Fix                                                                                           |
+| ---------------------------------------- | ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **Direct** fails                         | The prompt does not use the exact registered name, or required arguments are unclear. | Correct the tool identifier in the prompt; tighten zod argument descriptions.                 |
+| **Inferred** selects no tool              | The description does not cover the indirect phrasing.                              | Add one sentence connecting the goal to the tool (cap: one sentence).                         |
+| A distractor wins                         | The target and a competing tool are not sufficiently distinct.                     | Inspect the loaded distractors and disambiguate the target description or argument schema.    |
+| Only the smallest model fails one prompt | Often a prompt-fairness issue, not a description issue.                            | Drop or rephrase the prompt. Don't grow the description to win a single weak-model row.       |
+| Wrong args (right tool)                  | A zod field is missing a useful `.describe()`, or a required field looks optional. | Tighten `.describe()` strings; add `.default()` if the value is genuinely defaultable.        |
 
 **Iteration order when an eval fails:**
 
@@ -175,7 +173,7 @@ The rule is: **don't write to the eval.** The eval validates the description and
 - [ ] The direct prompt contains the exact registered tool identifier; the inferred prompt does not name the tool.
 - [ ] Every prompt expects exactly one tool call with exact args.
 - [ ] Both prompts are things a Vantage MCP user would actually send.
-- [ ] Mixed-mode distractors documented if the default pool is too weak for sibling tools.
+- [ ] Named distractors documented if the default pool is too weak for sibling tools.
 - [ ] If execution was not explicitly requested, no model-backed eval was run and the handoff includes the targeted command plus model-selection instructions.
 - [ ] If execution was explicitly requested, the user confirmed credential setup and selected the model and effort before the run.
 - [ ] After an authorized run, `npm run eval -- --tool <tool> --model <selected-model>` is green and the new result JSON is staged as the baseline.

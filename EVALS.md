@@ -12,29 +12,19 @@ Every tool is scored the same way: give the model a prompt, see which tool it ca
 it picked the right one with the right arguments. We do **not** execute the Vantage API.
 The tool's `execute` function is a no-op — selection is the only thing under test.
 
-Each tool has two loading modes, replayed across as many models as we care about:
+Every prompt loads the target plus four distractors. Testing the target in isolation does not tell us
+whether its description is distinct enough for a real MCP session, where the model has a large tool list.
 
-| Mode               | What the model sees              | What it tests                                                                   |
-| ------------------ | -------------------------------- | ------------------------------------------------------------------------------- |
-| **1:1 (isolated)** | Only the target tool             | Can the model pick this tool when nothing else is competing?                    |
-| **1:5 (mixed)**    | The target plus four distractors | Is the description distinct enough that four other tools do not steal the call? |
-
-The isolated run is the baseline. The mixed run is closer to a real MCP session, where
-the model has a large tool list. Failures in isolated usually mean the description or
-schema does not name the concept. Failures only in mixed usually mean a neighbor's description
-is winning the comparison.
-
-Mixed-mode distractors are sampled reproducibly from every other registered tool. A case can name
+Distractors are sampled reproducibly from every other registered tool. A case can name
 high-signal sibling tools explicitly; those are kept and any remaining slots are sampled automatically.
 
-Prompts are written in two styles so the same two modes cover both obvious and realistic wording:
+Each tool has exactly two prompts:
 
-- **Direct** — the user names the concept ("get the current user", "list my budgets").
+- **Direct** — the user names the exact registered tool identifier.
 - **Inferred** — the user names a goal ("I need my default workspace token before I query costs").
 
-A typical tool therefore has a handful of direct prompts and a handful of inferred prompts, each run
-in isolated and mixed against one model. That is the cell we store. To compare models, we replay
-the same cases with a different `--model` — we do not expand the suite into an always-on grid of every model.
+That produces two cells per tool and model. To compare models, we replay the same cases with a different
+`--model` — we do not expand the suite into an always-on grid of every model.
 
 ## Why we keep the outcomes
 
@@ -81,7 +71,7 @@ open evals/site/index.html
 ```
 
 `eval:site` merges every file under `evals/results/` into a single table
-(tool × phrasing × prompt, with a column per model × loading mode). Filter by tool in the page header.
+(tool × phrasing × prompt, with a column per model). Filter by tool in the page header.
 
 `npm run eval:view` opens promptfoo's interactive viewer if you want the raw run UI instead of the static report.
 
@@ -105,7 +95,7 @@ suffix (`gpt-5.6-sol-high`). Models that do not expose effort (for example `clau
 take the bare id. Effort is optional even when the model supports it — `gpt-5.6-sol`
 uses the provider default.
 
-That command runs only that tool's cases, isolated and mixed, and writes:
+That command runs only that tool's direct and inferred cases, each with four distractors, and writes:
 
 `evals/results/gpt-5.6-sol-high/current-user/get-myself.json`
 
