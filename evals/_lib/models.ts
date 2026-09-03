@@ -117,7 +117,9 @@ export function parseModelSpec(raw: string): ModelHandle {
 
 export function resolveEvalModel(raw: string | undefined): ModelHandle {
   if (raw === undefined || raw.trim().length === 0) {
-    throw new Error("EVAL_MODEL is not set. Run evals with `npm run eval -- --tool <name> --model gpt-5.6-sol-high`.");
+    throw new Error(
+      "EVAL_MODEL is not set. Run evals with `npm run eval -- --tool <name> --model gpt-5.6-sol-high` or select a resource with `--resource <name>`."
+    );
   }
   return parseModelSpec(raw);
 }

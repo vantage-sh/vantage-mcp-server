@@ -1,0 +1,841 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-09-03T16:36:52.518Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "edf4af69-d660-44db-825e-b20204e7db78",
+        "latencyMs": 3650,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use add-team-member to add pat@example.com to Vantage Team team_abc123 as an integration owner.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 1,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:mixed",
+          "label": "gpt-5.6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "add-team-member",
+                "input": {
+                  "team_token": "team_abc123",
+                  "user_email": "pat@example.com",
+                  "role": "integration_owner"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "mixed",
+            "target": "add-team-member",
+            "toolNames": [
+              "add-team-member",
+              "remove-team-member",
+              "get-team-members",
+              "update-team",
+              "get-user"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "add-team-member",
+                "input": {
+                  "team_token": "team_abc123",
+                  "user_email": "pat@example.com",
+                  "role": "integration_owner"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "add-team-member · direct · Use add-team-member to add pat@example.com to Vantage Team team_abc123 as an integration owner.",
+          "vars": {
+            "prompt": "Use add-team-member to add pat@example.com to Vantage Team team_abc123 as an integration owner.",
+            "target": "add-team-member",
+            "expected": [
+              {
+                "toolName": "add-team-member",
+                "input": {
+                  "team_token": "team_abc123",
+                  "user_email": "pat@example.com",
+                  "role": "integration_owner"
+                }
+              }
+            ],
+            "distractors": [
+              "remove-team-member",
+              "get-team-members",
+              "update-team",
+              "get-user"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "add-team-member",
+            "resource": "teams",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use add-team-member to add pat@example.com to Vantage Team team_abc123 as an integration owner.",
+          "target": "add-team-member",
+          "expected": [
+            {
+              "toolName": "add-team-member",
+              "input": {
+                "team_token": "team_abc123",
+                "user_email": "pat@example.com",
+                "role": "integration_owner"
+              }
+            }
+          ],
+          "distractors": [
+            "remove-team-member",
+            "get-team-members",
+            "update-team",
+            "get-user"
+          ]
+        },
+        "metadata": {
+          "tool": "add-team-member",
+          "resource": "teams",
+          "phrasing": "direct",
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed",
+          "target": "add-team-member",
+          "toolNames": [
+            "add-team-member",
+            "remove-team-member",
+            "get-team-members",
+            "update-team",
+            "get-user"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "add-team-member",
+              "input": {
+                "team_token": "team_abc123",
+                "user_email": "pat@example.com",
+                "role": "integration_owner"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "ff5c6e1b-5ad5-470e-8d29-6c18182bc184",
+        "latencyMs": 3725,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use add-team-member to add pat@example.com to Vantage Team team_abc123 as an integration owner.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:isolated",
+          "label": "gpt-5.6-luna · isolated"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "add-team-member",
+                "input": {
+                  "team_token": "team_abc123",
+                  "user_email": "pat@example.com",
+                  "role": "integration_owner"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "isolated",
+            "target": "add-team-member",
+            "toolNames": [
+              "add-team-member"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "add-team-member",
+                "input": {
+                  "team_token": "team_abc123",
+                  "user_email": "pat@example.com",
+                  "role": "integration_owner"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "add-team-member · direct · Use add-team-member to add pat@example.com to Vantage Team team_abc123 as an integration owner.",
+          "vars": {
+            "prompt": "Use add-team-member to add pat@example.com to Vantage Team team_abc123 as an integration owner.",
+            "target": "add-team-member",
+            "expected": [
+              {
+                "toolName": "add-team-member",
+                "input": {
+                  "team_token": "team_abc123",
+                  "user_email": "pat@example.com",
+                  "role": "integration_owner"
+                }
+              }
+            ],
+            "distractors": [
+              "remove-team-member",
+              "get-team-members",
+              "update-team",
+              "get-user"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "add-team-member",
+            "resource": "teams",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use add-team-member to add pat@example.com to Vantage Team team_abc123 as an integration owner.",
+          "target": "add-team-member",
+          "expected": [
+            {
+              "toolName": "add-team-member",
+              "input": {
+                "team_token": "team_abc123",
+                "user_email": "pat@example.com",
+                "role": "integration_owner"
+              }
+            }
+          ],
+          "distractors": [
+            "remove-team-member",
+            "get-team-members",
+            "update-team",
+            "get-user"
+          ]
+        },
+        "metadata": {
+          "tool": "add-team-member",
+          "resource": "teams",
+          "phrasing": "direct",
+          "modelId": "gpt-5.6-luna",
+          "mode": "isolated",
+          "target": "add-team-member",
+          "toolNames": [
+            "add-team-member"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "add-team-member",
+              "input": {
+                "team_token": "team_abc123",
+                "user_email": "pat@example.com",
+                "role": "integration_owner"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "0cd8ca5f-6287-4ea3-bc2f-66b7fff927dd",
+        "latencyMs": 2831,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Make lee@example.com a viewer on the Vantage Team team_abc123.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 1,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:mixed",
+          "label": "gpt-5.6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "add-team-member",
+                "input": {
+                  "team_token": "team_abc123",
+                  "user_email": "lee@example.com",
+                  "role": "viewer"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "mixed",
+            "target": "add-team-member",
+            "toolNames": [
+              "add-team-member",
+              "remove-team-member",
+              "get-team-members",
+              "update-team",
+              "get-user"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "add-team-member",
+                "input": {
+                  "team_token": "team_abc123",
+                  "user_email": "lee@example.com",
+                  "role": "viewer"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "add-team-member · inferred · Make lee@example.com a viewer on the Vantage Team team_abc123.",
+          "vars": {
+            "prompt": "Make lee@example.com a viewer on the Vantage Team team_abc123.",
+            "target": "add-team-member",
+            "expected": [
+              {
+                "toolName": "add-team-member",
+                "input": {
+                  "team_token": "team_abc123",
+                  "user_email": "lee@example.com",
+                  "role": "viewer"
+                }
+              }
+            ],
+            "distractors": [
+              "remove-team-member",
+              "get-team-members",
+              "update-team",
+              "get-user"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "add-team-member",
+            "resource": "teams",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Make lee@example.com a viewer on the Vantage Team team_abc123.",
+          "target": "add-team-member",
+          "expected": [
+            {
+              "toolName": "add-team-member",
+              "input": {
+                "team_token": "team_abc123",
+                "user_email": "lee@example.com",
+                "role": "viewer"
+              }
+            }
+          ],
+          "distractors": [
+            "remove-team-member",
+            "get-team-members",
+            "update-team",
+            "get-user"
+          ]
+        },
+        "metadata": {
+          "tool": "add-team-member",
+          "resource": "teams",
+          "phrasing": "inferred",
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed",
+          "target": "add-team-member",
+          "toolNames": [
+            "add-team-member",
+            "remove-team-member",
+            "get-team-members",
+            "update-team",
+            "get-user"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "add-team-member",
+              "input": {
+                "team_token": "team_abc123",
+                "user_email": "lee@example.com",
+                "role": "viewer"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "915fc4e5-c223-4f0c-9ef9-3223da9973ad",
+        "latencyMs": 2923,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Make lee@example.com a viewer on the Vantage Team team_abc123.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:isolated",
+          "label": "gpt-5.6-luna · isolated"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "add-team-member",
+                "input": {
+                  "team_token": "team_abc123",
+                  "user_email": "lee@example.com",
+                  "role": "viewer"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "isolated",
+            "target": "add-team-member",
+            "toolNames": [
+              "add-team-member"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "add-team-member",
+                "input": {
+                  "team_token": "team_abc123",
+                  "user_email": "lee@example.com",
+                  "role": "viewer"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "add-team-member · inferred · Make lee@example.com a viewer on the Vantage Team team_abc123.",
+          "vars": {
+            "prompt": "Make lee@example.com a viewer on the Vantage Team team_abc123.",
+            "target": "add-team-member",
+            "expected": [
+              {
+                "toolName": "add-team-member",
+                "input": {
+                  "team_token": "team_abc123",
+                  "user_email": "lee@example.com",
+                  "role": "viewer"
+                }
+              }
+            ],
+            "distractors": [
+              "remove-team-member",
+              "get-team-members",
+              "update-team",
+              "get-user"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "add-team-member",
+            "resource": "teams",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Make lee@example.com a viewer on the Vantage Team team_abc123.",
+          "target": "add-team-member",
+          "expected": [
+            {
+              "toolName": "add-team-member",
+              "input": {
+                "team_token": "team_abc123",
+                "user_email": "lee@example.com",
+                "role": "viewer"
+              }
+            }
+          ],
+          "distractors": [
+            "remove-team-member",
+            "get-team-members",
+            "update-team",
+            "get-user"
+          ]
+        },
+        "metadata": {
+          "tool": "add-team-member",
+          "resource": "teams",
+          "phrasing": "inferred",
+          "modelId": "gpt-5.6-luna",
+          "mode": "isolated",
+          "target": "add-team-member",
+          "toolNames": [
+            "add-team-member"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "add-team-member",
+              "input": {
+                "team_token": "team_abc123",
+                "user_email": "lee@example.com",
+                "role": "viewer"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 4,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 4,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-5.6-luna · isolated",
+        "config": {
+          "modelId": "gpt-5.6-luna",
+          "mode": "isolated"
+        }
+      },
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-5.6-luna · mixed",
+        "config": {
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/cost-providers/get-cost-provider-accounts.eval.ts",
+      "file://cases/current-user/get-myself.eval.ts",
+      "file://cases/teams/add-team-member.eval.ts",
+      "file://cases/teams/create-team.eval.ts",
+      "file://cases/teams/delete-team.eval.ts",
+      "file://cases/teams/get-team-members.eval.ts",
+      "file://cases/teams/remove-team-member.eval.ts",
+      "file://cases/teams/update-team.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-09-03T16:36:52.200Z",
+    "evaluationCreatedAt": "2026-09-03T16:36:48.386Z"
+  }
+}

@@ -1,0 +1,831 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-09-03T16:55:17.874Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "6a5760e9-1642-4dc0-8987-be83a024ae60",
+        "latencyMs": 1830,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use update-team to rename team_abc123 to Platform Engineering and clear its default Dashboard.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 1,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:mixed",
+          "label": "gpt-5.6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "update-team",
+                "input": {
+                  "team_token": "team_abc123",
+                  "name": "Platform Engineering",
+                  "default_dashboard_token": null
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "mixed",
+            "target": "update-team",
+            "toolNames": [
+              "update-team",
+              "create-team",
+              "get-team",
+              "add-team-member",
+              "update-workspace"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "update-team",
+                "input": {
+                  "team_token": "team_abc123",
+                  "name": "Platform Engineering",
+                  "default_dashboard_token": null
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "update-team · direct · Use update-team to rename team_abc123 to Platform Engineering and clear its default Dashboard.",
+          "vars": {
+            "prompt": "Use update-team to rename team_abc123 to Platform Engineering and clear its default Dashboard.",
+            "target": "update-team",
+            "expected": [
+              {
+                "toolName": "update-team",
+                "input": {
+                  "team_token": "team_abc123",
+                  "name": "Platform Engineering",
+                  "default_dashboard_token": null
+                }
+              }
+            ],
+            "distractors": [
+              "create-team",
+              "get-team",
+              "add-team-member",
+              "update-workspace"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "update-team",
+            "resource": "teams",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use update-team to rename team_abc123 to Platform Engineering and clear its default Dashboard.",
+          "target": "update-team",
+          "expected": [
+            {
+              "toolName": "update-team",
+              "input": {
+                "team_token": "team_abc123",
+                "name": "Platform Engineering",
+                "default_dashboard_token": null
+              }
+            }
+          ],
+          "distractors": [
+            "create-team",
+            "get-team",
+            "add-team-member",
+            "update-workspace"
+          ]
+        },
+        "metadata": {
+          "tool": "update-team",
+          "resource": "teams",
+          "phrasing": "direct",
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed",
+          "target": "update-team",
+          "toolNames": [
+            "update-team",
+            "create-team",
+            "get-team",
+            "add-team-member",
+            "update-workspace"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "update-team",
+              "input": {
+                "team_token": "team_abc123",
+                "name": "Platform Engineering",
+                "default_dashboard_token": null
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "22b925b0-5f90-4152-9a39-33f2070da2d5",
+        "latencyMs": 1874,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use update-team to rename team_abc123 to Platform Engineering and clear its default Dashboard.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:isolated",
+          "label": "gpt-5.6-luna · isolated"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "update-team",
+                "input": {
+                  "team_token": "team_abc123",
+                  "name": "Platform Engineering",
+                  "default_dashboard_token": null
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "isolated",
+            "target": "update-team",
+            "toolNames": [
+              "update-team"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "update-team",
+                "input": {
+                  "team_token": "team_abc123",
+                  "name": "Platform Engineering",
+                  "default_dashboard_token": null
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "update-team · direct · Use update-team to rename team_abc123 to Platform Engineering and clear its default Dashboard.",
+          "vars": {
+            "prompt": "Use update-team to rename team_abc123 to Platform Engineering and clear its default Dashboard.",
+            "target": "update-team",
+            "expected": [
+              {
+                "toolName": "update-team",
+                "input": {
+                  "team_token": "team_abc123",
+                  "name": "Platform Engineering",
+                  "default_dashboard_token": null
+                }
+              }
+            ],
+            "distractors": [
+              "create-team",
+              "get-team",
+              "add-team-member",
+              "update-workspace"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "update-team",
+            "resource": "teams",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use update-team to rename team_abc123 to Platform Engineering and clear its default Dashboard.",
+          "target": "update-team",
+          "expected": [
+            {
+              "toolName": "update-team",
+              "input": {
+                "team_token": "team_abc123",
+                "name": "Platform Engineering",
+                "default_dashboard_token": null
+              }
+            }
+          ],
+          "distractors": [
+            "create-team",
+            "get-team",
+            "add-team-member",
+            "update-workspace"
+          ]
+        },
+        "metadata": {
+          "tool": "update-team",
+          "resource": "teams",
+          "phrasing": "direct",
+          "modelId": "gpt-5.6-luna",
+          "mode": "isolated",
+          "target": "update-team",
+          "toolNames": [
+            "update-team"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "update-team",
+              "input": {
+                "team_token": "team_abc123",
+                "name": "Platform Engineering",
+                "default_dashboard_token": null
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "b9d137ad-a82a-472a-b8e2-d7c2aae0a4c7",
+        "latencyMs": 1422,
+        "namedScores": {},
+        "prompt": {
+          "raw": "The Vantage Team team_abc123 should now be called Cloud Efficiency.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:isolated",
+          "label": "gpt-5.6-luna · isolated"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "update-team",
+                "input": {
+                  "team_token": "team_abc123",
+                  "name": "Cloud Efficiency"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "isolated",
+            "target": "update-team",
+            "toolNames": [
+              "update-team"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "update-team",
+                "input": {
+                  "team_token": "team_abc123",
+                  "name": "Cloud Efficiency"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "update-team · inferred · The Vantage Team team_abc123 should now be called Cloud Efficiency.",
+          "vars": {
+            "prompt": "The Vantage Team team_abc123 should now be called Cloud Efficiency.",
+            "target": "update-team",
+            "expected": [
+              {
+                "toolName": "update-team",
+                "input": {
+                  "team_token": "team_abc123",
+                  "name": "Cloud Efficiency"
+                }
+              }
+            ],
+            "distractors": [
+              "create-team",
+              "get-team",
+              "add-team-member",
+              "update-workspace"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "update-team",
+            "resource": "teams",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "The Vantage Team team_abc123 should now be called Cloud Efficiency.",
+          "target": "update-team",
+          "expected": [
+            {
+              "toolName": "update-team",
+              "input": {
+                "team_token": "team_abc123",
+                "name": "Cloud Efficiency"
+              }
+            }
+          ],
+          "distractors": [
+            "create-team",
+            "get-team",
+            "add-team-member",
+            "update-workspace"
+          ]
+        },
+        "metadata": {
+          "tool": "update-team",
+          "resource": "teams",
+          "phrasing": "inferred",
+          "modelId": "gpt-5.6-luna",
+          "mode": "isolated",
+          "target": "update-team",
+          "toolNames": [
+            "update-team"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "update-team",
+              "input": {
+                "team_token": "team_abc123",
+                "name": "Cloud Efficiency"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "e9b64ab8-4e73-4bad-868d-a46c9ef22a98",
+        "latencyMs": 1536,
+        "namedScores": {},
+        "prompt": {
+          "raw": "The Vantage Team team_abc123 should now be called Cloud Efficiency.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 1,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:mixed",
+          "label": "gpt-5.6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "update-team",
+                "input": {
+                  "team_token": "team_abc123",
+                  "name": "Cloud Efficiency"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "mixed",
+            "target": "update-team",
+            "toolNames": [
+              "update-team",
+              "create-team",
+              "get-team",
+              "add-team-member",
+              "update-workspace"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "update-team",
+                "input": {
+                  "team_token": "team_abc123",
+                  "name": "Cloud Efficiency"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "update-team · inferred · The Vantage Team team_abc123 should now be called Cloud Efficiency.",
+          "vars": {
+            "prompt": "The Vantage Team team_abc123 should now be called Cloud Efficiency.",
+            "target": "update-team",
+            "expected": [
+              {
+                "toolName": "update-team",
+                "input": {
+                  "team_token": "team_abc123",
+                  "name": "Cloud Efficiency"
+                }
+              }
+            ],
+            "distractors": [
+              "create-team",
+              "get-team",
+              "add-team-member",
+              "update-workspace"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "update-team",
+            "resource": "teams",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "The Vantage Team team_abc123 should now be called Cloud Efficiency.",
+          "target": "update-team",
+          "expected": [
+            {
+              "toolName": "update-team",
+              "input": {
+                "team_token": "team_abc123",
+                "name": "Cloud Efficiency"
+              }
+            }
+          ],
+          "distractors": [
+            "create-team",
+            "get-team",
+            "add-team-member",
+            "update-workspace"
+          ]
+        },
+        "metadata": {
+          "tool": "update-team",
+          "resource": "teams",
+          "phrasing": "inferred",
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed",
+          "target": "update-team",
+          "toolNames": [
+            "update-team",
+            "create-team",
+            "get-team",
+            "add-team-member",
+            "update-workspace"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "update-team",
+              "input": {
+                "team_token": "team_abc123",
+                "name": "Cloud Efficiency"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 4,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 4,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-5.6-luna · isolated",
+        "config": {
+          "modelId": "gpt-5.6-luna",
+          "mode": "isolated"
+        }
+      },
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-5.6-luna · mixed",
+        "config": {
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/cost-providers/get-cost-provider-accounts.eval.ts",
+      "file://cases/current-user/get-myself.eval.ts",
+      "file://cases/teams/add-team-member.eval.ts",
+      "file://cases/teams/create-team.eval.ts",
+      "file://cases/teams/delete-team.eval.ts",
+      "file://cases/teams/get-team-members.eval.ts",
+      "file://cases/teams/remove-team-member.eval.ts",
+      "file://cases/teams/update-team.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-09-03T16:55:17.540Z",
+    "evaluationCreatedAt": "2026-09-03T16:55:15.597Z"
+  }
+}

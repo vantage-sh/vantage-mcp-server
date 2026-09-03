@@ -1,0 +1,801 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-09-03T16:54:21.446Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "299d3e13-7b0e-4b1c-a035-7edd16f0a81e",
+        "latencyMs": 1462,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use delete-team to delete Vantage Team team_abc123.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:isolated",
+          "label": "gpt-5.6-luna · isolated"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "delete-team",
+                "input": {
+                  "team_token": "team_abc123"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "isolated",
+            "target": "delete-team",
+            "toolNames": [
+              "delete-team"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "delete-team",
+                "input": {
+                  "team_token": "team_abc123"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "delete-team · direct · Use delete-team to delete Vantage Team team_abc123.",
+          "vars": {
+            "prompt": "Use delete-team to delete Vantage Team team_abc123.",
+            "target": "delete-team",
+            "expected": [
+              {
+                "toolName": "delete-team",
+                "input": {
+                  "team_token": "team_abc123"
+                }
+              }
+            ],
+            "distractors": [
+              "remove-team-member",
+              "get-team",
+              "update-team",
+              "create-team"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "delete-team",
+            "resource": "teams",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use delete-team to delete Vantage Team team_abc123.",
+          "target": "delete-team",
+          "expected": [
+            {
+              "toolName": "delete-team",
+              "input": {
+                "team_token": "team_abc123"
+              }
+            }
+          ],
+          "distractors": [
+            "remove-team-member",
+            "get-team",
+            "update-team",
+            "create-team"
+          ]
+        },
+        "metadata": {
+          "tool": "delete-team",
+          "resource": "teams",
+          "phrasing": "direct",
+          "modelId": "gpt-5.6-luna",
+          "mode": "isolated",
+          "target": "delete-team",
+          "toolNames": [
+            "delete-team"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "delete-team",
+              "input": {
+                "team_token": "team_abc123"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "c7eb8f2c-c850-4fcf-87dc-14356763dba7",
+        "latencyMs": 2340,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use delete-team to delete Vantage Team team_abc123.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 1,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:mixed",
+          "label": "gpt-5.6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "delete-team",
+                "input": {
+                  "team_token": "team_abc123"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "mixed",
+            "target": "delete-team",
+            "toolNames": [
+              "delete-team",
+              "remove-team-member",
+              "get-team",
+              "update-team",
+              "create-team"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "delete-team",
+                "input": {
+                  "team_token": "team_abc123"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "delete-team · direct · Use delete-team to delete Vantage Team team_abc123.",
+          "vars": {
+            "prompt": "Use delete-team to delete Vantage Team team_abc123.",
+            "target": "delete-team",
+            "expected": [
+              {
+                "toolName": "delete-team",
+                "input": {
+                  "team_token": "team_abc123"
+                }
+              }
+            ],
+            "distractors": [
+              "remove-team-member",
+              "get-team",
+              "update-team",
+              "create-team"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "delete-team",
+            "resource": "teams",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use delete-team to delete Vantage Team team_abc123.",
+          "target": "delete-team",
+          "expected": [
+            {
+              "toolName": "delete-team",
+              "input": {
+                "team_token": "team_abc123"
+              }
+            }
+          ],
+          "distractors": [
+            "remove-team-member",
+            "get-team",
+            "update-team",
+            "create-team"
+          ]
+        },
+        "metadata": {
+          "tool": "delete-team",
+          "resource": "teams",
+          "phrasing": "direct",
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed",
+          "target": "delete-team",
+          "toolNames": [
+            "delete-team",
+            "remove-team-member",
+            "get-team",
+            "update-team",
+            "create-team"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "delete-team",
+              "input": {
+                "team_token": "team_abc123"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "b2ff4e0c-61e6-4313-a81d-9d1ad3d621cf",
+        "latencyMs": 1823,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Permanently remove the obsolete Vantage Team team_legacy456.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:isolated",
+          "label": "gpt-5.6-luna · isolated"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "delete-team",
+                "input": {
+                  "team_token": "team_legacy456"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "isolated",
+            "target": "delete-team",
+            "toolNames": [
+              "delete-team"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "delete-team",
+                "input": {
+                  "team_token": "team_legacy456"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "delete-team · inferred · Permanently remove the obsolete Vantage Team team_legacy456.",
+          "vars": {
+            "prompt": "Permanently remove the obsolete Vantage Team team_legacy456.",
+            "target": "delete-team",
+            "expected": [
+              {
+                "toolName": "delete-team",
+                "input": {
+                  "team_token": "team_legacy456"
+                }
+              }
+            ],
+            "distractors": [
+              "remove-team-member",
+              "get-team",
+              "update-team",
+              "create-team"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "delete-team",
+            "resource": "teams",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Permanently remove the obsolete Vantage Team team_legacy456.",
+          "target": "delete-team",
+          "expected": [
+            {
+              "toolName": "delete-team",
+              "input": {
+                "team_token": "team_legacy456"
+              }
+            }
+          ],
+          "distractors": [
+            "remove-team-member",
+            "get-team",
+            "update-team",
+            "create-team"
+          ]
+        },
+        "metadata": {
+          "tool": "delete-team",
+          "resource": "teams",
+          "phrasing": "inferred",
+          "modelId": "gpt-5.6-luna",
+          "mode": "isolated",
+          "target": "delete-team",
+          "toolNames": [
+            "delete-team"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "delete-team",
+              "input": {
+                "team_token": "team_legacy456"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "56cd3ee8-943c-46ff-8437-55656c9b827b",
+        "latencyMs": 6753,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Permanently remove the obsolete Vantage Team team_legacy456.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 1,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:mixed",
+          "label": "gpt-5.6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "delete-team",
+                "input": {
+                  "team_token": "team_legacy456"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "mixed",
+            "target": "delete-team",
+            "toolNames": [
+              "delete-team",
+              "remove-team-member",
+              "get-team",
+              "update-team",
+              "create-team"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "delete-team",
+                "input": {
+                  "team_token": "team_legacy456"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "delete-team · inferred · Permanently remove the obsolete Vantage Team team_legacy456.",
+          "vars": {
+            "prompt": "Permanently remove the obsolete Vantage Team team_legacy456.",
+            "target": "delete-team",
+            "expected": [
+              {
+                "toolName": "delete-team",
+                "input": {
+                  "team_token": "team_legacy456"
+                }
+              }
+            ],
+            "distractors": [
+              "remove-team-member",
+              "get-team",
+              "update-team",
+              "create-team"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "delete-team",
+            "resource": "teams",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Permanently remove the obsolete Vantage Team team_legacy456.",
+          "target": "delete-team",
+          "expected": [
+            {
+              "toolName": "delete-team",
+              "input": {
+                "team_token": "team_legacy456"
+              }
+            }
+          ],
+          "distractors": [
+            "remove-team-member",
+            "get-team",
+            "update-team",
+            "create-team"
+          ]
+        },
+        "metadata": {
+          "tool": "delete-team",
+          "resource": "teams",
+          "phrasing": "inferred",
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed",
+          "target": "delete-team",
+          "toolNames": [
+            "delete-team",
+            "remove-team-member",
+            "get-team",
+            "update-team",
+            "create-team"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "delete-team",
+              "input": {
+                "team_token": "team_legacy456"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 4,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 4,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-5.6-luna · isolated",
+        "config": {
+          "modelId": "gpt-5.6-luna",
+          "mode": "isolated"
+        }
+      },
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-5.6-luna · mixed",
+        "config": {
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/cost-providers/get-cost-provider-accounts.eval.ts",
+      "file://cases/current-user/get-myself.eval.ts",
+      "file://cases/teams/add-team-member.eval.ts",
+      "file://cases/teams/create-team.eval.ts",
+      "file://cases/teams/delete-team.eval.ts",
+      "file://cases/teams/get-team-members.eval.ts",
+      "file://cases/teams/remove-team-member.eval.ts",
+      "file://cases/teams/update-team.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-09-03T16:54:21.140Z",
+    "evaluationCreatedAt": "2026-09-03T16:54:14.313Z"
+  }
+}

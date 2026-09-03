@@ -7,12 +7,29 @@ describe("eval command arguments", () => {
       parseEvalArgs(["--tool", "get-myself", "--model", "gpt-5.6-sol-high", "--filter-metadata", "phrasing=direct"])
     ).toEqual({
       all: false,
+      dryRun: false,
       help: false,
       listModels: false,
-      tool: "get-myself",
       model: "gpt-5.6-sol-high",
       passthrough: ["--filter-metadata", "phrasing=direct"],
+      resources: [],
+      tools: ["get-myself"],
     });
+  });
+
+  it("accumulates exact tool and resource selectors", () => {
+    expect(
+      parseEvalArgs(["--tool", "get-team", "--tool", "get-teams", "--resource", "workspaces", "--dry-run"])
+    ).toMatchObject({
+      dryRun: true,
+      resources: ["workspaces"],
+      tools: ["get-team", "get-teams"],
+    });
+  });
+
+  it("rejects selectors without values", () => {
+    expect(() => parseEvalArgs(["--tool", "--dry-run"])).toThrow("--tool requires a value");
+    expect(() => parseEvalArgs(["--resource"])).toThrow("--resource requires a value");
   });
 
   it("allows an explicit full eval", () => {
@@ -23,13 +40,13 @@ describe("eval command arguments", () => {
   it("rejects an implicit full eval", () => {
     const parsed = parseEvalArgs(["--model", "gpt-5.6-sol-high"]);
     const error = validateEvalScope(parsed);
-    expect(error).toMatch(/--tool <name> is required/);
+    expect(error).toMatch(/--tool <name> or --resource <name>/);
     expect(error).toMatch(/npm run eval -- --tool/);
   });
 
   it("rejects combining a targeted and full eval", () => {
     const parsed = parseEvalArgs(["--all", "--tool", "get-myself", "--model", "gpt-5.6-sol-high"]);
-    expect(validateEvalScope(parsed)).toMatch(/either --tool <name> or the eval:all command/);
+    expect(validateEvalScope(parsed)).toMatch(/--tool\/--resource selectors or the eval:all command/);
   });
 
   it("recognizes promptfoo filters that produce partial result sets", () => {

@@ -26,14 +26,19 @@ If the user wants evals but says the required key is not configured, author the 
 
 | Command                                                                                                                | Purpose                                                         |
 | ---------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| `npm run eval -- --tool <name> --model gpt-5.6-sol-high`                                                               | Run one tool against one approved model after explicit approval |
+| `npm run eval -- --tool <name> --model gpt-5.6-sol-high`                                                               | Run one exact tool against one approved model after explicit approval |
+| `npm run eval -- --tool <name> --tool <name> --model gpt-5.6-sol-high`                                                 | Run an explicit set of exact tools                              |
+| `npm run eval -- --resource <name> --model gpt-5.6-sol-high`                                                           | Run every eval case in one resource directory                   |
+| `npm run eval -- --tool <name> --dry-run`                                                                              | Preview the exact resolved scope without model calls            |
 | `npm run eval:all -- --model gpt-5.6-sol-high`                                                                         | Deliberately refresh every case against one model               |
 | `npm run eval -- --list-models`                                                                                        | Print the approved model × effort catalog                       |
 | `npm run eval -- --tool <name> --filter-failing evals/results/<model>/<resource>/<tool>.json --model gpt-5.6-sol-high` | Re-run failures only                                            |
 | `npm run eval:site`                                                                                                    | Merge stored JSON → `evals/site/index.html`                     |
 | `npm run eval:view`                                                                                                    | promptfoo's local viewer                                        |
 
-`--model` is required. The slug is an approved model id, optionally plus an effort suffix (`gpt-5.6-sol-high`). Models that do not expose effort (today: `claude-haiku-4-5`) take the bare id. Effort is optional even when the model supports it — `gpt-5.6-sol` uses the provider default. Dotted forms like `gpt-5.6.sol-high` are accepted and stored as `gpt-5.6-sol-high`. The catalog lives in `evals/_lib/models.ts`.
+`--tool` is an exact selector and may be repeated. `--resource` selects every case under the matching `evals/cases/<resource>/` directory, may be repeated, and accepts an optional trailing slash. The selectors can be combined and are resolved as a deduplicated union before Promptfoo starts. Use `--dry-run` to print that resolved scope without selecting a model or making model calls.
+
+`--model` is required except for `--dry-run`. The slug is an approved model id, optionally plus an effort suffix (`gpt-5.6-sol-high`). Models that do not expose effort (today: `claude-haiku-4-5`) take the bare id. Effort is optional even when the model supports it — `gpt-5.6-sol` uses the provider default. Dotted forms like `gpt-5.6.sol-high` are accepted and stored as `gpt-5.6-sol-high`. The catalog lives in `evals/_lib/models.ts`.
 
 promptfoo loads the ignored `.env` file; set `ANTHROPIC_API_KEY` or `OPENAI_API_KEY` there for the selected model's provider before the first run. Do not infer permission to run from the presence of a key. Every eval invocation makes fresh model calls; promptfoo's response cache is disabled. An unfiltered run replaces the selected result JSON. A run using a partial promptfoo filter merges rerun cells into the retained baseline and preserves cells the filter omitted.
 
@@ -52,8 +57,9 @@ evals/
 
 - **Adding a tool:** after the user opts in to evals, write `evals/cases/<resource>/<tool>.eval.ts`. Unless the user explicitly asked for execution and confirmed the required API key is configured, stop there and provide `npm run eval -- --tool <tool> --model <approved-model>` as the next-step command. When explicitly authorized, the run writes `evals/results/<model>/<resource>/<tool>.json` and leaves every other tool's files untouched; then run `npm run eval:site` and commit the new JSON.
 - **Editing an existing tool:** update the case file only when the user opts in to eval work. Re-run that tool only when the user explicitly asks and confirms credential setup; its per-tool JSON is replaced.
+- **Refreshing one resource:** use `npm run eval -- --resource <resource> --model <approved-model>` only after the user explicitly authorizes the model-backed run. This replaces the per-tool result JSON for every selected case in that resource and leaves other resources untouched.
 - **Filtered rerun:** partial filters such as `--filter-failing` and `--filter-metadata` replace matching cells by provider and case identity while preserving every stored cell the filter omitted.
-- **Full-model refresh:** the normal `eval` command rejects a missing `--tool`. Use `npm run eval:all -- --model <model>` only when you intentionally want to refresh every case for that model.
+- **Full-model refresh:** the normal `eval` command rejects a missing `--tool` or `--resource` selector. Use `npm run eval:all -- --model <model>` only when you intentionally want to refresh every case for that model.
 - **Merge conflicts** on a JSON file: take one side, re-run that tool, commit the result.
 - **Browsing results:** `npm run eval:site && open evals/site/index.html`. GitHub Pages at <https://vantage-sh.github.io/vantage-mcp-server/> regenerates HTML from committed JSON on every push to `main` that touches `evals/results/`. No model API keys in CI.
 
@@ -63,6 +69,7 @@ evals/
 evals/
   _lib/
     evalArgs.ts           # CLI parsing + targeted/full-run safety guard
+    evalScope.ts          # exact tool/resource case discovery and selection
     models.ts             # approved models × effort levels; --model slug parser
     distractors.ts        # registered-tool sampler + optional named distractors
     buildAiSdkTools.ts    # reads from the live registerTool registry → AI SDK tool() defs
@@ -114,7 +121,7 @@ export default function generateTests() {
 }
 ```
 
-`buildToolCases` tags every case with `metadata.tool` and `metadata.resource` so `--tool` / `--filter-metadata tool=` works and results land under `evals/results/<model>/<resource>/`.
+`buildToolCases` tags every case with `metadata.tool` and `metadata.resource` so results land under `evals/results/<model>/<resource>/` and optional Promptfoo metadata filters can narrow an already-resolved scope. The wrapper resolves `--tool` and `--resource` exactly before Promptfoo loads the selected case files.
 
 The scorer requires **exactly one** tool call with the expected name and args. Missing calls, extra calls, and multiple expected calls fail the cell. The v1 eval matrix does not cover abstention, negative, or multi-tool prompts.
 
