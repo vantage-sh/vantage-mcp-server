@@ -239,7 +239,7 @@ Wrangler serves the worker at `http://localhost:8787` (default). Setting `VANTAG
 
 ## Running Evals
 
-Each tool is scored two ways — **1:1** (only that tool loaded) and **1:5** (that tool plus four distractors) — then replayed across models. Outcomes are committed as JSON so we do not re-run the whole suite; GitHub Pages rebuilds the report from those files. The approach and full workflow are in [evals.md](evals.md).
+Each tool is tested with one direct prompt and one inferred prompt. Both runs load the target tool plus four distractors, then the same cases can be replayed across models. Outcomes are committed as JSON so we do not re-run the whole suite; GitHub Pages rebuilds the report from those files. The approach and full workflow are in [evals.md](evals.md).
 
 **New tools** must ship with cases under `evals/cases/<resource>/<tool>.eval.ts`. Authoring conventions: [`.agents/skills/writing-evals/SKILL.md`](.agents/skills/writing-evals/SKILL.md).
 

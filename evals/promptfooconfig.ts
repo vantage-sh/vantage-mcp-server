@@ -2,7 +2,7 @@ import { readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { UnifiedConfig } from "promptfoo";
-import { LOADING_MODES, resolveEvalModel } from "./_lib/models";
+import { resolveEvalModel } from "./_lib/models";
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -23,14 +23,15 @@ const selected = resolveEvalModel(process.env.EVAL_MODEL);
 const config: Partial<UnifiedConfig> = {
   description: "Vantage MCP tool-selection evals",
   prompts: ["{{prompt}}"],
-  providers: LOADING_MODES.map((mode) => ({
-    id: "file://_lib/provider.ts",
-    label: `${selected.id} · ${mode}`,
-    config: {
-      modelId: selected.id,
-      mode,
+  providers: [
+    {
+      id: "file://_lib/provider.ts",
+      label: `${selected.id} · mixed`,
+      config: {
+        modelId: selected.id,
+      },
     },
-  })),
+  ],
   tests: casePaths(),
   evaluateOptions: {
     maxConcurrency: 4,
