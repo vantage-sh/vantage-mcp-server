@@ -115,7 +115,7 @@ export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> 
 }
 
 // Initialize the Hono app with the routes for the OAuth Provider.
-const app = new Hono<{ Bindings: Env & { OAUTH_PROVIDER: OAuthHelpers } }>();
+const app = new Hono<{ Bindings: AppEnv & { OAUTH_PROVIDER: OAuthHelpers } }>();
 
 app.get("/authorize", authorize);
 app.post("/authorize/consent", confirmConsent);
@@ -139,25 +139,48 @@ function hasVantageHeaders(request: Request): boolean {
   return false;
 }
 
-function createMcpServer(request: Request, sse: boolean): HeaderAuthProvider | OAuthProvider {
+function createMcpServer(request: Request, sse: boolean): HeaderAuthProvider<AppEnv> | OAuthProvider<AppEnv> {
+  const apiHandler = (sse ? VantageMCP.mount("/sse") : VantageMCP.serve("/mcp")) as unknown as {
+    fetch(request: Request, env: AppEnv, ctx: ExecutionContext): Response | Promise<Response>;
+  };
+
   if (hasVantageHeaders(request) || hasValidAuthHeader(request)) {
     // Vantage headers or token is passed through headers, use HeaderAuthProvider
     // Can be used when programmatically accessing the server
-    return new HeaderAuthProvider({
-      apiHandler: sse ? VantageMCP.mount("/sse") : VantageMCP.serve("/mcp"),
+    return new HeaderAuthProvider<AppEnv>({
+      apiHandler,
       apiRoute: sse ? "/sse" : "/mcp",
-      // @ts-expect-error
       defaultHandler: app,
     });
   } else {
     // OAuth mode - use the full OAuth provider setup
-    return new OAuthProvider({
-      apiHandler: sse ? VantageMCP.mount("/sse") : VantageMCP.serve("/mcp"),
+    return new OAuthProvider<AppEnv>({
+      allowPlainPKCE: true,
+      apiHandler,
       apiRoute: sse ? "/sse" : "/mcp",
       authorizeEndpoint: "/authorize",
+      clientRegistrationTTL: undefined,
       clientRegistrationEndpoint: "/register",
-      // @ts-expect-error
       defaultHandler: app,
+      onError: ({ code, description, headers, internal, status }) => {
+        const tags = {
+          oauth_error_code: code,
+          oauth_error_status: status,
+          oauth_error_category: internal?.category,
+          oauth_error_reason: internal?.reason,
+        };
+        logger.withTags(tags).error("OAuth error response", description);
+        Sentry.captureMessage("OAuth error response", {
+          level: "error",
+          tags,
+          extra: {
+            description,
+            headers,
+            internal,
+          },
+        });
+      },
+      refreshTokenTTL: undefined,
       tokenEndpoint: "/token",
       tokenExchangeCallback,
     });
