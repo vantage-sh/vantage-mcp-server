@@ -1,0 +1,833 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-09-03T18:34:09.211Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "5fbc98a2-c341-4c62-887b-b77c57eea9f2",
+        "latencyMs": 1263,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use get-teams to search page 2 for Vantage Teams named Platform that can access workspace wrkspc_abc123.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:isolated",
+          "label": "gpt-5.6-luna · isolated"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "get-teams",
+                "input": {
+                  "page": 2,
+                  "q": "Platform",
+                  "workspace_token": "wrkspc_abc123"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "isolated",
+            "target": "get-teams",
+            "toolNames": [
+              "get-teams"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "get-teams",
+                "input": {
+                  "page": 2,
+                  "q": "Platform",
+                  "workspace_token": "wrkspc_abc123"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "get-teams · direct · Use get-teams to search page 2 for Vantage Teams named Platform that can access workspace wrkspc_abc123.",
+          "vars": {
+            "prompt": "Use get-teams to search page 2 for Vantage Teams named Platform that can access workspace wrkspc_abc123.",
+            "target": "get-teams",
+            "expected": [
+              {
+                "toolName": "get-teams",
+                "input": {
+                  "page": 2,
+                  "q": "Platform",
+                  "workspace_token": "wrkspc_abc123"
+                }
+              }
+            ],
+            "distractors": [
+              "get-team",
+              "get-team-members",
+              "get-users",
+              "list-workspaces"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "get-teams",
+            "resource": "teams",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 4,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use get-teams to search page 2 for Vantage Teams named Platform that can access workspace wrkspc_abc123.",
+          "target": "get-teams",
+          "expected": [
+            {
+              "toolName": "get-teams",
+              "input": {
+                "page": 2,
+                "q": "Platform",
+                "workspace_token": "wrkspc_abc123"
+              }
+            }
+          ],
+          "distractors": [
+            "get-team",
+            "get-team-members",
+            "get-users",
+            "list-workspaces"
+          ]
+        },
+        "metadata": {
+          "tool": "get-teams",
+          "resource": "teams",
+          "phrasing": "direct",
+          "modelId": "gpt-5.6-luna",
+          "mode": "isolated",
+          "target": "get-teams",
+          "toolNames": [
+            "get-teams"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "get-teams",
+              "input": {
+                "page": 2,
+                "q": "Platform",
+                "workspace_token": "wrkspc_abc123"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "80b4f8c1-3703-4680-b810-4e623087f7d7",
+        "latencyMs": 1375,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use get-teams to search page 2 for Vantage Teams named Platform that can access workspace wrkspc_abc123.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 1,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:mixed",
+          "label": "gpt-5.6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "get-teams",
+                "input": {
+                  "page": 2,
+                  "q": "Platform",
+                  "workspace_token": "wrkspc_abc123"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "mixed",
+            "target": "get-teams",
+            "toolNames": [
+              "get-teams",
+              "get-team",
+              "get-team-members",
+              "get-users",
+              "list-workspaces"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "get-teams",
+                "input": {
+                  "page": 2,
+                  "q": "Platform",
+                  "workspace_token": "wrkspc_abc123"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "get-teams · direct · Use get-teams to search page 2 for Vantage Teams named Platform that can access workspace wrkspc_abc123.",
+          "vars": {
+            "prompt": "Use get-teams to search page 2 for Vantage Teams named Platform that can access workspace wrkspc_abc123.",
+            "target": "get-teams",
+            "expected": [
+              {
+                "toolName": "get-teams",
+                "input": {
+                  "page": 2,
+                  "q": "Platform",
+                  "workspace_token": "wrkspc_abc123"
+                }
+              }
+            ],
+            "distractors": [
+              "get-team",
+              "get-team-members",
+              "get-users",
+              "list-workspaces"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "get-teams",
+            "resource": "teams",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 4,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use get-teams to search page 2 for Vantage Teams named Platform that can access workspace wrkspc_abc123.",
+          "target": "get-teams",
+          "expected": [
+            {
+              "toolName": "get-teams",
+              "input": {
+                "page": 2,
+                "q": "Platform",
+                "workspace_token": "wrkspc_abc123"
+              }
+            }
+          ],
+          "distractors": [
+            "get-team",
+            "get-team-members",
+            "get-users",
+            "list-workspaces"
+          ]
+        },
+        "metadata": {
+          "tool": "get-teams",
+          "resource": "teams",
+          "phrasing": "direct",
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed",
+          "target": "get-teams",
+          "toolNames": [
+            "get-teams",
+            "get-team",
+            "get-team-members",
+            "get-users",
+            "list-workspaces"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "get-teams",
+              "input": {
+                "page": 2,
+                "q": "Platform",
+                "workspace_token": "wrkspc_abc123"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "41d03229-613f-45f8-8c54-16fa0d0f1461",
+        "latencyMs": 1401,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Which Vantage Teams can access workspace wrkspc_abc123? Show page 3.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:isolated",
+          "label": "gpt-5.6-luna · isolated"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "get-teams",
+                "input": {
+                  "page": 3,
+                  "workspace_token": "wrkspc_abc123"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "isolated",
+            "target": "get-teams",
+            "toolNames": [
+              "get-teams"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "get-teams",
+                "input": {
+                  "page": 3,
+                  "workspace_token": "wrkspc_abc123"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "get-teams · inferred · Which Vantage Teams can access workspace wrkspc_abc123? Show page 3.",
+          "vars": {
+            "prompt": "Which Vantage Teams can access workspace wrkspc_abc123? Show page 3.",
+            "target": "get-teams",
+            "expected": [
+              {
+                "toolName": "get-teams",
+                "input": {
+                  "page": 3,
+                  "workspace_token": "wrkspc_abc123"
+                }
+              }
+            ],
+            "distractors": [
+              "get-team",
+              "get-team-members",
+              "get-users",
+              "list-workspaces"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "get-teams",
+            "resource": "teams",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 5,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Which Vantage Teams can access workspace wrkspc_abc123? Show page 3.",
+          "target": "get-teams",
+          "expected": [
+            {
+              "toolName": "get-teams",
+              "input": {
+                "page": 3,
+                "workspace_token": "wrkspc_abc123"
+              }
+            }
+          ],
+          "distractors": [
+            "get-team",
+            "get-team-members",
+            "get-users",
+            "list-workspaces"
+          ]
+        },
+        "metadata": {
+          "tool": "get-teams",
+          "resource": "teams",
+          "phrasing": "inferred",
+          "modelId": "gpt-5.6-luna",
+          "mode": "isolated",
+          "target": "get-teams",
+          "toolNames": [
+            "get-teams"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "get-teams",
+              "input": {
+                "page": 3,
+                "workspace_token": "wrkspc_abc123"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "24f7bd89-834b-43bb-88d8-81e727617bfc",
+        "latencyMs": 1879,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Which Vantage Teams can access workspace wrkspc_abc123? Show page 3.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 1,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:mixed",
+          "label": "gpt-5.6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "get-teams",
+                "input": {
+                  "page": 3,
+                  "workspace_token": "wrkspc_abc123"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "mixed",
+            "target": "get-teams",
+            "toolNames": [
+              "get-teams",
+              "get-team",
+              "get-team-members",
+              "get-users",
+              "list-workspaces"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "get-teams",
+                "input": {
+                  "page": 3,
+                  "workspace_token": "wrkspc_abc123"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "get-teams · inferred · Which Vantage Teams can access workspace wrkspc_abc123? Show page 3.",
+          "vars": {
+            "prompt": "Which Vantage Teams can access workspace wrkspc_abc123? Show page 3.",
+            "target": "get-teams",
+            "expected": [
+              {
+                "toolName": "get-teams",
+                "input": {
+                  "page": 3,
+                  "workspace_token": "wrkspc_abc123"
+                }
+              }
+            ],
+            "distractors": [
+              "get-team",
+              "get-team-members",
+              "get-users",
+              "list-workspaces"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "get-teams",
+            "resource": "teams",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 5,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Which Vantage Teams can access workspace wrkspc_abc123? Show page 3.",
+          "target": "get-teams",
+          "expected": [
+            {
+              "toolName": "get-teams",
+              "input": {
+                "page": 3,
+                "workspace_token": "wrkspc_abc123"
+              }
+            }
+          ],
+          "distractors": [
+            "get-team",
+            "get-team-members",
+            "get-users",
+            "list-workspaces"
+          ]
+        },
+        "metadata": {
+          "tool": "get-teams",
+          "resource": "teams",
+          "phrasing": "inferred",
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed",
+          "target": "get-teams",
+          "toolNames": [
+            "get-teams",
+            "get-team",
+            "get-team-members",
+            "get-users",
+            "list-workspaces"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "get-teams",
+              "input": {
+                "page": 3,
+                "workspace_token": "wrkspc_abc123"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 4,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 4,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-5.6-luna · isolated",
+        "config": {
+          "modelId": "gpt-5.6-luna",
+          "mode": "isolated"
+        }
+      },
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-5.6-luna · mixed",
+        "config": {
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/cost-providers/get-cost-provider-accounts.eval.ts",
+      "file://cases/current-user/get-myself.eval.ts",
+      "file://cases/teams/add-team-member.eval.ts",
+      "file://cases/teams/create-team.eval.ts",
+      "file://cases/teams/delete-team.eval.ts",
+      "file://cases/teams/get-team-members.eval.ts",
+      "file://cases/teams/get-team.eval.ts",
+      "file://cases/teams/get-teams.eval.ts",
+      "file://cases/teams/remove-team-member.eval.ts",
+      "file://cases/teams/update-team.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-09-03T18:34:08.896Z",
+    "evaluationCreatedAt": "2026-09-03T18:34:02.765Z"
+  }
+}

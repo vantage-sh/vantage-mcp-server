@@ -1,0 +1,823 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-09-03T18:34:09.208Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "e97a3f4c-0523-4bf8-8ea9-04aee926b868",
+        "latencyMs": 2289,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use get-team-members to show page 3 of the members of Vantage Team team_abc123.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 1,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:mixed",
+          "label": "gpt-5.6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "get-team-members",
+                "input": {
+                  "team_token": "team_abc123",
+                  "page": 3
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "mixed",
+            "target": "get-team-members",
+            "toolNames": [
+              "get-team-members",
+              "get-team",
+              "get-teams",
+              "get-users",
+              "add-team-member"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "get-team-members",
+                "input": {
+                  "team_token": "team_abc123",
+                  "page": 3
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "get-team-members · direct · Use get-team-members to show page 3 of the members of Vantage Team team_abc123.",
+          "vars": {
+            "prompt": "Use get-team-members to show page 3 of the members of Vantage Team team_abc123.",
+            "target": "get-team-members",
+            "expected": [
+              {
+                "toolName": "get-team-members",
+                "input": {
+                  "team_token": "team_abc123",
+                  "page": 3
+                }
+              }
+            ],
+            "distractors": [
+              "get-team",
+              "get-teams",
+              "get-users",
+              "add-team-member"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "get-team-members",
+            "resource": "teams",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use get-team-members to show page 3 of the members of Vantage Team team_abc123.",
+          "target": "get-team-members",
+          "expected": [
+            {
+              "toolName": "get-team-members",
+              "input": {
+                "team_token": "team_abc123",
+                "page": 3
+              }
+            }
+          ],
+          "distractors": [
+            "get-team",
+            "get-teams",
+            "get-users",
+            "add-team-member"
+          ]
+        },
+        "metadata": {
+          "tool": "get-team-members",
+          "resource": "teams",
+          "phrasing": "direct",
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed",
+          "target": "get-team-members",
+          "toolNames": [
+            "get-team-members",
+            "get-team",
+            "get-teams",
+            "get-users",
+            "add-team-member"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "get-team-members",
+              "input": {
+                "team_token": "team_abc123",
+                "page": 3
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "7dcec3b7-b69e-4eca-954a-1b1ccbcb3eb5",
+        "latencyMs": 2324,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use get-team-members to show page 3 of the members of Vantage Team team_abc123.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:isolated",
+          "label": "gpt-5.6-luna · isolated"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "get-team-members",
+                "input": {
+                  "team_token": "team_abc123",
+                  "page": 3
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "isolated",
+            "target": "get-team-members",
+            "toolNames": [
+              "get-team-members"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "get-team-members",
+                "input": {
+                  "team_token": "team_abc123",
+                  "page": 3
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "get-team-members · direct · Use get-team-members to show page 3 of the members of Vantage Team team_abc123.",
+          "vars": {
+            "prompt": "Use get-team-members to show page 3 of the members of Vantage Team team_abc123.",
+            "target": "get-team-members",
+            "expected": [
+              {
+                "toolName": "get-team-members",
+                "input": {
+                  "team_token": "team_abc123",
+                  "page": 3
+                }
+              }
+            ],
+            "distractors": [
+              "get-team",
+              "get-teams",
+              "get-users",
+              "add-team-member"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "get-team-members",
+            "resource": "teams",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use get-team-members to show page 3 of the members of Vantage Team team_abc123.",
+          "target": "get-team-members",
+          "expected": [
+            {
+              "toolName": "get-team-members",
+              "input": {
+                "team_token": "team_abc123",
+                "page": 3
+              }
+            }
+          ],
+          "distractors": [
+            "get-team",
+            "get-teams",
+            "get-users",
+            "add-team-member"
+          ]
+        },
+        "metadata": {
+          "tool": "get-team-members",
+          "resource": "teams",
+          "phrasing": "direct",
+          "modelId": "gpt-5.6-luna",
+          "mode": "isolated",
+          "target": "get-team-members",
+          "toolNames": [
+            "get-team-members"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "get-team-members",
+              "input": {
+                "team_token": "team_abc123",
+                "page": 3
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "317e6c9b-08f1-4fe8-a18c-18d443e81a91",
+        "latencyMs": 2451,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Who belongs to Vantage Team team_abc123? Show me the second page.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:isolated",
+          "label": "gpt-5.6-luna · isolated"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "get-team-members",
+                "input": {
+                  "team_token": "team_abc123",
+                  "page": 2
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "isolated",
+            "target": "get-team-members",
+            "toolNames": [
+              "get-team-members"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "get-team-members",
+                "input": {
+                  "team_token": "team_abc123",
+                  "page": 2
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "get-team-members · inferred · Who belongs to Vantage Team team_abc123? Show me the second page.",
+          "vars": {
+            "prompt": "Who belongs to Vantage Team team_abc123? Show me the second page.",
+            "target": "get-team-members",
+            "expected": [
+              {
+                "toolName": "get-team-members",
+                "input": {
+                  "team_token": "team_abc123",
+                  "page": 2
+                }
+              }
+            ],
+            "distractors": [
+              "get-team",
+              "get-teams",
+              "get-users",
+              "add-team-member"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "get-team-members",
+            "resource": "teams",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Who belongs to Vantage Team team_abc123? Show me the second page.",
+          "target": "get-team-members",
+          "expected": [
+            {
+              "toolName": "get-team-members",
+              "input": {
+                "team_token": "team_abc123",
+                "page": 2
+              }
+            }
+          ],
+          "distractors": [
+            "get-team",
+            "get-teams",
+            "get-users",
+            "add-team-member"
+          ]
+        },
+        "metadata": {
+          "tool": "get-team-members",
+          "resource": "teams",
+          "phrasing": "inferred",
+          "modelId": "gpt-5.6-luna",
+          "mode": "isolated",
+          "target": "get-team-members",
+          "toolNames": [
+            "get-team-members"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "get-team-members",
+              "input": {
+                "team_token": "team_abc123",
+                "page": 2
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "7d46a483-d920-4fe3-be42-e54bab510065",
+        "latencyMs": 3021,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Who belongs to Vantage Team team_abc123? Show me the second page.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 1,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:mixed",
+          "label": "gpt-5.6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "get-team-members",
+                "input": {
+                  "team_token": "team_abc123",
+                  "page": 2
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "mixed",
+            "target": "get-team-members",
+            "toolNames": [
+              "get-team-members",
+              "get-team",
+              "get-teams",
+              "get-users",
+              "add-team-member"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "get-team-members",
+                "input": {
+                  "team_token": "team_abc123",
+                  "page": 2
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "get-team-members · inferred · Who belongs to Vantage Team team_abc123? Show me the second page.",
+          "vars": {
+            "prompt": "Who belongs to Vantage Team team_abc123? Show me the second page.",
+            "target": "get-team-members",
+            "expected": [
+              {
+                "toolName": "get-team-members",
+                "input": {
+                  "team_token": "team_abc123",
+                  "page": 2
+                }
+              }
+            ],
+            "distractors": [
+              "get-team",
+              "get-teams",
+              "get-users",
+              "add-team-member"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "get-team-members",
+            "resource": "teams",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Who belongs to Vantage Team team_abc123? Show me the second page.",
+          "target": "get-team-members",
+          "expected": [
+            {
+              "toolName": "get-team-members",
+              "input": {
+                "team_token": "team_abc123",
+                "page": 2
+              }
+            }
+          ],
+          "distractors": [
+            "get-team",
+            "get-teams",
+            "get-users",
+            "add-team-member"
+          ]
+        },
+        "metadata": {
+          "tool": "get-team-members",
+          "resource": "teams",
+          "phrasing": "inferred",
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed",
+          "target": "get-team-members",
+          "toolNames": [
+            "get-team-members",
+            "get-team",
+            "get-teams",
+            "get-users",
+            "add-team-member"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "get-team-members",
+              "input": {
+                "team_token": "team_abc123",
+                "page": 2
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 4,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 4,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-5.6-luna · isolated",
+        "config": {
+          "modelId": "gpt-5.6-luna",
+          "mode": "isolated"
+        }
+      },
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-5.6-luna · mixed",
+        "config": {
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/cost-providers/get-cost-provider-accounts.eval.ts",
+      "file://cases/current-user/get-myself.eval.ts",
+      "file://cases/teams/add-team-member.eval.ts",
+      "file://cases/teams/create-team.eval.ts",
+      "file://cases/teams/delete-team.eval.ts",
+      "file://cases/teams/get-team-members.eval.ts",
+      "file://cases/teams/get-team.eval.ts",
+      "file://cases/teams/get-teams.eval.ts",
+      "file://cases/teams/remove-team-member.eval.ts",
+      "file://cases/teams/update-team.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-09-03T18:34:08.896Z",
+    "evaluationCreatedAt": "2026-09-03T18:34:02.765Z"
+  }
+}
