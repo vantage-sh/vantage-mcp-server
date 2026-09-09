@@ -18,7 +18,7 @@ import { logger } from "./logger";
 import setupRegisteredResources from "./resources";
 import { callApi, serverMeta } from "./shared";
 import { setupRegisteredTools } from "./tools/structure/registerTool";
-import { tracer } from "./tracing";
+import { datadogTraceLogTags, formatErrorsForTelemetry, tracer } from "./tracing";
 
 // Side effect import to register all tools
 import "./tools";
@@ -63,6 +63,7 @@ export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> 
       logger.setTags({
         endpoint: endpoint as string,
         method: method as string,
+        ...datadogTraceLogTags(tracer.getActiveTraceContext()),
       });
 
       const vantageHeaders =
@@ -96,8 +97,17 @@ export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> 
         this.env
       );
 
-      logger.setTags({ ok: result.ok });
-      logger.info("Vantage API request");
+      logger.setTags({
+        ok: result.ok,
+        ...datadogTraceLogTags(tracer.getActiveTraceContext()),
+      });
+
+      if (!result.ok) {
+        logger.setTags({ api_errors: formatErrorsForTelemetry(result.errors) });
+        logger.error("Vantage API request failed");
+      } else {
+        logger.info("Vantage API request");
+      }
 
       return result;
     });

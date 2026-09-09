@@ -21,17 +21,19 @@ export type TraceContext = {
 
 export type SpanKind = "client" | "consumer" | "internal" | "producer" | "server";
 
+export type SpanStatus = {
+  code: 0 | 1 | 2;
+  message?: string;
+};
+
 export type TraceSpan = TraceContext & {
   name: string;
   kind: SpanKind;
   parentSpanId?: string;
   startedAt: number;
   attributes: TraceAttributes;
-};
-
-type SpanStatus = {
-  code: 0 | 1 | 2;
-  message?: string;
+  /** Optional status applied when the span ends successfully via runWithSpan. */
+  status?: SpanStatus;
 };
 
 export type StartSpanOptions = {
@@ -53,6 +55,11 @@ export type EndSpanOptions = {
 type TraceFetchOptions = StartSpanOptions & {
   spanName?: string;
 };
+
+/** Max chars stored on span `error.message` / log tags for API error bodies. */
+export const TRACE_ERROR_BODY_MAX_LENGTH = 2048;
+/** Max chars stored on OTel span status.message (Datadog surfaces this as error.message). */
+export const TRACE_STATUS_MESSAGE_MAX_LENGTH = 512;
 
 export type WaitUntil = (promise: Promise<unknown>) => void;
 
@@ -229,7 +236,7 @@ export class CloudflareWorkerTracer {
     const runInsideSpan = async (): Promise<T> => {
       try {
         const result = await fn(span);
-        this.endSpan(span, { env: options.env });
+        this.endSpan(span, { env: options.env, status: span.status });
         return result;
       } catch (error) {
         this.endSpan(span, {
@@ -323,12 +330,23 @@ export class CloudflareWorkerTracer {
         const response =
           input instanceof Request ? await fetcher(new Request(input, tracedInit)) : await fetcher(input, tracedInit);
 
+        const attributes: TraceAttributes = {
+          "http.response.status_code": response.status,
+        };
+        let status = httpStatusToSpanStatus(response.status, span.kind);
+
+        if (shouldCaptureHttpErrorBody(response.status, span.kind)) {
+          const errorBody = await readResponseBodyPreview(response);
+          if (errorBody) {
+            attributes["error.message"] = errorBody;
+            status = { code: 2, message: truncateAttribute(errorBody, TRACE_STATUS_MESSAGE_MAX_LENGTH) };
+          }
+        }
+
         this.endSpan(span, {
           env: options.env,
-          attributes: {
-            "http.response.status_code": response.status,
-          },
-          status: httpStatusToSpanStatus(response.status, span.kind),
+          attributes,
+          status,
         });
 
         return response;
@@ -533,6 +551,60 @@ function httpStatusToSpanStatus(statusCode: number, kind: SpanKind = "internal")
   }
 
   return { code: 0 };
+}
+
+function shouldCaptureHttpErrorBody(statusCode: number, kind: SpanKind): boolean {
+  if (statusCode >= 500) {
+    return true;
+  }
+  return kind === "client" && statusCode >= 400;
+}
+
+async function readResponseBodyPreview(response: Response): Promise<string | undefined> {
+  try {
+    const text = (await response.clone().text()).trim();
+    if (!text) {
+      return undefined;
+    }
+    return truncateAttribute(text, TRACE_ERROR_BODY_MAX_LENGTH);
+  } catch {
+    return undefined;
+  }
+}
+
+export function truncateAttribute(value: string, maxLength: number): string {
+  if (value.length <= maxLength) {
+    return value;
+  }
+  return `${value.slice(0, maxLength - 3)}...`;
+}
+
+export function formatErrorsForTelemetry(errors: unknown, fallback = ""): string {
+  try {
+    return truncateAttribute(JSON.stringify(errors), TRACE_ERROR_BODY_MAX_LENGTH);
+  } catch {
+    return truncateAttribute(fallback || "Unknown error", TRACE_ERROR_BODY_MAX_LENGTH);
+  }
+}
+
+/** Datadog log↔trace correlation fields for the active (or provided) trace context. */
+export function datadogTraceLogTags(context?: TraceContext): Record<string, string> {
+  if (!context) {
+    return {};
+  }
+
+  return {
+    // Classic APM correlation uses the lower 64 bits of a 128-bit trace id as decimal.
+    "dd.trace_id": hexToUnsignedDecimal(context.traceId.slice(-16)),
+    "dd.span_id": hexToUnsignedDecimal(context.spanId),
+    // OTel / 128-bit friendly identifiers (matches span tags like otel.trace_id).
+    "otel.trace_id": context.traceId,
+    "otel.span_id": context.spanId,
+  };
+}
+
+function hexToUnsignedDecimal(hex: string): string {
+  return BigInt(`0x${hex}`).toString();
 }
 
 function isAllZeros(value: string): boolean {

@@ -9,7 +9,13 @@ import type {
 } from "@vantage-sh/vantage-client";
 import type z from "zod";
 import type { AppEnv } from "../../env";
-import { tracer, type WaitUntil } from "../../tracing";
+import {
+  formatErrorsForTelemetry,
+  TRACE_STATUS_MESSAGE_MAX_LENGTH,
+  tracer,
+  truncateAttribute,
+  type WaitUntil,
+} from "../../tracing";
 import MCPUserError from "./MCPUserError";
 
 export type ToolCallContext = {
@@ -116,7 +122,7 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
               ...(source ? { "mcp.source": source } : {}),
             },
           },
-          async () => {
+          async (span) => {
             try {
               const res = await toolProps.execute(args, ctx);
 
@@ -139,6 +145,12 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
               };
             } catch (e) {
               if (e instanceof MCPUserError) {
+                const message = formatErrorsForTelemetry(e.exception);
+                span.status = {
+                  code: 2,
+                  message: truncateAttribute(message, TRACE_STATUS_MESSAGE_MAX_LENGTH),
+                };
+                span.attributes["error.message"] = message;
                 return {
                   content: [
                     {
