@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { AppEnv } from "../../src/env";
-import { CloudflareWorkerTracer } from "../../src/tracing/tracer";
+import { CloudflareWorkerTracer, datadogTraceLogTags } from "../../src/tracing/tracer";
 
 const FIXED_NOW = 1_700_000_000_000;
 
@@ -322,6 +322,48 @@ describe("runWithSpan", () => {
     expect(span.status).toEqual({ code: 2, message: "boom" });
     expect(span.events[0].name).toBe("exception");
   });
+
+  it("applies span.status set by the callback on successful return", async () => {
+    const fetchSpy = vi.fn<typeof fetch>(async () => new Response(null, { status: 200 }));
+    const tracer = makeTracer({ exporterFetch: fetchSpy });
+
+    await tracer.runWithSpan("op", { env: appEnv }, async (span) => {
+      span.status = { code: 2, message: '{"errors":["nope"]}' };
+      span.attributes["error.message"] = '{"errors":["nope"]}';
+      return "handled";
+    });
+
+    const body = JSON.parse(fetchSpy.mock.calls[0][1]?.body as string);
+    const span = body.resourceSpans[0].scopeSpans[0].spans[0];
+    expect(span.status).toEqual({ code: 2, message: '{"errors":["nope"]}' });
+    const attrs = Object.fromEntries(
+      span.attributes.map((a: { key: string; value: { stringValue?: string } }) => [a.key, a.value])
+    );
+    expect(attrs["error.message"].stringValue).toBe('{"errors":["nope"]}');
+  });
+});
+
+describe("datadogTraceLogTags", () => {
+  it("emits classic dd.* decimals and otel hex ids", () => {
+    expect(
+      datadogTraceLogTags({
+        traceId: "012045e13ff5466d621637c8ee2b3266",
+        spanId: "4f9c1a2b3c4d5e6f",
+        traceFlags: "01",
+        sampled: true,
+      })
+    ).toEqual({
+      "dd.trace_id": BigInt("0x621637c8ee2b3266").toString(),
+      "dd.span_id": BigInt("0x4f9c1a2b3c4d5e6f").toString(),
+      "otel.trace_id": "012045e13ff5466d621637c8ee2b3266",
+      "otel.span_id": "4f9c1a2b3c4d5e6f",
+    });
+  });
+
+  it("returns an empty object when context is missing", () => {
+    expect(datadogTraceLogTags()).toEqual({});
+    expect(datadogTraceLogTags(undefined)).toEqual({});
+  });
 });
 
 describe("traceFetch", () => {
@@ -373,6 +415,32 @@ describe("traceFetch", () => {
     const body = JSON.parse(fetchSpy.mock.calls[0][1]?.body as string);
     const fetchSpan = body.resourceSpans[0].scopeSpans[0].spans.find((s: { kind: number }) => s.kind === 3);
     expect(fetchSpan.status).toEqual({ code: 2, message: "HTTP 503" });
+  });
+
+  it("attaches 4xx response bodies to the client span error message", async () => {
+    const fetchSpy = vi.fn<typeof fetch>(async () => new Response(null, { status: 200 }));
+    const tracer = makeTracer({ exporterFetch: fetchSpy });
+    const errorBody = JSON.stringify({ errors: ["Title can't be blank"] });
+
+    const inner = vi.fn<typeof fetch>(async () => new Response(errorBody, { status: 400 }));
+    await tracer.runWithSpan("root", { env: appEnv }, async () => {
+      const response = await tracer.traceFetch(
+        inner,
+        "https://api.example/create",
+        { method: "POST" },
+        { env: appEnv }
+      );
+      // Original body must remain readable by the caller.
+      expect(await response.text()).toBe(errorBody);
+    });
+
+    const body = JSON.parse(fetchSpy.mock.calls[0][1]?.body as string);
+    const fetchSpan = body.resourceSpans[0].scopeSpans[0].spans.find((s: { kind: number }) => s.kind === 3);
+    expect(fetchSpan.status).toEqual({ code: 2, message: errorBody });
+    const attrs = Object.fromEntries(
+      fetchSpan.attributes.map((a: { key: string; value: { stringValue?: string } }) => [a.key, a.value])
+    );
+    expect(attrs["error.message"].stringValue).toBe(errorBody);
   });
 
   it("captures fetcher errors as an exception event", async () => {

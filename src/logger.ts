@@ -6,6 +6,12 @@ export type LogTagHints = {
   endpoint?: string;
   method?: string;
   ok?: boolean;
+  /** JSON-serialized API error payload for failed Vantage calls. */
+  api_errors?: string;
+  "dd.trace_id"?: string;
+  "dd.span_id"?: string;
+  "otel.trace_id"?: string;
+  "otel.span_id"?: string;
 };
 
 export const logger = new WorkersLogger<LogTagHints>();
