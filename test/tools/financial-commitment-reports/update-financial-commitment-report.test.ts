@@ -1,7 +1,7 @@
 import {
   pathEncode,
-  type UpdateFinancialCommitmentReportRequest,
   type UpdateFinancialCommitmentReportResponse,
+  VANTAGE_FINANCIAL_COMMITMENT_GROUPINGS,
 } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/financial-commitment-reports/update-financial-commitment-report";
@@ -56,6 +56,13 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     data: validInputArguments,
   },
   {
+    name: "all built-in groupings",
+    data: {
+      ...minimalValidInputArguments,
+      groupings: [...VANTAGE_FINANCIAL_COMMITMENT_GROUPINGS],
+    },
+  },
+  {
     name: "invalid date bucket",
     data: {
       ...validInputArguments,
@@ -75,11 +82,17 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     name: "invalid grouping",
     data: {
       ...validInputArguments,
-      groupings: ["unsupported_grouping"],
+      groupings: ["provider"],
     },
-    expectedIssues: [
-      "Grouping dimensions for aggregating financial commitments on the report. Valid groupings: provider, service, resource_account_id, provider_account_id, commitment_type, commitment_id, cost_type, cost_category, cost_sub_category, instance_type, region, and tag:<tag_key>.",
-    ],
+    expectedIssues: ["Grouping dimensions for the report. Use tag:<tag_key> to group by tag."],
+  },
+  {
+    name: "empty tag key",
+    data: {
+      ...validInputArguments,
+      groupings: ["tag:"],
+    },
+    expectedIssues: ["Grouping dimensions for the report. Use tag:<tag_key> to group by tag."],
   },
   {
     name: "invalid start date",
@@ -145,8 +158,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           date_interval: "last_3_months",
           date_bucket: "week",
           on_demand_costs_scope: "discountable",
-          groupings: "cost_type,commitment_type",
-        } as unknown as UpdateFinancialCommitmentReportRequest,
+          groupings: ["cost_type", "commitment_type"],
+        },
         method: "PUT",
         result: {
           ok: true,

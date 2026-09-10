@@ -2,7 +2,7 @@
   "evalId": null,
   "results": {
     "version": 3,
-    "timestamp": "2026-09-10T20:47:27.803Z",
+    "timestamp": "2026-09-10T20:46:35.862Z",
     "results": [
       {
         "cost": 0,
@@ -30,11 +30,11 @@
             }
           ]
         },
-        "id": "fbed8fb4-6ea1-4928-86c5-cef3166225cb",
-        "latencyMs": 3606,
+        "id": "f7911285-9ca3-4f59-9f9c-7c7f7dd37523",
+        "latencyMs": 1693,
         "namedScores": {},
         "prompt": {
-          "raw": "Use query-financial-commitment-report-costs to fetch cost data for financial commitment report fncl_cmnt_rprt_abc123 from 2024-03-01 through 2024-03-31, grouped by resource_account_id and service.",
+          "raw": "Use get-financial-commitment-report to retrieve the saved configuration for Vantage financial commitment report fncl_cmnt_rprt_abc123.",
           "label": "{{prompt}}",
           "config": {
             "disableVarExpansion": true
@@ -50,16 +50,9 @@
           "output": {
             "toolCalls": [
               {
-                "toolName": "query-financial-commitment-report-costs",
+                "toolName": "get-financial-commitment-report",
                 "input": {
-                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                  "page": 1,
-                  "start_date": "2024-03-01",
-                  "end_date": "2024-03-31",
-                  "groupings": [
-                    "resource_account_id",
-                    "service"
-                  ]
+                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123"
                 }
               }
             ],
@@ -68,26 +61,19 @@
           "metadata": {
             "modelId": "gpt-5.6-luna",
             "mode": "mixed",
-            "target": "query-financial-commitment-report-costs",
+            "target": "get-financial-commitment-report",
             "toolNames": [
-              "query-financial-commitment-report-costs",
               "get-financial-commitment-report",
               "list-financial-commitment-reports",
-              "list-costs",
-              "query-costs"
+              "query-financial-commitment-report-costs",
+              "update-financial-commitment-report",
+              "get-cost-report"
             ],
             "toolCalls": [
               {
-                "toolName": "query-financial-commitment-report-costs",
+                "toolName": "get-financial-commitment-report",
                 "input": {
-                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                  "page": 1,
-                  "start_date": "2024-03-01",
-                  "end_date": "2024-03-31",
-                  "groupings": [
-                    "resource_account_id",
-                    "service"
-                  ]
+                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123"
                 }
               }
             ]
@@ -96,37 +82,30 @@
         "score": 1,
         "success": true,
         "testCase": {
-          "description": "query-financial-commitment-report-costs · direct · Use query-financial-commitment-report-costs to fetch cost data for financial commitment report fncl_cmnt_rprt_abc123 from 2024-03-01 through 2024-03-31, grouped by resource_account_id and service.",
+          "description": "get-financial-commitment-report · direct · Use get-financial-commitment-report to retrieve the saved configuration for Vantage financial commitment report fncl_cmnt_rprt_abc123.",
           "vars": {
-            "prompt": "Use query-financial-commitment-report-costs to fetch cost data for financial commitment report fncl_cmnt_rprt_abc123 from 2024-03-01 through 2024-03-31, grouped by resource_account_id and service.",
-            "target": "query-financial-commitment-report-costs",
+            "prompt": "Use get-financial-commitment-report to retrieve the saved configuration for Vantage financial commitment report fncl_cmnt_rprt_abc123.",
+            "target": "get-financial-commitment-report",
             "expected": [
               {
-                "toolName": "query-financial-commitment-report-costs",
+                "toolName": "get-financial-commitment-report",
                 "input": {
-                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                  "start_date": "2024-03-01",
-                  "end_date": "2024-03-31",
-                  "groupings": [
-                    "resource_account_id",
-                    "service"
-                  ],
-                  "page": 1
+                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123"
                 }
               }
             ],
             "distractors": [
-              "get-financial-commitment-report",
               "list-financial-commitment-reports",
-              "list-costs",
-              "query-costs"
+              "query-financial-commitment-report-costs",
+              "update-financial-commitment-report",
+              "get-cost-report"
             ]
           },
           "options": {
             "disableVarExpansion": true
           },
           "metadata": {
-            "tool": "query-financial-commitment-report-costs",
+            "tool": "get-financial-commitment-report",
             "resource": "financial-commitment-reports",
             "phrasing": "direct"
           },
@@ -167,56 +146,42 @@
           }
         },
         "vars": {
-          "prompt": "Use query-financial-commitment-report-costs to fetch cost data for financial commitment report fncl_cmnt_rprt_abc123 from 2024-03-01 through 2024-03-31, grouped by resource_account_id and service.",
-          "target": "query-financial-commitment-report-costs",
+          "prompt": "Use get-financial-commitment-report to retrieve the saved configuration for Vantage financial commitment report fncl_cmnt_rprt_abc123.",
+          "target": "get-financial-commitment-report",
           "expected": [
             {
-              "toolName": "query-financial-commitment-report-costs",
+              "toolName": "get-financial-commitment-report",
               "input": {
-                "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                "start_date": "2024-03-01",
-                "end_date": "2024-03-31",
-                "groupings": [
-                  "resource_account_id",
-                  "service"
-                ],
-                "page": 1
+                "financial_commitment_report_token": "fncl_cmnt_rprt_abc123"
               }
             }
           ],
           "distractors": [
-            "get-financial-commitment-report",
             "list-financial-commitment-reports",
-            "list-costs",
-            "query-costs"
+            "query-financial-commitment-report-costs",
+            "update-financial-commitment-report",
+            "get-cost-report"
           ]
         },
         "metadata": {
-          "tool": "query-financial-commitment-report-costs",
+          "tool": "get-financial-commitment-report",
           "resource": "financial-commitment-reports",
           "phrasing": "direct",
           "modelId": "gpt-5.6-luna",
           "mode": "mixed",
-          "target": "query-financial-commitment-report-costs",
+          "target": "get-financial-commitment-report",
           "toolNames": [
-            "query-financial-commitment-report-costs",
             "get-financial-commitment-report",
             "list-financial-commitment-reports",
-            "list-costs",
-            "query-costs"
+            "query-financial-commitment-report-costs",
+            "update-financial-commitment-report",
+            "get-cost-report"
           ],
           "toolCalls": [
             {
-              "toolName": "query-financial-commitment-report-costs",
+              "toolName": "get-financial-commitment-report",
               "input": {
-                "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                "page": 1,
-                "start_date": "2024-03-01",
-                "end_date": "2024-03-31",
-                "groupings": [
-                  "resource_account_id",
-                  "service"
-                ]
+                "financial_commitment_report_token": "fncl_cmnt_rprt_abc123"
               }
             }
           ],
@@ -250,11 +215,11 @@
             }
           ]
         },
-        "id": "cbd2c88a-bb39-41df-9ada-068fbdb7c777",
-        "latencyMs": 2439,
+        "id": "08514c78-dcc1-4fc6-bd44-859b55744752",
+        "latencyMs": 2328,
         "namedScores": {},
         "prompt": {
-          "raw": "For Vantage financial commitment report fncl_cmnt_rprt_abc123, show me which linked accounts' resources are actually consuming the commitments, broken down by resource account and commitment type. Use the report's saved date range and filters.",
+          "raw": "Show me the title, date range, groupings, and filter configured on Vantage financial commitment report fncl_cmnt_rprt_coverage789.",
           "label": "{{prompt}}",
           "config": {
             "disableVarExpansion": true
@@ -270,14 +235,9 @@
           "output": {
             "toolCalls": [
               {
-                "toolName": "query-financial-commitment-report-costs",
+                "toolName": "get-financial-commitment-report",
                 "input": {
-                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                  "page": 1,
-                  "groupings": [
-                    "resource_account_id",
-                    "commitment_type"
-                  ]
+                  "financial_commitment_report_token": "fncl_cmnt_rprt_coverage789"
                 }
               }
             ],
@@ -286,24 +246,19 @@
           "metadata": {
             "modelId": "gpt-5.6-luna",
             "mode": "mixed",
-            "target": "query-financial-commitment-report-costs",
+            "target": "get-financial-commitment-report",
             "toolNames": [
-              "query-financial-commitment-report-costs",
               "get-financial-commitment-report",
               "list-financial-commitment-reports",
-              "list-costs",
-              "query-costs"
+              "query-financial-commitment-report-costs",
+              "update-financial-commitment-report",
+              "get-cost-report"
             ],
             "toolCalls": [
               {
-                "toolName": "query-financial-commitment-report-costs",
+                "toolName": "get-financial-commitment-report",
                 "input": {
-                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                  "page": 1,
-                  "groupings": [
-                    "resource_account_id",
-                    "commitment_type"
-                  ]
+                  "financial_commitment_report_token": "fncl_cmnt_rprt_coverage789"
                 }
               }
             ]
@@ -312,35 +267,30 @@
         "score": 1,
         "success": true,
         "testCase": {
-          "description": "query-financial-commitment-report-costs · inferred · For Vantage financial commitment report fncl_cmnt_rprt_abc123, show me which linked accounts' resources are actually consuming the commitments, broken down by resource account and commitment type. Use the report's saved date range and filters.",
+          "description": "get-financial-commitment-report · inferred · Show me the title, date range, groupings, and filter configured on Vantage financial commitment report fncl_cmnt_rprt_coverage789.",
           "vars": {
-            "prompt": "For Vantage financial commitment report fncl_cmnt_rprt_abc123, show me which linked accounts' resources are actually consuming the commitments, broken down by resource account and commitment type. Use the report's saved date range and filters.",
-            "target": "query-financial-commitment-report-costs",
+            "prompt": "Show me the title, date range, groupings, and filter configured on Vantage financial commitment report fncl_cmnt_rprt_coverage789.",
+            "target": "get-financial-commitment-report",
             "expected": [
               {
-                "toolName": "query-financial-commitment-report-costs",
+                "toolName": "get-financial-commitment-report",
                 "input": {
-                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                  "groupings": [
-                    "resource_account_id",
-                    "commitment_type"
-                  ],
-                  "page": 1
+                  "financial_commitment_report_token": "fncl_cmnt_rprt_coverage789"
                 }
               }
             ],
             "distractors": [
-              "get-financial-commitment-report",
               "list-financial-commitment-reports",
-              "list-costs",
-              "query-costs"
+              "query-financial-commitment-report-costs",
+              "update-financial-commitment-report",
+              "get-cost-report"
             ]
           },
           "options": {
             "disableVarExpansion": true
           },
           "metadata": {
-            "tool": "query-financial-commitment-report-costs",
+            "tool": "get-financial-commitment-report",
             "resource": "financial-commitment-reports",
             "phrasing": "inferred"
           },
@@ -381,52 +331,42 @@
           }
         },
         "vars": {
-          "prompt": "For Vantage financial commitment report fncl_cmnt_rprt_abc123, show me which linked accounts' resources are actually consuming the commitments, broken down by resource account and commitment type. Use the report's saved date range and filters.",
-          "target": "query-financial-commitment-report-costs",
+          "prompt": "Show me the title, date range, groupings, and filter configured on Vantage financial commitment report fncl_cmnt_rprt_coverage789.",
+          "target": "get-financial-commitment-report",
           "expected": [
             {
-              "toolName": "query-financial-commitment-report-costs",
+              "toolName": "get-financial-commitment-report",
               "input": {
-                "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                "groupings": [
-                  "resource_account_id",
-                  "commitment_type"
-                ],
-                "page": 1
+                "financial_commitment_report_token": "fncl_cmnt_rprt_coverage789"
               }
             }
           ],
           "distractors": [
-            "get-financial-commitment-report",
             "list-financial-commitment-reports",
-            "list-costs",
-            "query-costs"
+            "query-financial-commitment-report-costs",
+            "update-financial-commitment-report",
+            "get-cost-report"
           ]
         },
         "metadata": {
-          "tool": "query-financial-commitment-report-costs",
+          "tool": "get-financial-commitment-report",
           "resource": "financial-commitment-reports",
           "phrasing": "inferred",
           "modelId": "gpt-5.6-luna",
           "mode": "mixed",
-          "target": "query-financial-commitment-report-costs",
+          "target": "get-financial-commitment-report",
           "toolNames": [
-            "query-financial-commitment-report-costs",
             "get-financial-commitment-report",
             "list-financial-commitment-reports",
-            "list-costs",
-            "query-costs"
+            "query-financial-commitment-report-costs",
+            "update-financial-commitment-report",
+            "get-cost-report"
           ],
           "toolCalls": [
             {
-              "toolName": "query-financial-commitment-report-costs",
+              "toolName": "get-financial-commitment-report",
               "input": {
-                "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                "page": 1,
-                "groupings": [
-                  "resource_account_id",
-                  "commitment_type"
-                ]
+                "financial_commitment_report_token": "fncl_cmnt_rprt_coverage789"
               }
             }
           ],
@@ -470,7 +410,7 @@
       }
     ],
     "tests": [
-      "file://cases/financial-commitment-reports/query-financial-commitment-report-costs.eval.ts"
+      "file://cases/financial-commitment-reports/get-financial-commitment-report.eval.ts"
     ],
     "env": {},
     "extensions": [],
@@ -485,7 +425,7 @@
     "nodeVersion": "v23.11.0",
     "platform": "darwin",
     "arch": "arm64",
-    "exportedAt": "2026-09-10T20:47:27.425Z",
-    "evaluationCreatedAt": "2026-09-10T20:47:23.716Z"
+    "exportedAt": "2026-09-10T20:46:35.528Z",
+    "evaluationCreatedAt": "2026-09-10T20:46:33.123Z"
   }
 }

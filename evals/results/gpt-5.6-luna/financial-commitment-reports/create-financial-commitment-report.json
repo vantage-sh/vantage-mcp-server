@@ -2,7 +2,7 @@
   "evalId": null,
   "results": {
     "version": 3,
-    "timestamp": "2026-09-10T20:47:27.803Z",
+    "timestamp": "2026-09-10T20:45:56.500Z",
     "results": [
       {
         "cost": 0,
@@ -30,11 +30,11 @@
             }
           ]
         },
-        "id": "fbed8fb4-6ea1-4928-86c5-cef3166225cb",
-        "latencyMs": 3606,
+        "id": "d37bfcda-790c-4f8a-8958-a46b22e38f69",
+        "latencyMs": 3344,
         "namedScores": {},
         "prompt": {
-          "raw": "Use query-financial-commitment-report-costs to fetch cost data for financial commitment report fncl_cmnt_rprt_abc123 from 2024-03-01 through 2024-03-31, grouped by resource_account_id and service.",
+          "raw": "Use create-financial-commitment-report to create a report titled AWS Commitment Coverage in workspace wrkspc_abc123 for the last 30 days, grouped by resource_account_id and service.",
           "label": "{{prompt}}",
           "config": {
             "disableVarExpansion": true
@@ -50,12 +50,11 @@
           "output": {
             "toolCalls": [
               {
-                "toolName": "query-financial-commitment-report-costs",
+                "toolName": "create-financial-commitment-report",
                 "input": {
-                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                  "page": 1,
-                  "start_date": "2024-03-01",
-                  "end_date": "2024-03-31",
+                  "workspace_token": "wrkspc_abc123",
+                  "title": "AWS Commitment Coverage",
+                  "date_interval": "last_30_days",
                   "groupings": [
                     "resource_account_id",
                     "service"
@@ -68,22 +67,21 @@
           "metadata": {
             "modelId": "gpt-5.6-luna",
             "mode": "mixed",
-            "target": "query-financial-commitment-report-costs",
+            "target": "create-financial-commitment-report",
             "toolNames": [
+              "create-financial-commitment-report",
+              "update-financial-commitment-report",
               "query-financial-commitment-report-costs",
-              "get-financial-commitment-report",
-              "list-financial-commitment-reports",
-              "list-costs",
-              "query-costs"
+              "create-cost-report",
+              "list-financial-commitment-reports"
             ],
             "toolCalls": [
               {
-                "toolName": "query-financial-commitment-report-costs",
+                "toolName": "create-financial-commitment-report",
                 "input": {
-                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                  "page": 1,
-                  "start_date": "2024-03-01",
-                  "end_date": "2024-03-31",
+                  "workspace_token": "wrkspc_abc123",
+                  "title": "AWS Commitment Coverage",
+                  "date_interval": "last_30_days",
                   "groupings": [
                     "resource_account_id",
                     "service"
@@ -96,37 +94,36 @@
         "score": 1,
         "success": true,
         "testCase": {
-          "description": "query-financial-commitment-report-costs · direct · Use query-financial-commitment-report-costs to fetch cost data for financial commitment report fncl_cmnt_rprt_abc123 from 2024-03-01 through 2024-03-31, grouped by resource_account_id and service.",
+          "description": "create-financial-commitment-report · direct · Use create-financial-commitment-report to create a report titled AWS Commitment Coverage in workspace wrkspc_abc123 for the last 30 days, grouped by resource_account_id and service.",
           "vars": {
-            "prompt": "Use query-financial-commitment-report-costs to fetch cost data for financial commitment report fncl_cmnt_rprt_abc123 from 2024-03-01 through 2024-03-31, grouped by resource_account_id and service.",
-            "target": "query-financial-commitment-report-costs",
+            "prompt": "Use create-financial-commitment-report to create a report titled AWS Commitment Coverage in workspace wrkspc_abc123 for the last 30 days, grouped by resource_account_id and service.",
+            "target": "create-financial-commitment-report",
             "expected": [
               {
-                "toolName": "query-financial-commitment-report-costs",
+                "toolName": "create-financial-commitment-report",
                 "input": {
-                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                  "start_date": "2024-03-01",
-                  "end_date": "2024-03-31",
+                  "workspace_token": "wrkspc_abc123",
+                  "title": "AWS Commitment Coverage",
+                  "date_interval": "last_30_days",
                   "groupings": [
                     "resource_account_id",
                     "service"
-                  ],
-                  "page": 1
+                  ]
                 }
               }
             ],
             "distractors": [
-              "get-financial-commitment-report",
-              "list-financial-commitment-reports",
-              "list-costs",
-              "query-costs"
+              "update-financial-commitment-report",
+              "query-financial-commitment-report-costs",
+              "create-cost-report",
+              "list-financial-commitment-reports"
             ]
           },
           "options": {
             "disableVarExpansion": true
           },
           "metadata": {
-            "tool": "query-financial-commitment-report-costs",
+            "tool": "create-financial-commitment-report",
             "resource": "financial-commitment-reports",
             "phrasing": "direct"
           },
@@ -167,52 +164,50 @@
           }
         },
         "vars": {
-          "prompt": "Use query-financial-commitment-report-costs to fetch cost data for financial commitment report fncl_cmnt_rprt_abc123 from 2024-03-01 through 2024-03-31, grouped by resource_account_id and service.",
-          "target": "query-financial-commitment-report-costs",
+          "prompt": "Use create-financial-commitment-report to create a report titled AWS Commitment Coverage in workspace wrkspc_abc123 for the last 30 days, grouped by resource_account_id and service.",
+          "target": "create-financial-commitment-report",
           "expected": [
             {
-              "toolName": "query-financial-commitment-report-costs",
+              "toolName": "create-financial-commitment-report",
               "input": {
-                "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                "start_date": "2024-03-01",
-                "end_date": "2024-03-31",
+                "workspace_token": "wrkspc_abc123",
+                "title": "AWS Commitment Coverage",
+                "date_interval": "last_30_days",
                 "groupings": [
                   "resource_account_id",
                   "service"
-                ],
-                "page": 1
+                ]
               }
             }
           ],
           "distractors": [
-            "get-financial-commitment-report",
-            "list-financial-commitment-reports",
-            "list-costs",
-            "query-costs"
+            "update-financial-commitment-report",
+            "query-financial-commitment-report-costs",
+            "create-cost-report",
+            "list-financial-commitment-reports"
           ]
         },
         "metadata": {
-          "tool": "query-financial-commitment-report-costs",
+          "tool": "create-financial-commitment-report",
           "resource": "financial-commitment-reports",
           "phrasing": "direct",
           "modelId": "gpt-5.6-luna",
           "mode": "mixed",
-          "target": "query-financial-commitment-report-costs",
+          "target": "create-financial-commitment-report",
           "toolNames": [
+            "create-financial-commitment-report",
+            "update-financial-commitment-report",
             "query-financial-commitment-report-costs",
-            "get-financial-commitment-report",
-            "list-financial-commitment-reports",
-            "list-costs",
-            "query-costs"
+            "create-cost-report",
+            "list-financial-commitment-reports"
           ],
           "toolCalls": [
             {
-              "toolName": "query-financial-commitment-report-costs",
+              "toolName": "create-financial-commitment-report",
               "input": {
-                "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                "page": 1,
-                "start_date": "2024-03-01",
-                "end_date": "2024-03-31",
+                "workspace_token": "wrkspc_abc123",
+                "title": "AWS Commitment Coverage",
+                "date_interval": "last_30_days",
                 "groupings": [
                   "resource_account_id",
                   "service"
@@ -250,11 +245,11 @@
             }
           ]
         },
-        "id": "cbd2c88a-bb39-41df-9ada-068fbdb7c777",
-        "latencyMs": 2439,
+        "id": "8ea41b56-8d92-463f-906c-f9d266d2cea9",
+        "latencyMs": 3339,
         "namedScores": {},
         "prompt": {
-          "raw": "For Vantage financial commitment report fncl_cmnt_rprt_abc123, show me which linked accounts' resources are actually consuming the commitments, broken down by resource account and commitment type. Use the report's saved date range and filters.",
+          "raw": "Set up a new Vantage financial commitment report named Linked Account Savings Plan Coverage in workspace wrkspc_abc123. Use the last month and break it down by the account whose resources consumed the commitment and by commitment type.",
           "label": "{{prompt}}",
           "config": {
             "disableVarExpansion": true
@@ -270,10 +265,11 @@
           "output": {
             "toolCalls": [
               {
-                "toolName": "query-financial-commitment-report-costs",
+                "toolName": "create-financial-commitment-report",
                 "input": {
-                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                  "page": 1,
+                  "workspace_token": "wrkspc_abc123",
+                  "title": "Linked Account Savings Plan Coverage",
+                  "date_interval": "last_month",
                   "groupings": [
                     "resource_account_id",
                     "commitment_type"
@@ -286,20 +282,21 @@
           "metadata": {
             "modelId": "gpt-5.6-luna",
             "mode": "mixed",
-            "target": "query-financial-commitment-report-costs",
+            "target": "create-financial-commitment-report",
             "toolNames": [
+              "create-financial-commitment-report",
+              "update-financial-commitment-report",
               "query-financial-commitment-report-costs",
-              "get-financial-commitment-report",
-              "list-financial-commitment-reports",
-              "list-costs",
-              "query-costs"
+              "create-cost-report",
+              "list-financial-commitment-reports"
             ],
             "toolCalls": [
               {
-                "toolName": "query-financial-commitment-report-costs",
+                "toolName": "create-financial-commitment-report",
                 "input": {
-                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                  "page": 1,
+                  "workspace_token": "wrkspc_abc123",
+                  "title": "Linked Account Savings Plan Coverage",
+                  "date_interval": "last_month",
                   "groupings": [
                     "resource_account_id",
                     "commitment_type"
@@ -312,35 +309,36 @@
         "score": 1,
         "success": true,
         "testCase": {
-          "description": "query-financial-commitment-report-costs · inferred · For Vantage financial commitment report fncl_cmnt_rprt_abc123, show me which linked accounts' resources are actually consuming the commitments, broken down by resource account and commitment type. Use the report's saved date range and filters.",
+          "description": "create-financial-commitment-report · inferred · Set up a new Vantage financial commitment report named Linked Account Savings Plan Coverage in workspace wrkspc_abc123. Use the last month and break it down by the account whose resources consumed the commitment and by commitment type.",
           "vars": {
-            "prompt": "For Vantage financial commitment report fncl_cmnt_rprt_abc123, show me which linked accounts' resources are actually consuming the commitments, broken down by resource account and commitment type. Use the report's saved date range and filters.",
-            "target": "query-financial-commitment-report-costs",
+            "prompt": "Set up a new Vantage financial commitment report named Linked Account Savings Plan Coverage in workspace wrkspc_abc123. Use the last month and break it down by the account whose resources consumed the commitment and by commitment type.",
+            "target": "create-financial-commitment-report",
             "expected": [
               {
-                "toolName": "query-financial-commitment-report-costs",
+                "toolName": "create-financial-commitment-report",
                 "input": {
-                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
+                  "workspace_token": "wrkspc_abc123",
+                  "title": "Linked Account Savings Plan Coverage",
+                  "date_interval": "last_month",
                   "groupings": [
                     "resource_account_id",
                     "commitment_type"
-                  ],
-                  "page": 1
+                  ]
                 }
               }
             ],
             "distractors": [
-              "get-financial-commitment-report",
-              "list-financial-commitment-reports",
-              "list-costs",
-              "query-costs"
+              "update-financial-commitment-report",
+              "query-financial-commitment-report-costs",
+              "create-cost-report",
+              "list-financial-commitment-reports"
             ]
           },
           "options": {
             "disableVarExpansion": true
           },
           "metadata": {
-            "tool": "query-financial-commitment-report-costs",
+            "tool": "create-financial-commitment-report",
             "resource": "financial-commitment-reports",
             "phrasing": "inferred"
           },
@@ -381,48 +379,50 @@
           }
         },
         "vars": {
-          "prompt": "For Vantage financial commitment report fncl_cmnt_rprt_abc123, show me which linked accounts' resources are actually consuming the commitments, broken down by resource account and commitment type. Use the report's saved date range and filters.",
-          "target": "query-financial-commitment-report-costs",
+          "prompt": "Set up a new Vantage financial commitment report named Linked Account Savings Plan Coverage in workspace wrkspc_abc123. Use the last month and break it down by the account whose resources consumed the commitment and by commitment type.",
+          "target": "create-financial-commitment-report",
           "expected": [
             {
-              "toolName": "query-financial-commitment-report-costs",
+              "toolName": "create-financial-commitment-report",
               "input": {
-                "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
+                "workspace_token": "wrkspc_abc123",
+                "title": "Linked Account Savings Plan Coverage",
+                "date_interval": "last_month",
                 "groupings": [
                   "resource_account_id",
                   "commitment_type"
-                ],
-                "page": 1
+                ]
               }
             }
           ],
           "distractors": [
-            "get-financial-commitment-report",
-            "list-financial-commitment-reports",
-            "list-costs",
-            "query-costs"
+            "update-financial-commitment-report",
+            "query-financial-commitment-report-costs",
+            "create-cost-report",
+            "list-financial-commitment-reports"
           ]
         },
         "metadata": {
-          "tool": "query-financial-commitment-report-costs",
+          "tool": "create-financial-commitment-report",
           "resource": "financial-commitment-reports",
           "phrasing": "inferred",
           "modelId": "gpt-5.6-luna",
           "mode": "mixed",
-          "target": "query-financial-commitment-report-costs",
+          "target": "create-financial-commitment-report",
           "toolNames": [
+            "create-financial-commitment-report",
+            "update-financial-commitment-report",
             "query-financial-commitment-report-costs",
-            "get-financial-commitment-report",
-            "list-financial-commitment-reports",
-            "list-costs",
-            "query-costs"
+            "create-cost-report",
+            "list-financial-commitment-reports"
           ],
           "toolCalls": [
             {
-              "toolName": "query-financial-commitment-report-costs",
+              "toolName": "create-financial-commitment-report",
               "input": {
-                "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                "page": 1,
+                "workspace_token": "wrkspc_abc123",
+                "title": "Linked Account Savings Plan Coverage",
+                "date_interval": "last_month",
                 "groupings": [
                   "resource_account_id",
                   "commitment_type"
@@ -470,7 +470,7 @@
       }
     ],
     "tests": [
-      "file://cases/financial-commitment-reports/query-financial-commitment-report-costs.eval.ts"
+      "file://cases/financial-commitment-reports/create-financial-commitment-report.eval.ts"
     ],
     "env": {},
     "extensions": [],
@@ -485,7 +485,7 @@
     "nodeVersion": "v23.11.0",
     "platform": "darwin",
     "arch": "arm64",
-    "exportedAt": "2026-09-10T20:47:27.425Z",
-    "evaluationCreatedAt": "2026-09-10T20:47:23.716Z"
+    "exportedAt": "2026-09-10T20:45:56.162Z",
+    "evaluationCreatedAt": "2026-09-10T20:45:52.719Z"
   }
 }

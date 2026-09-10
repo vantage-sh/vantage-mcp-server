@@ -1,64 +1,28 @@
+import {
+  createNonEmptyString,
+  isNonEmptyString,
+  VANTAGE_FINANCIAL_COMMITMENT_GROUPINGS,
+  type VantageFinancialCommitmentGrouping,
+} from "@vantage-sh/vantage-client";
 import z from "zod";
 
-const financialCommitmentGroupings = [
-  "provider",
-  "service",
-  "resource_account_id",
-  "provider_account_id",
-  "commitment_type",
-  "commitment_id",
-  "cost_type",
-  "cost_category",
-  "cost_sub_category",
-  "instance_type",
-  "region",
-] as const;
+export const groupingDescription = "Grouping dimensions for the report. Use tag:<tag_key> to group by tag.";
 
-export const groupingDescription =
-  "Grouping dimensions for aggregating financial commitments on the report. Valid groupings: provider, service, resource_account_id, provider_account_id, commitment_type, commitment_id, cost_type, cost_category, cost_sub_category, instance_type, region, and tag:<tag_key>.";
-
-export const groupingSchema = z
-  .string()
-  .min(1)
-  .refine(
-    (value) =>
-      financialCommitmentGroupings.includes(value as (typeof financialCommitmentGroupings)[number]) ||
-      value.startsWith("tag:"),
-    {
-      error: groupingDescription,
-      when(payload) {
-        return z.string().min(1).safeParse(payload.value).success;
-      },
-    }
+const groupingValueSchema = (description: string) =>
+  z.union(
+    [
+      z.enum(VANTAGE_FINANCIAL_COMMITMENT_GROUPINGS),
+      z
+        .string()
+        .startsWith("tag:", { error: description })
+        .refine((value) => isNonEmptyString(value.slice(4)), { error: description })
+        .transform((value): VantageFinancialCommitmentGrouping => `tag:${createNonEmptyString(value.slice(4))}`),
+    ],
+    { error: description }
   );
 
-const financialCommitmentCostGroupings = [
-  "cost_type",
-  "commitment_type",
-  "commitment_id",
-  "service",
-  "resource_account_id",
-  "provider_account_id",
-  "region",
-  "cost_category",
-  "cost_sub_category",
-  "instance_type",
-] as const;
+export const groupingSchema = groupingValueSchema(groupingDescription);
 
-export const costGroupingDescription =
-  "Grouping dimensions for aggregating costs on the report. Valid groupings: cost_type, commitment_type, commitment_id, service, resource_account_id, provider_account_id, region, cost_category, cost_sub_category, instance_type, and tag:<tag_key>.";
+export const costGroupingDescription = "Grouping dimensions for returned costs. Use tag:<tag_key> to group by tag.";
 
-export const costGroupingSchema = z
-  .string()
-  .min(1)
-  .refine(
-    (value) =>
-      financialCommitmentCostGroupings.includes(value as (typeof financialCommitmentCostGroupings)[number]) ||
-      value.startsWith("tag:"),
-    {
-      error: costGroupingDescription,
-      when(payload) {
-        return z.string().min(1).safeParse(payload.value).success;
-      },
-    }
-  );
+export const costGroupingSchema = groupingValueSchema(costGroupingDescription);
