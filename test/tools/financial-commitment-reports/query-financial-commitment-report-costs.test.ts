@@ -53,9 +53,15 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       financial_commitment_report_token: "fncl_cmnt_rprt_123",
       groupings: ["provider"],
     },
-    expectedIssues: [
-      "Grouping dimensions for aggregating costs on the report. Valid groupings: cost_type, commitment_type, commitment_id, service, resource_account_id, provider_account_id, region, cost_category, cost_sub_category, instance_type, and tag:<tag_key>.",
-    ],
+    expectedIssues: ["Grouping dimensions for returned costs. Use tag:<tag_key> to group by tag."],
+  },
+  {
+    name: "rejects empty tag key",
+    data: {
+      financial_commitment_report_token: "fncl_cmnt_rprt_123",
+      groupings: ["tag:"],
+    },
+    expectedIssues: ["Grouping dimensions for returned costs. Use tag:<tag_key> to group by tag."],
   },
   poisonOneValue(validArguments, "start_date", dateValidatorPoisoner),
   poisonOneValue(validArguments, "end_date", dateValidatorPoisoner),

@@ -1,4 +1,3 @@
-import type { RequestBodyForPathAndMethod } from "@vantage-sh/vantage-client";
 import z from "zod";
 import { pastDateIntervalOptions } from "../../utils/dateIntervalOptions";
 import dateValidator from "../../utils/dateValidator";
@@ -8,28 +7,8 @@ import registerTool from "../structure/registerTool";
 import { groupingDescription, groupingSchema } from "./schemas";
 
 const description = `
-Create a new Financial Commitment Report in Vantage.
-
-Financial Commitment Reports track committed spend and on-demand costs over time. They can be filtered
-using VQL and grouped by dimensions such as commitment type, service, region, or tags.
-
-VQL Filtering Guide:
-Financial Commitment Report VQL uses the financial_commitments namespace. A provider filter should be
-included in each query, and string values should be wrapped in single quotes.
-
-Basic VQL Syntax:
-- Query on a provider: (financial_commitments.provider = 'aws')
-- Query on a service: (financial_commitments.provider = 'aws' AND financial_commitments.service = 'AmazonEC2')
-- Multiple services: (financial_commitments.provider = 'aws' AND financial_commitments.service IN ('AmazonEC2','AmazonRDS'))
-- Filter by billing account: (financial_commitments.provider = 'aws' AND financial_commitments.provider_account_id = '123456789012')
-- Filter by region: (financial_commitments.provider = 'aws' AND financial_commitments.region = 'us-east-1')
-- Filter by tag: (financial_commitments.provider = 'aws' AND financial_commitments.resource_tags->>'environment' = 'production')
-
-Use get-myself to find available workspaces. Use the VQL for Financial Commitment Reports resource for
-the full list of available financial_commitments fields and examples.
+Creates a saved Financial Commitment Report for analyzing committed spend and on-demand costs.
 `.trim();
-
-type CreateFinancialCommitmentReportRequest = RequestBodyForPathAndMethod<"/v2/financial_commitment_reports", "POST">;
 
 export default registerTool({
   name: "create-financial-commitment-report",
@@ -58,18 +37,10 @@ export default registerTool({
       ),
     date_bucket: z.enum(["hour", "day", "week", "month", "quarter"]).optional().describe("Date aggregation bucket"),
     on_demand_costs_scope: z.enum(["discountable", "all"]).optional().describe("Scope for on-demand costs"),
-    groupings: z
-      .array(groupingSchema)
-      .optional()
-      .transform((v) => v?.join(","))
-      .describe(groupingDescription),
+    groupings: z.array(groupingSchema).optional().describe(groupingDescription),
   },
   async execute(args, ctx) {
-    const response = await ctx.callVantageApi(
-      "/v2/financial_commitment_reports",
-      args as CreateFinancialCommitmentReportRequest,
-      "POST"
-    );
+    const response = await ctx.callVantageApi("/v2/financial_commitment_reports", args, "POST");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }

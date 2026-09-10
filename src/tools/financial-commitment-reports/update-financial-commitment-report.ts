@@ -1,4 +1,4 @@
-import { pathEncode, type UpdateFinancialCommitmentReportRequest } from "@vantage-sh/vantage-client";
+import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod";
 import { pastDateIntervalOptions } from "../../utils/dateIntervalOptions";
 import dateValidator from "../../utils/dateValidator";
@@ -8,15 +8,7 @@ import registerTool from "../structure/registerTool";
 import { groupingDescription, groupingSchema } from "./schemas";
 
 const description = `
-Updates an existing Financial Commitment Report. Use this to change the report title, VQL filter, date range, date bucket, on-demand costs scope, or grouping dimensions.
-
-Date ranges can be set with either:
-- date_interval, or
-- start_date and end_date.
-
-Unless date_interval is "custom", date_interval is incompatible with start_date and end_date.
-
-VQL filters use financial commitment fields and should follow Vantage Query Language syntax. Additional VQL documentation is available at https://docs.vantage.sh/vql.
+Updates a saved Financial Commitment Report. Use list-financial-commitment-reports to discover tokens.
 `.trim();
 
 export default registerTool({
@@ -51,17 +43,13 @@ export default registerTool({
       ),
     date_bucket: z.enum(["hour", "day", "week", "month", "quarter"]).optional().describe("Updated date bucket."),
     on_demand_costs_scope: z.enum(["discountable", "all"]).optional().describe("Updated on-demand costs scope."),
-    groupings: z
-      .array(groupingSchema)
-      .optional()
-      .transform((v) => v?.join(","))
-      .describe(groupingDescription),
+    groupings: z.array(groupingSchema).optional().describe(groupingDescription),
   },
   async execute(args, ctx) {
     const { financial_commitment_report_token, ...requestBody } = args;
     const response = await ctx.callVantageApi(
       `/v2/financial_commitment_reports/${pathEncode(financial_commitment_report_token)}`,
-      requestBody as UpdateFinancialCommitmentReportRequest,
+      requestBody,
       "PUT"
     );
     if (!response.ok) {

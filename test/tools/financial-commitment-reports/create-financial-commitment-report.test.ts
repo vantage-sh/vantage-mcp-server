@@ -1,4 +1,4 @@
-import type { RequestBodyForPathAndMethod } from "@vantage-sh/vantage-client";
+import { VANTAGE_FINANCIAL_COMMITMENT_GROUPINGS } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/financial-commitment-reports/create-financial-commitment-report";
 import {
@@ -15,8 +15,6 @@ import {
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
-type CreateFinancialCommitmentReportRequest = RequestBodyForPathAndMethod<"/v2/financial_commitment_reports", "POST">;
-
 const undefineds = {
   filter: undefined,
   start_date: undefined,
@@ -46,13 +44,6 @@ const validInputArguments: InferValidators<Validators> = {
   groupings: ["provider_account_id", "service"],
 };
 
-const expectedValidInputArguments = {
-  ...validInputArguments,
-  groupings: "provider_account_id,service",
-} as unknown as CreateFinancialCommitmentReportRequest;
-const expectedMinimalValidInputArguments =
-  minimalValidInputArguments as unknown as CreateFinancialCommitmentReportRequest;
-
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "minimal valid arguments",
@@ -77,6 +68,13 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       title: "",
     },
     expectedIssues: ["Too small: expected string to have >=1 characters"],
+  },
+  {
+    name: "all built-in groupings",
+    data: {
+      ...minimalValidInputArguments,
+      groupings: [...VANTAGE_FINANCIAL_COMMITMENT_GROUPINGS],
+    },
   },
   {
     name: "tag grouping",
@@ -104,22 +102,20 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     expectedIssues: ['Invalid option: expected one of "discountable"|"all"'],
   },
   {
-    name: "invalid grouping",
+    name: "empty tag key",
     data: {
       ...validInputArguments,
-      groupings: ["unsupported_grouping"],
+      groupings: ["tag:"],
     },
-    expectedIssues: [
-      "Grouping dimensions for aggregating financial commitments on the report. Valid groupings: provider, service, resource_account_id, provider_account_id, commitment_type, commitment_id, cost_type, cost_category, cost_sub_category, instance_type, region, and tag:<tag_key>.",
-    ],
+    expectedIssues: ["Grouping dimensions for the report. Use tag:<tag_key> to group by tag."],
   },
   {
-    name: "empty grouping",
+    name: "whitespace-only tag key",
     data: {
       ...validInputArguments,
-      groupings: [""],
+      groupings: ["tag: \t"],
     },
-    expectedIssues: ["Too small: expected string to have >=1 characters"],
+    expectedIssues: ["Grouping dimensions for the report. Use tag:<tag_key> to group by tag."],
   },
   poisonOneValue(validInputArguments, "start_date", dateValidatorPoisoner),
   poisonOneValue(validInputArguments, "end_date", dateValidatorPoisoner),
@@ -147,7 +143,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     apiCallHandler: requestsInOrder([
       {
         endpoint: "/v2/financial_commitment_reports",
-        params: expectedValidInputArguments,
+        params: validInputArguments,
         method: "POST",
         result: {
           ok: true,
@@ -165,7 +161,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     apiCallHandler: requestsInOrder([
       {
         endpoint: "/v2/financial_commitment_reports",
-        params: expectedMinimalValidInputArguments,
+        params: minimalValidInputArguments,
         method: "POST",
         result: {
           ok: false,
