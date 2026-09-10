@@ -3,11 +3,12 @@ Note that this code started from the examples at
 https://github.com/cloudflare/ai/tree/0150b265a4510123b545b4f988511bf0b63c6641/demos/remote-mcp-auth0
 */
 import { env } from "cloudflare:workers";
-import type {
-  AuthRequest,
-  OAuthHelpers,
-  TokenExchangeCallbackOptions,
-  TokenExchangeCallbackResult,
+import {
+  AuthorizationError,
+  type AuthRequest,
+  type OAuthHelpers,
+  type TokenExchangeCallbackOptions,
+  type TokenExchangeCallbackResult,
 } from "@cloudflare/workers-oauth-provider";
 import axios from "axios";
 import type { Context } from "hono";
@@ -21,8 +22,9 @@ export type UserProps = {
   claims: JWTPayload;
   tokenSet: {
     accessToken: string;
-    idToken: string;
-    refreshToken: string;
+    accessTokenTTL?: number;
+    idToken?: string;
+    refreshToken?: string;
   };
 };
 
@@ -63,9 +65,28 @@ export async function getOidcConfig({
  * Then it shows a consent screen before redirecting to Auth0.
  */
 export async function authorize(c: Context<{ Bindings: AppEnv & { OAUTH_PROVIDER: OAuthHelpers } }>) {
-  const mcpClientAuthRequest = await c.env.OAUTH_PROVIDER.parseAuthRequest(c.req.raw);
-  if (!mcpClientAuthRequest.clientId) {
-    return c.text("Invalid request", 400);
+  let mcpClientAuthRequest: AuthRequest;
+  try {
+    mcpClientAuthRequest = await c.env.OAUTH_PROVIDER.parseAuthRequest(c.req.raw);
+  } catch (error) {
+    if (!(error instanceof AuthorizationError)) {
+      throw error;
+    }
+
+    if (!error.redirectUri) {
+      return c.text(error.description, 400);
+    }
+
+    const redirectUri = new URL(error.redirectUri);
+    redirectUri.searchParams.set("error", error.code);
+    redirectUri.searchParams.set("error_description", error.description);
+    if (error.state) {
+      redirectUri.searchParams.set("state", error.state);
+    }
+    if (error.issuer) {
+      redirectUri.searchParams.set("iss", error.issuer);
+    }
+    return c.redirect(redirectUri.toString());
   }
 
   const client = await c.env.OAUTH_PROVIDER.lookupClient(mcpClientAuthRequest.clientId);
@@ -163,6 +184,9 @@ export async function confirmConsent(c: Context<{ Bindings: AppEnv & { OAUTH_PRO
     redirectUri.searchParams.set("error_description", "User denied the request");
     if (auth0AuthRequest.mcpAuthRequest.state) {
       redirectUri.searchParams.set("state", auth0AuthRequest.mcpAuthRequest.state);
+    }
+    if (auth0AuthRequest.mcpAuthRequest.issuer) {
+      redirectUri.searchParams.set("iss", auth0AuthRequest.mcpAuthRequest.issuer);
     }
 
     // Clear the transaction cookie
@@ -295,8 +319,9 @@ export async function callback(c: Context<{ Bindings: AppEnv & { OAUTH_PROVIDER:
         idToken: result.id_token,
         refreshToken: result.refresh_token,
       },
-    } as UserProps,
+    } satisfies UserProps,
     request: auth0AuthRequest.mcpAuthRequest,
+    revokeExistingGrants: false,
     scope: auth0AuthRequest.mcpAuthRequest.scope,
     userId: claims.sub!,
   });
