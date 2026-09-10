@@ -31,13 +31,15 @@ export default function generateTests() {
     inferredPrompts: [
       {
         input:
-          "Change Vantage financial commitment report fncl_cmnt_rprt_abc123 so its breakdown shows the commitment billing account alongside the cost type.",
+          "Change Vantage financial commitment report fncl_cmnt_rprt_abc123 to be weekly, make on demand discountable, and group by cost type and commitment type",
         expected: [
           {
             toolName: TARGET,
             input: {
               financial_commitment_report_token: "fncl_cmnt_rprt_abc123",
-              groupings: ["provider_account_id", "cost_type"],
+              date_bucket: "week",
+              on_demand_costs_scope: "discountable",
+              groupings: ["cost_type", "commitment_type"],
             },
           },
         ],

@@ -2,7 +2,7 @@
   "evalId": null,
   "results": {
     "version": 3,
-    "timestamp": "2026-09-10T20:47:27.803Z",
+    "timestamp": "2026-09-10T22:50:52.824Z",
     "results": [
       {
         "cost": 0,
@@ -30,11 +30,11 @@
             }
           ]
         },
-        "id": "fbed8fb4-6ea1-4928-86c5-cef3166225cb",
-        "latencyMs": 3606,
+        "id": "273c5513-2b8f-40d9-a012-1a05928f91d1",
+        "latencyMs": 2268,
         "namedScores": {},
         "prompt": {
-          "raw": "Use query-financial-commitment-report-costs to fetch cost data for financial commitment report fncl_cmnt_rprt_abc123 from 2024-03-01 through 2024-03-31, grouped by resource_account_id and service.",
+          "raw": "Use update-financial-commitment-report to rename fncl_cmnt_rprt_abc123 to Account Commitment Coverage and group it by resource_account_id and service.",
           "label": "{{prompt}}",
           "config": {
             "disableVarExpansion": true
@@ -50,12 +50,10 @@
           "output": {
             "toolCalls": [
               {
-                "toolName": "query-financial-commitment-report-costs",
+                "toolName": "update-financial-commitment-report",
                 "input": {
                   "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                  "page": 1,
-                  "start_date": "2024-03-01",
-                  "end_date": "2024-03-31",
+                  "title": "Account Commitment Coverage",
                   "groupings": [
                     "resource_account_id",
                     "service"
@@ -68,22 +66,20 @@
           "metadata": {
             "modelId": "gpt-5.6-luna",
             "mode": "mixed",
-            "target": "query-financial-commitment-report-costs",
+            "target": "update-financial-commitment-report",
             "toolNames": [
+              "update-financial-commitment-report",
+              "create-financial-commitment-report",
               "query-financial-commitment-report-costs",
               "get-financial-commitment-report",
-              "list-financial-commitment-reports",
-              "list-costs",
-              "query-costs"
+              "update-cost-report"
             ],
             "toolCalls": [
               {
-                "toolName": "query-financial-commitment-report-costs",
+                "toolName": "update-financial-commitment-report",
                 "input": {
                   "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                  "page": 1,
-                  "start_date": "2024-03-01",
-                  "end_date": "2024-03-31",
+                  "title": "Account Commitment Coverage",
                   "groupings": [
                     "resource_account_id",
                     "service"
@@ -96,37 +92,35 @@
         "score": 1,
         "success": true,
         "testCase": {
-          "description": "query-financial-commitment-report-costs · direct · Use query-financial-commitment-report-costs to fetch cost data for financial commitment report fncl_cmnt_rprt_abc123 from 2024-03-01 through 2024-03-31, grouped by resource_account_id and service.",
+          "description": "update-financial-commitment-report · direct · Use update-financial-commitment-report to rename fncl_cmnt_rprt_abc123 to Account Commitment Coverage and group it by resource_account_id and service.",
           "vars": {
-            "prompt": "Use query-financial-commitment-report-costs to fetch cost data for financial commitment report fncl_cmnt_rprt_abc123 from 2024-03-01 through 2024-03-31, grouped by resource_account_id and service.",
-            "target": "query-financial-commitment-report-costs",
+            "prompt": "Use update-financial-commitment-report to rename fncl_cmnt_rprt_abc123 to Account Commitment Coverage and group it by resource_account_id and service.",
+            "target": "update-financial-commitment-report",
             "expected": [
               {
-                "toolName": "query-financial-commitment-report-costs",
+                "toolName": "update-financial-commitment-report",
                 "input": {
                   "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                  "start_date": "2024-03-01",
-                  "end_date": "2024-03-31",
+                  "title": "Account Commitment Coverage",
                   "groupings": [
                     "resource_account_id",
                     "service"
-                  ],
-                  "page": 1
+                  ]
                 }
               }
             ],
             "distractors": [
+              "create-financial-commitment-report",
+              "query-financial-commitment-report-costs",
               "get-financial-commitment-report",
-              "list-financial-commitment-reports",
-              "list-costs",
-              "query-costs"
+              "update-cost-report"
             ]
           },
           "options": {
             "disableVarExpansion": true
           },
           "metadata": {
-            "tool": "query-financial-commitment-report-costs",
+            "tool": "update-financial-commitment-report",
             "resource": "financial-commitment-reports",
             "phrasing": "direct"
           },
@@ -167,52 +161,48 @@
           }
         },
         "vars": {
-          "prompt": "Use query-financial-commitment-report-costs to fetch cost data for financial commitment report fncl_cmnt_rprt_abc123 from 2024-03-01 through 2024-03-31, grouped by resource_account_id and service.",
-          "target": "query-financial-commitment-report-costs",
+          "prompt": "Use update-financial-commitment-report to rename fncl_cmnt_rprt_abc123 to Account Commitment Coverage and group it by resource_account_id and service.",
+          "target": "update-financial-commitment-report",
           "expected": [
             {
-              "toolName": "query-financial-commitment-report-costs",
+              "toolName": "update-financial-commitment-report",
               "input": {
                 "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                "start_date": "2024-03-01",
-                "end_date": "2024-03-31",
+                "title": "Account Commitment Coverage",
                 "groupings": [
                   "resource_account_id",
                   "service"
-                ],
-                "page": 1
+                ]
               }
             }
           ],
           "distractors": [
+            "create-financial-commitment-report",
+            "query-financial-commitment-report-costs",
             "get-financial-commitment-report",
-            "list-financial-commitment-reports",
-            "list-costs",
-            "query-costs"
+            "update-cost-report"
           ]
         },
         "metadata": {
-          "tool": "query-financial-commitment-report-costs",
+          "tool": "update-financial-commitment-report",
           "resource": "financial-commitment-reports",
           "phrasing": "direct",
           "modelId": "gpt-5.6-luna",
           "mode": "mixed",
-          "target": "query-financial-commitment-report-costs",
+          "target": "update-financial-commitment-report",
           "toolNames": [
+            "update-financial-commitment-report",
+            "create-financial-commitment-report",
             "query-financial-commitment-report-costs",
             "get-financial-commitment-report",
-            "list-financial-commitment-reports",
-            "list-costs",
-            "query-costs"
+            "update-cost-report"
           ],
           "toolCalls": [
             {
-              "toolName": "query-financial-commitment-report-costs",
+              "toolName": "update-financial-commitment-report",
               "input": {
                 "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                "page": 1,
-                "start_date": "2024-03-01",
-                "end_date": "2024-03-31",
+                "title": "Account Commitment Coverage",
                 "groupings": [
                   "resource_account_id",
                   "service"
@@ -250,11 +240,11 @@
             }
           ]
         },
-        "id": "cbd2c88a-bb39-41df-9ada-068fbdb7c777",
-        "latencyMs": 2439,
+        "id": "7483c014-b243-4172-a8ce-f3d99796f5e0",
+        "latencyMs": 1996,
         "namedScores": {},
         "prompt": {
-          "raw": "For Vantage financial commitment report fncl_cmnt_rprt_abc123, show me which linked accounts' resources are actually consuming the commitments, broken down by resource account and commitment type. Use the report's saved date range and filters.",
+          "raw": "Change Vantage financial commitment report fncl_cmnt_rprt_abc123 to be weekly, make on demand discountable, and group by cost type and commitment type",
           "label": "{{prompt}}",
           "config": {
             "disableVarExpansion": true
@@ -270,12 +260,13 @@
           "output": {
             "toolCalls": [
               {
-                "toolName": "query-financial-commitment-report-costs",
+                "toolName": "update-financial-commitment-report",
                 "input": {
                   "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                  "page": 1,
+                  "date_bucket": "week",
+                  "on_demand_costs_scope": "discountable",
                   "groupings": [
-                    "resource_account_id",
+                    "cost_type",
                     "commitment_type"
                   ]
                 }
@@ -286,22 +277,23 @@
           "metadata": {
             "modelId": "gpt-5.6-luna",
             "mode": "mixed",
-            "target": "query-financial-commitment-report-costs",
+            "target": "update-financial-commitment-report",
             "toolNames": [
+              "update-financial-commitment-report",
+              "create-financial-commitment-report",
               "query-financial-commitment-report-costs",
               "get-financial-commitment-report",
-              "list-financial-commitment-reports",
-              "list-costs",
-              "query-costs"
+              "update-cost-report"
             ],
             "toolCalls": [
               {
-                "toolName": "query-financial-commitment-report-costs",
+                "toolName": "update-financial-commitment-report",
                 "input": {
                   "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                  "page": 1,
+                  "date_bucket": "week",
+                  "on_demand_costs_scope": "discountable",
                   "groupings": [
-                    "resource_account_id",
+                    "cost_type",
                     "commitment_type"
                   ]
                 }
@@ -312,35 +304,36 @@
         "score": 1,
         "success": true,
         "testCase": {
-          "description": "query-financial-commitment-report-costs · inferred · For Vantage financial commitment report fncl_cmnt_rprt_abc123, show me which linked accounts' resources are actually consuming the commitments, broken down by resource account and commitment type. Use the report's saved date range and filters.",
+          "description": "update-financial-commitment-report · inferred · Change Vantage financial commitment report fncl_cmnt_rprt_abc123 to be weekly, make on demand discountable, and group by cost type and commitment type",
           "vars": {
-            "prompt": "For Vantage financial commitment report fncl_cmnt_rprt_abc123, show me which linked accounts' resources are actually consuming the commitments, broken down by resource account and commitment type. Use the report's saved date range and filters.",
-            "target": "query-financial-commitment-report-costs",
+            "prompt": "Change Vantage financial commitment report fncl_cmnt_rprt_abc123 to be weekly, make on demand discountable, and group by cost type and commitment type",
+            "target": "update-financial-commitment-report",
             "expected": [
               {
-                "toolName": "query-financial-commitment-report-costs",
+                "toolName": "update-financial-commitment-report",
                 "input": {
                   "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
+                  "date_bucket": "week",
+                  "on_demand_costs_scope": "discountable",
                   "groupings": [
-                    "resource_account_id",
+                    "cost_type",
                     "commitment_type"
-                  ],
-                  "page": 1
+                  ]
                 }
               }
             ],
             "distractors": [
+              "create-financial-commitment-report",
+              "query-financial-commitment-report-costs",
               "get-financial-commitment-report",
-              "list-financial-commitment-reports",
-              "list-costs",
-              "query-costs"
+              "update-cost-report"
             ]
           },
           "options": {
             "disableVarExpansion": true
           },
           "metadata": {
-            "tool": "query-financial-commitment-report-costs",
+            "tool": "update-financial-commitment-report",
             "resource": "financial-commitment-reports",
             "phrasing": "inferred"
           },
@@ -381,50 +374,52 @@
           }
         },
         "vars": {
-          "prompt": "For Vantage financial commitment report fncl_cmnt_rprt_abc123, show me which linked accounts' resources are actually consuming the commitments, broken down by resource account and commitment type. Use the report's saved date range and filters.",
-          "target": "query-financial-commitment-report-costs",
+          "prompt": "Change Vantage financial commitment report fncl_cmnt_rprt_abc123 to be weekly, make on demand discountable, and group by cost type and commitment type",
+          "target": "update-financial-commitment-report",
           "expected": [
             {
-              "toolName": "query-financial-commitment-report-costs",
+              "toolName": "update-financial-commitment-report",
               "input": {
                 "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
+                "date_bucket": "week",
+                "on_demand_costs_scope": "discountable",
                 "groupings": [
-                  "resource_account_id",
+                  "cost_type",
                   "commitment_type"
-                ],
-                "page": 1
+                ]
               }
             }
           ],
           "distractors": [
+            "create-financial-commitment-report",
+            "query-financial-commitment-report-costs",
             "get-financial-commitment-report",
-            "list-financial-commitment-reports",
-            "list-costs",
-            "query-costs"
+            "update-cost-report"
           ]
         },
         "metadata": {
-          "tool": "query-financial-commitment-report-costs",
+          "tool": "update-financial-commitment-report",
           "resource": "financial-commitment-reports",
           "phrasing": "inferred",
           "modelId": "gpt-5.6-luna",
           "mode": "mixed",
-          "target": "query-financial-commitment-report-costs",
+          "target": "update-financial-commitment-report",
           "toolNames": [
+            "update-financial-commitment-report",
+            "create-financial-commitment-report",
             "query-financial-commitment-report-costs",
             "get-financial-commitment-report",
-            "list-financial-commitment-reports",
-            "list-costs",
-            "query-costs"
+            "update-cost-report"
           ],
           "toolCalls": [
             {
-              "toolName": "query-financial-commitment-report-costs",
+              "toolName": "update-financial-commitment-report",
               "input": {
                 "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                "page": 1,
+                "date_bucket": "week",
+                "on_demand_costs_scope": "discountable",
                 "groupings": [
-                  "resource_account_id",
+                  "cost_type",
                   "commitment_type"
                 ]
               }
@@ -470,7 +465,7 @@
       }
     ],
     "tests": [
-      "file://cases/financial-commitment-reports/query-financial-commitment-report-costs.eval.ts"
+      "file://cases/financial-commitment-reports/update-financial-commitment-report.eval.ts"
     ],
     "env": {},
     "extensions": [],
@@ -485,7 +480,7 @@
     "nodeVersion": "v23.11.0",
     "platform": "darwin",
     "arch": "arm64",
-    "exportedAt": "2026-09-10T20:47:27.425Z",
-    "evaluationCreatedAt": "2026-09-10T20:47:23.716Z"
+    "exportedAt": "2026-09-10T22:50:52.460Z",
+    "evaluationCreatedAt": "2026-09-10T22:50:50.095Z"
   }
 }

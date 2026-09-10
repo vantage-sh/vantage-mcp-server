@@ -2,7 +2,7 @@
   "evalId": null,
   "results": {
     "version": 3,
-    "timestamp": "2026-09-10T20:47:27.803Z",
+    "timestamp": "2026-09-10T20:46:52.541Z",
     "results": [
       {
         "cost": 0,
@@ -30,11 +30,11 @@
             }
           ]
         },
-        "id": "fbed8fb4-6ea1-4928-86c5-cef3166225cb",
-        "latencyMs": 3606,
+        "id": "9ff15ac2-9d2f-4c74-85aa-ca5c58061dd5",
+        "latencyMs": 1640,
         "namedScores": {},
         "prompt": {
-          "raw": "Use query-financial-commitment-report-costs to fetch cost data for financial commitment report fncl_cmnt_rprt_abc123 from 2024-03-01 through 2024-03-31, grouped by resource_account_id and service.",
+          "raw": "Use list-financial-commitment-reports to search page 2 for Vantage financial commitment reports titled Savings Plans in workspace wrkspc_abc123.",
           "label": "{{prompt}}",
           "config": {
             "disableVarExpansion": true
@@ -50,16 +50,11 @@
           "output": {
             "toolCalls": [
               {
-                "toolName": "query-financial-commitment-report-costs",
+                "toolName": "list-financial-commitment-reports",
                 "input": {
-                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                  "page": 1,
-                  "start_date": "2024-03-01",
-                  "end_date": "2024-03-31",
-                  "groupings": [
-                    "resource_account_id",
-                    "service"
-                  ]
+                  "page": 2,
+                  "q": "Savings Plans",
+                  "workspace_token": "wrkspc_abc123"
                 }
               }
             ],
@@ -68,26 +63,21 @@
           "metadata": {
             "modelId": "gpt-5.6-luna",
             "mode": "mixed",
-            "target": "query-financial-commitment-report-costs",
+            "target": "list-financial-commitment-reports",
             "toolNames": [
-              "query-financial-commitment-report-costs",
-              "get-financial-commitment-report",
               "list-financial-commitment-reports",
-              "list-costs",
-              "query-costs"
+              "get-financial-commitment-report",
+              "query-financial-commitment-report-costs",
+              "list-cost-reports",
+              "list-workspaces"
             ],
             "toolCalls": [
               {
-                "toolName": "query-financial-commitment-report-costs",
+                "toolName": "list-financial-commitment-reports",
                 "input": {
-                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                  "page": 1,
-                  "start_date": "2024-03-01",
-                  "end_date": "2024-03-31",
-                  "groupings": [
-                    "resource_account_id",
-                    "service"
-                  ]
+                  "page": 2,
+                  "q": "Savings Plans",
+                  "workspace_token": "wrkspc_abc123"
                 }
               }
             ]
@@ -96,37 +86,32 @@
         "score": 1,
         "success": true,
         "testCase": {
-          "description": "query-financial-commitment-report-costs · direct · Use query-financial-commitment-report-costs to fetch cost data for financial commitment report fncl_cmnt_rprt_abc123 from 2024-03-01 through 2024-03-31, grouped by resource_account_id and service.",
+          "description": "list-financial-commitment-reports · direct · Use list-financial-commitment-reports to search page 2 for Vantage financial commitment reports titled Savings Plans in workspace wrkspc_abc123.",
           "vars": {
-            "prompt": "Use query-financial-commitment-report-costs to fetch cost data for financial commitment report fncl_cmnt_rprt_abc123 from 2024-03-01 through 2024-03-31, grouped by resource_account_id and service.",
-            "target": "query-financial-commitment-report-costs",
+            "prompt": "Use list-financial-commitment-reports to search page 2 for Vantage financial commitment reports titled Savings Plans in workspace wrkspc_abc123.",
+            "target": "list-financial-commitment-reports",
             "expected": [
               {
-                "toolName": "query-financial-commitment-report-costs",
+                "toolName": "list-financial-commitment-reports",
                 "input": {
-                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                  "start_date": "2024-03-01",
-                  "end_date": "2024-03-31",
-                  "groupings": [
-                    "resource_account_id",
-                    "service"
-                  ],
-                  "page": 1
+                  "page": 2,
+                  "q": "Savings Plans",
+                  "workspace_token": "wrkspc_abc123"
                 }
               }
             ],
             "distractors": [
               "get-financial-commitment-report",
-              "list-financial-commitment-reports",
-              "list-costs",
-              "query-costs"
+              "query-financial-commitment-report-costs",
+              "list-cost-reports",
+              "list-workspaces"
             ]
           },
           "options": {
             "disableVarExpansion": true
           },
           "metadata": {
-            "tool": "query-financial-commitment-report-costs",
+            "tool": "list-financial-commitment-reports",
             "resource": "financial-commitment-reports",
             "phrasing": "direct"
           },
@@ -167,56 +152,46 @@
           }
         },
         "vars": {
-          "prompt": "Use query-financial-commitment-report-costs to fetch cost data for financial commitment report fncl_cmnt_rprt_abc123 from 2024-03-01 through 2024-03-31, grouped by resource_account_id and service.",
-          "target": "query-financial-commitment-report-costs",
+          "prompt": "Use list-financial-commitment-reports to search page 2 for Vantage financial commitment reports titled Savings Plans in workspace wrkspc_abc123.",
+          "target": "list-financial-commitment-reports",
           "expected": [
             {
-              "toolName": "query-financial-commitment-report-costs",
+              "toolName": "list-financial-commitment-reports",
               "input": {
-                "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                "start_date": "2024-03-01",
-                "end_date": "2024-03-31",
-                "groupings": [
-                  "resource_account_id",
-                  "service"
-                ],
-                "page": 1
+                "page": 2,
+                "q": "Savings Plans",
+                "workspace_token": "wrkspc_abc123"
               }
             }
           ],
           "distractors": [
             "get-financial-commitment-report",
-            "list-financial-commitment-reports",
-            "list-costs",
-            "query-costs"
+            "query-financial-commitment-report-costs",
+            "list-cost-reports",
+            "list-workspaces"
           ]
         },
         "metadata": {
-          "tool": "query-financial-commitment-report-costs",
+          "tool": "list-financial-commitment-reports",
           "resource": "financial-commitment-reports",
           "phrasing": "direct",
           "modelId": "gpt-5.6-luna",
           "mode": "mixed",
-          "target": "query-financial-commitment-report-costs",
+          "target": "list-financial-commitment-reports",
           "toolNames": [
-            "query-financial-commitment-report-costs",
-            "get-financial-commitment-report",
             "list-financial-commitment-reports",
-            "list-costs",
-            "query-costs"
+            "get-financial-commitment-report",
+            "query-financial-commitment-report-costs",
+            "list-cost-reports",
+            "list-workspaces"
           ],
           "toolCalls": [
             {
-              "toolName": "query-financial-commitment-report-costs",
+              "toolName": "list-financial-commitment-reports",
               "input": {
-                "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                "page": 1,
-                "start_date": "2024-03-01",
-                "end_date": "2024-03-31",
-                "groupings": [
-                  "resource_account_id",
-                  "service"
-                ]
+                "page": 2,
+                "q": "Savings Plans",
+                "workspace_token": "wrkspc_abc123"
               }
             }
           ],
@@ -250,11 +225,11 @@
             }
           ]
         },
-        "id": "cbd2c88a-bb39-41df-9ada-068fbdb7c777",
-        "latencyMs": 2439,
+        "id": "f5369b92-3d60-445f-b49a-fe059125c2c7",
+        "latencyMs": 1673,
         "namedScores": {},
         "prompt": {
-          "raw": "For Vantage financial commitment report fncl_cmnt_rprt_abc123, show me which linked accounts' resources are actually consuming the commitments, broken down by resource account and commitment type. Use the report's saved date range and filters.",
+          "raw": "Which saved Vantage financial commitment reports are available in workspace wrkspc_finops789? Show the first page.",
           "label": "{{prompt}}",
           "config": {
             "disableVarExpansion": true
@@ -270,14 +245,10 @@
           "output": {
             "toolCalls": [
               {
-                "toolName": "query-financial-commitment-report-costs",
+                "toolName": "list-financial-commitment-reports",
                 "input": {
-                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
                   "page": 1,
-                  "groupings": [
-                    "resource_account_id",
-                    "commitment_type"
-                  ]
+                  "workspace_token": "wrkspc_finops789"
                 }
               }
             ],
@@ -286,24 +257,20 @@
           "metadata": {
             "modelId": "gpt-5.6-luna",
             "mode": "mixed",
-            "target": "query-financial-commitment-report-costs",
+            "target": "list-financial-commitment-reports",
             "toolNames": [
-              "query-financial-commitment-report-costs",
-              "get-financial-commitment-report",
               "list-financial-commitment-reports",
-              "list-costs",
-              "query-costs"
+              "get-financial-commitment-report",
+              "query-financial-commitment-report-costs",
+              "list-cost-reports",
+              "list-workspaces"
             ],
             "toolCalls": [
               {
-                "toolName": "query-financial-commitment-report-costs",
+                "toolName": "list-financial-commitment-reports",
                 "input": {
-                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
                   "page": 1,
-                  "groupings": [
-                    "resource_account_id",
-                    "commitment_type"
-                  ]
+                  "workspace_token": "wrkspc_finops789"
                 }
               }
             ]
@@ -312,35 +279,31 @@
         "score": 1,
         "success": true,
         "testCase": {
-          "description": "query-financial-commitment-report-costs · inferred · For Vantage financial commitment report fncl_cmnt_rprt_abc123, show me which linked accounts' resources are actually consuming the commitments, broken down by resource account and commitment type. Use the report's saved date range and filters.",
+          "description": "list-financial-commitment-reports · inferred · Which saved Vantage financial commitment reports are available in workspace wrkspc_finops789? Show the first page.",
           "vars": {
-            "prompt": "For Vantage financial commitment report fncl_cmnt_rprt_abc123, show me which linked accounts' resources are actually consuming the commitments, broken down by resource account and commitment type. Use the report's saved date range and filters.",
-            "target": "query-financial-commitment-report-costs",
+            "prompt": "Which saved Vantage financial commitment reports are available in workspace wrkspc_finops789? Show the first page.",
+            "target": "list-financial-commitment-reports",
             "expected": [
               {
-                "toolName": "query-financial-commitment-report-costs",
+                "toolName": "list-financial-commitment-reports",
                 "input": {
-                  "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                  "groupings": [
-                    "resource_account_id",
-                    "commitment_type"
-                  ],
-                  "page": 1
+                  "page": 1,
+                  "workspace_token": "wrkspc_finops789"
                 }
               }
             ],
             "distractors": [
               "get-financial-commitment-report",
-              "list-financial-commitment-reports",
-              "list-costs",
-              "query-costs"
+              "query-financial-commitment-report-costs",
+              "list-cost-reports",
+              "list-workspaces"
             ]
           },
           "options": {
             "disableVarExpansion": true
           },
           "metadata": {
-            "tool": "query-financial-commitment-report-costs",
+            "tool": "list-financial-commitment-reports",
             "resource": "financial-commitment-reports",
             "phrasing": "inferred"
           },
@@ -381,52 +344,44 @@
           }
         },
         "vars": {
-          "prompt": "For Vantage financial commitment report fncl_cmnt_rprt_abc123, show me which linked accounts' resources are actually consuming the commitments, broken down by resource account and commitment type. Use the report's saved date range and filters.",
-          "target": "query-financial-commitment-report-costs",
+          "prompt": "Which saved Vantage financial commitment reports are available in workspace wrkspc_finops789? Show the first page.",
+          "target": "list-financial-commitment-reports",
           "expected": [
             {
-              "toolName": "query-financial-commitment-report-costs",
+              "toolName": "list-financial-commitment-reports",
               "input": {
-                "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
-                "groupings": [
-                  "resource_account_id",
-                  "commitment_type"
-                ],
-                "page": 1
+                "page": 1,
+                "workspace_token": "wrkspc_finops789"
               }
             }
           ],
           "distractors": [
             "get-financial-commitment-report",
-            "list-financial-commitment-reports",
-            "list-costs",
-            "query-costs"
+            "query-financial-commitment-report-costs",
+            "list-cost-reports",
+            "list-workspaces"
           ]
         },
         "metadata": {
-          "tool": "query-financial-commitment-report-costs",
+          "tool": "list-financial-commitment-reports",
           "resource": "financial-commitment-reports",
           "phrasing": "inferred",
           "modelId": "gpt-5.6-luna",
           "mode": "mixed",
-          "target": "query-financial-commitment-report-costs",
+          "target": "list-financial-commitment-reports",
           "toolNames": [
-            "query-financial-commitment-report-costs",
-            "get-financial-commitment-report",
             "list-financial-commitment-reports",
-            "list-costs",
-            "query-costs"
+            "get-financial-commitment-report",
+            "query-financial-commitment-report-costs",
+            "list-cost-reports",
+            "list-workspaces"
           ],
           "toolCalls": [
             {
-              "toolName": "query-financial-commitment-report-costs",
+              "toolName": "list-financial-commitment-reports",
               "input": {
-                "financial_commitment_report_token": "fncl_cmnt_rprt_abc123",
                 "page": 1,
-                "groupings": [
-                  "resource_account_id",
-                  "commitment_type"
-                ]
+                "workspace_token": "wrkspc_finops789"
               }
             }
           ],
@@ -470,7 +425,7 @@
       }
     ],
     "tests": [
-      "file://cases/financial-commitment-reports/query-financial-commitment-report-costs.eval.ts"
+      "file://cases/financial-commitment-reports/list-financial-commitment-reports.eval.ts"
     ],
     "env": {},
     "extensions": [],
@@ -485,7 +440,7 @@
     "nodeVersion": "v23.11.0",
     "platform": "darwin",
     "arch": "arm64",
-    "exportedAt": "2026-09-10T20:47:27.425Z",
-    "evaluationCreatedAt": "2026-09-10T20:47:23.716Z"
+    "exportedAt": "2026-09-10T20:46:52.148Z",
+    "evaluationCreatedAt": "2026-09-10T20:46:50.417Z"
   }
 }

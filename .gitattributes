@@ -1,0 +1,2 @@
+# Exclude generated eval results from GitHub language statistics
+evals/results/** linguist-generated
