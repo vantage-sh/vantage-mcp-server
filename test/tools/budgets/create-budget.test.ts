@@ -21,6 +21,8 @@ const undefineds = {
   child_budget_tokens: undefined,
   period_cadence: undefined,
   periods: undefined,
+  type: undefined,
+  unit: undefined,
 };
 
 const validInputArguments: InferValidators<Validators> = {
@@ -45,6 +47,8 @@ const validInputArguments: InferValidators<Validators> = {
       amount: 1200,
     },
   ],
+  type: "usage",
+  unit: "GB-Hours",
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
@@ -58,6 +62,34 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "all valid arguments",
     data: validInputArguments,
+  },
+  {
+    name: "usage budget with unit",
+    data: {
+      ...undefineds,
+      name: "Usage Budget",
+      type: "usage",
+      unit: "GB-Hours",
+    },
+  },
+  {
+    name: "invalid budget type",
+    data: {
+      ...undefineds,
+      name: "Invalid Type Budget",
+      type: "forecast" as "usage",
+    },
+    expectedIssues: ['Invalid option: expected one of "cost"|"usage"'],
+  },
+  {
+    name: "empty unit",
+    data: {
+      ...undefineds,
+      name: "Empty Unit Budget",
+      type: "usage",
+      unit: "",
+    },
+    expectedIssues: ["Too small: expected string to have >=1 characters"],
   },
   {
     name: "empty name",
@@ -287,6 +319,8 @@ const successData: CreateBudgetResponse = {
   budget_alert_tokens: [],
   child_budget_tokens: [],
   created_at: "2023-01-01T00:00:00Z",
+  type: "usage",
+  unit: "GB-Hours",
   period_cadence: {
     starts_at: "2024-01-01",
     interval_count: 1,

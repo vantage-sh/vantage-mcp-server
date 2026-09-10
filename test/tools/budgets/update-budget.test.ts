@@ -20,6 +20,8 @@ const undefineds = {
   child_budget_tokens: undefined,
   period_cadence: undefined,
   periods: undefined,
+  type: undefined,
+  unit: undefined,
 };
 
 const minimalValidInputArguments: InferValidators<Validators> = {
@@ -49,6 +51,8 @@ const validInputArguments: InferValidators<Validators> = {
       amount: 1200,
     },
   ],
+  type: "usage",
+  unit: "GB-Hours",
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
@@ -59,6 +63,42 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "all valid arguments",
     data: validInputArguments,
+  },
+  {
+    name: "usage budget type and unit",
+    data: {
+      ...undefineds,
+      budget_token: "bdgt_123",
+      type: "usage",
+      unit: "GB-Hours",
+    },
+  },
+  {
+    name: "clears unit",
+    data: {
+      ...undefineds,
+      budget_token: "bdgt_123",
+      unit: null,
+    },
+  },
+  {
+    name: "invalid budget type",
+    data: {
+      ...undefineds,
+      budget_token: "bdgt_123",
+      type: "forecast" as "usage",
+    },
+    expectedIssues: ['Invalid option: expected one of "cost"|"usage"'],
+  },
+  {
+    name: "empty unit",
+    data: {
+      ...undefineds,
+      budget_token: "bdgt_123",
+      type: "usage",
+      unit: "",
+    },
+    expectedIssues: ["Too small: expected string to have >=1 characters"],
   },
   {
     name: "empty name",
@@ -222,6 +262,8 @@ const successData: UpdateBudgetResponse = {
   budget_alert_tokens: [],
   child_budget_tokens: ["bdgt_child1", "bdgt_child2"],
   created_at: "2023-01-01T00:00:00Z",
+  type: "usage",
+  unit: "GB-Hours",
   period_cadence: {
     starts_at: "2024-01-01",
     interval_count: 1,
@@ -260,6 +302,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
             { start_at: "2024-01-01", end_at: "2024-01-31", amount: 1000 },
             { start_at: "2024-02-01", end_at: "2024-02-29", amount: 1200 },
           ],
+          type: "usage",
+          unit: "GB-Hours",
         },
         method: "PUT",
         result: {

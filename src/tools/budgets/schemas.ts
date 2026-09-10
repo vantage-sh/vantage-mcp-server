@@ -1,5 +1,10 @@
 import z from "zod";
 import dateValidator from "../../utils/dateValidator";
+import { nonempty } from "../../utils/zod";
+
+export const budgetType = z.enum(["cost", "usage"]);
+
+export const budgetUnit = nonempty();
 
 export const budgetPeriod = z.object({
   start_at: dateValidator("The start date of the period."),
