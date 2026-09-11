@@ -17,6 +17,7 @@ import homepage from "./homepage";
 import { logger } from "./logger";
 import setupRegisteredResources from "./resources";
 import { callApi, serverMeta } from "./shared";
+import { hideAccessPolicyToolsFromNonOwners } from "./tools/access-policies/gating";
 import { setupRegisteredTools } from "./tools/structure/registerTool";
 import { datadogTraceLogTags, formatErrorsForTelemetry, tracer } from "./tracing";
 
@@ -119,8 +120,9 @@ export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> 
       waitUntil: (promise: Promise<unknown>) => this.ctx.waitUntil(promise),
       callVantageApi: this.callVantageApi.bind(this),
     };
-    setupRegisteredTools(this.server, () => ctx);
+    const tools = setupRegisteredTools(this.server, () => ctx);
     setupRegisteredResources(this.server);
+    await hideAccessPolicyToolsFromNonOwners(tools, ctx);
   }
 }
 
