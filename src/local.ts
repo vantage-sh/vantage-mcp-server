@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import setupRegisteredResources from "./resources";
 import { callApi, serverMeta } from "./shared";
+import { hideAccessPolicyToolsFromNonOwners } from "./tools/access-policies/gating";
 import { setupRegisteredTools, type ToolCallContext } from "./tools/structure/registerTool";
 
 // Side effect import to register all tools
@@ -24,8 +25,9 @@ async function main() {
 
   const stdio = new StdioServerTransport();
   const server = new McpServer(serverMeta);
-  setupRegisteredTools(server, () => ctx);
+  const tools = setupRegisteredTools(server, () => ctx);
   setupRegisteredResources(server);
+  await hideAccessPolicyToolsFromNonOwners(tools, ctx);
 
   await server.connect(stdio);
 }

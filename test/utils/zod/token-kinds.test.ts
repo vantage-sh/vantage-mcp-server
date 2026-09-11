@@ -3,6 +3,7 @@ import { TOKEN_KINDS } from "../../../src/utils/zod";
 
 test("prefixes match public API token examples", () => {
   expect(TOKEN_KINDS.access_grant.prefix).toBe("rsrc_accss_grnt");
+  expect(TOKEN_KINDS.access_policy.prefix).toBe("accss_plcy");
   expect(TOKEN_KINDS.anomaly_notification.prefix).toBe("rprt_alrt");
   expect(TOKEN_KINDS.workspace.prefix).toBe("wrkspc");
   expect(TOKEN_KINDS.budget.prefix).toBe("bdgt");

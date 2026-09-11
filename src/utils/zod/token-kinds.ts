@@ -10,6 +10,10 @@ export const TOKEN_KINDS = {
     prefix: "rsrc_accss_grnt",
     label: "Access Grant",
   },
+  access_policy: {
+    prefix: "accss_plcy",
+    label: "Access Policy",
+  },
   annotation: {
     prefix: "issue",
     label: "Annotation",
