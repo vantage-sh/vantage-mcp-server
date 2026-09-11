@@ -1,5 +1,4 @@
 import type { RegisteredTool } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { isDefinitelyNotAccountOwner } from "../current-user/me";
 import type { ToolCallContext } from "../structure/registerTool";
 
 export const ACCESS_POLICY_TOOL_NAMES = [
@@ -24,7 +23,9 @@ export async function hideAccessPolicyToolsFromNonOwners(
   ctx: ToolCallContext
 ): Promise<void> {
   const response = await ctx.callVantageApi("/v2/me", {}, "GET");
-  if (!response.ok || !isDefinitelyNotAccountOwner(response.data)) {
+  // Anything short of a positive "not an owner" — including a deployment that
+  // does not send the field yet — leaves the tools registered.
+  if (!response.ok || response.data.is_account_owner !== false) {
     return;
   }
 
