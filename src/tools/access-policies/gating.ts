@@ -9,11 +9,9 @@ export const ACCESS_POLICY_TOOL_NAMES = [
 ];
 
 /**
- * Access Policy tools are account-owner only. Hiding them is a convenience so
- * non-owners are not offered calls that can only fail — the Vantage API is the
- * real boundary and returns 403 whether or not the tool was advertised. Because
- * of that, a failed lookup leaves the tools visible rather than hiding them from
- * an owner over a transient error.
+ * Access Policy tools are account-owner only. Anything short of the API
+ * confirming ownership hides them, so a failed or unrecognised lookup is treated
+ * as "not an owner" rather than granting access by default.
  *
  * Call before connecting the transport so the tools never appear in the first
  * `tools/list` response.
@@ -22,14 +20,22 @@ export async function hideAccessPolicyToolsFromNonOwners(
   tools: Map<string, RegisteredTool>,
   ctx: ToolCallContext
 ): Promise<void> {
-  const response = await ctx.callVantageApi("/v2/me", {}, "GET");
-  // Anything short of a positive "not an owner" — including a deployment that
-  // does not send the field yet — leaves the tools registered.
-  if (!response.ok || response.data.is_account_owner !== false) {
+  if (await isAccountOwner(ctx)) {
     return;
   }
 
   for (const name of ACCESS_POLICY_TOOL_NAMES) {
     tools.get(name)?.disable();
+  }
+}
+
+async function isAccountOwner(ctx: ToolCallContext): Promise<boolean> {
+  try {
+    const response = await ctx.callVantageApi("/v2/me", {}, "GET");
+    return response.ok && response.data.is_account_owner === true;
+  } catch {
+    // Runs during server startup, where callVantageApi throws on missing
+    // credentials or network failure. Swallow it so the session still starts.
+    return false;
   }
 }

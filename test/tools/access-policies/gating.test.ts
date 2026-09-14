@@ -43,21 +43,41 @@ describe("hideAccessPolicyToolsFromNonOwners", () => {
     expect(disable).not.toHaveBeenCalled();
   });
 
-  it("keeps the tools while the API omits is_account_owner", async () => {
+  it("hides the tools when the API omits is_account_owner", async () => {
     const { tools, disable } = toolsWithSpies();
     const { ctx } = contextReturning({ ok: true, data: { workspaces: [] } as never });
 
     await hideAccessPolicyToolsFromNonOwners(tools, ctx);
 
-    expect(disable).not.toHaveBeenCalled();
+    expect(disable).toHaveBeenCalledTimes(ACCESS_POLICY_TOOL_NAMES.length);
   });
 
-  it("fails open when the lookup fails", async () => {
+  it("fails closed when the lookup returns an error", async () => {
     const { tools, disable } = toolsWithSpies();
     const { ctx } = contextReturning({ ok: false, errors: [{ message: "boom" }] });
 
     await hideAccessPolicyToolsFromNonOwners(tools, ctx);
 
-    expect(disable).not.toHaveBeenCalled();
+    expect(disable).toHaveBeenCalledTimes(ACCESS_POLICY_TOOL_NAMES.length);
+  });
+
+  it("fails closed without rejecting when the lookup throws", async () => {
+    const { tools, disable } = toolsWithSpies();
+    const callVantageApi = vi.fn().mockRejectedValue(new Error("No authentication method available"));
+    const ctx = { callVantageApi } as unknown as ToolCallContext;
+
+    await expect(hideAccessPolicyToolsFromNonOwners(tools, ctx)).resolves.toBeUndefined();
+    expect(disable).toHaveBeenCalledTimes(ACCESS_POLICY_TOOL_NAMES.length);
+  });
+
+  it("leaves unrelated tools alone", async () => {
+    const { tools } = toolsWithSpies();
+    const disableUnrelated = vi.fn();
+    tools.set("list-budgets", { disable: disableUnrelated } as unknown as RegisteredTool);
+    const { ctx } = contextReturning({ ok: false, errors: [{ message: "boom" }] });
+
+    await hideAccessPolicyToolsFromNonOwners(tools, ctx);
+
+    expect(disableUnrelated).not.toHaveBeenCalled();
   });
 });
