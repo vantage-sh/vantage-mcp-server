@@ -1,4 +1,4 @@
-import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { McpServer, RegisteredTool } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { RequestHandlerExtra } from "@modelcontextprotocol/sdk/shared/protocol.js";
 import type { ServerNotification, ServerRequest } from "@modelcontextprotocol/sdk/types.js";
 import type {
@@ -55,7 +55,7 @@ export type ToolProperties<Input extends z.ZodRawShape, Output extends z.ZodRawS
   >;
 };
 
-const toolSetups = new Map<string, (server: McpServer, generateContext: () => ToolCallContext) => void>();
+const toolSetups = new Map<string, (server: McpServer, generateContext: () => ToolCallContext) => RegisteredTool>();
 
 export type ToolMetadata = Pick<
   ToolProperties<z.ZodRawShape, z.ZodRawShape | undefined>,
@@ -86,7 +86,7 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
   toolProps: ToolProperties<Input, Output>
 ): ToolProperties<Input, Output> {
   const serverSetup = (server: McpServer, generateContext: () => ToolCallContext) => {
-    server.registerTool(
+    return server.registerTool(
       toolProps.name,
       {
         title: toolProps.title,
@@ -179,8 +179,13 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
   return toolProps;
 }
 
-export function setupRegisteredTools(server: McpServer, generateContext: () => ToolCallContext) {
-  for (const setup of toolSetups.values()) {
-    setup(server, generateContext);
+export function setupRegisteredTools(
+  server: McpServer,
+  generateContext: () => ToolCallContext
+): Map<string, RegisteredTool> {
+  const registered = new Map<string, RegisteredTool>();
+  for (const [name, setup] of toolSetups) {
+    registered.set(name, setup(server, generateContext));
   }
+  return registered;
 }
