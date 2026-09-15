@@ -1,3 +1,4 @@
+import type { CreateAccessPolicyRequest } from "@vantage-sh/vantage-client";
 import z from "zod";
 import { nonempty, vantageToken } from "../../utils/zod";
 
@@ -14,7 +15,7 @@ export const accessPolicyFilter = nonempty();
 
 export const ACCESS_POLICY_API_VERSION = "v1" as const;
 
-export function accessPolicyDocument(filter: string) {
+export function accessPolicyDocument(filter: string): CreateAccessPolicyRequest["policy"] {
   return {
     api_version: ACCESS_POLICY_API_VERSION,
     policy: { filter },
