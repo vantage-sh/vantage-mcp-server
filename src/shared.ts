@@ -13,12 +13,6 @@ export const serverMeta = {
   version: SERVER_VERSION,
 };
 
-const locationResponseEndpoints = new Set<Path>([
-  "/v2/costs/data_exports",
-  "/v2/kubernetes_efficiency_reports/data_exports",
-  "/v2/unit_costs/data_exports",
-]);
-
 export async function callApi<
   P extends Path,
   M extends SupportedMethods<P>,
