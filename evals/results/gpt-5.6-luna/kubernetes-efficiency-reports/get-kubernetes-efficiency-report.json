@@ -1,0 +1,431 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-09-21T21:39:58.243Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "f88c7a27-2485-4541-994e-df132c7d4237",
+        "latencyMs": 1204,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use get-kubernetes-efficiency-report to retrieve the saved configuration for kbnts_eff_rprt_abc123.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:mixed",
+          "label": "gpt-5.6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "get-kubernetes-efficiency-report",
+                "input": {
+                  "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "mixed",
+            "target": "get-kubernetes-efficiency-report",
+            "toolNames": [
+              "get-kubernetes-efficiency-report",
+              "list-kubernetes-efficiency-reports",
+              "query-kubernetes-efficiency-report-costs",
+              "update-kubernetes-efficiency-report",
+              "get-cost-report"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "get-kubernetes-efficiency-report",
+                "input": {
+                  "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "get-kubernetes-efficiency-report · direct · Use get-kubernetes-efficiency-report to retrieve the saved configuration for kbnts_eff_rprt_abc123.",
+          "vars": {
+            "prompt": "Use get-kubernetes-efficiency-report to retrieve the saved configuration for kbnts_eff_rprt_abc123.",
+            "target": "get-kubernetes-efficiency-report",
+            "expected": [
+              {
+                "toolName": "get-kubernetes-efficiency-report",
+                "input": {
+                  "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123"
+                }
+              }
+            ],
+            "distractors": [
+              "list-kubernetes-efficiency-reports",
+              "query-kubernetes-efficiency-report-costs",
+              "update-kubernetes-efficiency-report",
+              "get-cost-report"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "get-kubernetes-efficiency-report",
+            "resource": "kubernetes-efficiency-reports",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use get-kubernetes-efficiency-report to retrieve the saved configuration for kbnts_eff_rprt_abc123.",
+          "target": "get-kubernetes-efficiency-report",
+          "expected": [
+            {
+              "toolName": "get-kubernetes-efficiency-report",
+              "input": {
+                "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123"
+              }
+            }
+          ],
+          "distractors": [
+            "list-kubernetes-efficiency-reports",
+            "query-kubernetes-efficiency-report-costs",
+            "update-kubernetes-efficiency-report",
+            "get-cost-report"
+          ]
+        },
+        "metadata": {
+          "tool": "get-kubernetes-efficiency-report",
+          "resource": "kubernetes-efficiency-reports",
+          "phrasing": "direct",
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed",
+          "target": "get-kubernetes-efficiency-report",
+          "toolNames": [
+            "get-kubernetes-efficiency-report",
+            "list-kubernetes-efficiency-reports",
+            "query-kubernetes-efficiency-report-costs",
+            "update-kubernetes-efficiency-report",
+            "get-cost-report"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "get-kubernetes-efficiency-report",
+              "input": {
+                "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "e9154652-555d-4ea3-b3e6-fe51f33127de",
+        "latencyMs": 1452,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Show me the title, date range, groupings, aggregation metric, and VQL filter configured on Vantage Kubernetes efficiency report kbnts_eff_rprt_platform789.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:mixed",
+          "label": "gpt-5.6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "get-kubernetes-efficiency-report",
+                "input": {
+                  "kubernetes_efficiency_report_token": "kbnts_eff_rprt_platform789"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "mixed",
+            "target": "get-kubernetes-efficiency-report",
+            "toolNames": [
+              "get-kubernetes-efficiency-report",
+              "list-kubernetes-efficiency-reports",
+              "query-kubernetes-efficiency-report-costs",
+              "update-kubernetes-efficiency-report",
+              "get-cost-report"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "get-kubernetes-efficiency-report",
+                "input": {
+                  "kubernetes_efficiency_report_token": "kbnts_eff_rprt_platform789"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "get-kubernetes-efficiency-report · inferred · Show me the title, date range, groupings, aggregation metric, and VQL filter configured on Vantage Kubernetes efficiency report kbnts_eff_rprt_platform789.",
+          "vars": {
+            "prompt": "Show me the title, date range, groupings, aggregation metric, and VQL filter configured on Vantage Kubernetes efficiency report kbnts_eff_rprt_platform789.",
+            "target": "get-kubernetes-efficiency-report",
+            "expected": [
+              {
+                "toolName": "get-kubernetes-efficiency-report",
+                "input": {
+                  "kubernetes_efficiency_report_token": "kbnts_eff_rprt_platform789"
+                }
+              }
+            ],
+            "distractors": [
+              "list-kubernetes-efficiency-reports",
+              "query-kubernetes-efficiency-report-costs",
+              "update-kubernetes-efficiency-report",
+              "get-cost-report"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "get-kubernetes-efficiency-report",
+            "resource": "kubernetes-efficiency-reports",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Show me the title, date range, groupings, aggregation metric, and VQL filter configured on Vantage Kubernetes efficiency report kbnts_eff_rprt_platform789.",
+          "target": "get-kubernetes-efficiency-report",
+          "expected": [
+            {
+              "toolName": "get-kubernetes-efficiency-report",
+              "input": {
+                "kubernetes_efficiency_report_token": "kbnts_eff_rprt_platform789"
+              }
+            }
+          ],
+          "distractors": [
+            "list-kubernetes-efficiency-reports",
+            "query-kubernetes-efficiency-report-costs",
+            "update-kubernetes-efficiency-report",
+            "get-cost-report"
+          ]
+        },
+        "metadata": {
+          "tool": "get-kubernetes-efficiency-report",
+          "resource": "kubernetes-efficiency-reports",
+          "phrasing": "inferred",
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed",
+          "target": "get-kubernetes-efficiency-report",
+          "toolNames": [
+            "get-kubernetes-efficiency-report",
+            "list-kubernetes-efficiency-reports",
+            "query-kubernetes-efficiency-report-costs",
+            "update-kubernetes-efficiency-report",
+            "get-cost-report"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "get-kubernetes-efficiency-report",
+              "input": {
+                "kubernetes_efficiency_report_token": "kbnts_eff_rprt_platform789"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 2,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-5.6-luna · mixed",
+        "config": {
+          "modelId": "gpt-5.6-luna"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/kubernetes-efficiency-reports/get-kubernetes-efficiency-report.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-09-21T21:39:57.921Z",
+    "evaluationCreatedAt": "2026-09-21T21:39:56.400Z"
+  }
+}

@@ -1,0 +1,471 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-09-21T21:49:43.702Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "05ce0de0-c771-479d-a701-a41345b54c66",
+        "latencyMs": 1489,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use update-kubernetes-efficiency-report to rename kbnts_eff_rprt_abc123 to Team Efficiency and group it by namespace and label:team.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:mixed",
+          "label": "gpt-5.6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "update-kubernetes-efficiency-report",
+                "input": {
+                  "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123",
+                  "title": "Team Efficiency",
+                  "groupings": [
+                    "namespace",
+                    "label:team"
+                  ]
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "mixed",
+            "target": "update-kubernetes-efficiency-report",
+            "toolNames": [
+              "update-kubernetes-efficiency-report",
+              "create-kubernetes-efficiency-report",
+              "query-kubernetes-efficiency-report-costs",
+              "get-kubernetes-efficiency-report",
+              "update-cost-report"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "update-kubernetes-efficiency-report",
+                "input": {
+                  "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123",
+                  "title": "Team Efficiency",
+                  "groupings": [
+                    "namespace",
+                    "label:team"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "update-kubernetes-efficiency-report · direct · Use update-kubernetes-efficiency-report to rename kbnts_eff_rprt_abc123 to Team Efficiency and group it by namespace and label:team.",
+          "vars": {
+            "prompt": "Use update-kubernetes-efficiency-report to rename kbnts_eff_rprt_abc123 to Team Efficiency and group it by namespace and label:team.",
+            "target": "update-kubernetes-efficiency-report",
+            "expected": [
+              {
+                "toolName": "update-kubernetes-efficiency-report",
+                "input": {
+                  "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123",
+                  "title": "Team Efficiency",
+                  "groupings": [
+                    "namespace",
+                    "label:team"
+                  ]
+                }
+              }
+            ],
+            "distractors": [
+              "create-kubernetes-efficiency-report",
+              "query-kubernetes-efficiency-report-costs",
+              "get-kubernetes-efficiency-report",
+              "update-cost-report"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "update-kubernetes-efficiency-report",
+            "resource": "kubernetes-efficiency-reports",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use update-kubernetes-efficiency-report to rename kbnts_eff_rprt_abc123 to Team Efficiency and group it by namespace and label:team.",
+          "target": "update-kubernetes-efficiency-report",
+          "expected": [
+            {
+              "toolName": "update-kubernetes-efficiency-report",
+              "input": {
+                "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123",
+                "title": "Team Efficiency",
+                "groupings": [
+                  "namespace",
+                  "label:team"
+                ]
+              }
+            }
+          ],
+          "distractors": [
+            "create-kubernetes-efficiency-report",
+            "query-kubernetes-efficiency-report-costs",
+            "get-kubernetes-efficiency-report",
+            "update-cost-report"
+          ]
+        },
+        "metadata": {
+          "tool": "update-kubernetes-efficiency-report",
+          "resource": "kubernetes-efficiency-reports",
+          "phrasing": "direct",
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed",
+          "target": "update-kubernetes-efficiency-report",
+          "toolNames": [
+            "update-kubernetes-efficiency-report",
+            "create-kubernetes-efficiency-report",
+            "query-kubernetes-efficiency-report-costs",
+            "get-kubernetes-efficiency-report",
+            "update-cost-report"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "update-kubernetes-efficiency-report",
+              "input": {
+                "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123",
+                "title": "Team Efficiency",
+                "groupings": [
+                  "namespace",
+                  "label:team"
+                ]
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "c541bee8-0f0d-412b-a660-79e9f930c383",
+        "latencyMs": 1970,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Change Vantage Kubernetes efficiency report kbnts_eff_rprt_abc123 to use weekly buckets over the last 30 days and rank rows by idle cost.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:mixed",
+          "label": "gpt-5.6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "update-kubernetes-efficiency-report",
+                "input": {
+                  "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123",
+                  "date_interval": "last_30_days",
+                  "aggregated_by": "idle_cost",
+                  "date_bucket": "week"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "mixed",
+            "target": "update-kubernetes-efficiency-report",
+            "toolNames": [
+              "update-kubernetes-efficiency-report",
+              "create-kubernetes-efficiency-report",
+              "query-kubernetes-efficiency-report-costs",
+              "get-kubernetes-efficiency-report",
+              "update-cost-report"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "update-kubernetes-efficiency-report",
+                "input": {
+                  "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123",
+                  "date_interval": "last_30_days",
+                  "aggregated_by": "idle_cost",
+                  "date_bucket": "week"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "update-kubernetes-efficiency-report · inferred · Change Vantage Kubernetes efficiency report kbnts_eff_rprt_abc123 to use weekly buckets over the last 30 days and rank rows by idle cost.",
+          "vars": {
+            "prompt": "Change Vantage Kubernetes efficiency report kbnts_eff_rprt_abc123 to use weekly buckets over the last 30 days and rank rows by idle cost.",
+            "target": "update-kubernetes-efficiency-report",
+            "expected": [
+              {
+                "toolName": "update-kubernetes-efficiency-report",
+                "input": {
+                  "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123",
+                  "date_bucket": "week",
+                  "date_interval": "last_30_days",
+                  "aggregated_by": "idle_cost"
+                }
+              }
+            ],
+            "distractors": [
+              "create-kubernetes-efficiency-report",
+              "query-kubernetes-efficiency-report-costs",
+              "get-kubernetes-efficiency-report",
+              "update-cost-report"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "update-kubernetes-efficiency-report",
+            "resource": "kubernetes-efficiency-reports",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Change Vantage Kubernetes efficiency report kbnts_eff_rprt_abc123 to use weekly buckets over the last 30 days and rank rows by idle cost.",
+          "target": "update-kubernetes-efficiency-report",
+          "expected": [
+            {
+              "toolName": "update-kubernetes-efficiency-report",
+              "input": {
+                "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123",
+                "date_bucket": "week",
+                "date_interval": "last_30_days",
+                "aggregated_by": "idle_cost"
+              }
+            }
+          ],
+          "distractors": [
+            "create-kubernetes-efficiency-report",
+            "query-kubernetes-efficiency-report-costs",
+            "get-kubernetes-efficiency-report",
+            "update-cost-report"
+          ]
+        },
+        "metadata": {
+          "tool": "update-kubernetes-efficiency-report",
+          "resource": "kubernetes-efficiency-reports",
+          "phrasing": "inferred",
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed",
+          "target": "update-kubernetes-efficiency-report",
+          "toolNames": [
+            "update-kubernetes-efficiency-report",
+            "create-kubernetes-efficiency-report",
+            "query-kubernetes-efficiency-report-costs",
+            "get-kubernetes-efficiency-report",
+            "update-cost-report"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "update-kubernetes-efficiency-report",
+              "input": {
+                "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123",
+                "date_interval": "last_30_days",
+                "aggregated_by": "idle_cost",
+                "date_bucket": "week"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 2,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-5.6-luna · mixed",
+        "config": {
+          "modelId": "gpt-5.6-luna"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/kubernetes-efficiency-reports/update-kubernetes-efficiency-report.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-09-21T21:49:43.380Z",
+    "evaluationCreatedAt": "2026-09-21T21:49:41.332Z"
+  }
+}

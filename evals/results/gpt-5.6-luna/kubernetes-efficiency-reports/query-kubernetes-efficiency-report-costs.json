@@ -1,0 +1,511 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-09-21T21:49:26.258Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "dcf17c1f-7fd7-4763-a54c-987ae6d9df47",
+        "latencyMs": 1736,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use query-kubernetes-efficiency-report-costs to fetch August 2026 costs for kbnts_eff_rprt_abc123, grouped by cluster_id, namespace, and label:app, on page 2.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:mixed",
+          "label": "gpt-5.6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "query-kubernetes-efficiency-report-costs",
+                "input": {
+                  "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123",
+                  "start_date": "2026-08-01",
+                  "end_date": "2026-08-31",
+                  "groupings": [
+                    "cluster_id",
+                    "namespace",
+                    "label:app"
+                  ],
+                  "page": 2,
+                  "limit": 128
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "mixed",
+            "target": "query-kubernetes-efficiency-report-costs",
+            "toolNames": [
+              "query-kubernetes-efficiency-report-costs",
+              "get-kubernetes-efficiency-report",
+              "list-kubernetes-efficiency-reports",
+              "query-financial-commitment-report-costs",
+              "query-costs"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "query-kubernetes-efficiency-report-costs",
+                "input": {
+                  "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123",
+                  "start_date": "2026-08-01",
+                  "end_date": "2026-08-31",
+                  "groupings": [
+                    "cluster_id",
+                    "namespace",
+                    "label:app"
+                  ],
+                  "page": 2,
+                  "limit": 128
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "query-kubernetes-efficiency-report-costs · direct · Use query-kubernetes-efficiency-report-costs to fetch August 2026 costs for kbnts_eff_rprt_abc123, grouped by cluster_id, namespace, and label:app, on page 2.",
+          "vars": {
+            "prompt": "Use query-kubernetes-efficiency-report-costs to fetch August 2026 costs for kbnts_eff_rprt_abc123, grouped by cluster_id, namespace, and label:app, on page 2.",
+            "target": "query-kubernetes-efficiency-report-costs",
+            "expected": [
+              {
+                "toolName": "query-kubernetes-efficiency-report-costs",
+                "input": {
+                  "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123",
+                  "start_date": "2026-08-01",
+                  "end_date": "2026-08-31",
+                  "groupings": [
+                    "cluster_id",
+                    "namespace",
+                    "label:app"
+                  ],
+                  "page": 2,
+                  "limit": 128
+                }
+              }
+            ],
+            "distractors": [
+              "get-kubernetes-efficiency-report",
+              "list-kubernetes-efficiency-reports",
+              "query-financial-commitment-report-costs",
+              "query-costs"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "query-kubernetes-efficiency-report-costs",
+            "resource": "kubernetes-efficiency-reports",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use query-kubernetes-efficiency-report-costs to fetch August 2026 costs for kbnts_eff_rprt_abc123, grouped by cluster_id, namespace, and label:app, on page 2.",
+          "target": "query-kubernetes-efficiency-report-costs",
+          "expected": [
+            {
+              "toolName": "query-kubernetes-efficiency-report-costs",
+              "input": {
+                "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123",
+                "start_date": "2026-08-01",
+                "end_date": "2026-08-31",
+                "groupings": [
+                  "cluster_id",
+                  "namespace",
+                  "label:app"
+                ],
+                "page": 2,
+                "limit": 128
+              }
+            }
+          ],
+          "distractors": [
+            "get-kubernetes-efficiency-report",
+            "list-kubernetes-efficiency-reports",
+            "query-financial-commitment-report-costs",
+            "query-costs"
+          ]
+        },
+        "metadata": {
+          "tool": "query-kubernetes-efficiency-report-costs",
+          "resource": "kubernetes-efficiency-reports",
+          "phrasing": "direct",
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed",
+          "target": "query-kubernetes-efficiency-report-costs",
+          "toolNames": [
+            "query-kubernetes-efficiency-report-costs",
+            "get-kubernetes-efficiency-report",
+            "list-kubernetes-efficiency-reports",
+            "query-financial-commitment-report-costs",
+            "query-costs"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "query-kubernetes-efficiency-report-costs",
+              "input": {
+                "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123",
+                "start_date": "2026-08-01",
+                "end_date": "2026-08-31",
+                "groupings": [
+                  "cluster_id",
+                  "namespace",
+                  "label:app"
+                ],
+                "page": 2,
+                "limit": 128
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "5391a3f2-eb13-44d0-b587-4121df866ccf",
+        "latencyMs": 1551,
+        "namedScores": {},
+        "prompt": {
+          "raw": "For Vantage Kubernetes efficiency report kbnts_eff_rprt_abc123, show daily workload cost, idle cost, and efficiency by namespace and team label using the report's saved date range and filter. Show page 1.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:mixed",
+          "label": "gpt-5.6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "query-kubernetes-efficiency-report-costs",
+                "input": {
+                  "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123",
+                  "date_bin": "day",
+                  "groupings": [
+                    "namespace",
+                    "label:team"
+                  ],
+                  "page": 1,
+                  "limit": 128
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "mixed",
+            "target": "query-kubernetes-efficiency-report-costs",
+            "toolNames": [
+              "query-kubernetes-efficiency-report-costs",
+              "get-kubernetes-efficiency-report",
+              "list-kubernetes-efficiency-reports",
+              "query-financial-commitment-report-costs",
+              "query-costs"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "query-kubernetes-efficiency-report-costs",
+                "input": {
+                  "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123",
+                  "date_bin": "day",
+                  "groupings": [
+                    "namespace",
+                    "label:team"
+                  ],
+                  "page": 1,
+                  "limit": 128
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "query-kubernetes-efficiency-report-costs · inferred · For Vantage Kubernetes efficiency report kbnts_eff_rprt_abc123, show daily workload cost, idle cost, and efficiency by namespace and team label using the report's saved date range and filter. Show page 1.",
+          "vars": {
+            "prompt": "For Vantage Kubernetes efficiency report kbnts_eff_rprt_abc123, show daily workload cost, idle cost, and efficiency by namespace and team label using the report's saved date range and filter. Show page 1.",
+            "target": "query-kubernetes-efficiency-report-costs",
+            "expected": [
+              {
+                "toolName": "query-kubernetes-efficiency-report-costs",
+                "input": {
+                  "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123",
+                  "date_bin": "day",
+                  "groupings": [
+                    "namespace",
+                    "label:team"
+                  ],
+                  "page": 1,
+                  "limit": 128
+                }
+              }
+            ],
+            "distractors": [
+              "get-kubernetes-efficiency-report",
+              "list-kubernetes-efficiency-reports",
+              "query-financial-commitment-report-costs",
+              "query-costs"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "query-kubernetes-efficiency-report-costs",
+            "resource": "kubernetes-efficiency-reports",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "For Vantage Kubernetes efficiency report kbnts_eff_rprt_abc123, show daily workload cost, idle cost, and efficiency by namespace and team label using the report's saved date range and filter. Show page 1.",
+          "target": "query-kubernetes-efficiency-report-costs",
+          "expected": [
+            {
+              "toolName": "query-kubernetes-efficiency-report-costs",
+              "input": {
+                "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123",
+                "date_bin": "day",
+                "groupings": [
+                  "namespace",
+                  "label:team"
+                ],
+                "page": 1,
+                "limit": 128
+              }
+            }
+          ],
+          "distractors": [
+            "get-kubernetes-efficiency-report",
+            "list-kubernetes-efficiency-reports",
+            "query-financial-commitment-report-costs",
+            "query-costs"
+          ]
+        },
+        "metadata": {
+          "tool": "query-kubernetes-efficiency-report-costs",
+          "resource": "kubernetes-efficiency-reports",
+          "phrasing": "inferred",
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed",
+          "target": "query-kubernetes-efficiency-report-costs",
+          "toolNames": [
+            "query-kubernetes-efficiency-report-costs",
+            "get-kubernetes-efficiency-report",
+            "list-kubernetes-efficiency-reports",
+            "query-financial-commitment-report-costs",
+            "query-costs"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "query-kubernetes-efficiency-report-costs",
+              "input": {
+                "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123",
+                "date_bin": "day",
+                "groupings": [
+                  "namespace",
+                  "label:team"
+                ],
+                "page": 1,
+                "limit": 128
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 2,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-5.6-luna · mixed",
+        "config": {
+          "modelId": "gpt-5.6-luna"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/kubernetes-efficiency-reports/query-kubernetes-efficiency-report-costs.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-09-21T21:49:25.942Z",
+    "evaluationCreatedAt": "2026-09-21T21:49:24.115Z"
+  }
+}

@@ -19,6 +19,7 @@ import "./dashboards";
 import "./financial-commitment-reports";
 import "./folders";
 import "./integrations";
+import "./kubernetes-efficiency-reports";
 import "./network-flow-reports";
 import "./provider-resources";
 import "./recommendation-views";

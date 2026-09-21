@@ -1,0 +1,431 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-09-21T21:39:15.420Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "7efce4b4-184c-4c35-ade8-e47195e3a7f5",
+        "latencyMs": 1328,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use delete-kubernetes-efficiency-report to permanently delete report kbnts_eff_rprt_abc123.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:mixed",
+          "label": "gpt-5.6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "delete-kubernetes-efficiency-report",
+                "input": {
+                  "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "mixed",
+            "target": "delete-kubernetes-efficiency-report",
+            "toolNames": [
+              "delete-kubernetes-efficiency-report",
+              "get-kubernetes-efficiency-report",
+              "update-kubernetes-efficiency-report",
+              "delete-cost-report",
+              "list-kubernetes-efficiency-reports"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "delete-kubernetes-efficiency-report",
+                "input": {
+                  "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "delete-kubernetes-efficiency-report · direct · Use delete-kubernetes-efficiency-report to permanently delete report kbnts_eff_rprt_abc123.",
+          "vars": {
+            "prompt": "Use delete-kubernetes-efficiency-report to permanently delete report kbnts_eff_rprt_abc123.",
+            "target": "delete-kubernetes-efficiency-report",
+            "expected": [
+              {
+                "toolName": "delete-kubernetes-efficiency-report",
+                "input": {
+                  "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123"
+                }
+              }
+            ],
+            "distractors": [
+              "get-kubernetes-efficiency-report",
+              "update-kubernetes-efficiency-report",
+              "delete-cost-report",
+              "list-kubernetes-efficiency-reports"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "delete-kubernetes-efficiency-report",
+            "resource": "kubernetes-efficiency-reports",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use delete-kubernetes-efficiency-report to permanently delete report kbnts_eff_rprt_abc123.",
+          "target": "delete-kubernetes-efficiency-report",
+          "expected": [
+            {
+              "toolName": "delete-kubernetes-efficiency-report",
+              "input": {
+                "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123"
+              }
+            }
+          ],
+          "distractors": [
+            "get-kubernetes-efficiency-report",
+            "update-kubernetes-efficiency-report",
+            "delete-cost-report",
+            "list-kubernetes-efficiency-reports"
+          ]
+        },
+        "metadata": {
+          "tool": "delete-kubernetes-efficiency-report",
+          "resource": "kubernetes-efficiency-reports",
+          "phrasing": "direct",
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed",
+          "target": "delete-kubernetes-efficiency-report",
+          "toolNames": [
+            "delete-kubernetes-efficiency-report",
+            "get-kubernetes-efficiency-report",
+            "update-kubernetes-efficiency-report",
+            "delete-cost-report",
+            "list-kubernetes-efficiency-reports"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "delete-kubernetes-efficiency-report",
+              "input": {
+                "kubernetes_efficiency_report_token": "kbnts_eff_rprt_abc123"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "a8c07a5e-405e-4b77-9155-3ddaad51c644",
+        "latencyMs": 2792,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Remove the obsolete Vantage Kubernetes efficiency report kbnts_eff_rprt_legacy456 for good.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:mixed",
+          "label": "gpt-5.6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "delete-kubernetes-efficiency-report",
+                "input": {
+                  "kubernetes_efficiency_report_token": "kbnts_eff_rprt_legacy456"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "mixed",
+            "target": "delete-kubernetes-efficiency-report",
+            "toolNames": [
+              "delete-kubernetes-efficiency-report",
+              "get-kubernetes-efficiency-report",
+              "update-kubernetes-efficiency-report",
+              "delete-cost-report",
+              "list-kubernetes-efficiency-reports"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "delete-kubernetes-efficiency-report",
+                "input": {
+                  "kubernetes_efficiency_report_token": "kbnts_eff_rprt_legacy456"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "delete-kubernetes-efficiency-report · inferred · Remove the obsolete Vantage Kubernetes efficiency report kbnts_eff_rprt_legacy456 for good.",
+          "vars": {
+            "prompt": "Remove the obsolete Vantage Kubernetes efficiency report kbnts_eff_rprt_legacy456 for good.",
+            "target": "delete-kubernetes-efficiency-report",
+            "expected": [
+              {
+                "toolName": "delete-kubernetes-efficiency-report",
+                "input": {
+                  "kubernetes_efficiency_report_token": "kbnts_eff_rprt_legacy456"
+                }
+              }
+            ],
+            "distractors": [
+              "get-kubernetes-efficiency-report",
+              "update-kubernetes-efficiency-report",
+              "delete-cost-report",
+              "list-kubernetes-efficiency-reports"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "delete-kubernetes-efficiency-report",
+            "resource": "kubernetes-efficiency-reports",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Remove the obsolete Vantage Kubernetes efficiency report kbnts_eff_rprt_legacy456 for good.",
+          "target": "delete-kubernetes-efficiency-report",
+          "expected": [
+            {
+              "toolName": "delete-kubernetes-efficiency-report",
+              "input": {
+                "kubernetes_efficiency_report_token": "kbnts_eff_rprt_legacy456"
+              }
+            }
+          ],
+          "distractors": [
+            "get-kubernetes-efficiency-report",
+            "update-kubernetes-efficiency-report",
+            "delete-cost-report",
+            "list-kubernetes-efficiency-reports"
+          ]
+        },
+        "metadata": {
+          "tool": "delete-kubernetes-efficiency-report",
+          "resource": "kubernetes-efficiency-reports",
+          "phrasing": "inferred",
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed",
+          "target": "delete-kubernetes-efficiency-report",
+          "toolNames": [
+            "delete-kubernetes-efficiency-report",
+            "get-kubernetes-efficiency-report",
+            "update-kubernetes-efficiency-report",
+            "delete-cost-report",
+            "list-kubernetes-efficiency-reports"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "delete-kubernetes-efficiency-report",
+              "input": {
+                "kubernetes_efficiency_report_token": "kbnts_eff_rprt_legacy456"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 2,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-5.6-luna · mixed",
+        "config": {
+          "modelId": "gpt-5.6-luna"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/kubernetes-efficiency-reports/delete-kubernetes-efficiency-report.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-09-21T21:39:15.120Z",
+    "evaluationCreatedAt": "2026-09-21T21:39:12.259Z"
+  }
+}
