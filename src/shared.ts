@@ -13,6 +13,12 @@ export const serverMeta = {
   version: SERVER_VERSION,
 };
 
+const locationResponseEndpoints = new Set<Path>([
+  "/v2/costs/data_exports",
+  "/v2/kubernetes_efficiency_reports/data_exports",
+  "/v2/unit_costs/data_exports",
+]);
+
 export async function callApi<
   P extends Path,
   M extends SupportedMethods<P>,
@@ -92,6 +98,9 @@ export async function callApi<
   if (response.status === 204) {
     // No content response - return undefined
     return { data: undefined as Response, ok: true };
+  }
+  if (method === "POST" && locationResponseEndpoints.has(endpoint)) {
+    return { data: response.headers.get("Location") as Response, ok: true };
   }
   const responseData = await response.json();
   return { data: responseData as Response, ok: true };
