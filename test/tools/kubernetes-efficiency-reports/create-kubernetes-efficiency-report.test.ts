@@ -38,7 +38,7 @@ const validArguments: InferValidators<Validators> = {
   filter: "kubernetes.namespace = 'production'",
   start_date: "2026-08-01",
   end_date: "2026-08-31",
-  date_interval: undefined,
+  date_interval: "custom",
   aggregated_by: "cost_efficiency",
   date_bucket: "week",
   groupings: ["cluster_id", "namespace", "label:app"],
@@ -87,7 +87,7 @@ const successData: CreateKubernetesEfficiencyReportResponse = {
   user_token: null,
   start_date: "2026-08-01",
   end_date: "2026-08-31",
-  date_interval: null,
+  date_interval: "custom",
   date_bucket: "week",
   aggregated_by: "cost_efficiency",
   groupings: "cluster_id,namespace,label:app",
@@ -110,20 +110,21 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     },
   },
   {
-    name: "rejects incomplete custom dates",
+    name: "requires both dates for a custom interval",
     apiCallHandler: requestsInOrder([]),
     handler: async ({ callExpectingMCPUserError }) => {
       const error = await callExpectingMCPUserError({
         ...minimalArguments,
+        date_interval: "custom",
         start_date: "2026-08-01",
       });
       expect(error.exception).toEqual({
-        errors: [{ message: "start_date and end_date must both be provided together" }],
+        errors: [{ message: "'start_date' and 'end_date' are required for custom date intervals." }],
       });
     },
   },
   {
-    name: "rejects relative and custom dates together",
+    name: "rejects dates with a relative interval",
     apiCallHandler: requestsInOrder([]),
     handler: async ({ callExpectingMCPUserError }) => {
       const error = await callExpectingMCPUserError({
@@ -131,7 +132,20 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         date_interval: "last_month",
       });
       expect(error.exception).toEqual({
-        errors: [{ message: "date_interval cannot be used together with start_date or end_date" }],
+        errors: [{ message: "start_date and end_date require date_interval to be custom" }],
+      });
+    },
+  },
+  {
+    name: "rejects dates without a custom interval",
+    apiCallHandler: requestsInOrder([]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const error = await callExpectingMCPUserError({
+        ...validArguments,
+        date_interval: undefined,
+      });
+      expect(error.exception).toEqual({
+        errors: [{ message: "start_date and end_date require date_interval to be custom" }],
       });
     },
   },

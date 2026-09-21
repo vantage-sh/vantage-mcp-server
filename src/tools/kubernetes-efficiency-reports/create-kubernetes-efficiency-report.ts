@@ -3,13 +3,13 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import {
   aggregatedBySchema,
+  createEndDateSchema,
+  createStartDateSchema,
   dateBucketSchema,
-  dateIntervalSchema,
-  endDateSchema,
+  dateIntervalSchemaForCreate,
   filterSchema,
   groupingsSchema,
-  startDateSchema,
-  validateDateRange,
+  validateCreateDateRange,
 } from "./schemas";
 
 const description = `
@@ -29,15 +29,15 @@ export default registerTool({
     workspace_token: vantageToken("workspace"),
     title: nonempty().describe("Title for the Kubernetes Efficiency Report."),
     filter: filterSchema,
-    start_date: startDateSchema,
-    end_date: endDateSchema,
-    date_interval: dateIntervalSchema,
+    start_date: createStartDateSchema,
+    end_date: createEndDateSchema,
+    date_interval: dateIntervalSchemaForCreate,
     aggregated_by: aggregatedBySchema,
     date_bucket: dateBucketSchema,
     groupings: groupingsSchema,
   },
   async execute(args, ctx) {
-    validateDateRange(args);
+    validateCreateDateRange(args);
 
     const response = await ctx.callVantageApi("/v2/kubernetes_efficiency_reports", args, "POST");
     if (!response.ok) {

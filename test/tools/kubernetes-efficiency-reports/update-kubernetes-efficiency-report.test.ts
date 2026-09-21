@@ -42,9 +42,23 @@ const validArguments: InferValidators<Validators> = {
   groupings: ["cluster_id", "namespace", "label:team"],
 };
 
+const customDateArguments: InferValidators<Validators> = {
+  ...minimalArguments,
+  start_date: "2026-08-01",
+  end_date: "2026-08-31",
+  date_interval: "custom",
+};
+
+const partialDateArguments: InferValidators<Validators> = {
+  ...minimalArguments,
+  start_date: "2026-08-15",
+};
+
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   { name: "minimal valid arguments", data: minimalArguments },
   { name: "all valid arguments", data: validArguments },
+  { name: "custom date range", data: customDateArguments },
+  { name: "partial date update", data: partialDateArguments },
   {
     name: "rejects an invalid aggregation",
     data: { ...validArguments, aggregated_by: "usage" as any },
@@ -73,6 +87,13 @@ const successData: UpdateKubernetesEfficiencyReportResponse = {
   filter: "kubernetes.namespace = 'payments'",
 };
 
+const partialDateSuccessData: UpdateKubernetesEfficiencyReportResponse = {
+  ...successData,
+  start_date: "2026-08-15",
+  end_date: "2026-08-31",
+  date_interval: "custom",
+};
+
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   {
     name: "successful call",
@@ -98,15 +119,65 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     },
   },
   {
-    name: "rejects incomplete custom dates",
+    name: "supports a partial date update while preserving omitted fields",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: `/v2/kubernetes_efficiency_reports/${pathEncode("kbnts_eff_rprt_123")}`,
+        params: {
+          title: undefined,
+          filter: undefined,
+          start_date: "2026-08-15",
+          end_date: undefined,
+          date_interval: undefined,
+          aggregated_by: undefined,
+          date_bucket: undefined,
+          groupings: undefined,
+        } as UpdateKubernetesEfficiencyReportRequest,
+        method: "PUT",
+        result: { ok: true, data: partialDateSuccessData },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      expect(await callExpectingSuccess(partialDateArguments)).toEqual(partialDateSuccessData);
+    },
+  },
+  {
+    name: "requires both dates when changing to a custom interval",
     apiCallHandler: requestsInOrder([]),
     handler: async ({ callExpectingMCPUserError }) => {
       const error = await callExpectingMCPUserError({
         ...minimalArguments,
+        date_interval: "custom",
         start_date: "2026-08-01",
       });
       expect(error.exception).toEqual({
-        errors: [{ message: "start_date and end_date must both be provided together" }],
+        errors: [{ message: "'start_date' and 'end_date' are required when changing to a custom date interval." }],
+      });
+    },
+  },
+  {
+    name: "rejects date updates with a non-custom interval",
+    apiCallHandler: requestsInOrder([]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const error = await callExpectingMCPUserError({
+        ...customDateArguments,
+        date_interval: "last_month",
+      });
+      expect(error.exception).toEqual({
+        errors: [{ message: "start_date and end_date cannot be updated with a non-custom date_interval" }],
+      });
+    },
+  },
+  {
+    name: "rejects reversed updated dates",
+    apiCallHandler: requestsInOrder([]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const error = await callExpectingMCPUserError({
+        ...customDateArguments,
+        start_date: "2026-09-01",
+      });
+      expect(error.exception).toEqual({
+        errors: [{ message: "start_date must be on or before end_date" }],
       });
     },
   },

@@ -38,20 +38,39 @@ export const filterSchema = z
   .string()
   .min(1)
   .optional()
-  .describe("VQL filter using the kubernetes namespace. See the VQL documentation for Kubernetes Efficiency Reports.");
+  .describe(
+    "VQL filter using the `kubernetes.` VQL namespace, including fields such as `kubernetes.cluster_id`, `kubernetes.namespace`, and Kubernetes labels."
+  );
 
-export const startDateSchema = dateValidator(
-  "Custom range start date, YYYY-MM-DD. Provide end_date and omit date_interval."
+export const createStartDateSchema = dateValidator(
+  "Custom range start date, YYYY-MM-DD. Requires date_interval=custom and end_date."
 ).optional();
 
-export const endDateSchema = dateValidator(
-  "Custom range end date, YYYY-MM-DD. Provide start_date and omit date_interval."
+export const createEndDateSchema = dateValidator(
+  "Custom range end date, YYYY-MM-DD. Requires date_interval=custom and start_date."
 ).optional();
 
-export const dateIntervalSchema = z
-  .enum(pastDateIntervalOptions)
+export const updateStartDateSchema = dateValidator(
+  "Updated custom range start date, YYYY-MM-DD. Omit to preserve the existing start date."
+).optional();
+
+export const updateEndDateSchema = dateValidator(
+  "Updated custom range end date, YYYY-MM-DD. Omit to preserve the existing end date."
+).optional();
+
+const dateIntervalSchema = z.enum(pastDateIntervalOptions);
+
+export const dateIntervalSchemaForCreate = dateIntervalSchema
   .optional()
-  .describe("Relative date interval. Incompatible with start_date and end_date; defaults to this_month when omitted.");
+  .describe(
+    "Report date interval. For a custom range, set to custom and provide start_date and end_date. Defaults to this_month when omitted."
+  );
+
+export const dateIntervalSchemaForUpdate = dateIntervalSchema
+  .optional()
+  .describe(
+    "Updated report date interval. When changing to custom, also provide start_date and end_date. Omit to preserve the existing interval."
+  );
 
 export const aggregatedBySchema = z
   .enum(["idle_cost", "amount", "cost_efficiency"])
@@ -69,22 +88,52 @@ type DateRange = {
   date_interval?: (typeof pastDateIntervalOptions)[number];
 };
 
-export function validateDateRange(args: DateRange) {
-  if (!!args.start_date !== !!args.end_date) {
-    throw new MCPUserError({
-      errors: [{ message: "start_date and end_date must both be provided together" }],
-    });
-  }
-
-  if (args.date_interval !== undefined && args.start_date !== undefined) {
-    throw new MCPUserError({
-      errors: [{ message: "date_interval cannot be used together with start_date or end_date" }],
-    });
-  }
-
+function validateDateOrder(args: Pick<DateRange, "start_date" | "end_date">) {
   if (args.start_date !== undefined && args.end_date !== undefined && args.start_date > args.end_date) {
     throw new MCPUserError({
       errors: [{ message: "start_date must be on or before end_date" }],
     });
   }
+}
+
+export function validateCreateDateRange(args: DateRange) {
+  const hasStartDate = args.start_date !== undefined;
+  const hasEndDate = args.end_date !== undefined;
+
+  if (args.date_interval === "custom" && (!hasStartDate || !hasEndDate)) {
+    throw new MCPUserError({
+      errors: [{ message: "'start_date' and 'end_date' are required for custom date intervals." }],
+    });
+  }
+
+  if (args.date_interval !== "custom" && (hasStartDate || hasEndDate)) {
+    throw new MCPUserError({
+      errors: [{ message: "start_date and end_date require date_interval to be custom" }],
+    });
+  }
+
+  validateDateOrder(args);
+}
+
+export function validateUpdateDateRange(args: DateRange) {
+  const hasStartDate = args.start_date !== undefined;
+  const hasEndDate = args.end_date !== undefined;
+
+  if (args.date_interval === "custom" && (!hasStartDate || !hasEndDate)) {
+    throw new MCPUserError({
+      errors: [{ message: "'start_date' and 'end_date' are required when changing to a custom date interval." }],
+    });
+  }
+
+  if (args.date_interval !== undefined && args.date_interval !== "custom" && (hasStartDate || hasEndDate)) {
+    throw new MCPUserError({
+      errors: [{ message: "start_date and end_date cannot be updated with a non-custom date_interval" }],
+    });
+  }
+
+  validateDateOrder(args);
+}
+
+export function validateQueryDateRange(args: Pick<DateRange, "start_date" | "end_date">) {
+  validateDateOrder(args);
 }

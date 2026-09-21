@@ -6,10 +6,18 @@ import { vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { dateBucketSchema, filterSchema, groupingDescription, groupingsSchema, validateDateRange } from "./schemas";
+import {
+  dateBucketSchema,
+  filterSchema,
+  groupingDescription,
+  groupingsSchema,
+  validateQueryDateRange,
+} from "./schemas";
 
 const description = `
 Queries cost, idle cost, and cost-efficiency data for a Kubernetes Efficiency Report. Omit overrides to use the report's saved configuration.
+The accrued_at field is the start date of each aggregation bucket, not necessarily a date within the requested range.
+Weekly buckets follow calendar boundaries in the effective time zone, so querying September 1–7 can return bucket starts of August 31 and September 7.
 `.trim();
 
 export default registerTool({
@@ -23,17 +31,19 @@ export default registerTool({
   },
   args: {
     kubernetes_efficiency_report_token: vantageToken("kubernetes_efficiency_report"),
-    start_date: dateValidator("Start date to query costs from, inclusive, YYYY-MM-DD.").optional(),
-    end_date: dateValidator("End date to query costs through, inclusive, YYYY-MM-DD.").optional(),
-    date_bin: dateBucketSchema.describe("Override the report's configured time bucket."),
+    start_date: dateValidator("Optional start date override for this query, inclusive, YYYY-MM-DD.").optional(),
+    end_date: dateValidator("Optional end date override for this query, inclusive, YYYY-MM-DD.").optional(),
+    date_bin: dateBucketSchema.describe(
+      "Time bucket for this query only. Overrides the saved report's date_bucket without modifying the report."
+    ),
     groupings: groupingsSchema.describe(`${groupingDescription} Overrides the report's saved groupings.`),
-    filter: filterSchema.describe("VQL filter overriding the report's saved filter. Uses the kubernetes namespace."),
+    filter: filterSchema,
     order: z.enum(["asc", "desc"]).optional().describe("Order cost rows by date ascending or descending."),
     page: z.number().int().min(1).optional().default(1).describe("Page number, defaults to 1"),
     limit: z.number().int().min(1).max(2500).optional().default(DEFAULT_LIMIT).describe("Number of cost rows per page"),
   },
   async execute(args, ctx) {
-    validateDateRange(args);
+    validateQueryDateRange(args);
 
     const { kubernetes_efficiency_report_token, ...query } = args;
     const requestParams: Record<string, unknown> = { ...query };

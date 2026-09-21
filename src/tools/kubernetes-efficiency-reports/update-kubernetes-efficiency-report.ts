@@ -5,16 +5,16 @@ import registerTool from "../structure/registerTool";
 import {
   aggregatedBySchema,
   dateBucketSchema,
-  dateIntervalSchema,
-  endDateSchema,
+  dateIntervalSchemaForUpdate,
   filterSchema,
   groupingsSchema,
-  startDateSchema,
-  validateDateRange,
+  updateEndDateSchema,
+  updateStartDateSchema,
+  validateUpdateDateRange,
 } from "./schemas";
 
 const description = `
-Updates a saved Kubernetes Efficiency Report.
+Updates a saved Kubernetes Efficiency Report. Omitted fields preserve the existing report configuration.
 `.trim();
 
 export default registerTool({
@@ -30,15 +30,15 @@ export default registerTool({
     kubernetes_efficiency_report_token: vantageToken("kubernetes_efficiency_report"),
     title: nonempty().optional().describe("Updated title for the Kubernetes Efficiency Report."),
     filter: filterSchema,
-    start_date: startDateSchema,
-    end_date: endDateSchema,
-    date_interval: dateIntervalSchema,
+    start_date: updateStartDateSchema,
+    end_date: updateEndDateSchema,
+    date_interval: dateIntervalSchemaForUpdate,
     aggregated_by: aggregatedBySchema,
     date_bucket: dateBucketSchema,
     groupings: groupingsSchema,
   },
   async execute(args, ctx) {
-    validateDateRange(args);
+    validateUpdateDateRange(args);
 
     const { kubernetes_efficiency_report_token, ...body } = args;
     const response = await ctx.callVantageApi(

@@ -136,15 +136,43 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     },
   },
   {
-    name: "rejects incomplete date ranges",
+    name: "supports a start-date-only override",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: `/v2/kubernetes_efficiency_reports/${pathEncode("kbnts_eff_rprt_123")}/costs`,
+        params: {
+          start_date: "2026-08-01",
+          end_date: undefined,
+          date_bin: undefined,
+          groupings: undefined,
+          filter: undefined,
+          order: undefined,
+          page: 1,
+          limit: DEFAULT_LIMIT,
+        } as GetKubernetesEfficiencyReportCostsRequest,
+        method: "GET",
+        result: { ok: true, data: { ...successData, links: {} } },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const result = await callExpectingSuccess({
+        ...minimalArguments,
+        start_date: "2026-08-01",
+      });
+      expect(result.costs).toEqual(successData.costs);
+    },
+  },
+  {
+    name: "rejects reversed date overrides",
     apiCallHandler: requestsInOrder([]),
     handler: async ({ callExpectingMCPUserError }) => {
       const error = await callExpectingMCPUserError({
         ...minimalArguments,
-        start_date: "2026-08-01",
+        start_date: "2026-09-01",
+        end_date: "2026-08-01",
       });
       expect(error.exception).toEqual({
-        errors: [{ message: "start_date and end_date must both be provided together" }],
+        errors: [{ message: "start_date must be on or before end_date" }],
       });
     },
   },
