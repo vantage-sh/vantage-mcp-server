@@ -19,7 +19,7 @@ export default function generateTests() {
         expected: [
           {
             toolName: TARGET,
-            input: { q: "Production", workspace_token: "wrkspc_abc123", page: 2 },
+            input: { q: "Production", workspace_token: "wrkspc_abc123", page: 2, limit: 128 },
           },
         ],
       },
@@ -31,7 +31,7 @@ export default function generateTests() {
         expected: [
           {
             toolName: TARGET,
-            input: { workspace_token: "wrkspc_platform789", page: 1 },
+            input: { workspace_token: "wrkspc_platform789", page: 1, limit: 128 },
           },
         ],
       },

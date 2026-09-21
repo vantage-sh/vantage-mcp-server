@@ -1,0 +1,456 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-09-21T21:42:25.548Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "3755ad48-e70a-43e8-8a58-364e875ee4c6",
+        "latencyMs": 1804,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use list-kubernetes-efficiency-reports to search page 2 for reports titled Production in workspace wrkspc_abc123.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:mixed",
+          "label": "gpt-5.6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "list-kubernetes-efficiency-reports",
+                "input": {
+                  "q": "Production",
+                  "workspace_token": "wrkspc_abc123",
+                  "page": 2,
+                  "limit": 128
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "mixed",
+            "target": "list-kubernetes-efficiency-reports",
+            "toolNames": [
+              "list-kubernetes-efficiency-reports",
+              "get-kubernetes-efficiency-report",
+              "query-kubernetes-efficiency-report-costs",
+              "list-cost-reports",
+              "list-network-flow-reports"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "list-kubernetes-efficiency-reports",
+                "input": {
+                  "q": "Production",
+                  "workspace_token": "wrkspc_abc123",
+                  "page": 2,
+                  "limit": 128
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "list-kubernetes-efficiency-reports · direct · Use list-kubernetes-efficiency-reports to search page 2 for reports titled Production in workspace wrkspc_abc123.",
+          "vars": {
+            "prompt": "Use list-kubernetes-efficiency-reports to search page 2 for reports titled Production in workspace wrkspc_abc123.",
+            "target": "list-kubernetes-efficiency-reports",
+            "expected": [
+              {
+                "toolName": "list-kubernetes-efficiency-reports",
+                "input": {
+                  "q": "Production",
+                  "workspace_token": "wrkspc_abc123",
+                  "page": 2,
+                  "limit": 128
+                }
+              }
+            ],
+            "distractors": [
+              "get-kubernetes-efficiency-report",
+              "query-kubernetes-efficiency-report-costs",
+              "list-cost-reports",
+              "list-network-flow-reports"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "list-kubernetes-efficiency-reports",
+            "resource": "kubernetes-efficiency-reports",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use list-kubernetes-efficiency-reports to search page 2 for reports titled Production in workspace wrkspc_abc123.",
+          "target": "list-kubernetes-efficiency-reports",
+          "expected": [
+            {
+              "toolName": "list-kubernetes-efficiency-reports",
+              "input": {
+                "q": "Production",
+                "workspace_token": "wrkspc_abc123",
+                "page": 2,
+                "limit": 128
+              }
+            }
+          ],
+          "distractors": [
+            "get-kubernetes-efficiency-report",
+            "query-kubernetes-efficiency-report-costs",
+            "list-cost-reports",
+            "list-network-flow-reports"
+          ]
+        },
+        "metadata": {
+          "tool": "list-kubernetes-efficiency-reports",
+          "resource": "kubernetes-efficiency-reports",
+          "phrasing": "direct",
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed",
+          "target": "list-kubernetes-efficiency-reports",
+          "toolNames": [
+            "list-kubernetes-efficiency-reports",
+            "get-kubernetes-efficiency-report",
+            "query-kubernetes-efficiency-report-costs",
+            "list-cost-reports",
+            "list-network-flow-reports"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "list-kubernetes-efficiency-reports",
+              "input": {
+                "q": "Production",
+                "workspace_token": "wrkspc_abc123",
+                "page": 2,
+                "limit": 128
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "ec374927-ed89-43d8-8804-1e921384d694",
+        "latencyMs": 1242,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Which saved Vantage Kubernetes efficiency reports are available in workspace wrkspc_platform789? Show the first page.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:mixed",
+          "label": "gpt-5.6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "list-kubernetes-efficiency-reports",
+                "input": {
+                  "workspace_token": "wrkspc_platform789",
+                  "page": 1,
+                  "limit": 128
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "mixed",
+            "target": "list-kubernetes-efficiency-reports",
+            "toolNames": [
+              "list-kubernetes-efficiency-reports",
+              "get-kubernetes-efficiency-report",
+              "query-kubernetes-efficiency-report-costs",
+              "list-cost-reports",
+              "list-network-flow-reports"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "list-kubernetes-efficiency-reports",
+                "input": {
+                  "workspace_token": "wrkspc_platform789",
+                  "page": 1,
+                  "limit": 128
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "list-kubernetes-efficiency-reports · inferred · Which saved Vantage Kubernetes efficiency reports are available in workspace wrkspc_platform789? Show the first page.",
+          "vars": {
+            "prompt": "Which saved Vantage Kubernetes efficiency reports are available in workspace wrkspc_platform789? Show the first page.",
+            "target": "list-kubernetes-efficiency-reports",
+            "expected": [
+              {
+                "toolName": "list-kubernetes-efficiency-reports",
+                "input": {
+                  "workspace_token": "wrkspc_platform789",
+                  "page": 1,
+                  "limit": 128
+                }
+              }
+            ],
+            "distractors": [
+              "get-kubernetes-efficiency-report",
+              "query-kubernetes-efficiency-report-costs",
+              "list-cost-reports",
+              "list-network-flow-reports"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "list-kubernetes-efficiency-reports",
+            "resource": "kubernetes-efficiency-reports",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Which saved Vantage Kubernetes efficiency reports are available in workspace wrkspc_platform789? Show the first page.",
+          "target": "list-kubernetes-efficiency-reports",
+          "expected": [
+            {
+              "toolName": "list-kubernetes-efficiency-reports",
+              "input": {
+                "workspace_token": "wrkspc_platform789",
+                "page": 1,
+                "limit": 128
+              }
+            }
+          ],
+          "distractors": [
+            "get-kubernetes-efficiency-report",
+            "query-kubernetes-efficiency-report-costs",
+            "list-cost-reports",
+            "list-network-flow-reports"
+          ]
+        },
+        "metadata": {
+          "tool": "list-kubernetes-efficiency-reports",
+          "resource": "kubernetes-efficiency-reports",
+          "phrasing": "inferred",
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed",
+          "target": "list-kubernetes-efficiency-reports",
+          "toolNames": [
+            "list-kubernetes-efficiency-reports",
+            "get-kubernetes-efficiency-report",
+            "query-kubernetes-efficiency-report-costs",
+            "list-cost-reports",
+            "list-network-flow-reports"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "list-kubernetes-efficiency-reports",
+              "input": {
+                "workspace_token": "wrkspc_platform789",
+                "page": 1,
+                "limit": 128
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 2,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-5.6-luna · mixed",
+        "config": {
+          "modelId": "gpt-5.6-luna"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/kubernetes-efficiency-reports/list-kubernetes-efficiency-reports.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-09-21T21:42:25.203Z",
+    "evaluationCreatedAt": "2026-09-21T21:42:23.313Z"
+  }
+}

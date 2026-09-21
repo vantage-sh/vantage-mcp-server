@@ -1,0 +1,506 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-09-21T21:38:35.063Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "773d9dc7-5e31-42ad-9bbb-7dfda4a3210c",
+        "latencyMs": 3237,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use create-kubernetes-efficiency-report to create Production K8s Efficiency in workspace wrkspc_abc123 for last month, grouped by cluster_id, namespace, and label:app, with costs aggregated by cost efficiency.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:mixed",
+          "label": "gpt-5.6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "create-kubernetes-efficiency-report",
+                "input": {
+                  "workspace_token": "wrkspc_abc123",
+                  "title": "Production K8s Efficiency",
+                  "date_interval": "last_month",
+                  "aggregated_by": "cost_efficiency",
+                  "groupings": [
+                    "cluster_id",
+                    "namespace",
+                    "label:app"
+                  ]
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "mixed",
+            "target": "create-kubernetes-efficiency-report",
+            "toolNames": [
+              "create-kubernetes-efficiency-report",
+              "update-kubernetes-efficiency-report",
+              "query-kubernetes-efficiency-report-costs",
+              "create-cost-report",
+              "list-kubernetes-efficiency-reports"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "create-kubernetes-efficiency-report",
+                "input": {
+                  "workspace_token": "wrkspc_abc123",
+                  "title": "Production K8s Efficiency",
+                  "date_interval": "last_month",
+                  "aggregated_by": "cost_efficiency",
+                  "groupings": [
+                    "cluster_id",
+                    "namespace",
+                    "label:app"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "create-kubernetes-efficiency-report · direct · Use create-kubernetes-efficiency-report to create Production K8s Efficiency in workspace wrkspc_abc123 for last month, grouped by cluster_id, namespace, and label:app, with costs aggregated by cost efficiency.",
+          "vars": {
+            "prompt": "Use create-kubernetes-efficiency-report to create Production K8s Efficiency in workspace wrkspc_abc123 for last month, grouped by cluster_id, namespace, and label:app, with costs aggregated by cost efficiency.",
+            "target": "create-kubernetes-efficiency-report",
+            "expected": [
+              {
+                "toolName": "create-kubernetes-efficiency-report",
+                "input": {
+                  "workspace_token": "wrkspc_abc123",
+                  "title": "Production K8s Efficiency",
+                  "date_interval": "last_month",
+                  "groupings": [
+                    "cluster_id",
+                    "namespace",
+                    "label:app"
+                  ],
+                  "aggregated_by": "cost_efficiency"
+                }
+              }
+            ],
+            "distractors": [
+              "update-kubernetes-efficiency-report",
+              "query-kubernetes-efficiency-report-costs",
+              "create-cost-report",
+              "list-kubernetes-efficiency-reports"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "create-kubernetes-efficiency-report",
+            "resource": "kubernetes-efficiency-reports",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use create-kubernetes-efficiency-report to create Production K8s Efficiency in workspace wrkspc_abc123 for last month, grouped by cluster_id, namespace, and label:app, with costs aggregated by cost efficiency.",
+          "target": "create-kubernetes-efficiency-report",
+          "expected": [
+            {
+              "toolName": "create-kubernetes-efficiency-report",
+              "input": {
+                "workspace_token": "wrkspc_abc123",
+                "title": "Production K8s Efficiency",
+                "date_interval": "last_month",
+                "groupings": [
+                  "cluster_id",
+                  "namespace",
+                  "label:app"
+                ],
+                "aggregated_by": "cost_efficiency"
+              }
+            }
+          ],
+          "distractors": [
+            "update-kubernetes-efficiency-report",
+            "query-kubernetes-efficiency-report-costs",
+            "create-cost-report",
+            "list-kubernetes-efficiency-reports"
+          ]
+        },
+        "metadata": {
+          "tool": "create-kubernetes-efficiency-report",
+          "resource": "kubernetes-efficiency-reports",
+          "phrasing": "direct",
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed",
+          "target": "create-kubernetes-efficiency-report",
+          "toolNames": [
+            "create-kubernetes-efficiency-report",
+            "update-kubernetes-efficiency-report",
+            "query-kubernetes-efficiency-report-costs",
+            "create-cost-report",
+            "list-kubernetes-efficiency-reports"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "create-kubernetes-efficiency-report",
+              "input": {
+                "workspace_token": "wrkspc_abc123",
+                "title": "Production K8s Efficiency",
+                "date_interval": "last_month",
+                "aggregated_by": "cost_efficiency",
+                "groupings": [
+                  "cluster_id",
+                  "namespace",
+                  "label:app"
+                ]
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "a9730b2e-7e7c-43b0-a84d-236b58140582",
+        "latencyMs": 3134,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Set up a saved Vantage Kubernetes efficiency report named Namespace Idle Spend in workspace wrkspc_abc123. Use the last 30 days, show daily data, group by namespace, and rank it by idle cost.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-5.6-luna:mixed",
+          "label": "gpt-5.6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "create-kubernetes-efficiency-report",
+                "input": {
+                  "workspace_token": "wrkspc_abc123",
+                  "title": "Namespace Idle Spend",
+                  "date_interval": "last_30_days",
+                  "aggregated_by": "idle_cost",
+                  "date_bucket": "day",
+                  "groupings": [
+                    "namespace"
+                  ]
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-5.6-luna",
+            "mode": "mixed",
+            "target": "create-kubernetes-efficiency-report",
+            "toolNames": [
+              "create-kubernetes-efficiency-report",
+              "update-kubernetes-efficiency-report",
+              "query-kubernetes-efficiency-report-costs",
+              "create-cost-report",
+              "list-kubernetes-efficiency-reports"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "create-kubernetes-efficiency-report",
+                "input": {
+                  "workspace_token": "wrkspc_abc123",
+                  "title": "Namespace Idle Spend",
+                  "date_interval": "last_30_days",
+                  "aggregated_by": "idle_cost",
+                  "date_bucket": "day",
+                  "groupings": [
+                    "namespace"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "create-kubernetes-efficiency-report · inferred · Set up a saved Vantage Kubernetes efficiency report named Namespace Idle Spend in workspace wrkspc_abc123. Use the last 30 days, show daily data, group by namespace, and rank it by idle cost.",
+          "vars": {
+            "prompt": "Set up a saved Vantage Kubernetes efficiency report named Namespace Idle Spend in workspace wrkspc_abc123. Use the last 30 days, show daily data, group by namespace, and rank it by idle cost.",
+            "target": "create-kubernetes-efficiency-report",
+            "expected": [
+              {
+                "toolName": "create-kubernetes-efficiency-report",
+                "input": {
+                  "workspace_token": "wrkspc_abc123",
+                  "title": "Namespace Idle Spend",
+                  "date_interval": "last_30_days",
+                  "date_bucket": "day",
+                  "groupings": [
+                    "namespace"
+                  ],
+                  "aggregated_by": "idle_cost"
+                }
+              }
+            ],
+            "distractors": [
+              "update-kubernetes-efficiency-report",
+              "query-kubernetes-efficiency-report-costs",
+              "create-cost-report",
+              "list-kubernetes-efficiency-reports"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "create-kubernetes-efficiency-report",
+            "resource": "kubernetes-efficiency-reports",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Set up a saved Vantage Kubernetes efficiency report named Namespace Idle Spend in workspace wrkspc_abc123. Use the last 30 days, show daily data, group by namespace, and rank it by idle cost.",
+          "target": "create-kubernetes-efficiency-report",
+          "expected": [
+            {
+              "toolName": "create-kubernetes-efficiency-report",
+              "input": {
+                "workspace_token": "wrkspc_abc123",
+                "title": "Namespace Idle Spend",
+                "date_interval": "last_30_days",
+                "date_bucket": "day",
+                "groupings": [
+                  "namespace"
+                ],
+                "aggregated_by": "idle_cost"
+              }
+            }
+          ],
+          "distractors": [
+            "update-kubernetes-efficiency-report",
+            "query-kubernetes-efficiency-report-costs",
+            "create-cost-report",
+            "list-kubernetes-efficiency-reports"
+          ]
+        },
+        "metadata": {
+          "tool": "create-kubernetes-efficiency-report",
+          "resource": "kubernetes-efficiency-reports",
+          "phrasing": "inferred",
+          "modelId": "gpt-5.6-luna",
+          "mode": "mixed",
+          "target": "create-kubernetes-efficiency-report",
+          "toolNames": [
+            "create-kubernetes-efficiency-report",
+            "update-kubernetes-efficiency-report",
+            "query-kubernetes-efficiency-report-costs",
+            "create-cost-report",
+            "list-kubernetes-efficiency-reports"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "create-kubernetes-efficiency-report",
+              "input": {
+                "workspace_token": "wrkspc_abc123",
+                "title": "Namespace Idle Spend",
+                "date_interval": "last_30_days",
+                "aggregated_by": "idle_cost",
+                "date_bucket": "day",
+                "groupings": [
+                  "namespace"
+                ]
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 2,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-5.6-luna · mixed",
+        "config": {
+          "modelId": "gpt-5.6-luna"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/kubernetes-efficiency-reports/create-kubernetes-efficiency-report.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-09-21T21:38:34.791Z",
+    "evaluationCreatedAt": "2026-09-21T21:38:31.470Z"
+  }
+}
