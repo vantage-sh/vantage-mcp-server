@@ -93,9 +93,6 @@ export async function callApi<
     // No content response - return undefined
     return { data: undefined as Response, ok: true };
   }
-  if (method === "POST" && locationResponseEndpoints.has(endpoint)) {
-    return { data: response.headers.get("Location") as Response, ok: true };
-  }
   const responseData = await response.json();
   return { data: responseData as Response, ok: true };
 }
