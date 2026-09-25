@@ -1,0 +1,442 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-09-25T20:58:57.330Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "c4d19ce8-e21e-49bd-961b-df1bc2f5b189",
+        "latencyMs": 1410,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use list-saved-filters to search page 2 for saved filters titled AWS in workspace wrkspc_abc123.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "list-saved-filters",
+                "input": {
+                  "page": 2,
+                  "q": "AWS",
+                  "workspace_token": "wrkspc_abc123"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "list-saved-filters",
+            "toolNames": [
+              "list-saved-filters",
+              "get-saved-filter",
+              "list-cost-reports",
+              "list-recommendation-views",
+              "list-kubernetes-efficiency-reports"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "list-saved-filters",
+                "input": {
+                  "page": 2,
+                  "q": "AWS",
+                  "workspace_token": "wrkspc_abc123"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "list-saved-filters · direct · Use list-saved-filters to search page 2 for saved filters titled AWS in workspace wrkspc_abc123.",
+          "vars": {
+            "prompt": "Use list-saved-filters to search page 2 for saved filters titled AWS in workspace wrkspc_abc123.",
+            "target": "list-saved-filters",
+            "expected": [
+              {
+                "toolName": "list-saved-filters",
+                "input": {
+                  "page": 2,
+                  "q": "AWS",
+                  "workspace_token": "wrkspc_abc123"
+                }
+              }
+            ],
+            "distractors": [
+              "get-saved-filter",
+              "list-cost-reports",
+              "list-recommendation-views"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "list-saved-filters",
+            "resource": "saved-filters",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use list-saved-filters to search page 2 for saved filters titled AWS in workspace wrkspc_abc123.",
+          "target": "list-saved-filters",
+          "expected": [
+            {
+              "toolName": "list-saved-filters",
+              "input": {
+                "page": 2,
+                "q": "AWS",
+                "workspace_token": "wrkspc_abc123"
+              }
+            }
+          ],
+          "distractors": [
+            "get-saved-filter",
+            "list-cost-reports",
+            "list-recommendation-views"
+          ]
+        },
+        "metadata": {
+          "tool": "list-saved-filters",
+          "resource": "saved-filters",
+          "phrasing": "direct",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "list-saved-filters",
+          "toolNames": [
+            "list-saved-filters",
+            "get-saved-filter",
+            "list-cost-reports",
+            "list-recommendation-views",
+            "list-kubernetes-efficiency-reports"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "list-saved-filters",
+              "input": {
+                "page": 2,
+                "q": "AWS",
+                "workspace_token": "wrkspc_abc123"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "04394389-1962-4238-9b5d-35534404ee85",
+        "latencyMs": 1408,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Show me the first page of reusable Cost Report filters in Vantage for workspace wrkspc_abc123.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "list-saved-filters",
+                "input": {
+                  "page": 1,
+                  "workspace_token": "wrkspc_abc123"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "list-saved-filters",
+            "toolNames": [
+              "list-saved-filters",
+              "get-saved-filter",
+              "list-cost-reports",
+              "list-recommendation-views",
+              "list-kubernetes-efficiency-reports"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "list-saved-filters",
+                "input": {
+                  "page": 1,
+                  "workspace_token": "wrkspc_abc123"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "list-saved-filters · inferred · Show me the first page of reusable Cost Report filters in Vantage for workspace wrkspc_abc123.",
+          "vars": {
+            "prompt": "Show me the first page of reusable Cost Report filters in Vantage for workspace wrkspc_abc123.",
+            "target": "list-saved-filters",
+            "expected": [
+              {
+                "toolName": "list-saved-filters",
+                "input": {
+                  "page": 1,
+                  "workspace_token": "wrkspc_abc123"
+                }
+              }
+            ],
+            "distractors": [
+              "get-saved-filter",
+              "list-cost-reports",
+              "list-recommendation-views"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "list-saved-filters",
+            "resource": "saved-filters",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Show me the first page of reusable Cost Report filters in Vantage for workspace wrkspc_abc123.",
+          "target": "list-saved-filters",
+          "expected": [
+            {
+              "toolName": "list-saved-filters",
+              "input": {
+                "page": 1,
+                "workspace_token": "wrkspc_abc123"
+              }
+            }
+          ],
+          "distractors": [
+            "get-saved-filter",
+            "list-cost-reports",
+            "list-recommendation-views"
+          ]
+        },
+        "metadata": {
+          "tool": "list-saved-filters",
+          "resource": "saved-filters",
+          "phrasing": "inferred",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "list-saved-filters",
+          "toolNames": [
+            "list-saved-filters",
+            "get-saved-filter",
+            "list-cost-reports",
+            "list-recommendation-views",
+            "list-kubernetes-efficiency-reports"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "list-saved-filters",
+              "input": {
+                "page": 1,
+                "workspace_token": "wrkspc_abc123"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 2,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-6-luna · mixed",
+        "config": {
+          "modelId": "gpt-6-luna"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/saved-filters/list-saved-filters.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-09-25T20:58:57.028Z",
+    "evaluationCreatedAt": "2026-09-25T20:58:55.557Z"
+  }
+}

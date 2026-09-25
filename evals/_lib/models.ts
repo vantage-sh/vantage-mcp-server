@@ -37,6 +37,8 @@ export const APPROVED_MODELS: readonly ApprovedModel[] = [
   { id: "claude-sonnet-5", provider: "anthropic", efforts: ANTHROPIC_EFFORTS },
   { id: "claude-opus-5", provider: "anthropic", efforts: ANTHROPIC_EFFORTS },
   { id: "claude-haiku-4-5", provider: "anthropic", efforts: [] },
+  { id: "gpt-6-luna", provider: "openai", efforts: OPENAI_EFFORTS },
+  { id: "gpt-6-sol", provider: "openai", efforts: OPENAI_EFFORTS },
 ];
 
 export type ModelHandle = {

@@ -1,0 +1,427 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-09-25T20:58:28.917Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "e602f51b-fd25-4d16-b2da-641fefa0e21c",
+        "latencyMs": 2605,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use get-saved-filter to inspect svd_fltr_abc123.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "get-saved-filter",
+                "input": {
+                  "saved_filter_token": "svd_fltr_abc123"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "get-saved-filter",
+            "toolNames": [
+              "get-saved-filter",
+              "list-saved-filters",
+              "get-cost-report",
+              "get-recommendation-view",
+              "get-team"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "get-saved-filter",
+                "input": {
+                  "saved_filter_token": "svd_fltr_abc123"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "get-saved-filter · direct · Use get-saved-filter to inspect svd_fltr_abc123.",
+          "vars": {
+            "prompt": "Use get-saved-filter to inspect svd_fltr_abc123.",
+            "target": "get-saved-filter",
+            "expected": [
+              {
+                "toolName": "get-saved-filter",
+                "input": {
+                  "saved_filter_token": "svd_fltr_abc123"
+                }
+              }
+            ],
+            "distractors": [
+              "list-saved-filters",
+              "get-cost-report",
+              "get-recommendation-view"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "get-saved-filter",
+            "resource": "saved-filters",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use get-saved-filter to inspect svd_fltr_abc123.",
+          "target": "get-saved-filter",
+          "expected": [
+            {
+              "toolName": "get-saved-filter",
+              "input": {
+                "saved_filter_token": "svd_fltr_abc123"
+              }
+            }
+          ],
+          "distractors": [
+            "list-saved-filters",
+            "get-cost-report",
+            "get-recommendation-view"
+          ]
+        },
+        "metadata": {
+          "tool": "get-saved-filter",
+          "resource": "saved-filters",
+          "phrasing": "direct",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "get-saved-filter",
+          "toolNames": [
+            "get-saved-filter",
+            "list-saved-filters",
+            "get-cost-report",
+            "get-recommendation-view",
+            "get-team"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "get-saved-filter",
+              "input": {
+                "saved_filter_token": "svd_fltr_abc123"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "1afe0cd6-f066-43e2-ae51-228df0d36423",
+        "latencyMs": 1254,
+        "namedScores": {},
+        "prompt": {
+          "raw": "What VQL query is stored in Vantage Cost Report filter svd_fltr_abc123?",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "get-saved-filter",
+                "input": {
+                  "saved_filter_token": "svd_fltr_abc123"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "get-saved-filter",
+            "toolNames": [
+              "get-saved-filter",
+              "list-saved-filters",
+              "get-cost-report",
+              "get-recommendation-view",
+              "get-team"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "get-saved-filter",
+                "input": {
+                  "saved_filter_token": "svd_fltr_abc123"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "get-saved-filter · inferred · What VQL query is stored in Vantage Cost Report filter svd_fltr_abc123?",
+          "vars": {
+            "prompt": "What VQL query is stored in Vantage Cost Report filter svd_fltr_abc123?",
+            "target": "get-saved-filter",
+            "expected": [
+              {
+                "toolName": "get-saved-filter",
+                "input": {
+                  "saved_filter_token": "svd_fltr_abc123"
+                }
+              }
+            ],
+            "distractors": [
+              "list-saved-filters",
+              "get-cost-report",
+              "get-recommendation-view"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "get-saved-filter",
+            "resource": "saved-filters",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "What VQL query is stored in Vantage Cost Report filter svd_fltr_abc123?",
+          "target": "get-saved-filter",
+          "expected": [
+            {
+              "toolName": "get-saved-filter",
+              "input": {
+                "saved_filter_token": "svd_fltr_abc123"
+              }
+            }
+          ],
+          "distractors": [
+            "list-saved-filters",
+            "get-cost-report",
+            "get-recommendation-view"
+          ]
+        },
+        "metadata": {
+          "tool": "get-saved-filter",
+          "resource": "saved-filters",
+          "phrasing": "inferred",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "get-saved-filter",
+          "toolNames": [
+            "get-saved-filter",
+            "list-saved-filters",
+            "get-cost-report",
+            "get-recommendation-view",
+            "get-team"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "get-saved-filter",
+              "input": {
+                "saved_filter_token": "svd_fltr_abc123"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 2,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-6-luna · mixed",
+        "config": {
+          "modelId": "gpt-6-luna"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/saved-filters/get-saved-filter.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-09-25T20:58:28.634Z",
+    "evaluationCreatedAt": "2026-09-25T20:58:25.973Z"
+  }
+}
