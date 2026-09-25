@@ -1,24 +1,24 @@
 import type { ExecutionContext } from "@cloudflare/workers-types";
 
-type HandlerWithFetch = {
-  fetch(request: Request, env?: unknown, ctx?: ExecutionContext): Promise<Response>;
+type HandlerWithFetch<Env> = {
+  fetch(request: Request, env: Env, ctx: ExecutionContext): Response | Promise<Response>;
 };
 
 // These options mimic the OAuthProviderOptions from @cloudflare/workers-oauth-provider
-export type HeaderAuthProviderOptions = {
+export type HeaderAuthProviderOptions<Env> = {
   apiRoute: string | string[];
-  defaultHandler: HandlerWithFetch;
-  apiHandler: HandlerWithFetch;
+  defaultHandler: HandlerWithFetch<Env>;
+  apiHandler: HandlerWithFetch<Env>;
 };
 
-export class HeaderAuthProvider {
-  private options: HeaderAuthProviderOptions;
+export class HeaderAuthProvider<Env> {
+  private options: HeaderAuthProviderOptions<Env>;
 
-  constructor(options: HeaderAuthProviderOptions) {
+  constructor(options: HeaderAuthProviderOptions<Env>) {
     this.options = options;
   }
 
-  async fetch(request: Request, env: unknown, ctx: ExecutionContext): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
     if (this.matchesApiRoute(url)) {
