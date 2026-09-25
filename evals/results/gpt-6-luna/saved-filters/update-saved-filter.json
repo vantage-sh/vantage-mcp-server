@@ -1,0 +1,442 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-09-25T20:59:10.477Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "57fb2903-578f-44b1-a36c-13ad6150cbb6",
+        "latencyMs": 1500,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use update-saved-filter to rename svd_fltr_abc123 to Azure Spend and set its VQL filter to (costs.provider = 'azure').",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "update-saved-filter",
+                "input": {
+                  "saved_filter_token": "svd_fltr_abc123",
+                  "title": "Azure Spend",
+                  "filter": "(costs.provider = 'azure')"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "update-saved-filter",
+            "toolNames": [
+              "update-saved-filter",
+              "create-saved-filter",
+              "get-saved-filter",
+              "update-cost-report",
+              "list-tag-values"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "update-saved-filter",
+                "input": {
+                  "saved_filter_token": "svd_fltr_abc123",
+                  "title": "Azure Spend",
+                  "filter": "(costs.provider = 'azure')"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "update-saved-filter · direct · Use update-saved-filter to rename svd_fltr_abc123 to Azure Spend and set its VQL filter to (costs.provider = 'azure').",
+          "vars": {
+            "prompt": "Use update-saved-filter to rename svd_fltr_abc123 to Azure Spend and set its VQL filter to (costs.provider = 'azure').",
+            "target": "update-saved-filter",
+            "expected": [
+              {
+                "toolName": "update-saved-filter",
+                "input": {
+                  "saved_filter_token": "svd_fltr_abc123",
+                  "title": "Azure Spend",
+                  "filter": "(costs.provider = 'azure')"
+                }
+              }
+            ],
+            "distractors": [
+              "create-saved-filter",
+              "get-saved-filter",
+              "update-cost-report"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "update-saved-filter",
+            "resource": "saved-filters",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use update-saved-filter to rename svd_fltr_abc123 to Azure Spend and set its VQL filter to (costs.provider = 'azure').",
+          "target": "update-saved-filter",
+          "expected": [
+            {
+              "toolName": "update-saved-filter",
+              "input": {
+                "saved_filter_token": "svd_fltr_abc123",
+                "title": "Azure Spend",
+                "filter": "(costs.provider = 'azure')"
+              }
+            }
+          ],
+          "distractors": [
+            "create-saved-filter",
+            "get-saved-filter",
+            "update-cost-report"
+          ]
+        },
+        "metadata": {
+          "tool": "update-saved-filter",
+          "resource": "saved-filters",
+          "phrasing": "direct",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "update-saved-filter",
+          "toolNames": [
+            "update-saved-filter",
+            "create-saved-filter",
+            "get-saved-filter",
+            "update-cost-report",
+            "list-tag-values"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "update-saved-filter",
+              "input": {
+                "saved_filter_token": "svd_fltr_abc123",
+                "title": "Azure Spend",
+                "filter": "(costs.provider = 'azure')"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "13094876-1cbc-47d7-8505-2330da2bcb3a",
+        "latencyMs": 1900,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Change the Vantage Cost Report filter svd_fltr_abc123 so its saved VQL is (costs.provider = 'aws').",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "update-saved-filter",
+                "input": {
+                  "saved_filter_token": "svd_fltr_abc123",
+                  "filter": "(costs.provider = 'aws')"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "update-saved-filter",
+            "toolNames": [
+              "update-saved-filter",
+              "create-saved-filter",
+              "get-saved-filter",
+              "update-cost-report",
+              "list-tag-values"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "update-saved-filter",
+                "input": {
+                  "saved_filter_token": "svd_fltr_abc123",
+                  "filter": "(costs.provider = 'aws')"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "update-saved-filter · inferred · Change the Vantage Cost Report filter svd_fltr_abc123 so its saved VQL is (costs.provider = 'aws').",
+          "vars": {
+            "prompt": "Change the Vantage Cost Report filter svd_fltr_abc123 so its saved VQL is (costs.provider = 'aws').",
+            "target": "update-saved-filter",
+            "expected": [
+              {
+                "toolName": "update-saved-filter",
+                "input": {
+                  "saved_filter_token": "svd_fltr_abc123",
+                  "filter": "(costs.provider = 'aws')"
+                }
+              }
+            ],
+            "distractors": [
+              "create-saved-filter",
+              "get-saved-filter",
+              "update-cost-report"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "update-saved-filter",
+            "resource": "saved-filters",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Change the Vantage Cost Report filter svd_fltr_abc123 so its saved VQL is (costs.provider = 'aws').",
+          "target": "update-saved-filter",
+          "expected": [
+            {
+              "toolName": "update-saved-filter",
+              "input": {
+                "saved_filter_token": "svd_fltr_abc123",
+                "filter": "(costs.provider = 'aws')"
+              }
+            }
+          ],
+          "distractors": [
+            "create-saved-filter",
+            "get-saved-filter",
+            "update-cost-report"
+          ]
+        },
+        "metadata": {
+          "tool": "update-saved-filter",
+          "resource": "saved-filters",
+          "phrasing": "inferred",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "update-saved-filter",
+          "toolNames": [
+            "update-saved-filter",
+            "create-saved-filter",
+            "get-saved-filter",
+            "update-cost-report",
+            "list-tag-values"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "update-saved-filter",
+              "input": {
+                "saved_filter_token": "svd_fltr_abc123",
+                "filter": "(costs.provider = 'aws')"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 2,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-6-luna · mixed",
+        "config": {
+          "modelId": "gpt-6-luna"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/saved-filters/update-saved-filter.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-09-25T20:59:10.174Z",
+    "evaluationCreatedAt": "2026-09-25T20:59:08.211Z"
+  }
+}

@@ -10,11 +10,11 @@ export default function generateTests() {
     directPrompts: [
       {
         input:
-          "Use create-saved-filter to create AWS Spend in workspace wrkspc_abc123 with VQL filter costs.provider = 'aws'.",
+          "Use create-saved-filter to create AWS Spend in workspace wrkspc_abc123 with VQL filter (costs.provider = 'aws').",
         expected: [
           {
             toolName: TARGET,
-            input: { title: "AWS Spend", workspace_token: "wrkspc_abc123", filter: "costs.provider = 'aws'" },
+            input: { title: "AWS Spend", workspace_token: "wrkspc_abc123", filter: "(costs.provider = 'aws')" },
           },
         ],
       },
@@ -22,11 +22,11 @@ export default function generateTests() {
     inferredPrompts: [
       {
         input:
-          "Save a reusable Vantage Cost Report filter named Azure Spend in workspace wrkspc_abc123 using VQL costs.provider = 'azure'.",
+          "Save a reusable Vantage Cost Report filter named Azure Spend in workspace wrkspc_abc123 using VQL (costs.provider = 'azure').",
         expected: [
           {
             toolName: TARGET,
-            input: { title: "Azure Spend", workspace_token: "wrkspc_abc123", filter: "costs.provider = 'azure'" },
+            input: { title: "Azure Spend", workspace_token: "wrkspc_abc123", filter: "(costs.provider = 'azure')" },
           },
         ],
       },

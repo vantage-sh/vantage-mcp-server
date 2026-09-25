@@ -1,0 +1,447 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-09-25T20:58:00.614Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "26f3689c-baf2-4a3c-a0b8-4263c7b0a03e",
+        "latencyMs": 1974,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use create-saved-filter to create AWS Spend in workspace wrkspc_abc123 with VQL filter (costs.provider = 'aws').",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "create-saved-filter",
+                "input": {
+                  "title": "AWS Spend",
+                  "workspace_token": "wrkspc_abc123",
+                  "filter": "(costs.provider = 'aws')"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "create-saved-filter",
+            "toolNames": [
+              "create-saved-filter",
+              "update-saved-filter",
+              "create-cost-report",
+              "create-recommendation-view",
+              "create-virtual-tag-config"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "create-saved-filter",
+                "input": {
+                  "title": "AWS Spend",
+                  "workspace_token": "wrkspc_abc123",
+                  "filter": "(costs.provider = 'aws')"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "create-saved-filter · direct · Use create-saved-filter to create AWS Spend in workspace wrkspc_abc123 with VQL filter (costs.provider = 'aws').",
+          "vars": {
+            "prompt": "Use create-saved-filter to create AWS Spend in workspace wrkspc_abc123 with VQL filter (costs.provider = 'aws').",
+            "target": "create-saved-filter",
+            "expected": [
+              {
+                "toolName": "create-saved-filter",
+                "input": {
+                  "title": "AWS Spend",
+                  "workspace_token": "wrkspc_abc123",
+                  "filter": "(costs.provider = 'aws')"
+                }
+              }
+            ],
+            "distractors": [
+              "update-saved-filter",
+              "create-cost-report",
+              "create-recommendation-view"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "create-saved-filter",
+            "resource": "saved-filters",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use create-saved-filter to create AWS Spend in workspace wrkspc_abc123 with VQL filter (costs.provider = 'aws').",
+          "target": "create-saved-filter",
+          "expected": [
+            {
+              "toolName": "create-saved-filter",
+              "input": {
+                "title": "AWS Spend",
+                "workspace_token": "wrkspc_abc123",
+                "filter": "(costs.provider = 'aws')"
+              }
+            }
+          ],
+          "distractors": [
+            "update-saved-filter",
+            "create-cost-report",
+            "create-recommendation-view"
+          ]
+        },
+        "metadata": {
+          "tool": "create-saved-filter",
+          "resource": "saved-filters",
+          "phrasing": "direct",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "create-saved-filter",
+          "toolNames": [
+            "create-saved-filter",
+            "update-saved-filter",
+            "create-cost-report",
+            "create-recommendation-view",
+            "create-virtual-tag-config"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "create-saved-filter",
+              "input": {
+                "title": "AWS Spend",
+                "workspace_token": "wrkspc_abc123",
+                "filter": "(costs.provider = 'aws')"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "84484afa-2f60-4d9c-b48d-f48bf81b64a5",
+        "latencyMs": 2190,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Save a reusable Vantage Cost Report filter named Azure Spend in workspace wrkspc_abc123 using VQL (costs.provider = 'azure').",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "create-saved-filter",
+                "input": {
+                  "title": "Azure Spend",
+                  "workspace_token": "wrkspc_abc123",
+                  "filter": "(costs.provider = 'azure')"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "create-saved-filter",
+            "toolNames": [
+              "create-saved-filter",
+              "update-saved-filter",
+              "create-cost-report",
+              "create-recommendation-view",
+              "create-virtual-tag-config"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "create-saved-filter",
+                "input": {
+                  "title": "Azure Spend",
+                  "workspace_token": "wrkspc_abc123",
+                  "filter": "(costs.provider = 'azure')"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "create-saved-filter · inferred · Save a reusable Vantage Cost Report filter named Azure Spend in workspace wrkspc_abc123 using VQL (costs.provider = 'azure').",
+          "vars": {
+            "prompt": "Save a reusable Vantage Cost Report filter named Azure Spend in workspace wrkspc_abc123 using VQL (costs.provider = 'azure').",
+            "target": "create-saved-filter",
+            "expected": [
+              {
+                "toolName": "create-saved-filter",
+                "input": {
+                  "title": "Azure Spend",
+                  "workspace_token": "wrkspc_abc123",
+                  "filter": "(costs.provider = 'azure')"
+                }
+              }
+            ],
+            "distractors": [
+              "update-saved-filter",
+              "create-cost-report",
+              "create-recommendation-view"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "create-saved-filter",
+            "resource": "saved-filters",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Save a reusable Vantage Cost Report filter named Azure Spend in workspace wrkspc_abc123 using VQL (costs.provider = 'azure').",
+          "target": "create-saved-filter",
+          "expected": [
+            {
+              "toolName": "create-saved-filter",
+              "input": {
+                "title": "Azure Spend",
+                "workspace_token": "wrkspc_abc123",
+                "filter": "(costs.provider = 'azure')"
+              }
+            }
+          ],
+          "distractors": [
+            "update-saved-filter",
+            "create-cost-report",
+            "create-recommendation-view"
+          ]
+        },
+        "metadata": {
+          "tool": "create-saved-filter",
+          "resource": "saved-filters",
+          "phrasing": "inferred",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "create-saved-filter",
+          "toolNames": [
+            "create-saved-filter",
+            "update-saved-filter",
+            "create-cost-report",
+            "create-recommendation-view",
+            "create-virtual-tag-config"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "create-saved-filter",
+              "input": {
+                "title": "Azure Spend",
+                "workspace_token": "wrkspc_abc123",
+                "filter": "(costs.provider = 'azure')"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 2,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-6-luna · mixed",
+        "config": {
+          "modelId": "gpt-6-luna"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/saved-filters/create-saved-filter.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-09-25T20:58:00.288Z",
+    "evaluationCreatedAt": "2026-09-25T20:57:58.025Z"
+  }
+}

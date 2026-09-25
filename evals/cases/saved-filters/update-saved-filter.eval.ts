@@ -10,20 +10,24 @@ export default function generateTests() {
     directPrompts: [
       {
         input:
-          "Use update-saved-filter to rename svd_fltr_abc123 to Azure Spend and set its VQL filter to costs.provider = 'azure'.",
+          "Use update-saved-filter to rename svd_fltr_abc123 to Azure Spend and set its VQL filter to (costs.provider = 'azure').",
         expected: [
           {
             toolName: TARGET,
-            input: { saved_filter_token: "svd_fltr_abc123", title: "Azure Spend", filter: "costs.provider = 'azure'" },
+            input: {
+              saved_filter_token: "svd_fltr_abc123",
+              title: "Azure Spend",
+              filter: "(costs.provider = 'azure')",
+            },
           },
         ],
       },
     ],
     inferredPrompts: [
       {
-        input: "Change the Vantage Cost Report filter svd_fltr_abc123 so its saved VQL is costs.provider = 'aws'.",
+        input: "Change the Vantage Cost Report filter svd_fltr_abc123 so its saved VQL is (costs.provider = 'aws').",
         expected: [
-          { toolName: TARGET, input: { saved_filter_token: "svd_fltr_abc123", filter: "costs.provider = 'aws'" } },
+          { toolName: TARGET, input: { saved_filter_token: "svd_fltr_abc123", filter: "(costs.provider = 'aws')" } },
         ],
       },
     ],
