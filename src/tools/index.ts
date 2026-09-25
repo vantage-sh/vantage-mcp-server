@@ -27,6 +27,7 @@ import "./recommendations";
 import "./report-forecasts";
 import "./report-notifications";
 import "./resource-reports";
+import "./saved-filters";
 import "./scenario-models";
 import "./tags";
 import "./teams";
