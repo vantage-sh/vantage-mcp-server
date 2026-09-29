@@ -7,6 +7,10 @@ import { endDateSchema, startDateSchema, updateDateBinSchema, updateDateInterval
 
 const description = `
 Updates an existing Dashboard. You can update the title, widgets, saved filters, and date range settings.
+
+Widget settings.display_type supports table, chart, and kpi. For KPI widgets, optionally set
+kpi_calculation (sum|average), kpi_type (cost|usage|count|business_metric), and kpi_usage_unit when
+kpi_type is usage. KPI widgets are backed by a CostReport widgetable_token.
 `.trim();
 
 export default registerTool({

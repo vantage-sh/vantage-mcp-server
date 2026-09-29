@@ -7,7 +7,15 @@ export const widgetSchema = z.object({
   title: z.string().describe("The title of the Widget (defaults to the title of the Resource).").optional(),
   settings: z
     .object({
-      display_type: z.enum(["table", "chart"]).describe("The display type of the Widget."),
+      display_type: z
+        .enum(["table", "chart", "kpi"])
+        .describe("The display type of the Widget. Use kpi for compact KPI widgets backed by a CostReport."),
+      kpi_calculation: z.enum(["sum", "average"]).optional().describe("The aggregation used when display_type is kpi."),
+      kpi_type: z
+        .enum(["cost", "usage", "count", "business_metric"])
+        .optional()
+        .describe("The metric represented when display_type is kpi."),
+      kpi_usage_unit: z.string().optional().describe("The usage unit represented when kpi_type is usage."),
     })
     .optional(),
 });

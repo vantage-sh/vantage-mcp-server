@@ -48,6 +48,15 @@ const validInputArguments: InferValidators<Validators> = {
         display_type: "table",
       },
     },
+    {
+      widgetable_token: "rprt_789",
+      title: "Monthly Cost KPI",
+      settings: {
+        display_type: "kpi",
+        kpi_calculation: "sum",
+        kpi_type: "cost",
+      },
+    },
   ],
   saved_filter_tokens: ["svd_fltr_123"],
   date_bin: "week",
@@ -78,7 +87,39 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
         },
       ],
     },
-    expectedIssues: ['Invalid option: expected one of "table"|"chart"'],
+    expectedIssues: ['Invalid option: expected one of "table"|"chart"|"kpi"'],
+  },
+  {
+    name: "invalid kpi_calculation",
+    data: {
+      ...validInputArguments,
+      widgets: [
+        {
+          widgetable_token: "rprt_123",
+          settings: {
+            display_type: "kpi",
+            kpi_calculation: "median" as any,
+          },
+        },
+      ],
+    },
+    expectedIssues: ['Invalid option: expected one of "sum"|"average"'],
+  },
+  {
+    name: "invalid kpi_type",
+    data: {
+      ...validInputArguments,
+      widgets: [
+        {
+          widgetable_token: "rprt_123",
+          settings: {
+            display_type: "kpi",
+            kpi_type: "spend" as any,
+          },
+        },
+      ],
+    },
+    expectedIssues: ['Invalid option: expected one of "cost"|"usage"|"count"|"business_metric"'],
   },
 ];
 
