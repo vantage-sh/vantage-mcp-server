@@ -6,7 +6,7 @@ import {
 } from "@cloudflare/workers-oauth-provider";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { tokenExchangeCallback } from "../src/auth";
+import { tokenExchangeCallback } from "../../src/auth/token-exchange";
 
 const auth0Env = {
   AUTH0_CLIENT_ID: "client-id",

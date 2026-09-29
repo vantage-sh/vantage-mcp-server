@@ -1,7 +1,7 @@
 import OAuthProvider, { getOAuthApi, type OAuthProviderOptions } from "@cloudflare/workers-oauth-provider";
 import * as oauth from "oauth4webapi";
 import { describe, expect, it } from "vitest";
-import { tokenExchangeCallback } from "../src/auth";
+import { tokenExchangeCallback } from "../../src/auth/token-exchange";
 
 const auth0Env = {
   AUTH0_CLIENT_ID: "client-id",
