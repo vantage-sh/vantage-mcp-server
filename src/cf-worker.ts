@@ -167,7 +167,6 @@ function createMcpServer(request: Request, sse: boolean): HeaderAuthProvider<App
   } else {
     // OAuth mode - use the full OAuth provider setup
     return new OAuthProvider<AppEnv>({
-      allowPlainPKCE: true,
       apiHandler,
       apiRoute: sse ? "/sse" : "/mcp",
       authorizeEndpoint: "/authorize",
