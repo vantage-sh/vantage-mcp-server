@@ -16,7 +16,7 @@ export const widgetSchema = z.object({
         .enum(["sum", "average"])
         .optional()
         .describe(
-          "For kpi Widgets: total the values across the date range (sum) or average them per date bin (average). Defaults to sum."
+          "For kpi Widgets: total the values across the date range (sum) or average them per date bin (average). Defaults to sum. With kpi_type business_metric only average is supported; set average or omit."
         ),
       kpi_type: z
         .enum(["cost", "usage", "count", "business_metric"])
