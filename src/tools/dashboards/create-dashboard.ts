@@ -15,16 +15,11 @@ their widgetable_token) and saved filters, and you can control the time range us
 Note: start_date/end_date are incompatible with date_interval.
 
 The list of supported widgets is:
-- cost reports (including KPI display via settings.display_type=kpi)
-- usage reports
+- cost and usage reports (rprt_*), shown as a chart, table, or KPI
 - resource reports
 - kubernetes efficiency reports
 - financial commitment reports
 - recommendation saved views
-
-For KPI widgets, set settings.display_type to kpi and optionally set kpi_calculation (sum|average),
-kpi_type (cost|usage|count|business_metric), and kpi_usage_unit when kpi_type is usage. The
-widgetable_token should still be a CostReport token.
 
 The token returned in the response can be used to link to the Dashboard in the Vantage Web UI:
 https://console.vantage.sh/go/<token>

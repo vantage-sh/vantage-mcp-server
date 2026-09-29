@@ -6,11 +6,9 @@ import registerTool from "../structure/registerTool";
 import { endDateSchema, startDateSchema, updateDateBinSchema, updateDateIntervalSchema, widgetSchema } from "./schemas";
 
 const description = `
-Updates an existing Dashboard. You can update the title, widgets, saved filters, and date range settings.
+Updates an existing Dashboard's title, widgets, saved filters, or date range.
 
-Widget settings.display_type supports table, chart, and kpi. For KPI widgets, optionally set
-kpi_calculation (sum|average), kpi_type (cost|usage|count|business_metric), and kpi_usage_unit when
-kpi_type is usage. KPI widgets are backed by a CostReport widgetable_token.
+Passing widgets replaces the Dashboard's entire widget list. To add or change a single widget, call get-dashboard first and send back the full list with your edit.
 `.trim();
 
 export default registerTool({
