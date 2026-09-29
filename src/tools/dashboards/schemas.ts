@@ -9,13 +9,27 @@ export const widgetSchema = z.object({
     .object({
       display_type: z
         .enum(["table", "chart", "kpi"])
-        .describe("The display type of the Widget. Use kpi for compact KPI widgets backed by a CostReport."),
-      kpi_calculation: z.enum(["sum", "average"]).optional().describe("The aggregation used when display_type is kpi."),
+        .describe(
+          "How the Widget renders. kpi shows a single headline number and only works for Cost Report Widgets (rprt_*)."
+        ),
+      kpi_calculation: z
+        .enum(["sum", "average"])
+        .optional()
+        .describe(
+          "For kpi Widgets: total the values across the date range (sum) or average them per date bin (average). Defaults to sum. With kpi_type business_metric only average is supported; set average or omit."
+        ),
       kpi_type: z
         .enum(["cost", "usage", "count", "business_metric"])
         .optional()
-        .describe("The metric represented when display_type is kpi."),
-      kpi_usage_unit: z.string().optional().describe("The usage unit represented when kpi_type is usage."),
+        .describe(
+          "For kpi Widgets: which value to show. Defaults to whatever the Cost Report displays (cost, usage, or count)."
+        ),
+      kpi_usage_unit: z
+        .string()
+        .optional()
+        .describe(
+          "For kpi Widgets with kpi_type usage: the usage unit to show, matching a unit in the report's data. Ignored otherwise."
+        ),
     })
     .optional(),
 });
