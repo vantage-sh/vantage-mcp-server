@@ -44,6 +44,16 @@ const validInputArguments: InferValidators<Validators> = {
         display_type: "chart",
       },
     },
+    {
+      widgetable_token: "rprt_789",
+      title: "Usage KPI",
+      settings: {
+        display_type: "kpi",
+        kpi_calculation: "average",
+        kpi_type: "usage",
+        kpi_usage_unit: "GB",
+      },
+    },
   ],
   saved_filter_tokens: ["svd_fltr_123"],
   date_bin: "week",
@@ -90,7 +100,23 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
         },
       ],
     },
-    expectedIssues: ['Invalid option: expected one of "table"|"chart"'],
+    expectedIssues: ['Invalid option: expected one of "table"|"chart"|"kpi"'],
+  },
+  {
+    name: "invalid kpi_calculation",
+    data: {
+      ...validInputArguments,
+      widgets: [
+        {
+          widgetable_token: "rprt_123",
+          settings: {
+            display_type: "kpi",
+            kpi_calculation: "median" as any,
+          },
+        },
+      ],
+    },
+    expectedIssues: ['Invalid option: expected one of "sum"|"average"'],
   },
 ];
 
@@ -119,6 +145,16 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
               widgetable_token: "rprt_123",
               title: "Weekly Sales Report",
               settings: { display_type: "chart" },
+            },
+            {
+              widgetable_token: "rprt_789",
+              title: "Usage KPI",
+              settings: {
+                display_type: "kpi",
+                kpi_calculation: "average",
+                kpi_type: "usage",
+                kpi_usage_unit: "GB",
+              },
             },
           ],
           saved_filter_tokens: ["svd_fltr_123"],
