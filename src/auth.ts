@@ -2,10 +2,10 @@
 Note that this code started from the examples at
 https://github.com/cloudflare/ai/tree/0150b265a4510123b545b4f988511bf0b63c6641/demos/remote-mcp-auth0
 */
-import { env } from "cloudflare:workers";
 import {
   AuthorizationError,
   type AuthRequest,
+  OAuthError,
   type OAuthHelpers,
   type TokenExchangeCallbackOptions,
   type TokenExchangeCallbackResult,
@@ -339,7 +339,9 @@ export async function callback(c: Context<{ Bindings: AppEnv & { OAUTH_PROVIDER:
  * This function handles the token exchange callback for the CloudflareOAuth Provider and allows us to then interact with the Upstream IdP (your Auth0 tenant)
  */
 export async function tokenExchangeCallback(
-  options: TokenExchangeCallbackOptions
+  options: TokenExchangeCallbackOptions,
+  auth0Env: Pick<AppEnv, "AUTH0_CLIENT_ID" | "AUTH0_CLIENT_SECRET" | "AUTH0_DOMAIN">,
+  getOAuthHelpers: () => Pick<OAuthHelpers, "revokeGrant">
 ): Promise<TokenExchangeCallbackResult | undefined> {
   // During the Authorization Code Exchange, we want to make sure that the Access Token issued
   // by the MCP Server has the same TTL as the one issued by Auth0.
@@ -355,23 +357,49 @@ export async function tokenExchangeCallback(
   if (options.grantType === "refresh_token") {
     const auth0RefreshToken = options.props.tokenSet.refreshToken;
     if (!auth0RefreshToken) {
-      throw new Error("No Auth0 refresh token found");
+      await getOAuthHelpers().revokeGrant(options.grantId, options.userId);
+      throw new OAuthError("invalid_grant", { description: "Reauthorization is required" });
     }
 
-    const { as, client, clientAuth } = await getOidcConfig({
-      client_id: env.AUTH0_CLIENT_ID,
-      client_secret: env.AUTH0_CLIENT_SECRET,
-      issuer: `https://${env.AUTH0_DOMAIN}/`,
-    });
+    let refreshTokenResponse: oauth.TokenEndpointResponse;
+    try {
+      const { as, client, clientAuth } = await getOidcConfig({
+        client_id: auth0Env.AUTH0_CLIENT_ID,
+        client_secret: auth0Env.AUTH0_CLIENT_SECRET,
+        issuer: `https://${auth0Env.AUTH0_DOMAIN}/`,
+      });
 
-    // Perform the refresh token exchange with Auth0.
-    const response = await oauth.refreshTokenGrantRequest(as, client, clientAuth, auth0RefreshToken);
-    const refreshTokenResponse = await oauth.processRefreshTokenResponse(as, client, response);
+      const response = await oauth.refreshTokenGrantRequest(as, client, clientAuth, auth0RefreshToken);
+      refreshTokenResponse = await oauth.processRefreshTokenResponse(as, client, response);
+    } catch (error) {
+      if (error instanceof oauth.ResponseBodyError && error.error === "invalid_grant") {
+        await getOAuthHelpers().revokeGrant(options.grantId, options.userId);
+        throw new OAuthError("invalid_grant", { description: "Reauthorization is required" });
+      }
 
-    // Get the claims from the id_token
-    const claims = oauth.getValidatedIdTokenClaims(refreshTokenResponse);
-    if (!claims) {
-      throw new Error("Received invalid id_token from Auth0");
+      // Auth0's rate limits and outages must not invalidate an otherwise usable grant.
+      const upstreamResponse =
+        error instanceof oauth.ResponseBodyError
+          ? error.response
+          : error instanceof oauth.OperationProcessingError && "cause" in error && error.cause instanceof Response
+            ? error.cause
+            : undefined;
+      if (
+        (error instanceof oauth.ResponseBodyError &&
+          ["server_error", "temporarily_unavailable"].includes(error.error)) ||
+        upstreamResponse?.status === 429 ||
+        (upstreamResponse && upstreamResponse.status >= 500) ||
+        error instanceof TypeError
+      ) {
+        const retryAfter = upstreamResponse?.headers.get("Retry-After");
+        throw new OAuthError("temporarily_unavailable", {
+          description: "Authentication service is temporarily unavailable",
+          statusCode: 503,
+          ...(retryAfter ? { headers: { "Retry-After": retryAfter } } : {}),
+        });
+      }
+
+      throw error;
     }
 
     // Store the new token set and claims.
@@ -379,11 +407,11 @@ export async function tokenExchangeCallback(
       accessTokenTTL: refreshTokenResponse.expires_in,
       newProps: {
         ...options.props,
-        claims: claims,
+        claims: oauth.getValidatedIdTokenClaims(refreshTokenResponse) ?? options.props.claims,
         tokenSet: {
           accessToken: refreshTokenResponse.access_token,
           accessTokenTTL: refreshTokenResponse.expires_in,
-          idToken: refreshTokenResponse.id_token,
+          idToken: refreshTokenResponse.id_token ?? options.props.tokenSet.idToken,
           refreshToken: refreshTokenResponse.refresh_token || auth0RefreshToken,
         },
       },
