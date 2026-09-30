@@ -17,6 +17,7 @@ import { html, raw } from "hono/html";
 import type { JWTPayload } from "jose";
 import * as oauth from "oauth4webapi";
 import type { AppEnv } from "./env";
+import { isLegacySseResource } from "./sse-deprecation";
 
 export type UserProps = {
   claims: JWTPayload;
@@ -135,6 +136,9 @@ export async function authorize(c: Context<{ Bindings: AppEnv & { OAUTH_PROVIDER
       consentToken,
       redirectUri: mcpClientAuthRequest.redirectUri,
       requestedScopes,
+      sseMigrationUrl: isLegacySseResource(mcpClientAuthRequest.resource, c.req.url)
+        ? new URL("/mcp", c.req.url).href
+        : undefined,
       transactionState,
     })
   );
@@ -398,6 +402,7 @@ export function renderConsentScreen({
   requestedScopes,
   transactionState,
   consentToken,
+  sseMigrationUrl,
 }: {
   clientName: string;
   clientLogo: string;
@@ -406,6 +411,7 @@ export function renderConsentScreen({
   requestedScopes: string[];
   transactionState: string;
   consentToken: string;
+  sseMigrationUrl?: string;
 }) {
   return html`
     <!doctype html>
@@ -488,6 +494,24 @@ export function renderConsentScreen({
             border-radius: 8px;
             padding: 16px;
             margin: 24px 0;
+          }
+
+          .deprecation-notice {
+            background-color: #fff8e6;
+            border: 1px solid #e5c66a;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 24px 0;
+            font-size: 14px;
+            line-height: 1.5;
+          }
+
+          .deprecation-notice p {
+            margin: 8px 0 0;
+          }
+
+          .deprecation-notice code {
+            overflow-wrap: anywhere;
           }
 
           .scope-title {
@@ -620,6 +644,20 @@ export function renderConsentScreen({
               <strong>Vantage API</strong> using your account. Please review the
               permissions before proceeding.
             </p>
+
+            ${
+              sseMigrationUrl
+                ? html`<div class="deprecation-notice" role="note">
+                  <strong>Update your Vantage MCP connection</strong>
+                  <p>
+                    This client is connecting through the deprecated legacy SSE endpoint.
+                    Update your MCP client configuration to use <code>${sseMigrationUrl}</code>
+                    with Streamable HTTP. You can continue authorizing this connection during
+                    the transition. No shutdown date has been announced.
+                  </p>
+                </div>`
+                : ""
+            }
 
             <p class="description mb-8">
               By clicking "Allow Access", you authorize

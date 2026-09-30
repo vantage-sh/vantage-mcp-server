@@ -17,6 +17,7 @@ import homepage from "./homepage";
 import { logger } from "./logger";
 import setupRegisteredResources from "./resources";
 import { callApi, serverMeta } from "./shared";
+import { createHostedMcpServer } from "./sse-deprecation";
 import { hideAccessPolicyToolsFromNonOwners } from "./tools/access-policies/gating";
 import { setupRegisteredTools } from "./tools/structure/registerTool";
 import { datadogTraceLogTags, formatErrorsForTelemetry, tracer } from "./tracing";
@@ -115,6 +116,12 @@ export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> 
   }
 
   async init() {
+    this.server = createHostedMcpServer(serverMeta, {
+      transportType: this.getTransportType(),
+      mcpUrl: new URL("/mcp", this.env.SELF_CALLBACK_URL).href,
+      storage: this.ctx.storage,
+      waitUntil: (promise) => this.ctx.waitUntil(promise),
+    });
     const ctx = {
       env: this.env,
       waitUntil: (promise: Promise<unknown>) => this.ctx.waitUntil(promise),

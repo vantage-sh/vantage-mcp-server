@@ -29,6 +29,8 @@ The hosted MCP server uses [Streamable HTTP](https://modelcontextprotocol.io/spe
 
 **Server URL:** `https://mcp.vantage.sh/mcp`
 
+**Legacy SSE connections:** The `/sse` endpoint is deprecated and remains available during the transition. If your client uses `https://mcp.vantage.sh/sse`, update its server URL to `https://mcp.vantage.sh/mcp`, select Streamable HTTP if it asks for a transport, then reconnect and sign in if prompted. No shutdown date has been announced. Some clients display a deprecation warning when connecting; others do not. See the [SSE compatibility and retirement plan](docs/legacy-sse-deprecation.md) for rollout and verification details.
+
 Clients that support remote MCP natively can connect directly to that URL. For clients that only support stdio, use the `mcp-remote` bridge (see [Visual Studio Code](#visual-studio-code) below).
 
 **API token auth:** If your client or script cannot complete OAuth, pass a [Vantage API token](https://docs.vantage.sh/vantage_account#create-an-api-token) as a Bearer token instead:
