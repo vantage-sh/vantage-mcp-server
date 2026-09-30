@@ -75,6 +75,21 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     data: validArguments,
   },
   {
+    name: "accepts label filters on values",
+    data: {
+      ...undefineds,
+      virtual_tag_config_token: "vtag_123",
+      values: [
+        {
+          filter: "costs.provider = 'aws'",
+          business_metric_token: "bsnss_mtrc_123",
+          label_key: "environment",
+          label_filters: { app: ["consumer"], team: ["payments"] },
+        },
+      ],
+    },
+  },
+  {
     name: "accepts open-ended value date ranges from get responses",
     data: {
       ...undefineds,

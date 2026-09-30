@@ -20,6 +20,7 @@ const undefineds = {
   business_metric_token: undefined,
   label_key: undefined,
   label_values: undefined,
+  label_filters: undefined,
   display_name: undefined,
   label_transforms: undefined,
   cost_metric: undefined,
@@ -33,6 +34,7 @@ const validArguments: InferValidators<Validators> = {
   virtual_tag_config_value_token: "vtag_val_456",
   filter: "costs.provider = 'gcp'",
   name: "Cloud",
+  label_filters: { app: ["consumer"] },
   percentages: [],
 };
 
@@ -42,6 +44,7 @@ const requestBody = {
   business_metric_token: validArguments.business_metric_token,
   label_key: validArguments.label_key,
   label_values: validArguments.label_values,
+  label_filters: validArguments.label_filters,
   display_name: validArguments.display_name,
   label_transforms: validArguments.label_transforms,
   cost_metric: validArguments.cost_metric,
@@ -53,6 +56,24 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "valid partial update",
     data: validArguments,
+  },
+  {
+    name: "accepts label filters",
+    data: {
+      ...undefineds,
+      virtual_tag_config_token: "vtag_123",
+      virtual_tag_config_value_token: "vtag_val_456",
+      label_filters: { app: ["consumer"] },
+    },
+  },
+  {
+    name: "accepts null label filters",
+    data: {
+      ...undefineds,
+      virtual_tag_config_token: "vtag_123",
+      virtual_tag_config_value_token: "vtag_val_456",
+      label_filters: null,
+    },
   },
   {
     name: "clears optional fields",
