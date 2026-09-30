@@ -25,6 +25,13 @@ test("rejects a token with the wrong prefix", () => {
   expect(result.error.issues[0]?.message).toBe("Must be a Workspace token (wrkspc_*)");
 });
 
+test("does not accept a Dashboard Widget token as a Dashboard token", () => {
+  const widgetToken = "dshbrd_wdgt_5a727210453f6dbc";
+
+  expect(vantageToken("dashboard").safeParse(widgetToken).success).toBe(false);
+  expect(vantageToken("dashboard_widget").safeParse(widgetToken).success).toBe(true);
+});
+
 test("does not accept a Report Forecast token as a Cost Report token", () => {
   const reportForecastToken = "rprt_frcst_5a727210453f6dbc";
 

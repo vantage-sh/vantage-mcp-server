@@ -2,36 +2,47 @@ import z from "zod";
 import { dateIntervalOptions } from "../../utils/dateIntervalOptions";
 import dateValidator from "../../utils/dateValidator";
 
+const displayTypeSchema = z
+  .enum(["table", "chart", "kpi"])
+  .describe(
+    "How the Widget renders. kpi shows a single headline number and only works for Cost Report Widgets (rprt_*)."
+  );
+
+const widgetSettingsFields = {
+  kpi_calculation: z
+    .enum(["sum", "average"])
+    .optional()
+    .describe(
+      "For kpi Widgets: total the values across the date range (sum) or average them per date bin (average). Defaults to sum. With kpi_type business_metric only average is supported; set average or omit."
+    ),
+  kpi_type: z
+    .enum(["cost", "usage", "count", "business_metric"])
+    .optional()
+    .describe(
+      "For kpi Widgets: which value to show. Defaults to whatever the Cost Report displays (cost, usage, or count)."
+    ),
+  kpi_usage_unit: z
+    .string()
+    .optional()
+    .describe(
+      "For kpi Widgets with kpi_type usage: the usage unit to show, matching a unit in the report's data. Ignored otherwise."
+    ),
+};
+
+export const widgetSettingsSchema = z.object({
+  display_type: displayTypeSchema,
+  ...widgetSettingsFields,
+});
+
+export const widgetSettingsUpdateSchema = z.object({
+  display_type: displayTypeSchema.optional(),
+  ...widgetSettingsFields,
+});
+
 export const widgetSchema = z.object({
   widgetable_token: z.string().describe("The token of the represented Resource."),
   title: z.string().describe("The title of the Widget (defaults to the title of the Resource).").optional(),
-  settings: z
-    .object({
-      display_type: z
-        .enum(["table", "chart", "kpi"])
-        .describe(
-          "How the Widget renders. kpi shows a single headline number and only works for Cost Report Widgets (rprt_*)."
-        ),
-      kpi_calculation: z
-        .enum(["sum", "average"])
-        .optional()
-        .describe(
-          "For kpi Widgets: total the values across the date range (sum) or average them per date bin (average). Defaults to sum. With kpi_type business_metric only average is supported; set average or omit."
-        ),
-      kpi_type: z
-        .enum(["cost", "usage", "count", "business_metric"])
-        .optional()
-        .describe(
-          "For kpi Widgets: which value to show. Defaults to whatever the Cost Report displays (cost, usage, or count)."
-        ),
-      kpi_usage_unit: z
-        .string()
-        .optional()
-        .describe(
-          "For kpi Widgets with kpi_type usage: the usage unit to show, matching a unit in the report's data. Ignored otherwise."
-        ),
-    })
-    .optional(),
+  settings: widgetSettingsSchema.optional(),
 });
 
 export const dateBinSchema = z
