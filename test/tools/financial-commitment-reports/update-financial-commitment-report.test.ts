@@ -82,7 +82,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     name: "invalid grouping",
     data: {
       ...validInputArguments,
-      groupings: ["provider"],
+      groupings: ["account"],
     },
     expectedIssues: ["Grouping dimensions for the report. Use tag:<tag_key> to group by tag."],
   },
