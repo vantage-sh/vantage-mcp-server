@@ -70,6 +70,10 @@ export const TOKEN_KINDS = {
     prefix: "dshbrd",
     label: "Dashboard",
   },
+  dashboard_widget: {
+    prefix: "dshbrd_wdgt",
+    label: "Dashboard Widget",
+  },
   data_export: {
     prefix: "dta_xprt",
     label: "Data Export",

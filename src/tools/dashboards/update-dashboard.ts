@@ -8,7 +8,7 @@ import { endDateSchema, startDateSchema, updateDateBinSchema, updateDateInterval
 const description = `
 Updates an existing Dashboard's title, widgets, saved filters, or date range.
 
-Passing widgets replaces the Dashboard's entire widget list. To add or change a single widget, call get-dashboard first and send back the full list with your edit.
+Passing widgets replaces the Dashboard's entire widget list. To edit or remove one widget, use update-dashboard-widget or delete-dashboard-widget.
 `.trim();
 
 export default registerTool({
