@@ -69,6 +69,8 @@ describe("SSE deprecation notices", () => {
     expect(session.client.getServerCapabilities()?.logging).toEqual({});
     expect(session.client.getInstructions()).toContain("https://hosted-mcp-staging.vantage.sh/mcp");
     expect(session.client.getInstructions()).toContain("Streamable HTTP");
+    expect(session.client.getInstructions()).toContain("60-day migration window");
+    expect(session.client.getInstructions()).toContain("The legacy SSE endpoint will be retired on November 30, 2026.");
     expect(session.warnings).toEqual([
       {
         level: "warning",

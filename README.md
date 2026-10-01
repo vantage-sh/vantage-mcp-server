@@ -14,9 +14,9 @@ The Vantage MCP Server exposes tools for listing, querying, and creating Vantage
 
 This repository supports two deployment modes:
 
-| Mode | Best for |
-| ---- | -------- |
-| **Hosted (Remote) MCP** — Vantage-managed at `https://mcp.vantage.sh/mcp` | Most users and teams. OAuth sign-in, no local server to run. |
+| Mode                                                                             | Best for                                                                   |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| **Hosted (Remote) MCP** — Vantage-managed at `https://mcp.vantage.sh/mcp`        | Most users and teams. OAuth sign-in, no local server to run.               |
 | **Self-Hosted (Local) MCP** — stdio via `npx -y vantage-mcp-server` or this repo | API-token auth, air-gapped environments, or contributing to this codebase. |
 
 **Start with the hosted MCP** unless you have a specific reason to self-host.
@@ -29,7 +29,11 @@ The hosted MCP server uses [Streamable HTTP](https://modelcontextprotocol.io/spe
 
 **Server URL:** `https://mcp.vantage.sh/mcp`
 
-**Legacy SSE connections:** The `/sse` endpoint is deprecated and remains available during the transition. If your client uses `https://mcp.vantage.sh/sse`, update its server URL to `https://mcp.vantage.sh/mcp`, select Streamable HTTP if it asks for a transport, then reconnect and sign in if prompted. No shutdown date has been announced. Some clients display a deprecation warning when connecting; others do not. See the [SSE compatibility and retirement plan](docs/legacy-sse-deprecation.md) for rollout and verification details.
+**Legacy SSE connections:** The `/sse` endpoint is deprecated and remains available during the 60-day migration
+window, ending on **November 30, 2026**, when the legacy SSE endpoint will be retired. If your client uses
+`https://mcp.vantage.sh/sse`, update its server URL to `https://mcp.vantage.sh/mcp`, select Streamable HTTP if it asks
+for a transport, then reconnect and sign in if prompted. Some clients display a deprecation warning when connecting;
+others do not.
 
 Clients that support remote MCP natively can connect directly to that URL. For clients that only support stdio, use the `mcp-remote` bridge (see [Visual Studio Code](#visual-studio-code) below).
 
@@ -155,7 +159,7 @@ See the [MCP clients list](https://modelcontextprotocol.io/clients) and the [Van
 
 After configuring your client, you may need to restart it. A browser window opens for Vantage OAuth — sign in and click **Allow Access**. You can revoke access anytime under **Vantage Settings → API Access Tokens → MCP Server Token**.
 
-Try a prompt like: *"In Vantage, which workspaces do I have access to?"*
+Try a prompt like: _"In Vantage, which workspaces do I have access to?"_
 
 ---
 

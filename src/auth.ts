@@ -653,7 +653,7 @@ export function renderConsentScreen({
                     This client is connecting through the deprecated legacy SSE endpoint.
                     Update your MCP client configuration to use <code>${sseMigrationUrl}</code>
                     with Streamable HTTP. You can continue authorizing this connection during
-                    the transition. No shutdown date has been announced.
+                    the 60-day migration window. The legacy SSE endpoint will be retired on November 30, 2026.
                   </p>
                 </div>`
                 : ""

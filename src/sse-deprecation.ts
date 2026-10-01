@@ -5,7 +5,7 @@ import { logger } from "./logger";
 const NOTICE_ATTEMPTED_KEY = "sseDeprecationNoticeAttempted";
 
 export function sseDeprecationMessage(mcpUrl: string): string {
-  return `The Vantage legacy SSE connection is deprecated. Update your MCP client configuration to use ${mcpUrl} with Streamable HTTP. Your existing connection will continue working during the transition. No shutdown date has been announced.`;
+  return `The Vantage legacy SSE connection is deprecated. Update your MCP client configuration to use ${mcpUrl} with Streamable HTTP. Your existing connection will continue working during the 60-day migration window. The legacy SSE endpoint will be retired on November 30, 2026.`;
 }
 
 export function createHostedMcpServer(

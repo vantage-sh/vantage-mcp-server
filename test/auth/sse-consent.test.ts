@@ -35,7 +35,8 @@ describe("SSE consent deprecation notice", () => {
     expect(response.status).toBe(200);
     expect(html).toContain("This client is connecting through the deprecated legacy SSE endpoint.");
     expect(html).toContain("<code>https://hosted-mcp-staging.vantage.sh/mcp</code>");
-    expect(html).toContain("No shutdown date has been announced.");
+    expect(html).toContain("60-day migration window");
+    expect(html).toContain("The legacy SSE endpoint will be retired on November 30, 2026.");
     expect(html).toContain("Example MCP client");
     expect(html.match(/action="\/authorize\/consent"/g)).toHaveLength(2);
     expect(html.match(/name="consent_token"/g)).toHaveLength(2);
@@ -49,7 +50,8 @@ describe("SSE consent deprecation notice", () => {
       const { response, html } = await consentPage(resource);
       expect(response.status).toBe(200);
       expect(html).not.toContain("This client is connecting through the deprecated legacy SSE endpoint.");
-      expect(html).not.toContain("No shutdown date has been announced.");
+      expect(html).not.toContain("60-day migration window");
+      expect(html).not.toContain("The legacy SSE endpoint will be retired on November 30, 2026.");
     }
   );
 });
