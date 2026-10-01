@@ -1,5 +1,5 @@
 import OAuthProvider, { type OAuthHelpers } from "@cloudflare/workers-oauth-provider";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import * as Sentry from "@sentry/cloudflare";
 import type {
   Path,
@@ -39,7 +39,8 @@ function tokenFromProps(props: UserProps, env?: AppEnv): string {
 }
 
 export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> {
-  server = new McpServer(serverMeta);
+  // Created in init(), before McpAgent connects the transport.
+  server!: McpServer;
   env: Env;
 
   constructor(ctx: DurableObjectState, env: Env) {
@@ -54,7 +55,7 @@ export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> 
     Response extends ResponseBodyForPathAndMethod<P, M>,
   >(endpoint: P, params: Request, method: M): Promise<{ data: Response; ok: true } | { errors: unknown[]; ok: false }> {
     return withLogTags({}, async () => {
-      const clientVersion = (this.server as McpServer).server.getClientVersion();
+      const clientVersion = this.server.server.getClientVersion();
       if (clientVersion) {
         logger.setTags({
           mcp_client_name: clientVersion.name,
