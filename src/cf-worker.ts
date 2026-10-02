@@ -1,4 +1,8 @@
-import OAuthProvider, { type OAuthHelpers } from "@cloudflare/workers-oauth-provider";
+import OAuthProvider, {
+  getOAuthApi,
+  type OAuthHelpers,
+  type OAuthProviderOptions,
+} from "@cloudflare/workers-oauth-provider";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import * as Sentry from "@sentry/cloudflare";
 import type {
@@ -159,7 +163,11 @@ function hasVantageHeaders(request: Request): boolean {
   return false;
 }
 
-function createMcpServer(request: Request, sse: boolean): HeaderAuthProvider<AppEnv> | OAuthProvider<AppEnv> {
+function createMcpServer(
+  request: Request,
+  sse: boolean,
+  env: AppEnv
+): HeaderAuthProvider<AppEnv> | OAuthProvider<AppEnv> {
   const apiHandler = (sse ? VantageMCP.mount("/sse") : VantageMCP.serve("/mcp")) as unknown as {
     fetch(request: Request, env: AppEnv, ctx: ExecutionContext): Response | Promise<Response>;
   };
@@ -174,7 +182,7 @@ function createMcpServer(request: Request, sse: boolean): HeaderAuthProvider<App
     });
   } else {
     // OAuth mode - use the full OAuth provider setup
-    return new OAuthProvider<AppEnv>({
+    const oauthOptions: OAuthProviderOptions<AppEnv> = {
       apiHandler,
       apiRoute: sse ? "/sse" : "/mcp",
       authorizeEndpoint: "/authorize",
@@ -201,8 +209,9 @@ function createMcpServer(request: Request, sse: boolean): HeaderAuthProvider<App
       },
       refreshTokenTTL: undefined,
       tokenEndpoint: "/token",
-      tokenExchangeCallback,
-    });
+      tokenExchangeCallback: (options) => tokenExchangeCallback(options, env, () => getOAuthApi(oauthOptions, env)),
+    };
+    return new OAuthProvider<AppEnv>(oauthOptions);
   }
 }
 
@@ -234,7 +243,7 @@ const fetchHandler = async (request: Request, env: AppEnv, ctx: ExecutionContext
     return VantageMCP.serve("/mcp").fetch(tracedRequest, env, ctx);
   }
 
-  const mcpServer = createMcpServer(tracedRequest, sse);
+  const mcpServer = createMcpServer(tracedRequest, sse, env);
 
   const sentryHandler = Sentry.withSentry((env: AppEnv) => {
     const { id: versionId } = env.CF_VERSION_METADATA;
