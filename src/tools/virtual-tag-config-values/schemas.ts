@@ -46,6 +46,13 @@ export const virtualTagConfigValueCreateOptionalArgs = {
     .array(z.string())
     .optional()
     .describe("Business Metric label values. An empty array includes every value for the label key."),
+  label_filters: z
+    .record(z.string(), z.array(z.string()))
+    .nullable()
+    .optional()
+    .describe(
+      "Business Metric row filters. Every key must match, and values within a key are alternatives. Cannot include the fan-out label_key. Null or an empty object leaves stored filters unchanged."
+    ),
   display_name: nonempty().optional().describe("Display name for a cost metric or percentage allocation value."),
   label_transforms: z.array(labelTransform).optional().describe("Transforms applied to Business Metric labels."),
   cost_metric: costMetric.optional().describe("Cost metric used for dynamic allocation."),
@@ -68,6 +75,7 @@ export const valueUpdateFields = [
   ...valueTypeFields,
   "label_key",
   "label_values",
+  "label_filters",
   "display_name",
   "label_transforms",
   "date_ranges",

@@ -18,6 +18,7 @@ test("prefixes match public API token examples", () => {
   expect(TOKEN_KINDS.report_forecast.prefix).toBe("rprt_frcst");
   expect(TOKEN_KINDS.scenario_model.prefix).toBe("frcst_mdl");
   expect(TOKEN_KINDS.saved_filter.prefix).toBe("svd_fltr");
+  expect(TOKEN_KINDS.dashboard_widget.prefix).toBe("dshbrd_wdgt");
 });
 
 test("does not expose internal-only token kinds", () => {
