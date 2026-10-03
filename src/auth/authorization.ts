@@ -82,6 +82,7 @@ export async function authorize(c: Context<{ Bindings: AppEnv & { OAUTH_PROVIDER
   // Render the consent screen with CSRF protection
   return c.html(
     renderConsentScreen({
+      clientId: mcpClientAuthRequest.clientId,
       clientLogo,
       clientName,
       clientUri,
