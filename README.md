@@ -305,3 +305,39 @@ See [AGENTS.md](/AGENTS.md) for conventions when adding tools, evals, or resourc
 ## License
 
 See [LICENSE.md](LICENSE.md) for commercial and non-commercial licensing details.
+
+## OAuth metadata rollout (ENG-2832)
+
+`MCP_OAUTH_METADATA_ENABLED=true` opts into CIMD and a canonical protected resource at
+`<SELF_CALLBACK_URL origin>/mcp`. It is unset by default. Production discovery on
+`hosted-mcp-prod.vantage.sh` advertises `https://mcp.vantage.sh/mcp` and its authorization
+server; with the flag enabled the Worker redirects the old production hostname to the
+canonical hostname (HTTP 308, preserving path/query and method). Clients should update
+their configured URL, especially if they do not follow cross-origin redirects. `/register` remains available for
+DCR clients. No Auth0 scopes are advertised as Vantage resource permissions.
+
+The Worker enables `global_fetch_strictly_public`, required by the provider to protect
+CIMD fetches (including redirects) against private-network access. The consent screen
+shows the client name and the client ID domain for URL-based clients. This domain is an
+identity cue, not an endorsement of the client.
+
+Before enabling in production:
+
+1. Merge the unified authentication change (#298). Finish the SSE migration/retirement
+   in ENG-3242 after November 30, 2026; the provider's single canonical resource also
+   rejects new authorization requests explicitly naming `/sse`.
+2. Enable the flag on staging. Test Codex and MCP Inspector with both CIMD and DCR,
+   fresh authorization, access-token refresh, and the agent delegation path.
+3. Exercise valid/invalid metadata documents, redirect chains, oversized responses,
+   private IP/DNS destinations and redirects to private addresses under workerd.
+   Node unit tests mock fetch and do not establish Cloudflare network enforcement.
+4. Test previously issued tokens/grants on both production hostnames. Canonical
+   audience enforcement rejects existing unbound access tokens; unbound grants can
+   inherit the canonical resource on refresh. Grants bound to `/sse`, an origin-only
+   resource, or the old hostname require reauthorization. Plan this transition before
+   enabling the flag. The flag does not rewrite or revoke stored grants.
+5. Verify both root and path-specific metadata and their 401 discovery challenges.
+   Enable production only after the compatibility checks pass.
+
+Removing the flag restores the previous discovery/audience policy and disables CIMD;
+clients first authorized with URL-based IDs then cannot refresh until CIMD is re-enabled.
