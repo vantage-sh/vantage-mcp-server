@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "wrangler dev --env development",
+    "oauth:inventory": "tsx src/auth/bin/oauth-kv-inventory.ts",
     "inspect": "mcp-inspector",
     "inspector": "mcp-inspector",
     "format": "biome format --write",

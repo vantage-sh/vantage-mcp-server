@@ -22,6 +22,7 @@ import {
   validateClientRegistration,
 } from "./auth/client-policy";
 import { resolveVantageToken } from "./auth/external-token";
+import { cleanupOAuthKv } from "./auth/kv-cleanup";
 import { createAuthRouter } from "./auth/request-router";
 import type { AppEnv } from "./env";
 import homepage from "./homepage";
@@ -268,4 +269,9 @@ const fetchHandler = async (request: Request, env: AppEnv, ctx: ExecutionContext
 
 export default {
   fetch: tracer.wrapFetchHandler<AppEnv>(fetchHandler),
+  scheduled(_controller: ScheduledController, env: AppEnv, ctx: ExecutionContext) {
+    if (env.OAUTH_KV_CLEANUP_ENABLED !== "true") return;
+    const provider = createMcpServer(env);
+    ctx.waitUntil(cleanupOAuthKv(env, provider));
+  },
 };
