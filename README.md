@@ -346,7 +346,8 @@ provider's validated props, and preserves Core logging, tracing, resources, and
 owner-only tool gating. The existing development token override also works.
 It serves 2026-07-28 and stateless 2025-era clients without a session ID; legacy
 GET/DELETE session operations return 405. Modern requests use the SDK's method/name
-header validation and conservative private, zero-TTL cache hints. MRTR is deferred.
+header validation and conservative private, zero-TTL cache hints. Opt-in MRTR
+confirmations are described below.
 
 Integrate the authentication refactor in #298 before enabling this flag. Staging
 checks must cover real client reconnects, OAuth refresh, authorization isolation,
@@ -355,3 +356,65 @@ depend on stateful `/mcp` sessions need compatibility validation before switchin
 `/sse` continues through McpAgent regardless of the flag; its November 30, 2026
 retirement window and Durable Object cleanup are separate changes. Keep the
 `MCP_OBJECT` binding and historical migrations until SSE retirement is complete.
+
+## Mutation confirmations (ENG-3282)
+
+HTTP clients choose confirmations with `X-MCP-Confirm`. With no header, mutations
+keep their existing behavior. The policy applies to every `create-*`, `update-*`,
+and `delete-*` tool, including new tools registered through the shared wrapper.
+Read-only tools do not require confirmation.
+
+| Header value | Confirm before executing |
+| --- | --- |
+| `all` | Every create, update, and delete |
+| `delete` | Deletes |
+| `update,delete` | Updates and deletes |
+| `create-folder,delete-folder` | Those two tools |
+| `delete,update-budget` | Deletes and budget updates |
+| `none` | No confirmations |
+
+Use a modern 2026-07-28 HTTP client that supports form elicitation and sends the
+header on each request, including MRTR retries. The server returns `input_required`
+with an operation/argument preview. It performs the mutation only after the client
+returns `action: accept` and `confirm: true` for that challenge. Decline, cancel,
+invalid input, and unsupported elicitation stop the selected mutation. Malformed
+policy values return 400; they never silently turn confirmations off. The header is
+scoped to the request and is not forwarded to Core. The legacy hosted handler and
+`/sse` return 503 when a confirmation policy is requested; legacy stateless HTTP
+cannot retain the client capability/session state needed for push elicitation.
+
+Hosted confirmations require the stateless v2 flag and a shared
+`MCP_CONFIRMATION_SECRET` of at least 32 bytes, configured as a Worker secret in each
+environment before rollout. Every instance serving a retry must use the same key.
+If a policy is requested without that key, the server returns 503. Rotating the key
+invalidates pending confirmations. Continuation state is signed, expires after five
+minutes, and binds the authenticated Core credentials, policy, tool, and normalized
+arguments. Only argument hashes are carried in state; credential fields in prompts
+are redacted. Large previews are refused instead of truncated.
+
+Local stdio clients use `VANTAGE_MCP_CONFIRM` with the same values:
+
+```json
+{
+  "mcpServers": {
+    "vantage": {
+      "command": "npx",
+      "args": ["-y", "vantage-mcp-server"],
+      "env": {
+        "VANTAGE_TOKEN": "<YOUR_VANTAGE_TOKEN>",
+        "VANTAGE_MCP_CONFIRM": "update,delete"
+      }
+    }
+  }
+}
+```
+
+Stdio uses a process-local signing key and supports modern MRTR and legacy live
+session form elicitation through the SDK shim. A process restart invalidates its
+pending confirmations. These examples require a release containing this change.
+
+This is a user-controlled client preference, not an authorization rule: a client
+can choose a different header or `none`. Confirmation also provides no exactly-once
+guarantee; repeating an accepted operation can repeat the mutation. Existing Vantage
+permissions remain authoritative. Validate real client dialogs, cancellation, and
+retries on staging before enabling the hosted runtime.

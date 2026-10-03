@@ -6,6 +6,8 @@ import type {
 } from "@vantage-sh/vantage-client";
 import z from "zod";
 import type { AppEnv } from "../../env";
+import type { MutationConfirmation } from "../../mcp/confirm-mutation";
+import { CONFIRMATION_HEADER, parseConfirmationPolicy, requiresConfirmation } from "../../mcp/confirmation-policy";
 import type { ToolHandle, ToolRegistrationHost, ToolRequestContext } from "../../mcp/registration";
 import {
   formatErrorsForTelemetry,
@@ -21,6 +23,7 @@ export type ToolCallContext = {
   env?: AppEnv;
   waitUntil?: WaitUntil;
   signal?: AbortSignal;
+  confirmMutation?: MutationConfirmation;
   callVantageApi: <
     P extends Path,
     M extends SupportedMethods<P>,
@@ -148,6 +151,23 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
           },
           async (span) => {
             try {
+              signal?.throwIfAborted();
+              if (ctx.confirmMutation) {
+                const pending = await ctx.confirmMutation(toolProps, args, extra);
+                if (pending) return pending;
+              } else if (headers?.has(CONFIRMATION_HEADER)) {
+                let policy: ReturnType<typeof parseConfirmationPolicy>;
+                try {
+                  policy = parseConfirmationPolicy(headers.get(CONFIRMATION_HEADER), getRegisteredToolNames());
+                } catch (error) {
+                  throw new MCPUserError({ errors: [{ message: (error as Error).message }] });
+                }
+                if (requiresConfirmation(policy, toolProps.name)) {
+                  throw new MCPUserError({
+                    errors: [{ message: "Requested confirmations require the SDK v2 runtime; no changes were made." }],
+                  });
+                }
+              }
               signal?.throwIfAborted();
               const res = await toolProps.execute(args, ctx);
               signal?.throwIfAborted();

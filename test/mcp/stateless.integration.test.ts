@@ -98,12 +98,32 @@ function authFixture() {
   return { env, provider, issueToken };
 }
 
-it("keeps stateless routing off by default and always retains the SSE handler", () => {
-  const legacy = { fetch: vi.fn() };
-  expect(selectMcpApiHandler(false, {} as AppEnv, legacy)).toBe(legacy);
-  expect(selectMcpApiHandler(false, { MCP_STATELESS_ENABLED: "false" } as AppEnv, legacy)).toBe(legacy);
+it("keeps stateless routing off by default and retains SSE, refusing unsupported requested confirmations", async () => {
+  const legacy = { fetch: vi.fn(() => new Response("legacy")) };
+  for (const [sse, env] of [
+    [false, {}],
+    [false, { MCP_STATELESS_ENABLED: "false" }],
+    [true, { MCP_STATELESS_ENABLED: "true" }],
+  ] as const) {
+    const handler = selectMcpApiHandler(sse, env as AppEnv, legacy);
+    expect(
+      await (await handler.fetch(new Request("https://mcp.example/mcp"), env as AppEnv, executionContext())).text()
+    ).toBe("legacy");
+    const rejected = await handler.fetch(
+      new Request("https://mcp.example/mcp", { headers: { "X-MCP-Confirm": "delete" } }),
+      env as AppEnv,
+      executionContext()
+    );
+    expect(rejected.status).toBe(503);
+    const invalid = await handler.fetch(
+      new Request("https://mcp.example/mcp", { headers: { "X-MCP-Confirm": "typo" } }),
+      env as AppEnv,
+      executionContext()
+    );
+    expect(invalid.status).toBe(400);
+  }
+  expect(legacy.fetch).toHaveBeenCalledTimes(3);
   expect(selectMcpApiHandler(false, { MCP_STATELESS_ENABLED: "true" } as AppEnv, legacy)).toBe(statelessMcpHandler);
-  expect(selectMcpApiHandler(true, { MCP_STATELESS_ENABLED: "true" } as AppEnv, legacy)).toBe(legacy);
 });
 
 it.each(["v1", "v2"])(
