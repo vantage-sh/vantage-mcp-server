@@ -6,7 +6,11 @@ import { vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { costGroupingDescription, costGroupingSchema } from "./schemas";
+import {
+  costGroupingDescription,
+  costGroupingSchema,
+  queryFinancialCommitmentReportCostsOutputSchema,
+} from "./schemas";
 
 const description = `
 Query cost data for a Financial Commitment Report. Omit date_bin, groupings, filter, and
@@ -49,6 +53,7 @@ export default registerTool({
   name: "query-financial-commitment-report-costs",
   title: "Query Financial Commitment Report Costs",
   description,
+  outputSchema: queryFinancialCommitmentReportCostsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

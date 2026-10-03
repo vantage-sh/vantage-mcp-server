@@ -2,11 +2,13 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { savedFilterOutputSchema } from "./schemas";
 
 export default registerTool({
   name: "get-saved-filter",
   title: "Get Saved Filter",
   description: "Get a Saved Filter by token, including its VQL filter and associated Cost Report tokens.",
+  outputSchema: savedFilterOutputSchema,
   annotations: { readOnly: true, destructive: false, openWorld: false },
   args: { saved_filter_token: vantageToken("saved_filter") },
   async execute(args, ctx) {

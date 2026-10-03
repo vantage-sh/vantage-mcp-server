@@ -4,6 +4,7 @@ import { nonempty, vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { getTeamsOutputSchema } from "./schemas";
 
 const description = `
 Return all Teams that the user has access to.
@@ -21,6 +22,7 @@ export default registerTool({
   name: "get-teams",
   title: "Get Teams",
   description,
+  outputSchema: getTeamsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

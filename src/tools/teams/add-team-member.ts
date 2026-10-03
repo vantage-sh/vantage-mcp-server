@@ -3,7 +3,7 @@ import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { teamMemberRole } from "./schemas";
+import { teamMemberOutputSchema, teamMemberRole } from "./schemas";
 
 const description = `
 Add a user to a Team by email address and assign their Team role.
@@ -13,6 +13,7 @@ export default registerTool({
   name: "add-team-member",
   title: "Add Team Member",
   description,
+  outputSchema: teamMemberOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

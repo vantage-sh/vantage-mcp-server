@@ -2,6 +2,7 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { networkFlowReportOutputSchema } from "./schemas";
 
 const description = `
 Gets a saved Network Flow Report by token. Open in the console at https://console.vantage.sh/go/<token>.
@@ -11,6 +12,7 @@ export default registerTool({
   name: "get-network-flow-report",
   title: "Get Network Flow Report",
   description,
+  outputSchema: networkFlowReportOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

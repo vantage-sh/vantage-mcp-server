@@ -2,6 +2,7 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { workspaceOutputSchema } from "./schemas";
 
 const description = `
 Gets a specific Workspace by its token. Workspaces are isolated environments within Vantage for organizing cost data and access control across teams.
@@ -15,6 +16,7 @@ export default registerTool({
   name: "get-workspace",
   title: "Get Workspace",
   description,
+  outputSchema: workspaceOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

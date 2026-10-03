@@ -4,6 +4,7 @@ import { nonempty, vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listBudgetsOutputSchema } from "./schemas";
 
 const description = `
 List all budgets available in the Vantage account. Budgets help track spending against predefined limits.
@@ -25,6 +26,7 @@ export default registerTool({
   name: "list-budgets",
   title: "List Budgets",
   description,
+  outputSchema: listBudgetsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

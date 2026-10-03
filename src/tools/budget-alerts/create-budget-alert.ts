@@ -4,6 +4,7 @@ import registerTool from "../structure/registerTool";
 import {
   budgetAlertBudgetTokens,
   budgetAlertDurationInDays,
+  budgetAlertOutputSchema,
   budgetAlertPeriodToTrack,
   budgetAlertRecipientChannels,
   budgetAlertRecipientEmails,
@@ -19,6 +20,7 @@ export default registerTool({
   name: "create-budget-alert",
   title: "Create Budget Alert",
   description,
+  outputSchema: budgetAlertOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

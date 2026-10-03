@@ -4,6 +4,7 @@ import { nonempty, vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listResourceReportsOutputSchema } from "./schemas";
 
 const description = `
 List all resource reports available. Resource reports are already created reports authored by a user in Vantage.
@@ -31,6 +32,7 @@ export default registerTool({
   name: "list-resource-reports",
   title: "List Resource Reports",
   description,
+  outputSchema: listResourceReportsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

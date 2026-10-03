@@ -5,6 +5,7 @@ import { vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listAnomaliesOutputSchema } from "./schemas";
 
 const description = `
 Given a token of a Cost Report, look for anomalies in the report. You may optionally pass a Provider, like AWS to filter on. If you do pass a Provider, you can futher filter on a Service, like EC2 or S3.
@@ -27,6 +28,7 @@ export default registerTool({
   name: "list-anomalies",
   title: "List Anomalies",
   description,
+  outputSchema: listAnomaliesOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

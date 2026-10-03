@@ -11,6 +11,7 @@ import {
   filterSchema,
   groupingDescription,
   groupingsSchema,
+  queryKubernetesEfficiencyReportCostsOutputSchema,
   validateQueryDateRange,
 } from "./schemas";
 
@@ -24,6 +25,7 @@ export default registerTool({
   name: "query-kubernetes-efficiency-report-costs",
   title: "Query Kubernetes Efficiency Report Costs",
   description,
+  outputSchema: queryKubernetesEfficiencyReportCostsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

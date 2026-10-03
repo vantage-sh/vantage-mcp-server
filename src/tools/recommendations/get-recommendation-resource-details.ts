@@ -2,6 +2,7 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { recommendationProviderResourceOutputSchema } from "./schemas";
 
 const description = `
 Get comprehensive details about a specific infrastructure resource within a cost optimization recommendation, including the exact actions recommended for that resource.
@@ -36,6 +37,7 @@ export default registerTool({
   name: "get-recommendation-resource-details",
   title: "Get Recommendation Resource Details",
   description,
+  outputSchema: recommendationProviderResourceOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

@@ -15,6 +15,17 @@ testTool(
   ],
   [
     {
+      name: "deleted Dashboard token",
+      data: { token: "dshbrd_fb27faa25ef5ea72" },
+    },
+    {
+      name: "missing token",
+      data: { token: undefined as any },
+      expectedIssues: ["Invalid input: expected string, received undefined"],
+    },
+  ],
+  [
+    {
       name: "successful call",
       apiCallHandler: requestsInOrder([
         {

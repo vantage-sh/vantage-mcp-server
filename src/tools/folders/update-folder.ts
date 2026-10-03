@@ -3,6 +3,7 @@ import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { folderOutputSchema } from "./schemas";
 
 const description = `
 Updates a Folder's title, parent, or SavedFilter tokens. Folder type cannot be changed after creation.
@@ -12,6 +13,7 @@ export default registerTool({
   name: "update-folder",
   title: "Update Folder",
   description,
+  outputSchema: folderOutputSchema,
   annotations: {
     destructive: true,
     openWorld: false,

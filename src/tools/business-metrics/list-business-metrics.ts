@@ -3,7 +3,7 @@ import paginationData from "../../utils/paginationData";
 import { nonempty } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { BUSINESS_METRICS_LIST_LIMIT } from "./schemas";
+import { BUSINESS_METRICS_LIST_LIMIT, listBusinessMetricsOutputSchema } from "./schemas";
 
 const description = `
 List all BusinessMetrics available to the current Vantage API token.
@@ -21,6 +21,7 @@ export default registerTool({
   name: "list-business-metrics",
   title: "List Business Metrics",
   description,
+  outputSchema: listBusinessMetricsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

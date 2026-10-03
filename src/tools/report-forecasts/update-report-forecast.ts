@@ -3,7 +3,7 @@ import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { nullableBusinessMetricToken, scenarioModelTokens, setAsDefault } from "./schemas";
+import { nullableBusinessMetricToken, reportForecastOutputSchema, scenarioModelTokens, setAsDefault } from "./schemas";
 
 const description = `
 Update a scenario-model ReportForecast. Providing scenario_model_tokens replaces the assigned models.
@@ -15,6 +15,7 @@ export default registerTool({
   name: "update-report-forecast",
   title: "Update Report Forecast",
   description,
+  outputSchema: reportForecastOutputSchema,
   annotations: {
     destructive: true,
     openWorld: false,

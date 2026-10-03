@@ -2,6 +2,7 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { virtualTagConfigOutputSchema } from "./schemas";
 
 const description = `
 Returns one existing Virtual Tag (Virtual Tag Config) with its complete ordered mappings/values. Use this to show all values on a tag and discover value tokens before editing or reordering.
@@ -11,6 +12,7 @@ export default registerTool({
   name: "get-virtual-tag-config",
   title: "Get Virtual Tag Config",
   description,
+  outputSchema: virtualTagConfigOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

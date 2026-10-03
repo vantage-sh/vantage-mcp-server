@@ -3,6 +3,7 @@ import paginationData from "../../utils/paginationData";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listScenarioModelsOutputSchema } from "./schemas";
 
 const description = `
 List ScenarioModels available to the current Vantage API token.
@@ -20,6 +21,7 @@ export default registerTool({
   name: "list-scenario-models",
   title: "List Scenario Models",
   description,
+  outputSchema: listScenarioModelsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

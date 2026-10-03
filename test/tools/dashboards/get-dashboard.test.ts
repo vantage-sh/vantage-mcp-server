@@ -2,12 +2,13 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/dashboards/get-dashboard";
 import { requestsInOrder, testTool } from "../../../src/utils/testing";
+import { dashboardOutputSchemaTests, dashboardResponse } from "./fixtures";
 
 const success = {
   token: "dshbrd_fb27faa25ef5ea72",
   title: "My Dashboard",
   workspace_token: "wrkspc_e5c550d14cfa3101",
-  widgets: [],
+  widgets: dashboardResponse.widgets,
   saved_filter_tokens: [],
   date_bin: "day" as const,
   date_interval: "this_month" as const,
@@ -25,6 +26,7 @@ testTool(
       },
     },
   ],
+  dashboardOutputSchemaTests,
   [
     {
       name: "successful call",

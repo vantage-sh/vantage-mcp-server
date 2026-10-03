@@ -4,6 +4,7 @@ import { nonempty, vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listKubernetesEfficiencyReportsOutputSchema } from "./schemas";
 
 const description = `
 Lists saved Kubernetes Efficiency Reports.
@@ -13,6 +14,7 @@ export default registerTool({
   name: "list-kubernetes-efficiency-reports",
   title: "List Kubernetes Efficiency Reports",
   description,
+  outputSchema: listKubernetesEfficiencyReportsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

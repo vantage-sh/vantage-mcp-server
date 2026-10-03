@@ -2,6 +2,7 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { anomalyAlertOutputSchema } from "./schemas";
 
 const description = `
 Gets a specific anomaly alert by its token.
@@ -15,6 +16,7 @@ export default registerTool({
   name: "get-anomaly",
   title: "Get Anomaly",
   description,
+  outputSchema: anomalyAlertOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

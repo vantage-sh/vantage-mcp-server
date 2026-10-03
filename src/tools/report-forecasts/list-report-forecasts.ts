@@ -4,6 +4,7 @@ import { vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listReportForecastsOutputSchema } from "./schemas";
 
 const description = `
 List scenario-model ReportForecasts for a Cost Report.
@@ -22,6 +23,7 @@ export default registerTool({
   name: "list-report-forecasts",
   title: "List Report Forecasts",
   description,
+  outputSchema: listReportForecastsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

@@ -3,6 +3,7 @@ import dateValidator from "../../utils/dateValidator";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { annotationOutputSchema } from "./schemas";
 
 const description = `
 Create an Annotation on one or more Cost Reports for a specific date. Use this tool when a user asks to add a note, explanation, or event marker to Cost Reports.
@@ -12,6 +13,7 @@ export default registerTool({
   name: "create-annotation",
   title: "Create Annotation",
   description,
+  outputSchema: annotationOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

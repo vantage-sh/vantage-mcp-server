@@ -1,6 +1,7 @@
 import z from "zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { workspaceOutputSchema } from "./schemas";
 
 const description = `
 Create a new Workspace in Vantage. Workspaces are isolated environments for organizing cost data and access control across teams.
@@ -10,6 +11,7 @@ export default registerTool({
   name: "create-workspace",
   title: "Create Workspace",
   description,
+  outputSchema: workspaceOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

@@ -6,6 +6,7 @@ import {
   nullablePriority,
   nullableProvider,
   nullableService,
+  scenarioModelOutputSchema,
   scenarioModelPeriod,
   validateProviderServiceWorkspace,
   workspaceTokenForFilters,
@@ -21,6 +22,7 @@ export default registerTool({
   name: "create-scenario-model",
   title: "Create Scenario Model",
   description,
+  outputSchema: scenarioModelOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

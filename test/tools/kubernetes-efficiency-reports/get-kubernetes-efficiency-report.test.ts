@@ -1,7 +1,12 @@
 import { type GetKubernetesEfficiencyReportResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/kubernetes-efficiency-reports/get-kubernetes-efficiency-report";
-import { requestsInOrder, testTool } from "../../../src/utils/testing";
+import {
+  type ExtractOutputSchema,
+  requestsInOrder,
+  type SchemaTestTableItem,
+  testTool,
+} from "../../../src/utils/testing";
 
 const successData: GetKubernetesEfficiencyReportResponse = {
   token: "kbnts_eff_rprt_123",
@@ -19,6 +24,17 @@ const successData: GetKubernetesEfficiencyReportResponse = {
   filter: null,
 };
 
+const validOutput = successData;
+
+const outputSchemaTests: SchemaTestTableItem<ExtractOutputSchema<typeof tool>>[] = [
+  { name: "valid response", data: validOutput },
+  {
+    name: "rejects a non-string resource token",
+    data: { ...validOutput, token: 123 as any },
+    expectedIssues: ["Invalid input: expected string, received number"],
+  },
+];
+
 testTool(
   tool,
   [
@@ -32,6 +48,7 @@ testTool(
       expectedIssues: ["Must be a Kubernetes Efficiency Report token (kbnts_eff_rprt_*)"],
     },
   ],
+  outputSchemaTests,
   [
     {
       name: "successful call encodes the report token",

@@ -4,6 +4,7 @@ import dateValidator from "../../utils/dateValidator";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { annotationOutputSchema } from "./schemas";
 
 const description = `
 Update the title, date, message, or associated Cost Reports of an existing Annotation. Providing report_tokens replaces all existing Report associations. Use list-annotations to find the annotation_token.
@@ -13,6 +14,7 @@ export default registerTool({
   name: "update-annotation",
   title: "Update Annotation",
   description,
+  outputSchema: annotationOutputSchema,
   annotations: {
     destructive: true,
     openWorld: false,

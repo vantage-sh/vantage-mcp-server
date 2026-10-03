@@ -6,6 +6,7 @@ import {
   teamDefaultDashboardToken,
   teamDescription,
   teamName,
+  teamOutputSchema,
   teamRole,
   teamUserEmails,
   teamUserTokens,
@@ -20,6 +21,7 @@ export default registerTool({
   name: "update-team",
   title: "Update Team",
   description,
+  outputSchema: teamOutputSchema,
   annotations: {
     destructive: true,
     openWorld: false,

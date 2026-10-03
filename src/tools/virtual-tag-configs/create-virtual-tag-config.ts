@@ -4,7 +4,7 @@ import dateValidator from "../../utils/dateValidator";
 import { nonempty } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { collapsedTagKeySchema, virtualTagConfigValueSchema } from "./schemas";
+import { collapsedTagKeySchema, virtualTagConfigOutputSchema, virtualTagConfigValueSchema } from "./schemas";
 
 const description = `
 Creates a new Virtual Tag (Virtual Tag Config) in Vantage.
@@ -24,6 +24,7 @@ export default registerTool({
   name: "create-virtual-tag-config",
   title: "Create Virtual Tag Config",
   description,
+  outputSchema: virtualTagConfigOutputSchema,
   args: {
     key: nonempty().describe("The key of the VirtualTagConfig"),
     overridable: z

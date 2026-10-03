@@ -5,6 +5,7 @@ import { vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { getTeamMembersOutputSchema } from "./schemas";
 
 const description = `
 Return the members of a Team, including each user's name, email, token, and Team role.
@@ -14,6 +15,7 @@ export default registerTool({
   name: "get-team-members",
   title: "Get Team Members",
   description,
+  outputSchema: getTeamMembersOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

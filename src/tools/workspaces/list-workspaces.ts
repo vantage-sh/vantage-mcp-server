@@ -4,6 +4,7 @@ import { nonempty } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listWorkspacesOutputSchema } from "./schemas";
 
 const description = `
 List all Workspaces available to the authenticated API token. Workspaces are isolated environments within Vantage for organizing cost data and access control across teams.
@@ -25,6 +26,7 @@ export default registerTool({
   name: "list-workspaces",
   title: "List Workspaces",
   description,
+  outputSchema: listWorkspacesOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

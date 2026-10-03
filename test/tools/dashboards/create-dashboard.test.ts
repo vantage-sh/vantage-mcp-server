@@ -11,6 +11,7 @@ import {
   type SchemaTestTableItem,
   testTool,
 } from "../../../src/utils/testing";
+import { dashboardOutputSchemaTests, dashboardResponse } from "./fixtures";
 
 type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
@@ -127,7 +128,7 @@ const successData = {
   token: "dshbrd_123",
   title: "New Dashboard",
   workspace_token: "wrkspc_123",
-  widgets: [],
+  widgets: dashboardResponse.widgets,
   saved_filter_tokens: [],
   date_bin: "day" as const,
   date_interval: "this_month" as const,
@@ -176,4 +177,4 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   },
 ];
 
-testTool(tool, argumentSchemaTests, executionTests);
+testTool(tool, argumentSchemaTests, dashboardOutputSchemaTests, executionTests);

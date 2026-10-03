@@ -3,6 +3,7 @@ import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { canvasOutputSchema } from "./schemas";
 
 const description = `
 Updates an existing Canvas. You can update the title, the prompt, or both. Updating the prompt triggers an asynchronous refresh to regenerate the canvas data.
@@ -12,6 +13,7 @@ export default registerTool({
   name: "update-canvas",
   title: "Update Canvas",
   description,
+  outputSchema: canvasOutputSchema,
   annotations: {
     destructive: true,
     openWorld: false,

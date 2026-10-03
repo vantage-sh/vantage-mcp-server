@@ -2,6 +2,7 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { resourceOutputSchema } from "./schemas";
 
 const description = `
 Get detailed information about a specific provider resource using its token or UUID.
@@ -21,6 +22,7 @@ export default registerTool({
   name: "get-provider-resource",
   title: "Get Provider Resource",
   description,
+  outputSchema: resourceOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

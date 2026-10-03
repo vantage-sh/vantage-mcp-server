@@ -1,12 +1,13 @@
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { filter, title } from "./schemas";
+import { filter, savedFilterOutputSchema, title } from "./schemas";
 
 export default registerTool({
   name: "create-saved-filter",
   title: "Create Saved Filter",
   description: "Create a Saved Filter for reuse across Cost Reports. The filter uses VQL syntax.",
+  outputSchema: savedFilterOutputSchema,
   annotations: { readOnly: false, destructive: false, openWorld: false },
   args: {
     title,

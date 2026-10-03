@@ -5,6 +5,7 @@ import { vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listCostAlertEventsOutputSchema } from "./schemas";
 
 const description = `
 List events for a Cost Alert. Events are individual alert trigger records and can be filtered by Cost Report token.
@@ -14,6 +15,7 @@ export default registerTool({
   name: "list-cost-alert-events",
   title: "List Cost Alert Events",
   description,
+  outputSchema: listCostAlertEventsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

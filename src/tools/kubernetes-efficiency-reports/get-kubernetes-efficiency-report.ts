@@ -2,6 +2,7 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { kubernetesEfficiencyReportOutputSchema } from "./schemas";
 
 const description = `
 Gets a saved Kubernetes Efficiency Report by token.
@@ -11,6 +12,7 @@ export default registerTool({
   name: "get-kubernetes-efficiency-report",
   title: "Get Kubernetes Efficiency Report",
   description,
+  outputSchema: kubernetesEfficiencyReportOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

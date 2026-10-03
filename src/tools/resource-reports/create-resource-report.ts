@@ -3,7 +3,7 @@ import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { resourceReportColumns } from "./schemas";
+import { resourceReportColumns, resourceReportOutputSchema } from "./schemas";
 
 const description = `
 Create a saved Resource Report in Vantage. Resource Reports persist a VQL filter over cloud infrastructure resources so the view can be reopened, shared, added to dashboards, and queried later with list-provider-resources via resource_report_token. Returns the report token; link users to https://console.vantage.sh/go/<token>.
@@ -17,6 +17,7 @@ export default registerTool({
   name: "create-resource-report",
   title: "Create Resource Report",
   description,
+  outputSchema: resourceReportOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

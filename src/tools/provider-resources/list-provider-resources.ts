@@ -3,6 +3,7 @@ import paginationData from "../../utils/paginationData";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listProviderResourcesOutputSchema } from "./schemas";
 
 const description = `
 List infrastructure provider resources (instances, volumes, load balancers, etc.) from your cloud accounts.
@@ -88,6 +89,7 @@ export default registerTool({
   name: "list-provider-resources",
   title: "List Provider Resources",
   description,
+  outputSchema: listProviderResourcesOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

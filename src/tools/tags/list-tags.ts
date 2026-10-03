@@ -4,6 +4,7 @@ import paginationData from "../../utils/paginationData";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listTagsOutputSchema } from "./schemas";
 
 const description = `
 List tags that can be used to filter costs and cost reports.
@@ -27,6 +28,7 @@ export default registerTool({
   name: "list-tags",
   title: "List Tags",
   description,
+  outputSchema: listTagsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

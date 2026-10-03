@@ -83,3 +83,60 @@ export function countProvidedValueTypes(args: Record<string, unknown>): number {
     return field === "percentages" ? Array.isArray(value) && value.length > 0 : value !== undefined;
   }).length;
 }
+
+// Output schemas mirror the Vantage client response types.
+export const virtualTagConfigValueCostMetricAggregationResponseSchema = z.object({
+  tag: z.string().nullable().optional().describe("The tag to aggregate on."),
+});
+
+export const virtualTagConfigValueCostMetricResponseSchema = z.object({
+  filter: z.string().nullable().describe("The filter VQL for the cost metric."),
+  aggregation: virtualTagConfigValueCostMetricAggregationResponseSchema.describe("Aggregation."),
+});
+
+export const virtualTagConfigValueLabelTransformResponseSchema = z.object({
+  type: z.enum(["format", "split"]).describe("The label transform type."),
+  delimiter: z.string().nullable().optional().describe("Delimiter used by split transforms."),
+  index: z.number().nullable().optional().describe("Zero-based index used by split transforms."),
+  template: z.string().nullable().optional().describe("Template used by format transforms."),
+});
+
+export const virtualTagConfigValuePercentageResponseSchema = z.object({
+  value: z.string().describe("The tag value associated with a percentage of matched costs."),
+  pct: z.number().describe("The percentage of matched costs associated with the value."),
+});
+
+export const virtualTagConfigValueDateRangeResponseSchema = z.object({
+  start_date: z.string().nullable().describe("The start date of the range (inclusive), or null for unbounded."),
+  end_date: z.string().nullable().describe("The end date of the range (inclusive), or null for unbounded."),
+});
+
+export const virtualTagConfigValueResponseSchema = z.object({
+  token: z.string().describe("The token of the Value."),
+  filter: z.string().nullable().describe("The filter VQL for the Value."),
+  name: z.string().nullable().optional().describe("The name of the Value."),
+  business_metric_token: z.string().nullable().optional().describe("The token of the associated BusinessMetric."),
+  label_key: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The business metric label key used for this virtual tag value."),
+  label_values: z
+    .array(z.string())
+    .nullable()
+    .optional()
+    .describe("Optional business metric label values. An empty array includes every value for the label key."),
+  cost_metric: virtualTagConfigValueCostMetricResponseSchema.optional().describe("Cost metric."),
+  display_name: z.string().nullable().optional().describe("The display name for this allocation value."),
+  label_transforms: z
+    .array(virtualTagConfigValueLabelTransformResponseSchema)
+    .describe("Label transforms applied to business metric labels."),
+  percentages: z
+    .array(virtualTagConfigValuePercentageResponseSchema)
+    .describe("Labeled percentage allocations for matching costs."),
+  date_ranges: z
+    .array(virtualTagConfigValueDateRangeResponseSchema)
+    .describe("Date ranges restricting when this value applies."),
+});
+
+export const virtualTagConfigValueOutputSchema = virtualTagConfigValueResponseSchema.shape;

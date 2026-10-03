@@ -3,6 +3,7 @@ import paginationData from "../../utils/paginationData";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listAccessPoliciesOutputSchema } from "./schemas";
 
 const description = `
 List the Access Policies on the account, including the cost filter each one applies and the Teams it is assigned to.
@@ -13,6 +14,7 @@ export default registerTool({
   name: "list-access-policies",
   title: "List Access Policies",
   description,
+  outputSchema: listAccessPoliciesOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

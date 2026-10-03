@@ -4,11 +4,13 @@ import { nonempty, vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listSavedFiltersOutputSchema } from "./schemas";
 
 export default registerTool({
   name: "list-saved-filters",
   title: "List Saved Filters",
   description: "List Saved Filters that can be applied to Cost Reports, optionally searching by title or Workspace.",
+  outputSchema: listSavedFiltersOutputSchema,
   annotations: { readOnly: true, destructive: false, openWorld: false },
   args: {
     page: z.number().int().min(1).optional().default(1).describe("Page number, defaults to 1."),

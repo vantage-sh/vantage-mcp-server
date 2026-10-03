@@ -5,6 +5,7 @@ import registerTool from "../structure/registerTool";
 import {
   costAlertInterval,
   costAlertMinimumThreshold,
+  costAlertOutputSchema,
   costAlertReportTokens,
   costAlertThreshold,
   costAlertTitle,
@@ -23,6 +24,7 @@ export default registerTool({
   name: "create-cost-alert",
   title: "Create Cost Alert",
   description,
+  outputSchema: costAlertOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

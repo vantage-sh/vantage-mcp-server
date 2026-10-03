@@ -393,4 +393,37 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   },
 ];
 
-testTool(tool, argumentSchemaTests, executionTests);
+const validOutput = {
+  costs: successData.costs,
+  total_cost: successData.total_cost,
+  notes: "Costs records represent one day.",
+  pagination: {
+    hasNextPage: false,
+    nextPage: 0,
+  },
+};
+
+const outputSchemaTests: SchemaTestTableItem<ExtractOutputSchema<typeof tool>>[] = [
+  { name: "valid response", data: validOutput },
+  {
+    name: "count aggregation response",
+    data: { ...validOutput, total_count: 3, counts: [{ accrued_at: "2026-09-01", count: 3 }] },
+  },
+  {
+    name: "rejects a string count",
+    data: { ...validOutput, total_count: "3" as any },
+    expectedIssues: ["Invalid input: expected number, received string"],
+  },
+  {
+    name: "rejects a numeric total cost amount that would lose decimal precision",
+    data: { ...validOutput, total_cost: { ...validOutput.total_cost, amount: 100.5 as any } },
+    expectedIssues: ["Invalid input: expected string, received number"],
+  },
+  {
+    name: "rejects an invalid pagination flag",
+    data: { ...validOutput, pagination: { hasNextPage: "true" as any, nextPage: 2 } },
+    expectedIssues: ["Invalid input: expected boolean, received string"],
+  },
+];
+
+testTool(tool, argumentSchemaTests, outputSchemaTests, executionTests);

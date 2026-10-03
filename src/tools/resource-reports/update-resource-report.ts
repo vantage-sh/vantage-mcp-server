@@ -3,7 +3,7 @@ import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { resourceReportColumns } from "./schemas";
+import { resourceReportColumns, resourceReportOutputSchema } from "./schemas";
 
 const description = `
 Updates an existing Resource Report. Use to change the title, VQL filter, table columns, or folder.
@@ -15,6 +15,7 @@ export default registerTool({
   name: "update-resource-report",
   title: "Update Resource Report",
   description,
+  outputSchema: resourceReportOutputSchema,
   annotations: {
     destructive: true,
     openWorld: false,

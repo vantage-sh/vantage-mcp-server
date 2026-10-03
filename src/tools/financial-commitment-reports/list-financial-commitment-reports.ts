@@ -4,6 +4,7 @@ import { nonempty, vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listFinancialCommitmentReportsOutputSchema } from "./schemas";
 
 const description = `
 List all financial commitment reports available in the Vantage account.
@@ -22,6 +23,7 @@ export default registerTool({
   name: "list-financial-commitment-reports",
   title: "List Financial Commitment Reports",
   description,
+  outputSchema: listFinancialCommitmentReportsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

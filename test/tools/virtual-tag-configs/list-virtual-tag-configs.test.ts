@@ -1,7 +1,12 @@
 import type { GetVirtualTagConfigsResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/virtual-tag-configs/list-virtual-tag-configs";
-import { requestsInOrder, testTool } from "../../../src/utils/testing";
+import {
+  type ExtractOutputSchema,
+  requestsInOrder,
+  type SchemaTestTableItem,
+  testTool,
+} from "../../../src/utils/testing";
 
 const validArguments = {
   q: "team",
@@ -32,12 +37,24 @@ const successData: GetVirtualTagConfigsResponse = {
   ],
 };
 
+const validOutput = successData;
+
+const outputSchemaTests: SchemaTestTableItem<ExtractOutputSchema<typeof tool>>[] = [
+  { name: "valid response", data: validOutput },
+  {
+    name: "rejects invalid Virtual Tag Config entries",
+    data: { ...validOutput, virtual_tag_configs: [123 as any] },
+    expectedIssues: ["Invalid input: expected object, received number"],
+  },
+];
+
 testTool(
   tool,
   [
     { name: "lists all configs", data: { q: undefined } },
     { name: "searches configs by key", data: validArguments },
   ],
+  outputSchemaTests,
   [
     {
       name: "successful call",

@@ -6,6 +6,7 @@ import {
   virtualTagConfigToken,
   virtualTagConfigValueCreateOptionalArgs,
   virtualTagConfigValueFilter,
+  virtualTagConfigValueOutputSchema,
 } from "./schemas";
 
 const description = `
@@ -16,6 +17,7 @@ export default registerTool({
   name: "create-virtual-tag-config-value",
   title: "Create Virtual Tag Config Value",
   description,
+  outputSchema: virtualTagConfigValueOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

@@ -1,7 +1,12 @@
 import type { CreateSavedFilterResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/saved-filters/create-saved-filter";
-import { requestsInOrder, testTool } from "../../../src/utils/testing";
+import {
+  type ExtractOutputSchema,
+  requestsInOrder,
+  type SchemaTestTableItem,
+  testTool,
+} from "../../../src/utils/testing";
 
 const args = { title: "AWS costs", workspace_token: "wrkspc_123", filter: "costs.provider = 'aws'" };
 const success: CreateSavedFilterResponse = {
@@ -11,6 +16,17 @@ const success: CreateSavedFilterResponse = {
   created_at: "2024-07-15T16:08:53Z",
   created_by: "usr_123",
 };
+
+const validOutput = success;
+
+const outputSchemaTests: SchemaTestTableItem<ExtractOutputSchema<typeof tool>>[] = [
+  { name: "valid response", data: validOutput },
+  {
+    name: "rejects a non-string resource token",
+    data: { ...validOutput, token: 123 as any },
+    expectedIssues: ["Invalid input: expected string, received number"],
+  },
+];
 
 testTool(
   tool,
@@ -28,6 +44,7 @@ testTool(
       expectedIssues: ["Must be a Workspace token (wrkspc_*)"],
     },
   ],
+  outputSchemaTests,
   [
     {
       name: "successful call",

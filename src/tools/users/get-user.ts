@@ -2,6 +2,7 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { userOutputSchema } from "./schemas";
 
 const description = `
 Gets a specific User by their token. Use get-users to discover user tokens in the workspace.
@@ -11,6 +12,7 @@ export default registerTool({
   name: "get-user",
   title: "Get User",
   description,
+  outputSchema: userOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

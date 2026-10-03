@@ -3,6 +3,7 @@ import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { reportNotificationOutputSchema } from "./schemas";
 
 const description = `
 Updates an existing Report Notification in Vantage.
@@ -16,6 +17,7 @@ export default registerTool({
   name: "update-report-notification",
   title: "Update Report Notification",
   description,
+  outputSchema: reportNotificationOutputSchema,
   annotations: {
     destructive: true,
     openWorld: false,

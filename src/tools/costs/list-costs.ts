@@ -5,6 +5,7 @@ import { vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listCostsOutputSchema } from "./schemas";
 
 const description = `
 List the cost items inside a report. The Token of a Report must be provided. Use the page value of 1 to start.
@@ -80,6 +81,7 @@ export default registerTool({
   name: "list-costs",
   title: "List Costs",
   description,
+  outputSchema: listCostsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

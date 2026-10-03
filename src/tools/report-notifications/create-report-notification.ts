@@ -2,6 +2,7 @@ import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { reportNotificationOutputSchema } from "./schemas";
 
 const description = `
 Create a new Report Notification in Vantage.
@@ -15,6 +16,7 @@ export default registerTool({
   name: "create-report-notification",
   title: "Create Report Notification",
   description,
+  outputSchema: reportNotificationOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

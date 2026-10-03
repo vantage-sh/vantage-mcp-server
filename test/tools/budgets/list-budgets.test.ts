@@ -40,6 +40,7 @@ const successData = {
     {
       token: "budget_123",
       name: "Monthly AWS Budget",
+      type: "cost" as const,
       workspace_token: "wrkspc_123",
       created_at: "2023-01-15T10:30:00Z",
       budget_alert_tokens: [],
@@ -55,6 +56,7 @@ const successData = {
     {
       token: "budget_456",
       name: "Quarterly Azure Budget",
+      type: "cost" as const,
       workspace_token: "wrkspc_123",
       created_at: "2023-01-15T10:30:00Z",
       budget_alert_tokens: [],
@@ -128,4 +130,21 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   },
 ];
 
-testTool(tool, argumentSchemaTests, executionTests);
+const validOutput = {
+  budgets: successData.budgets,
+  pagination: {
+    hasNextPage: false,
+    nextPage: 0,
+  },
+};
+
+const outputSchemaTests: SchemaTestTableItem<ExtractOutputSchema<typeof tool>>[] = [
+  { name: "valid response", data: validOutput },
+  {
+    name: "rejects an invalid pagination flag",
+    data: { ...validOutput, pagination: { hasNextPage: "true" as any, nextPage: 2 } },
+    expectedIssues: ["Invalid input: expected boolean, received string"],
+  },
+];
+
+testTool(tool, argumentSchemaTests, outputSchemaTests, executionTests);

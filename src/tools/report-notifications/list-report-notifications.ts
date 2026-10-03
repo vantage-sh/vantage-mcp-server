@@ -4,6 +4,7 @@ import { nonempty, vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listReportNotificationsOutputSchema } from "./schemas";
 
 const description = `
 List Report Notifications available in the Vantage account. Report Notifications are scheduled deliveries of Cost Report summaries to users, Slack channels, or Microsoft Teams channels.
@@ -25,6 +26,7 @@ export default registerTool({
   name: "list-report-notifications",
   title: "List Report Notifications",
   description,
+  outputSchema: listReportNotificationsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

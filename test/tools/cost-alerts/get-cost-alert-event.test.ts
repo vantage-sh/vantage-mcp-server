@@ -1,7 +1,12 @@
 import { type GetCostAlertEventResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/cost-alerts/get-cost-alert-event";
-import { requestsInOrder, testTool } from "../../../src/utils/testing";
+import {
+  type ExtractOutputSchema,
+  requestsInOrder,
+  type SchemaTestTableItem,
+  testTool,
+} from "../../../src/utils/testing";
 
 const success: GetCostAlertEventResponse = {
   token: "cstm_alrt_evnt_123",
@@ -15,6 +20,17 @@ const success: GetCostAlertEventResponse = {
   report_token: "rprt_123",
   alert_token: "cstm_alrt_rl_123",
 };
+
+const validOutput = success;
+
+const outputSchemaTests: SchemaTestTableItem<ExtractOutputSchema<typeof tool>>[] = [
+  { name: "valid response", data: validOutput },
+  {
+    name: "rejects a non-string resource token",
+    data: { ...validOutput, token: 123 as any },
+    expectedIssues: ["Invalid input: expected string, received number"],
+  },
+];
 
 testTool(
   tool,
@@ -43,6 +59,7 @@ testTool(
       expectedIssues: ["Too small: expected string to have >=1 characters"],
     },
   ],
+  outputSchemaTests,
   [
     {
       name: "successful call",

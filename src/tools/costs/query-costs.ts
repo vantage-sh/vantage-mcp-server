@@ -4,6 +4,7 @@ import paginationData from "../../utils/paginationData";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { queryCostsOutputSchema } from "./schemas";
 
 const description = `
 Query for costs in a Vantage Account. These are independent of a cost reports.
@@ -108,6 +109,7 @@ export default registerTool({
   name: "query-costs",
   title: "Query Costs",
   description,
+  outputSchema: queryCostsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

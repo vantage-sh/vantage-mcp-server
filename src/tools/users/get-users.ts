@@ -3,6 +3,7 @@ import paginationData from "../../utils/paginationData";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { getUsersOutputSchema } from "./schemas";
 
 const description = `
 Return all Users that the user can see in the workspace.
@@ -18,6 +19,7 @@ export default registerTool({
   name: "get-users",
   title: "Get Users",
   description,
+  outputSchema: getUsersOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

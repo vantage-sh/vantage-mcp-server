@@ -4,6 +4,7 @@ import { vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listBudgetAlertsOutputSchema } from "./schemas";
 
 const description = `
 List Budget Alerts in Vantage. Budget Alerts notify users or connected channels when one or more Budgets reach a percentage threshold during a monthly time window.
@@ -13,6 +14,7 @@ export default registerTool({
   name: "list-budget-alerts",
   title: "List Budget Alerts",
   description,
+  outputSchema: listBudgetAlertsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

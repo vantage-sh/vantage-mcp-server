@@ -2,6 +2,7 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { removeTeamMemberOutputSchema } from "./schemas";
 
 const description = `
 Remove a user from a Team without deleting the user.
@@ -11,6 +12,7 @@ export default registerTool({
   name: "remove-team-member",
   title: "Remove Team Member",
   description,
+  outputSchema: removeTeamMemberOutputSchema,
   annotations: {
     destructive: true,
     openWorld: false,

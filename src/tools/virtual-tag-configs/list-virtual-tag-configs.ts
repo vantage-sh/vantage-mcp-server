@@ -1,6 +1,7 @@
 import { nonempty } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { virtualTagConfigsOutputSchema } from "./schemas";
 
 const description = `
 Lists or searches the Virtual Tags (Virtual Tag Configs) the current API token can access, including every mapping/value. Use this to discover config and value tokens or find a tag by key.
@@ -10,6 +11,7 @@ export default registerTool({
   name: "list-virtual-tag-configs",
   title: "List Virtual Tag Configs",
   description,
+  outputSchema: virtualTagConfigsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

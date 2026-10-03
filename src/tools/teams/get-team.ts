@@ -2,6 +2,7 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { teamOutputSchema } from "./schemas";
 
 const description = `
 Gets a specific team with its token.
@@ -15,6 +16,7 @@ export default registerTool({
   name: "get-team",
   title: "Get Team",
   description,
+  outputSchema: teamOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

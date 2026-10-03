@@ -1,7 +1,12 @@
 import { pathEncode, type UpdateSavedFilterResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/saved-filters/update-saved-filter";
-import { requestsInOrder, testTool } from "../../../src/utils/testing";
+import {
+  type ExtractOutputSchema,
+  requestsInOrder,
+  type SchemaTestTableItem,
+  testTool,
+} from "../../../src/utils/testing";
 
 const args = { saved_filter_token: "svd_fltr_123", title: "Azure costs", filter: "costs.provider = 'azure'" };
 const body = { title: args.title, filter: args.filter };
@@ -14,6 +19,17 @@ const success: UpdateSavedFilterResponse = {
   created_by: "usr_123",
   workspace_token: "wrkspc_123",
 };
+
+const validOutput = success;
+
+const outputSchemaTests: SchemaTestTableItem<ExtractOutputSchema<typeof tool>>[] = [
+  { name: "valid response", data: validOutput },
+  {
+    name: "rejects a non-string resource token",
+    data: { ...validOutput, token: 123 as any },
+    expectedIssues: ["Invalid input: expected string, received number"],
+  },
+];
 
 testTool(
   tool,
@@ -31,6 +47,7 @@ testTool(
       expectedIssues: ["Must be a Saved Filter token (svd_fltr_*)"],
     },
   ],
+  outputSchemaTests,
   [
     {
       name: "successful call",

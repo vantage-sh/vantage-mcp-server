@@ -3,6 +3,7 @@ import z from "zod";
 import { nonempty, vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { costProviderAccountsOutputSchema } from "./schemas";
 
 const description = `
 Get Cost Provider Accounts in a workspace with human-readable titles.
@@ -13,6 +14,7 @@ export default registerTool({
   name: "get-cost-provider-accounts",
   title: "Get Cost Provider Accounts",
   description,
+  outputSchema: costProviderAccountsOutputSchema,
   args: {
     workspace_token: vantageToken("workspace"),
     account_id: nonempty().optional().describe("Filter by a specific account ID."),

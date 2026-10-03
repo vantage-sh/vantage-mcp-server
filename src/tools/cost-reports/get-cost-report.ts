@@ -2,6 +2,7 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { costReportOutputSchema } from "./schemas";
 
 const description = `
 Gets a specific cost report by its token. The token of a report can be used to generate a link to the report in the Vantage Web UI: https://console.vantage.sh/go/<token>
@@ -16,6 +17,7 @@ export default registerTool({
   name: "get-cost-report",
   title: "Get Cost Report",
   description,
+  outputSchema: costReportOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

@@ -1,6 +1,7 @@
 import z from "zod";
 import dateValidator from "../../utils/dateValidator";
 import { vantageToken } from "../../utils/zod";
+import { paginationSchema } from "../../utils/zod/output";
 import MCPUserError from "../structure/MCPUserError";
 
 export const amountType = z.enum(["dollar", "percent"]).describe("Whether the amount is in dollars or percent.");
@@ -50,3 +51,33 @@ export function validateProviderServiceWorkspace(args: {
     });
   }
 }
+
+// Output schemas mirror the Vantage client response types.
+export const scenarioModelPeriodResponseSchema = z.object({
+  start_at: z.string().describe("The ISO 8601 start date of the period."),
+  end_at: z.string().nullable().describe("The ISO 8601 end date of the period."),
+  amount: z.string().describe("The period amount as a string to preserve decimal precision."),
+  amount_type: z.enum(["dollar", "percent"]).describe("Whether the amount is in dollars or percent."),
+});
+
+export const scenarioModelResponseSchema = z.object({
+  token: z.string().describe("The token identifying this resource."),
+  title: z.string().describe("Title."),
+  priority: z.number().nullable().describe("Priority."),
+  workspace_token: z.string().nullable().describe("Workspace token."),
+  provider: z.string().nullable().describe("Provider."),
+  service: z.string().nullable().describe("Service."),
+  periods: z.array(scenarioModelPeriodResponseSchema).describe("Periods."),
+  created_by_token: z.string().nullable().describe("Created by token."),
+  created_at: z.string().describe("Created at."),
+  updated_at: z.string().describe("Updated at."),
+});
+
+export const listScenarioModelsResponseSchema = z.object({
+  scenario_models: z.array(scenarioModelResponseSchema).describe("Scenario models."),
+  pagination: paginationSchema.describe("Pagination information for these results."),
+});
+
+export const scenarioModelOutputSchema = scenarioModelResponseSchema.shape;
+
+export const listScenarioModelsOutputSchema = listScenarioModelsResponseSchema.shape;

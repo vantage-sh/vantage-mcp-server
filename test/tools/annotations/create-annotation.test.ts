@@ -1,6 +1,11 @@
 import { expect } from "vitest";
 import tool from "../../../src/tools/annotations/create-annotation";
-import { requestsInOrder, testTool } from "../../../src/utils/testing";
+import {
+  type ExtractOutputSchema,
+  requestsInOrder,
+  type SchemaTestTableItem,
+  testTool,
+} from "../../../src/utils/testing";
 
 const validArguments = {
   report_tokens: ["rprt_123", "rprt_456"],
@@ -16,6 +21,17 @@ const annotation = {
   date: "2026-08-12",
   message: "Infrastructure migration completed",
 };
+
+const validOutput = annotation;
+
+const outputSchemaTests: SchemaTestTableItem<ExtractOutputSchema<typeof tool>>[] = [
+  { name: "valid response", data: validOutput },
+  {
+    name: "rejects a non-string resource token",
+    data: { ...validOutput, token: 123 as any },
+    expectedIssues: ["Invalid input: expected string, received number"],
+  },
+];
 
 testTool(
   tool,
@@ -72,6 +88,7 @@ testTool(
       expectedIssues: ["Too small: expected string to have >=1 characters"],
     },
   ],
+  outputSchemaTests,
   [
     {
       name: "successful call",

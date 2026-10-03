@@ -1,5 +1,6 @@
 import z from "zod";
 import dateValidator from "../../utils/dateValidator";
+import { paginationSchema } from "../../utils/zod/output";
 import MCPUserError from "../structure/MCPUserError";
 
 export const networkFlowReportRelativeDateIntervals = [
@@ -110,3 +111,70 @@ export function validateNetworkFlowReportDateRange(args: NetworkFlowReportDateRa
     });
   }
 }
+
+// Output schemas mirror the Vantage client response types.
+export const networkFlowReportResponseSchema = z.object({
+  token: z.string().describe("The token identifying this resource."),
+  title: z.string().describe("The title of the NetworkFlowReport."),
+  default: z.boolean().describe("Indicates whether the NetworkFlowReport is the default report."),
+  created_at: z.string().describe("The date and time, in UTC, the report was created. ISO 8601 Formatted."),
+  workspace_token: z.string().describe("The token for the Workspace the NetworkFlowReport is a part of."),
+  created_by_token: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The token for the User or Team that created this NetworkFlowReport."),
+  start_date: z
+    .string()
+    .nullable()
+    .describe("The start date for the NetworkFlowReport. Only set for custom date ranges. ISO 8601 Formatted."),
+  end_date: z
+    .string()
+    .nullable()
+    .describe("The end date for the NetworkFlowReport. Only set for custom date ranges. ISO 8601 Formatted."),
+  date_interval: z
+    .string()
+    .nullable()
+    .describe("The date range for the NetworkFlowReport. Only present if a custom date range is not specified."),
+  groupings: z.string().nullable().describe("The grouping aggregations applied to the filtered data."),
+  flow_direction: z
+    .string()
+    .nullable()
+    .describe("The flow weight of the NetworkFlowReport. Possible values: costs, bytes."),
+  flow_weight: z.string().describe("The flow weight of the NetworkFlowReport. Possible values: costs, bytes."),
+  filter: z
+    .string()
+    .nullable()
+    .describe(
+      "The filter applied to the NetworkFlowReport. Additional documentation available at https://docs.vantage.sh/vql."
+    ),
+});
+
+export const listNetworkFlowReportsResponseSchema = z.object({
+  network_flow_reports: z.array(networkFlowReportResponseSchema).describe("Network flow reports."),
+  pagination: paginationSchema.describe("Pagination information for these results."),
+});
+
+export const networkFlowLogResponseSchema = z.object({
+  groupings: z
+    .record(z.string(), z.unknown())
+    .describe("The grouping values for this aggregated Network Flow Log row."),
+  bytes: z.number().describe("The sampling-adjusted estimated byte count."),
+  estimated_cost: z.string().describe("The sampling-adjusted estimated cost."),
+  currency: z.string().describe("The ISO 4217 currency code for estimated costs."),
+  sampled_bytes: z.number().nullable().describe("The observed byte count when sampling applies."),
+  sampled_estimated_cost: z.string().nullable().describe("The observed estimated cost when sampling applies."),
+});
+
+export const queryNetworkFlowLogsResponseSchema = z.object({
+  network_flow_logs: z.array(networkFlowLogResponseSchema).describe("Network flow logs."),
+  flow_weight: z.string().describe("Flow weight."),
+  sampling: z.record(z.string(), z.unknown()).describe("Sampling."),
+  pagination: paginationSchema.describe("Pagination information for these results."),
+});
+
+export const networkFlowReportOutputSchema = networkFlowReportResponseSchema.shape;
+
+export const listNetworkFlowReportsOutputSchema = listNetworkFlowReportsResponseSchema.shape;
+
+export const queryNetworkFlowLogsOutputSchema = queryNetworkFlowLogsResponseSchema.shape;

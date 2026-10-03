@@ -6,6 +6,7 @@ import {
   accessPolicyDescription,
   accessPolicyDocument,
   accessPolicyFilter,
+  accessPolicyOutputSchema,
   accessPolicyTeamTokens,
   accessPolicyTitle,
 } from "./schemas";
@@ -19,6 +20,7 @@ export default registerTool({
   name: "update-access-policy",
   title: "Update Access Policy",
   description,
+  outputSchema: accessPolicyOutputSchema,
   annotations: {
     destructive: true,
     openWorld: false,

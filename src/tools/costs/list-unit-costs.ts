@@ -4,6 +4,7 @@ import paginationData from "../../utils/paginationData";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listUnitCostsOutputSchema } from "./schemas";
 
 const description = `
 Retrieve the unit costs for a given CostReport, with optional paging, date filters, and ordering.
@@ -27,6 +28,7 @@ export default registerTool({
   name: "list-unit-costs",
   title: "List Unit Costs",
   description,
+  outputSchema: listUnitCostsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

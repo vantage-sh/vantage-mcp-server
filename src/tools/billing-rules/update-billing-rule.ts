@@ -4,6 +4,7 @@ import dateValidator from "../../utils/dateValidator";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { billingRuleOutputSchema } from "./schemas";
 
 const description = `
 Updates an existing Billing Rule. You can update the title, dates, and type-specific fields.
@@ -18,6 +19,7 @@ export default registerTool({
   name: "update-billing-rule",
   title: "Update Billing Rule",
   description,
+  outputSchema: billingRuleOutputSchema,
   annotations: {
     destructive: true,
     openWorld: false,

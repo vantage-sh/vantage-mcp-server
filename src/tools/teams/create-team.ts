@@ -5,6 +5,7 @@ import {
   teamDefaultDashboardToken,
   teamDescription,
   teamName,
+  teamOutputSchema,
   teamRole,
   teamUserEmails,
   teamUserTokens,
@@ -21,6 +22,7 @@ export default registerTool({
   name: "create-team",
   title: "Create Team",
   description,
+  outputSchema: teamOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

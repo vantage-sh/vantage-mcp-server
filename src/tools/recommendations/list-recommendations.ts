@@ -5,6 +5,7 @@ import { vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listRecommendationsOutputSchema } from "./schemas";
 
 const SUPPORTED_PROVIDERS = ["aws", "gcp", "azure", "kubernetes", "datadog"] as const;
 
@@ -237,6 +238,7 @@ export default registerTool({
   name: "list-recommendations",
   title: "List Recommendations",
   description,
+  outputSchema: listRecommendationsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

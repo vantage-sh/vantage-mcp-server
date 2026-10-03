@@ -3,6 +3,7 @@ import paginationData from "../../utils/paginationData";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listBillingRulesOutputSchema } from "./schemas";
 
 const description = `
 List all billing rules available in the Vantage account. Billing rules allow you to adjust, exclude, or add charges to your cost data.
@@ -17,6 +18,7 @@ export default registerTool({
   name: "list-billing-rules",
   title: "List Billing Rules",
   description,
+  outputSchema: listBillingRulesOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

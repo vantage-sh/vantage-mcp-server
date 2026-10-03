@@ -10,6 +10,7 @@ import {
   flowDirectionSchema,
   flowWeightSchemaForUpdate,
   groupingsSchema,
+  networkFlowReportOutputSchema,
   startDateSchema,
   validateNetworkFlowReportDateRange,
 } from "./schemas";
@@ -22,6 +23,7 @@ export default registerTool({
   name: "update-network-flow-report",
   title: "Update Network Flow Report",
   description,
+  outputSchema: networkFlowReportOutputSchema,
   annotations: {
     destructive: true,
     openWorld: false,

@@ -2,6 +2,7 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { billingRuleOutputSchema } from "./schemas";
 
 const description = `
 Gets a specific Billing Rule by its token. Returns details about the rule including its type, configuration, and applicable dates.
@@ -11,6 +12,7 @@ export default registerTool({
   name: "get-billing-rule",
   title: "Get Billing Rule",
   description,
+  outputSchema: billingRuleOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

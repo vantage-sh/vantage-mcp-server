@@ -3,7 +3,7 @@ import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { budgetPeriod, budgetType, budgetUnit, periodCadence } from "./schemas";
+import { budgetOutputSchema, budgetPeriod, budgetType, budgetUnit, periodCadence } from "./schemas";
 
 const description = `
 Updates an existing Budget. You can update the name, linked Cost Report, child Budget tokens for hierarchical budgets, period cadence, or budget periods.
@@ -13,6 +13,7 @@ export default registerTool({
   name: "update-budget",
   title: "Update Budget",
   description,
+  outputSchema: budgetOutputSchema,
   annotations: {
     destructive: true,
     openWorld: false,

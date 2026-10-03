@@ -2,6 +2,7 @@ import z from "zod";
 import dateValidator from "../../utils/dateValidator";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { billingRuleOutputSchema } from "./schemas";
 
 const description = `
 Creates a new Billing Rule. Billing rules allow you to adjust, exclude, credit, charge, or apply custom modifications to your cost data.
@@ -16,6 +17,7 @@ export default registerTool({
   name: "create-billing-rule",
   title: "Create Billing Rule",
   description,
+  outputSchema: billingRuleOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

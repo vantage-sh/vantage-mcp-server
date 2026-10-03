@@ -4,7 +4,7 @@ import { nonempty, vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { folderType } from "./schemas";
+import { folderType, listFoldersOutputSchema } from "./schemas";
 
 const description = `
 List folders for Cost Reports or Resource Reports, optionally filtering by title, Workspace, or folder type. Use CostFolder for Cost Report folders and ProviderResourceFolder for Resource Report folders; folder tokens link to https://console.vantage.sh/go/<token>.
@@ -25,6 +25,7 @@ export default registerTool({
   name: "list-folders",
   title: "List Folders",
   description,
+  outputSchema: listFoldersOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

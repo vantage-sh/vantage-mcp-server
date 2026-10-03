@@ -151,6 +151,21 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     },
   },
   {
+    name: "successful asynchronous update",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: `/v2/virtual_tag_configs/${pathEncode("vtag_123")}`,
+        params: requestBody,
+        method: "PUT",
+        result: { ok: true, data: { request_id: "request_123", status_url: "/v2/requests/request_123" } },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const result = await callExpectingSuccess(validArguments);
+      expect(result).toEqual({ request_id: "request_123", status_url: "/v2/requests/request_123" });
+    },
+  },
+  {
     name: "requires a field to update",
     apiCallHandler: requestsInOrder([]),
     handler: async ({ callExpectingMCPUserError }) => {
@@ -180,4 +195,29 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   },
 ];
 
-testTool(tool, argumentSchemaTests, executionTests);
+const validOutput = successData;
+
+const outputSchemaTests: SchemaTestTableItem<ExtractOutputSchema<typeof tool>>[] = [
+  { name: "valid response", data: validOutput },
+  {
+    name: "asynchronous job response",
+    data: { request_id: "request_123", status_url: "/v2/requests/request_123" },
+  },
+  {
+    name: "rejects a job without its status URL",
+    data: { request_id: "request_123" },
+    expectedIssues: ["Expected a complete Virtual Tag Config or an asynchronous job."],
+  },
+  {
+    name: "rejects an incomplete synchronous response",
+    data: { token: "vtag_123" },
+    expectedIssues: ["Expected a complete Virtual Tag Config or an asynchronous job."],
+  },
+  {
+    name: "rejects a non-string resource token",
+    data: { ...validOutput, token: 123 as any },
+    expectedIssues: ["Invalid input: expected string, received number"],
+  },
+];
+
+testTool(tool, argumentSchemaTests, outputSchemaTests, executionTests);
