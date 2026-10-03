@@ -57,7 +57,12 @@ export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> 
     M extends SupportedMethods<P>,
     Request extends RequestBodyForPathAndMethod<P, M>,
     Response extends ResponseBodyForPathAndMethod<P, M>,
-  >(endpoint: P, params: Request, method: M): Promise<{ data: Response; ok: true } | { errors: unknown[]; ok: false }> {
+  >(
+    endpoint: P,
+    params: Request,
+    method: M,
+    signal?: AbortSignal
+  ): Promise<{ data: Response; ok: true } | { errors: unknown[]; ok: false }> {
     return withLogTags({}, async () => {
       const clientVersion = this.server.server.getClientVersion();
       if (clientVersion) {
@@ -101,7 +106,8 @@ export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> 
         params,
         method,
         endpoint,
-        this.env
+        this.env,
+        signal
       );
 
       logger.setTags({
