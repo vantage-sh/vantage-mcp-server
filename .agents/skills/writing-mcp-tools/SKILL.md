@@ -1,6 +1,6 @@
 ---
 name: writing-mcp-tools
-description: Author a new MCP tool for the Vantage MCP server — file layout under resource folders, registerTool template, annotation hints, description style, and tests. Use whenever adding, splitting, refactoring, or relocating a tool under `src/tools/`. Evals are optional; see writing-evals when the user opts in.
+description: Add or change MCP tools for the Vantage MCP server — resource folder layout, registerTool, input and output schemas, annotation hints, descriptions, and tests. Use whenever adding, changing, splitting, refactoring, or relocating a tool under `src/tools/`. Evals are optional; see writing-evals when the user opts in.
 ---
 
 # Writing MCP tools
@@ -27,7 +27,7 @@ Do not add tool files at the top level of `src/tools/`. Every tool belongs under
 
 ### Shared schemas (`schemas.ts`)
 
-Nesting tools under one resource folder exists so siblings can share zod without copy-paste. When two or more tools in `src/tools/<resource>/` use the same argument shapes (or the same shape with create defaults vs update optionals), extract them into `schemas.ts` in that folder — **do not duplicate** constants or `z.object(...)` blocks across `create-*` and `update-*` files.
+Nesting tools under one resource folder exists so siblings can share zod without copy-paste. When two or more tools in `src/tools/<resource>/` use the same argument or response shapes (or the same shape with create defaults vs update optionals), extract them into `schemas.ts` in that folder — **do not duplicate** constants or `z.object(...)` blocks across tool files.
 
 Reference: `src/tools/budgets/schemas.ts` (`budgetPeriod` for `create-budget` and `update-budget`). Cost reports: `src/tools/cost-reports/schemas.ts` (`chartTypes`, `chartSettings`, `businessMetricTokenForCreate` / `businessMetricTokenForUpdate`, `costReportSettingsForCreate` / `costReportSettingsForUpdate`, `dateBins`).
 
@@ -44,8 +44,10 @@ Every tool exports a `registerTool` call as the default export. The minimum surf
 
 ```ts
 import z from "zod/v4";
+import paginationData from "../../utils/paginationData";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listWidgetsOutputSchema } from "./schemas";
 
 const description = `
 One or two sentences. What this returns and when to reach for it.
@@ -55,6 +57,7 @@ export default registerTool({
   name: "list-widgets",            // kebab-case, matches filename
   title: "List Widgets",            // Title Case, shown in UIs
   description,
+  outputSchema: listWidgetsOutputSchema,
   annotations: {
     readOnly: true,
     destructive: false,
@@ -68,7 +71,10 @@ export default registerTool({
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }
-    return response.data;
+    return {
+      widgets: response.data.widgets,
+      pagination: paginationData(response.data),
+    };
   },
 });
 ```
@@ -158,6 +164,43 @@ Patterns to use:
 
 In `.describe()` strings: name the thing, give the format, and point at the tool that can discover valid values ("Use list-cost-providers to discover valid provider names"). Don't restate types — `z.number()` already says it's a number. For tokens, prefer `vantageToken` over hand-written describes.
 
+## Output schemas
+
+**Every tool declares `outputSchema`.** It describes the object returned by `execute`, including any pagination, notes, hints, or delete confirmation the tool adds. Use the Vantage client's response types for API fields, then account for these tool-specific changes. Do not copy the upstream response schema unchanged when the tool transforms that response.
+
+`registerTool` accepts a Zod raw shape or a `z.ZodObject`. Normally define shared response objects in the resource's `schemas.ts` and export `.shape` for registration. Keep a complete Zod object when its refinements or JSON Schema metadata are needed; extracting `.shape` would lose them.
+
+```ts
+// src/tools/<resource>/schemas.ts — fields must match the actual client types.
+import z from "zod";
+import { paginationSchema } from "../../utils/zod/output";
+
+export const widgetResponseSchema = z.object({
+  token: z.string().describe("The token of the Widget."),
+  title: z.string().describe("The title of the Widget."),
+});
+
+export const widgetOutputSchema = widgetResponseSchema.shape;
+export const listWidgetsOutputSchema = {
+  widgets: z.array(widgetResponseSchema).describe("The Widgets on this page."),
+  pagination: paginationSchema.describe("Pagination information for the Widget list."),
+};
+```
+
+Reuse the response object for get/create/update tools and the list's array elements when their client response types match. Extend existing response schemas for additional fields rather than duplicating their nested objects. See `src/tools/budgets/schemas.ts` and `src/tools/recommendations/schemas.ts`.
+
+Match response types precisely:
+
+- Preserve required fields, enums, and nullability: `string | null` becomes `.nullable()`, an optional field becomes `.optional()`, and an optional nullable field can use `.nullish()`.
+- Keep amounts as strings when the client uses strings for decimal precision. Use numbers only for numeric response fields; do not coerce between them.
+- Input defaults, trimming, token-prefix validation, and date validation are request rules. Apply them to responses only when the response contract warrants them. In particular, request fields may be optional while their response counterparts are required; Dashboard widget titles and settings are an example.
+- Describe output fields with `.describe()`. Use `z.record(z.string(), z.unknown())` for client-declared arbitrary dictionaries such as provider metadata; define known nested fields explicitly.
+- Reuse `paginationSchema`, `linksSchema`, `monetaryAmountSchema`, and `costProviderSchema` from `src/utils/zod/output.ts` where the types match. Delete tools can register `deletedTokenOutputSchema` from that file and continue returning `{ token: args.<resource>_token }`.
+
+For an endpoint with alternative object responses, retain its existing return shape and require a complete valid alternative. MCP output schemas must have an object root, so a top-level `z.union(...)` is not supported here. The Virtual Tag Config update uses a refined object plus `.meta({ anyOf: ... })` to describe both a config and an asynchronous job. See `src/tools/virtual-tag-configs/schemas.ts`; test both Zod validation and the published JSON Schema, since a Zod refinement alone is not represented in JSON Schema.
+
+`execute` returns the data object, not an MCP content envelope. `registerTool` supplies `structuredContent` and matching JSON text content for compatibility. The MCP SDK validates successful structured output; upstream `MCPUserError` responses remain error content and do not need to match the success schema.
+
 ## Execute
 
 `execute(args, ctx)` is async and uses `ctx.callVantageApi(path, params, method)`. Always check `response.ok` and throw `MCPUserError` on failure:
@@ -225,21 +268,35 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   // poisoned-input cases use `poisonOneValue` + `dateValidatorPoisoner`
 ];
 
+const validOutput = {
+  budgets: [],
+  pagination: { hasNextPage: false, nextPage: 0 },
+};
+
+const outputSchemaTests: SchemaTestTableItem<OutputSchema>[] = [
+  { name: "valid response", data: validOutput },
+  {
+    name: "rejects an invalid pagination flag",
+    data: { ...validOutput, pagination: { hasNextPage: "true" as any, nextPage: 2 } },
+    expectedIssues: ["Invalid input: expected boolean, received string"],
+  },
+];
+
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   {
     name: "successful call",
     apiCallHandler: requestsInOrder([
-      { endpoint: "/v2/widgets", params: {/* … */}, method: "GET", result: { ok: true, data: {/* … */} } },
+      { endpoint: "/v2/budgets", params: {/* … */}, method: "GET", result: { ok: true, data: { budgets: [], links: {} } } },
     ]),
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess(validArguments);
-      expect(res).toEqual(/* … */);
+      expect(res).toEqual(validOutput);
     },
   },
   {
     name: "unsuccessful call",
     apiCallHandler: requestsInOrder([
-      { endpoint: "/v2/widgets", params: {/* … */}, method: "GET", result: { ok: false, errors: [{ message: "…" }] } },
+      { endpoint: "/v2/budgets", params: {/* … */}, method: "GET", result: { ok: false, errors: [{ message: "…" }] } },
     ]),
     handler: async ({ callExpectingMCPUserError }) => {
       const err = await callExpectingMCPUserError(validArguments);
@@ -248,16 +305,19 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   },
 ];
 
-testTool(tool, argumentSchemaTests, executionTests);
+testTool(tool, argumentSchemaTests, outputSchemaTests, executionTests);
 ```
 
-`testTool` automatically verifies the tool registers with the right name/title/description/annotations, so you don't write that test by hand. Reference: `test/tools/budgets/list-budgets.test.ts`.
+`testTool` automatically verifies the tool registers with the right name/title/description/annotations/output schema. `callExpectingSuccess` also parses the returned object against that schema. Reference: `test/tools/budgets/list-budgets.test.ts`.
 
 Always include:
 - At least one schema test with valid input.
 - A schema test per non-trivial constraint (required field missing, bad enum value, poisoned date via `dateValidatorPoisoner`).
+- Valid and invalid output-schema cases. Cover relevant nullable/optional fields, nested records, precision-sensitive amounts, and alternative responses. Fixtures must match the client types; fix stale fixtures rather than weakening schemas to accept them.
 - A successful-execution test that asserts both the request params (via `requestsInOrder`) and the returned shape.
 - An unsuccessful-execution test that asserts the `MCPUserError` exception shape.
+
+`test/tools/output-schemas.test.ts` checks that all registered tools publish usable object schemas and exercises MCP client/server output validation. Extend those checks when adding a new schema representation or alternative response pattern; ordinary tools use the existing checks plus their own `testTool` cases.
 
 ## Optional evals
 
@@ -279,8 +339,9 @@ After the user opts in, see **`.agents/skills/writing-evals/SKILL.md`** for the 
 - [ ] `annotations` follow the table above (especially: `create-*` is `destructive: false`).
 - [ ] Description is one or two sentences plus only the non-obvious context the model needs.
 - [ ] Every zod field has a `.describe(...)` and uses the right helper (`dateValidator`, `pathEncode`, `DEFAULT_LIMIT`, `paginationData`, `MCPUserError`).
+- [ ] `outputSchema` matches the returned object and the client's API field types, with shared response schemas and output helpers reused where appropriate.
 - [ ] Delete tools return `{ token: args.<resource>_token }`.
-- [ ] Tests live under `test/tools/<resource>/` and cover schema validation (valid + poisoned), success, and failure.
+- [ ] Tests live under `test/tools/<resource>/` and use the four-argument `testTool` form to cover input/output schemas, success, and failure.
 - [ ] The user was asked whether to include evals and, if they opted in, whether the provider API key they intend to use is configured in `.env`.
 - [ ] If evals were included, the applicable checklist in `.agents/skills/writing-evals/SKILL.md` is complete.
 - [ ] `npm run type-check` and `npm test -- --run` are green.
