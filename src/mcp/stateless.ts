@@ -4,7 +4,9 @@ import type { AppEnv } from "../env";
 import setupRegisteredResources from "../resources";
 import { serverMeta } from "../shared";
 import { ACCESS_POLICY_TOOL_NAMES, hideAccessPolicyToolsFromNonOwners } from "../tools/access-policies/gating";
-import { setupRegisteredTools, type ToolCallContext } from "../tools/structure/registerTool";
+import { getRegisteredToolNames, setupRegisteredTools, type ToolCallContext } from "../tools/structure/registerTool";
+import { createMutationConfirmation } from "./confirm-mutation";
+import { CONFIRMATION_HEADER, parseConfirmationPolicy } from "./confirmation-policy";
 import "../tools";
 
 export type McpApiHandler = {
@@ -44,14 +46,34 @@ export const statelessMcpHandler: McpApiHandler = {
     // is cached in module state or stored in a Durable Object.
     const headers = coreApiHeaders(executionCtx.props as CoreCredentialProps | undefined, env);
     if (!headers) return new Response("Unauthorized", { status: 401 });
+    let policy: ReturnType<typeof parseConfirmationPolicy>;
+    try {
+      policy = parseConfirmationPolicy(request.headers.get(CONFIRMATION_HEADER), getRegisteredToolNames());
+    } catch (error) {
+      return new Response((error as Error).message, { status: 400 });
+    }
+    if (policy.selectors.size && new TextEncoder().encode(env.MCP_CONFIRMATION_SECRET ?? "").length < 32) {
+      return new Response("Confirmations require a configured MCP_CONFIRMATION_SECRET of at least 32 bytes.", {
+        status: 503,
+      });
+    }
 
     const parsedBody = await readJsonRpcBody(request);
     const checkOwner = needsOwnerCheck(parsedBody);
     const handler = createMcpHandler(
       async () => {
-        const server = new McpServer(serverMeta);
+        const confirmation = policy.selectors.size
+          ? createMutationConfirmation({
+              policy,
+              key: env.MCP_CONFIRMATION_SECRET!,
+              principal: JSON.stringify([env.VANTAGE_API_HOST, headers]),
+              clientCapabilities: () => server.server.getClientCapabilities(),
+            })
+          : undefined;
+        const server: McpServer = new McpServer(serverMeta, confirmation?.serverOptions);
         const context: ToolCallContext = {
           env,
+          confirmMutation: confirmation?.confirm,
           waitUntil: (promise) => executionCtx.waitUntil(promise),
           callVantageApi: (endpoint, params, method, signal) =>
             callCoreApi(
@@ -77,11 +99,30 @@ export const statelessMcpHandler: McpApiHandler = {
   },
 };
 
-/** Serves /mcp statelessly when MCP_STATELESS_ENABLED is set; /sse keeps its McpAgent handler. */
-export function withStatelessMcp(legacy: McpApiHandler): McpApiHandler {
+/** The McpAgent handlers cannot elicit, so requested confirmations are refused rather than ignored. */
+export function withoutConfirmations(legacy: McpApiHandler): McpApiHandler {
   return {
     fetch(request, env, ctx) {
-      return (env.MCP_STATELESS_ENABLED === "true" ? statelessMcpHandler : legacy).fetch(request, env, ctx);
+      if (request.headers.has(CONFIRMATION_HEADER)) {
+        try {
+          const policy = parseConfirmationPolicy(request.headers.get(CONFIRMATION_HEADER), getRegisteredToolNames());
+          if (policy.selectors.size)
+            return new Response("Requested confirmations require the stateless SDK v2 /mcp endpoint.", { status: 503 });
+        } catch (error) {
+          return new Response((error as Error).message, { status: 400 });
+        }
+      }
+      return legacy.fetch(request, env, ctx);
+    },
+  };
+}
+
+/** Serves /mcp statelessly when MCP_STATELESS_ENABLED is set; /sse keeps its McpAgent handler. */
+export function withStatelessMcp(legacy: McpApiHandler): McpApiHandler {
+  const guarded = withoutConfirmations(legacy);
+  return {
+    fetch(request, env, ctx) {
+      return (env.MCP_STATELESS_ENABLED === "true" ? statelessMcpHandler : guarded).fetch(request, env, ctx);
     },
   };
 }
