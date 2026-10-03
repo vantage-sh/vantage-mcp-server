@@ -2,6 +2,7 @@
 export type AppEnv = Omit<Env, "ENVIRONMENT"> & {
   ENVIRONMENT: "development" | "staging" | "production";
   MCP_STATELESS_ENABLED?: string;
+  MCP_CONFIRMATION_SECRET?: string;
   OTEL_EXPORTER_OTLP_ENDPOINT?: string;
   OTEL_EXPORTER_OTLP_HEADERS?: string;
   OTEL_RESOURCE_ATTRIBUTES?: string;

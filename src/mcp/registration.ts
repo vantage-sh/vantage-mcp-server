@@ -7,7 +7,13 @@ export type ToolRequestContext = {
   signal?: AbortSignal;
   _meta?: Record<string, unknown>;
   requestInfo?: { headers?: Record<string, string | string[] | undefined> };
-  mcpReq?: { signal: AbortSignal; _meta?: Record<string, unknown> };
+  mcpReq?: {
+    signal: AbortSignal;
+    _meta?: Record<string, unknown>;
+    envelope?: Record<string, unknown>;
+    inputResponses?: Record<string, unknown>;
+    requestState?: () => unknown;
+  };
   http?: { req?: Request };
 };
 
