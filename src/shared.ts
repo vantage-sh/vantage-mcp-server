@@ -24,8 +24,10 @@ export async function callApi<
   params: Request,
   method: M,
   endpoint: P,
-  env?: AppEnv
+  env?: AppEnv,
+  signal?: AbortSignal
 ): Promise<{ data: Response; ok: true } | { errors: unknown[]; ok: false }> {
+  signal?.throwIfAborted();
   headers["User-Agent"] = `vantage-mcp-server/${serverMeta.version}`;
 
   const url = new URL(endpoint, baseUrl);
@@ -45,6 +47,7 @@ export async function callApi<
     headers["Content-Type"] = "application/json";
   }
   const options = {
+    signal,
     method,
     headers,
     body: method !== "GET" ? JSON.stringify(params) : undefined,
