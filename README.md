@@ -334,7 +334,24 @@ back to HTTP trace headers when metadata has no valid parent. This also enables 
 for stdio clients. Tool spans include `mcp.method.name=tools/call` and the existing tool
 name. Other metadata and baggage are not copied into Core headers or log attributes.
 
-This is compatible groundwork on SDK v1. It does not advertise the 2026-07-28 protocol
-or implement the remaining ENG-2838 cache hints, method/name HTTP routing, or MRTR pilot;
-those follow the SDK v2/runtime migration. Validate real hosted and stdio client
-cancellation on staging before rollout.
+The existing hosted McpAgent path remains on SDK v1. Validate real hosted and stdio
+client cancellation on staging before rollout.
+
+## Stateless hosted MCP (ENG-2834 draft)
+
+`MCP_STATELESS_ENABLED=true` opts `/mcp` into the SDK v2 web-standard
+`createMcpHandler`. The flag is unset by default and no Wrangler environment enables
+it. The handler creates a fresh server per HTTP exchange, uses the authentication
+provider's validated props, and preserves Core logging, tracing, resources, and
+owner-only tool gating. The existing development token override also works.
+It serves 2026-07-28 and stateless 2025-era clients without a session ID; legacy
+GET/DELETE session operations return 405. Modern requests use the SDK's method/name
+header validation and conservative private, zero-TTL cache hints. MRTR is deferred.
+
+Integrate the authentication refactor in #298 before enabling this flag. Staging
+checks must cover real client reconnects, OAuth refresh, authorization isolation,
+cancellation, and the latency of a fresh owner lookup per exchange. Clients that
+depend on stateful `/mcp` sessions need compatibility validation before switching.
+`/sse` continues through McpAgent regardless of the flag; its November 30, 2026
+retirement window and Durable Object cleanup are separate changes. Keep the
+`MCP_OBJECT` binding and historical migrations until SSE retirement is complete.
