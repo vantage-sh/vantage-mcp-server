@@ -1,5 +1,5 @@
-import type { RegisteredTool } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { describe, expect, it, vi } from "vitest";
+import type { ToolHandle as RegisteredTool } from "../../../src/mcp/registration";
 import {
   ACCESS_POLICY_TOOL_NAMES,
   hideAccessPolicyToolsFromNonOwners,
