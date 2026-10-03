@@ -19,6 +19,7 @@ import type { AppEnv } from "./env";
 import { HeaderAuthProvider } from "./header-auth-provider";
 import homepage from "./homepage";
 import { logger } from "./logger";
+import { selectMcpApiHandler } from "./mcp/stateless";
 import setupRegisteredResources from "./resources";
 import { callApi, serverMeta } from "./shared";
 import { createHostedMcpServer } from "./sse-deprecation";
@@ -174,9 +175,10 @@ function createMcpServer(
   sse: boolean,
   env: AppEnv
 ): HeaderAuthProvider<AppEnv> | OAuthProvider<AppEnv> {
-  const apiHandler = (sse ? VantageMCP.mount("/sse") : VantageMCP.serve("/mcp")) as unknown as {
+  const legacyHandler = (sse ? VantageMCP.mount("/sse") : VantageMCP.serve("/mcp")) as unknown as {
     fetch(request: Request, env: AppEnv, ctx: ExecutionContext): Response | Promise<Response>;
   };
+  const apiHandler = selectMcpApiHandler(sse, env, legacyHandler);
 
   if (hasVantageHeaders(request) || hasValidAuthHeader(request)) {
     // Vantage headers or token is passed through headers, use HeaderAuthProvider
@@ -243,10 +245,10 @@ const fetchHandler = async (request: Request, env: AppEnv, ctx: ExecutionContext
     // Direct token mode - bypass OAuth and serve MCP directly
     // Can be used for easy local development or for MCP clients without
     // OAuth support or the ability to pass headers.
-    if (sse) {
-      return VantageMCP.mount("/sse").fetch(tracedRequest, env, ctx);
-    }
-    return VantageMCP.serve("/mcp").fetch(tracedRequest, env, ctx);
+    const legacyHandler = (sse ? VantageMCP.mount("/sse") : VantageMCP.serve("/mcp")) as unknown as {
+      fetch(request: Request, env: AppEnv, ctx: ExecutionContext): Promise<Response>;
+    };
+    return selectMcpApiHandler(sse, env, legacyHandler).fetch(tracedRequest, env, ctx);
   }
 
   const mcpServer = createMcpServer(tracedRequest, sse, env);
