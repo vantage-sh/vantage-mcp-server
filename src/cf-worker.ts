@@ -22,6 +22,7 @@ import {
   validateClientRegistration,
 } from "./auth/client-policy";
 import { createAuthRouter } from "./auth/request-router";
+import { canonicalOAuthRedirect, resourceMetadataOptions } from "./auth/resource-metadata";
 import type { AppEnv } from "./env";
 import homepage from "./homepage";
 import { logger } from "./logger";
@@ -164,6 +165,7 @@ const sseHandler = VantageMCP.mount("/sse") as unknown as ApiHandler;
 
 function createMcpServer(env: AppEnv): OAuthProvider<AppEnv> {
   const oauthOptions: OAuthProviderOptions<AppEnv> = {
+    ...resourceMetadataOptions(env),
     // Direct Vantage API bearer tokens are retired. Only provider-issued
     // tokens reach these API handlers; agent headers use the narrow pre-router.
     apiHandlers: { "/mcp": mcpHandler, "/sse": sseHandler },
@@ -234,6 +236,8 @@ function withActiveTrace(request: Request): Request {
 }
 
 const fetchHandler = async (request: Request, env: AppEnv, ctx: ExecutionContext): Promise<Response> => {
+  const redirect = canonicalOAuthRedirect(request, env);
+  if (redirect) return redirect;
   const tracedRequest = withActiveTrace(request);
   const sse = new URL(tracedRequest.url).pathname.startsWith("/sse");
   if (env.VANTAGE_MCP_TOKEN) {

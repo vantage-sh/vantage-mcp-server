@@ -4,6 +4,7 @@ import { html, raw } from "hono/html";
  * Renders the consent screen HTML
  */
 export function renderConsentScreen({
+  clientId,
   clientName,
   // clientLogo, // TODO: Implement logo display
   // clientUri, // TODO: Implement client URI display
@@ -17,6 +18,7 @@ export function renderConsentScreen({
   consentToken,
   sseMigrationUrl,
 }: {
+  clientId?: string;
   clientName: string;
   clientLogo: string;
   clientUri: string;
@@ -30,6 +32,13 @@ export function renderConsentScreen({
   consentToken: string;
   sseMigrationUrl?: string;
 }) {
+  let clientDomain: string | undefined;
+  try {
+    const url = new URL(clientId || "");
+    if (url.protocol === "https:") clientDomain = url.host;
+  } catch {
+    // Dynamically registered clients have opaque IDs.
+  }
   return html`
     <!doctype html>
     <html lang="en">
@@ -261,6 +270,8 @@ export function renderConsentScreen({
               <strong>Vantage API</strong> using your account. Please review the
               permissions before proceeding.
             </p>
+
+            ${clientDomain ? html`<p class="description">Client ID domain: <strong>${clientDomain}</strong></p>` : ""}
 
             ${
               isRecognisedClient
