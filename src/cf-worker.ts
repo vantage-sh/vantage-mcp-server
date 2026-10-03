@@ -15,6 +15,7 @@ import { McpAgent } from "agents/mcp";
 import { Hono } from "hono";
 import { withLogTags } from "workers-tagged-logger";
 import { authorize, callback, confirmConsent, tokenExchangeCallback, type UserProps } from "./auth";
+import { cleanupOAuthKv } from "./auth/kv-cleanup";
 import type { AppEnv } from "./env";
 import { HeaderAuthProvider } from "./header-auth-provider";
 import homepage from "./homepage";
@@ -180,39 +181,45 @@ function createMcpServer(
       apiRoute: sse ? "/sse" : "/mcp",
       defaultHandler: app,
     });
-  } else {
-    // OAuth mode - use the full OAuth provider setup
-    const oauthOptions: OAuthProviderOptions<AppEnv> = {
-      apiHandler,
-      apiRoute: sse ? "/sse" : "/mcp",
-      authorizeEndpoint: "/authorize",
-      clientRegistrationTTL: undefined,
-      clientRegistrationEndpoint: "/register",
-      defaultHandler: app,
-      onError: ({ code, description, headers, internal, status }) => {
-        const tags = {
-          oauth_error_code: code,
-          oauth_error_status: status,
-          oauth_error_category: internal?.category,
-          oauth_error_reason: internal?.reason,
-        };
-        logger.withTags(tags).error("OAuth error response", description);
-        Sentry.captureMessage("OAuth error response", {
-          level: "error",
-          tags,
-          extra: {
-            description,
-            headers,
-            internal,
-          },
-        });
-      },
-      refreshTokenTTL: undefined,
-      tokenEndpoint: "/token",
-      tokenExchangeCallback: (options) => tokenExchangeCallback(options, env, () => getOAuthApi(oauthOptions, env)),
-    };
-    return new OAuthProvider<AppEnv>(oauthOptions);
   }
+  return createOAuthProvider(env, apiHandler, sse ? "/sse" : "/mcp");
+}
+
+function createOAuthProvider(
+  env: AppEnv,
+  apiHandler: NonNullable<OAuthProviderOptions<AppEnv>["apiHandler"]>,
+  apiRoute = "/mcp"
+): OAuthProvider<AppEnv> {
+  const oauthOptions: OAuthProviderOptions<AppEnv> = {
+    apiHandler,
+    apiRoute,
+    authorizeEndpoint: "/authorize",
+    clientRegistrationTTL: undefined,
+    clientRegistrationEndpoint: "/register",
+    defaultHandler: app,
+    onError: ({ code, description, headers, internal, status }) => {
+      const tags = {
+        oauth_error_code: code,
+        oauth_error_status: status,
+        oauth_error_category: internal?.category,
+        oauth_error_reason: internal?.reason,
+      };
+      logger.withTags(tags).error("OAuth error response", description);
+      Sentry.captureMessage("OAuth error response", {
+        level: "error",
+        tags,
+        extra: {
+          description,
+          headers,
+          internal,
+        },
+      });
+    },
+    refreshTokenTTL: undefined,
+    tokenEndpoint: "/token",
+    tokenExchangeCallback: (options) => tokenExchangeCallback(options, env, () => getOAuthApi(oauthOptions, env)),
+  };
+  return new OAuthProvider<AppEnv>(oauthOptions);
 }
 
 // Forwards the Worker span's W3C traceparent onto the request so downstream
@@ -266,4 +273,12 @@ const fetchHandler = async (request: Request, env: AppEnv, ctx: ExecutionContext
 
 export default {
   fetch: tracer.wrapFetchHandler<AppEnv>(fetchHandler),
+  scheduled(_controller: ScheduledController, env: AppEnv, ctx: ExecutionContext) {
+    if (env.OAUTH_KV_CLEANUP_ENABLED !== "true") return;
+    const provider = createOAuthProvider(
+      env,
+      VantageMCP.serve("/mcp") as unknown as NonNullable<OAuthProviderOptions<AppEnv>["apiHandler"]>
+    );
+    ctx.waitUntil(cleanupOAuthKv(env, provider));
+  },
 };

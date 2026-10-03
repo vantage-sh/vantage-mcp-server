@@ -311,3 +311,42 @@ See [AGENTS.md](/AGENTS.md) for conventions when adding tools, evals, or resourc
 ## License
 
 See [LICENSE.md](LICENSE.md) for commercial and non-commercial licensing details.
+
+## OAuth KV retention and cleanup (ENG-2929)
+
+Refresh grants and registered clients remain non-expiring (`refreshTokenTTL: undefined`
+and `clientRegistrationTTL: undefined`). This change does not force periodic login or
+expire existing clients. Access tokens retain the provider's one-hour default. A finite
+retention policy remains a separate product decision.
+
+Daily Cron Triggers run at 04:00 UTC in staging and 05:00 UTC in production. They perform
+no KV reads or deletes unless `OAUTH_KV_CLEANUP_ENABLED=true` is explicitly configured.
+When enabled, the scheduled handler invokes the provider's `purgeExpiredData` to remove
+expired/orphaned grants and orphaned tokens. Active DCR clients and grants are preserved;
+URL-based CIMD clients do not need a KV client record. No key names or values are logged.
+
+Before enabling cleanup, inventory the selected namespace with a read-only Workers KV
+API token and the Cloudflare account ID:
+
+```bash
+# Supply CLOUDFLARE_API_TOKEN through your shell environment.
+npm run oauth:inventory -- <account-id> <namespace-id>
+```
+
+Namespace IDs are in `wrangler.jsonc`. The command paginates key metadata and prints only
+client/grant/token/other counts and the number of keys whose KV expiration is in the past.
+It does not read stored values, so it cannot identify orphaned records or grants with
+application-level expiration fields. KV listings are eventually consistent; this is an
+operational estimate, not a snapshot or a deletion dry-run.
+
+Provider 0.10.3 does not persist purge cursors between invocations. Cleanup therefore
+runs only when the complete grant and token listings each fit in a batch of 50 keys;
+otherwise it logs a skipped sweep. Repeated calls would scan the same live prefix and
+could starve later records, so large namespaces need a resumable provider implementation
+before cleanup can be enabled effectively. The initial inventory has not been run by this PR.
+
+Validate on staging with an active OAuth client, an expired grant, a grant whose DCR
+client was removed, an orphaned token, and a CIMD grant. Confirm the active client can
+still call a tool and refresh before enabling production. Disable the flag to stop
+future sweeps; it does not restore records already removed. `OAUTH_KV` remains required
+for OAuth after the MCP Durable Object migration.
