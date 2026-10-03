@@ -25,7 +25,7 @@ import { callCoreApi, coreApiHeaders } from "./core-api";
 import type { AppEnv } from "./env";
 import homepage from "./homepage";
 import { logger } from "./logger";
-import { withStatelessMcp } from "./mcp/stateless";
+import { withoutConfirmations, withStatelessMcp } from "./mcp/stateless";
 import setupRegisteredResources from "./resources";
 import { serverMeta } from "./shared";
 import { createHostedMcpServer } from "./sse-deprecation";
@@ -106,7 +106,7 @@ type ApiHandler = {
 };
 
 const mcpHandler = withStatelessMcp(VantageMCP.serve("/mcp") as unknown as ApiHandler);
-const sseHandler = VantageMCP.mount("/sse") as unknown as ApiHandler;
+const sseHandler = withoutConfirmations(VantageMCP.mount("/sse") as unknown as ApiHandler);
 
 function createMcpServer(env: AppEnv): OAuthProvider<AppEnv> {
   const oauthOptions: OAuthProviderOptions<AppEnv> = {
