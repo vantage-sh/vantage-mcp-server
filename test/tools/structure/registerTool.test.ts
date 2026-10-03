@@ -218,3 +218,41 @@ test("tool output schema is typed and loaded properly", () => {
   expect(outputSchemaFromTool).toBeDefined();
   expect(outputSchemaFromTool).toBe(outputSchema);
 });
+
+describe("request cancellation", () => {
+  function registerCancellable(execute: any) {
+    registerTool({
+      name: "cancel-tool",
+      title: "Cancel Tool",
+      description: "Test",
+      args: {},
+      annotations: { readOnly: true, destructive: false, openWorld: false },
+      execute,
+    });
+    const mockServer = { registerTool: vi.fn() } as any;
+    const ctx = { callVantageApi: vi.fn().mockResolvedValue({ ok: true, data: {} }) };
+    setupRegisteredTools(mockServer, () => ctx);
+    return { handler: mockServer.registerTool.mock.calls[0][2], ctx };
+  }
+
+  it("does not execute an already cancelled request", async () => {
+    const execute = vi.fn();
+    const { handler } = registerCancellable(execute);
+    const signal = AbortSignal.abort(new Error("cancelled"));
+    await expect(handler({}, { signal })).rejects.toThrow("cancelled");
+    expect(execute).not.toHaveBeenCalled();
+  });
+
+  it("stops a later API call after cancellation and keeps the base context isolated", async () => {
+    const controller = new AbortController();
+    const { handler, ctx } = registerCancellable(async (_args: any, context: any) => {
+      await context.callVantageApi("/v2/workspaces", {}, "GET");
+      controller.abort(new Error("cancelled"));
+      await context.callVantageApi("/v2/workspaces", {}, "GET");
+      return {};
+    });
+    await expect(handler({}, { signal: controller.signal })).rejects.toThrow("cancelled");
+    expect(ctx.callVantageApi).toHaveBeenCalledExactlyOnceWith("/v2/workspaces", {}, "GET", controller.signal);
+    expect(ctx).not.toHaveProperty("signal");
+  });
+});
