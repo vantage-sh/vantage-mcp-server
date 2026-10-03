@@ -314,6 +314,15 @@ See [LICENSE.md](LICENSE.md) for commercial and non-commercial licensing details
 
 ## Tool request cancellation and tracing (ENG-2838 groundwork)
 
+Local stdio, the in-memory protocol tests, and current-release version tooling use
+the split MCP SDK v2 packages. Hosted `McpAgent` and its SSE compatibility tests
+retain SDK v1 until the hosted stateless migration and SSE retirement. Shared
+registration accepts definitions and request data from either SDK; server,
+client, and transport objects stay within their own SDK version. Version tooling
+enumerates tagged releases inside a bundle using the tag's SDK and returns only
+the tool catalog. The v2 JSON Schema dialect change can trigger a minor version
+bump on the first comparison against a v1 release.
+
 Tool handlers pass the MCP SDK's per-request abort signal to Core fetches in both hosted
 and local stdio modes. Cancellation stops a pending fetch and prevents later API calls
 within that tool request. Each request gets its own context and signal, so cancelling one

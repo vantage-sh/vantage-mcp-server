@@ -1,4 +1,4 @@
-import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { ResourceRegistrationHost } from "../../../mcp/registration";
 
 export default function wrapMap(
   m: Map<
@@ -10,7 +10,7 @@ export default function wrapMap(
     }
   >
 ) {
-  return (s: McpServer) => {
+  return (s: ResourceRegistrationHost) => {
     for (const [key, value] of m.entries()) {
       const uri = `file://vantage/${key}`;
       s.registerResource(
