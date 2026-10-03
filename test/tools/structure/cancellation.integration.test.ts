@@ -1,6 +1,5 @@
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { Client } from "@modelcontextprotocol/client";
+import { InMemoryTransport, McpServer } from "@modelcontextprotocol/server";
 import { afterEach, expect, it, vi } from "vitest";
 import z from "zod";
 import { callApi } from "../../../src/shared";
@@ -78,7 +77,6 @@ it("cancels the pending Core request without cancelling a concurrent tool call",
           arguments: { page: 1 },
           _meta: { traceparent: "00-11111111111111111111111111111111-2222222222222222-01" },
         },
-        undefined,
         { signal: controller.signal }
       )
       .catch((error) => error);

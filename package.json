@@ -25,7 +25,9 @@
   },
   "dependencies": {
     "@cloudflare/workers-oauth-provider": "^0.10.3",
+    "@modelcontextprotocol/client": "2.3.0",
     "@modelcontextprotocol/sdk": "1.29.0",
+    "@modelcontextprotocol/server": "2.3.0",
     "@sentry/cloudflare": "10.30.0",
     "@vantage-sh/vantage-client": "2.33.0",
     "agents": "^0.13.2",

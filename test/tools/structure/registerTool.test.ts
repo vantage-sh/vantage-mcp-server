@@ -42,7 +42,7 @@ test("tool registration works properly", () => {
     expect.objectContaining({
       title: tool.title,
       description: tool.description,
-      inputSchema: tool.args,
+      inputSchema: expect.objectContaining({ shape: tool.args }),
       annotations: {
         readOnlyHint: false,
         openWorldHint: false,
@@ -216,7 +216,7 @@ test("tool output schema is typed and loaded properly", () => {
   const toolRaw = (mockServer.registerTool as any).mock.calls.find((call: any) => call[0] === "valid-output-tool");
   const outputSchemaFromTool = toolRaw[1].outputSchema;
   expect(outputSchemaFromTool).toBeDefined();
-  expect(outputSchemaFromTool).toBe(outputSchema);
+  expect(outputSchemaFromTool.shape).toEqual(outputSchema);
 });
 
 describe("request cancellation", () => {

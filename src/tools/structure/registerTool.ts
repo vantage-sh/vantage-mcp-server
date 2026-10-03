@@ -1,14 +1,12 @@
-import type { McpServer, RegisteredTool } from "@modelcontextprotocol/sdk/server/mcp.js";
-import type { RequestHandlerExtra } from "@modelcontextprotocol/sdk/shared/protocol.js";
-import type { ServerNotification, ServerRequest } from "@modelcontextprotocol/sdk/types.js";
 import type {
   Path,
   RequestBodyForPathAndMethod,
   ResponseBodyForPathAndMethod,
   SupportedMethods,
 } from "@vantage-sh/vantage-client";
-import type z from "zod";
+import z from "zod";
 import type { AppEnv } from "../../env";
+import type { ToolHandle, ToolRegistrationHost, ToolRequestContext } from "../../mcp/registration";
 import {
   formatErrorsForTelemetry,
   TRACE_STATUS_MESSAGE_MAX_LENGTH,
@@ -58,7 +56,10 @@ export type ToolProperties<Input extends z.ZodRawShape, Output extends z.ZodRawS
   >;
 };
 
-const toolSetups = new Map<string, (server: McpServer, generateContext: () => ToolCallContext) => RegisteredTool>();
+const toolSetups = new Map<
+  string,
+  (server: ToolRegistrationHost, generateContext: () => ToolCallContext) => ToolHandle
+>();
 
 export type ToolMetadata = Pick<
   ToolProperties<z.ZodRawShape, z.ZodRawShape | undefined>,
@@ -88,17 +89,16 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
 export default function registerTool<Input extends z.ZodRawShape, Output extends z.ZodRawShape | undefined>(
   toolProps: ToolProperties<Input, Output>
 ): ToolProperties<Input, Output> {
-  const serverSetup = (server: McpServer, generateContext: () => ToolCallContext) => {
+  const serverSetup = (server: ToolRegistrationHost, generateContext: () => ToolCallContext) => {
     return server.registerTool(
       toolProps.name,
       {
         title: toolProps.title,
         description: toolProps.description,
 
-        // I don't like this, but it is handled by the higher level type system.
-        inputSchema: toolProps.args as any,
+        inputSchema: z.object(toolProps.args),
 
-        outputSchema: toolProps.outputSchema,
+        outputSchema: toolProps.outputSchema ? z.object(toolProps.outputSchema) : undefined,
         annotations: {
           readOnlyHint: toolProps.annotations.readOnly,
           openWorldHint: toolProps.annotations.openWorld,
@@ -106,9 +106,9 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
         },
       },
 
-      async (args: any, extra: RequestHandlerExtra<ServerRequest, ServerNotification>): Promise<any> => {
+      async (args: any, extra: ToolRequestContext): Promise<any> => {
         const baseContext = generateContext();
-        const signal = extra?.signal;
+        const signal = extra?.mcpReq?.signal ?? extra?.signal;
         const ctx: ToolCallContext = signal
           ? {
               ...baseContext,
@@ -119,9 +119,18 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
               },
             }
           : baseContext;
-        const rawHeaders = extra?.requestInfo?.headers as HeadersInit | undefined;
+        const legacyHeaders = extra?.requestInfo?.headers;
+        const rawHeaders =
+          extra?.http?.req?.headers ??
+          (legacyHeaders
+            ? Object.fromEntries(
+                Object.entries(legacyHeaders)
+                  .filter((entry): entry is [string, string | string[]] => entry[1] !== undefined)
+                  .map(([key, value]) => [key, Array.isArray(value) ? value.join(", ") : value])
+              )
+            : undefined);
         const headers = rawHeaders ? new Headers(rawHeaders) : undefined;
-        const parent = mcpTraceContext(extra?._meta, headers);
+        const parent = mcpTraceContext(extra?.mcpReq?._meta ?? extra?._meta, headers);
         const source = headers?.get("x-trace-source") ?? undefined;
 
         return tracer.runWithSpan(
@@ -143,14 +152,6 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
               const res = await toolProps.execute(args, ctx);
               signal?.throwIfAborted();
 
-              if (toolProps.outputSchema) {
-                // Since there's an output schema, we should return structured content.
-                return {
-                  structuredContent: res,
-                };
-              }
-
-              // There's no output schema, so we should return text content.
               return {
                 content: [
                   {
@@ -158,6 +159,7 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
                     text: JSON.stringify(res, null, 2),
                   },
                 ],
+                ...(toolProps.outputSchema ? { structuredContent: res } : {}),
                 isError: false,
               };
             } catch (e) {
@@ -197,10 +199,10 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
 }
 
 export function setupRegisteredTools(
-  server: McpServer,
+  server: ToolRegistrationHost,
   generateContext: () => ToolCallContext
-): Map<string, RegisteredTool> {
-  const registered = new Map<string, RegisteredTool>();
+): Map<string, ToolHandle> {
+  const registered = new Map<string, ToolHandle>();
   for (const [name, setup] of toolSetups) {
     registered.set(name, setup(server, generateContext));
   }
