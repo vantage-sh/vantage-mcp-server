@@ -25,6 +25,7 @@ import { createAuthRouter } from "./auth/request-router";
 import type { AppEnv } from "./env";
 import homepage from "./homepage";
 import { logger } from "./logger";
+import { withStatelessMcp } from "./mcp/stateless";
 import setupRegisteredResources from "./resources";
 import { callApi, serverMeta } from "./shared";
 import { createHostedMcpServer } from "./sse-deprecation";
@@ -165,7 +166,7 @@ type ApiHandler = {
   fetch(request: Request, env: AppEnv, ctx: ExecutionContext): Response | Promise<Response>;
 };
 
-const mcpHandler = VantageMCP.serve("/mcp") as unknown as ApiHandler;
+const mcpHandler = withStatelessMcp(VantageMCP.serve("/mcp") as unknown as ApiHandler);
 const sseHandler = VantageMCP.mount("/sse") as unknown as ApiHandler;
 
 function createMcpServer(env: AppEnv): OAuthProvider<AppEnv> {
@@ -244,10 +245,7 @@ const fetchHandler = async (request: Request, env: AppEnv, ctx: ExecutionContext
   const sse = new URL(tracedRequest.url).pathname.startsWith("/sse");
   if (env.VANTAGE_MCP_TOKEN) {
     // Preserve the local development override, which bypasses OAuth.
-    if (sse) {
-      return VantageMCP.mount("/sse").fetch(tracedRequest, env, ctx);
-    }
-    return VantageMCP.serve("/mcp").fetch(tracedRequest, env, ctx);
+    return (sse ? sseHandler : mcpHandler).fetch(tracedRequest, env, ctx);
   }
 
   const oauthProvider = createMcpServer(env);
