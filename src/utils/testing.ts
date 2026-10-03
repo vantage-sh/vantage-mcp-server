@@ -193,8 +193,8 @@ export function testTool<Input extends z.ZodRawShape, Output extends z.ZodRawSha
     const toolRaw = toolHandler[1];
     expect(toolRaw.title).toBe(tool.title);
     expect(toolRaw.description).toBe(tool.description);
-    expect(toolRaw.inputSchema).toBe(tool.args);
-    expect(toolRaw.outputSchema).toBe(tool.outputSchema);
+    expect(toolRaw.inputSchema.shape).toEqual(tool.args);
+    expect(toolRaw.outputSchema?.shape).toEqual(tool.outputSchema);
     expect(toolRaw.annotations).toEqual({
       readOnlyHint: tool.annotations.readOnly,
       openWorldHint: tool.annotations.openWorld,

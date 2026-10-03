@@ -1,5 +1,5 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { McpServer } from "@modelcontextprotocol/server";
+import { StdioServerTransport } from "@modelcontextprotocol/server/stdio";
 import setupRegisteredResources from "./resources";
 import { callApi, serverMeta } from "./shared";
 import { hideAccessPolicyToolsFromNonOwners } from "./tools/access-policies/gating";

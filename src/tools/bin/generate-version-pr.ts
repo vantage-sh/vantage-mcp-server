@@ -1,13 +1,11 @@
 import { spawnSync } from "node:child_process";
 import { readFileSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import type { Tool } from "@modelcontextprotocol/sdk/types.js";
+import { McpServer, type Tool } from "@modelcontextprotocol/server";
 import { buildSync } from "esbuild";
 import { serverMeta } from "../../shared";
 import { setupRegisteredTools } from "../structure/registerTool";
+import { listToolCatalog, taggedCatalogSource } from "./tool-catalog";
 
 // Side affect import for the tools in this branch
 import "..";
@@ -61,23 +59,11 @@ runCommandAndPipeToUser("git", ["checkout", `v${serverMeta.version}`], false);
 
 // Here comes the fun bit! We want to get a server within the tag context, BUT we do not want to change this context.
 // To do this, we build a script that does the same init above then bundle it. This way, it has its own context.
-const exportScript = `import "../src/tools";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { setupRegisteredTools } from "../src/tools/structure/registerTool";
-import { serverMeta } from "../src/shared";
-
-const server = new McpServer(serverMeta);
-setupRegisteredTools(server, () => ({
-    callVantageApi() {
-        return Promise.reject(new Error("Not implemented"));
-    }
-}));
-
-export default server;
-`;
 const root = join(__dirname, "..", "..", "..");
+const taggedPackage = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
+const exportScript = taggedCatalogSource(Boolean(taggedPackage.dependencies?.["@modelcontextprotocol/server"]));
 const tmpFile = join(root, "node_modules", "tag-out.mjs");
-const outTmpFile = join(root, "node_modules", "tag-out-bundle.mjs");
+const outTmpFile = join(root, "node_modules", "tag-out-bundle.cjs");
 writeFileSync(tmpFile, exportScript);
 
 try {
@@ -89,6 +75,7 @@ try {
     platform: "node",
     target: "node20",
     outfile: outTmpFile,
+    format: "cjs",
   });
   unlinkSync(tmpFile);
 } catch {
@@ -98,9 +85,9 @@ try {
 }
 
 // Load this bundle here
-let tagServer: McpServer;
+let tagToolsPromise: Promise<Tool[]>;
 try {
-  tagServer = require(outTmpFile).default;
+  tagToolsPromise = require(outTmpFile).default();
 } finally {
   unlinkSync(outTmpFile);
 }
@@ -226,30 +213,11 @@ async function doPr(description: string, newVersion: string) {
 }
 
 (async () => {
-  // Get the current branch's tools
-  const [clientTagTransport, serverTagTransport] = InMemoryTransport.createLinkedPair();
-  await tagServer.connect(serverTagTransport);
-  const tagClient = new Client(serverMeta);
-  await tagClient.connect(clientTagTransport);
-  const tagTools = await tagClient.listTools();
-
-  // Close the server
-  await tagClient.close();
-  await tagServer.close();
-
-  // Now do the same for the main branch
-  const [clientMainTransport, serverMainTransport] = InMemoryTransport.createLinkedPair();
-  await mainServer.connect(serverMainTransport);
-  const mainClient = new Client(serverMeta);
-  await mainClient.connect(clientMainTransport);
-  const mainTools = await mainClient.listTools();
-
-  // Close the client and server
-  await mainClient.close();
-  await mainServer.close();
+  const tagTools = await tagToolsPromise;
+  const mainTools = await listToolCatalog(mainServer);
 
   // Compare the tools
-  const toolChanges = getToolStructureChanges(tagTools.tools, mainTools.tools);
+  const toolChanges = getToolStructureChanges(tagTools, mainTools);
   const parts = serverMeta.version.split(".");
   if (toolChanges.length === 0) {
     // Patch version bump
