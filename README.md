@@ -311,3 +311,21 @@ See [AGENTS.md](/AGENTS.md) for conventions when adding tools, evals, or resourc
 ## License
 
 See [LICENSE.md](LICENSE.md) for commercial and non-commercial licensing details.
+
+## Tool request cancellation and tracing (ENG-2838 groundwork)
+
+Tool handlers pass the MCP SDK's per-request abort signal to Core fetches in both hosted
+and local stdio modes. Cancellation stops a pending fetch and prevents later API calls
+within that tool request. Each request gets its own context and signal, so cancelling one
+call does not cancel another. Cancellation is best effort: it cannot undo a mutation
+already accepted by Core.
+
+Tool spans prefer valid W3C `traceparent`/`tracestate` from MCP request `_meta`, falling
+back to HTTP trace headers when metadata has no valid parent. This also enables tracing
+for stdio clients. Tool spans include `mcp.method.name=tools/call` and the existing tool
+name. Other metadata and baggage are not copied into Core headers or log attributes.
+
+This is compatible groundwork on SDK v1. It does not advertise the 2026-07-28 protocol
+or implement the remaining ENG-2838 cache hints, method/name HTTP routing, or MRTR pilot;
+those follow the SDK v2/runtime migration. Validate real hosted and stdio client
+cancellation on staging before rollout.
