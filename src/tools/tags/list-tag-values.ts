@@ -4,6 +4,7 @@ import paginationData from "../../utils/paginationData";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listTagValuesOutputSchema } from "./schemas";
 
 const description = `
 List values for a tag key. The argument is \`key\` (the tag key name); the API response fields use \`tag_value\`.
@@ -25,6 +26,7 @@ export default registerTool({
   name: "list-tag-values",
   title: "List Tag Values",
   description,
+  outputSchema: listTagValuesOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

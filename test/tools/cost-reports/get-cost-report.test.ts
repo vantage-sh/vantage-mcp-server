@@ -1,7 +1,12 @@
 import { type GetCostReportResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/cost-reports/get-cost-report";
-import { requestsInOrder, testTool } from "../../../src/utils/testing";
+import {
+  type ExtractOutputSchema,
+  requestsInOrder,
+  type SchemaTestTableItem,
+  testTool,
+} from "../../../src/utils/testing";
 
 const success: GetCostReportResponse = {
   token: "rprt_fb27faa25ef5ea72",
@@ -37,6 +42,17 @@ const success: GetCostReportResponse = {
   },
 };
 
+const validOutput = success;
+
+const outputSchemaTests: SchemaTestTableItem<ExtractOutputSchema<typeof tool>>[] = [
+  { name: "valid response", data: validOutput },
+  {
+    name: "rejects a non-string resource token",
+    data: { ...validOutput, token: 123 as any },
+    expectedIssues: ["Invalid input: expected string, received number"],
+  },
+];
+
 testTool(
   tool,
   [
@@ -47,6 +63,7 @@ testTool(
       },
     },
   ],
+  outputSchemaTests,
   [
     {
       name: "successful call",

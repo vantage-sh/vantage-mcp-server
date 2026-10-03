@@ -4,6 +4,7 @@ import dateValidator from "../../utils/dateValidator";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { recommendationViewOutputSchema } from "./schemas";
 
 const description = `
 Create a new Recommendation View in Vantage.
@@ -27,6 +28,7 @@ export default registerTool({
   name: "create-recommendation-view",
   title: "Create Recommendation View",
   description,
+  outputSchema: recommendationViewOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

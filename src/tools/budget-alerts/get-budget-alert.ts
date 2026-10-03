@@ -2,6 +2,7 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { budgetAlertOutputSchema } from "./schemas";
 
 const description = `
 Get a specific Budget Alert by token. Budget Alerts monitor Budget objects.
@@ -11,6 +12,7 @@ export default registerTool({
   name: "get-budget-alert",
   title: "Get Budget Alert",
   description,
+  outputSchema: budgetAlertOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

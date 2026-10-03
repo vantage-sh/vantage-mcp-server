@@ -2,6 +2,7 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { costAlertEventOutputSchema } from "./schemas";
 
 const description = `
 Gets a specific Cost Alert event by its token. Use after list-cost-alert-events when you need the full trigger record.
@@ -11,6 +12,7 @@ export default registerTool({
   name: "get-cost-alert-event",
   title: "Get Cost Alert Event",
   description,
+  outputSchema: costAlertEventOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

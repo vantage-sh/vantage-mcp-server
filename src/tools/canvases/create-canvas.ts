@@ -2,6 +2,7 @@ import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { canvasOutputSchema } from "./schemas";
 
 const description = `
 Creates a Canvas based on the parameters specified. A Canvas is an AI-generated cost analysis view created from a natural language prompt.
@@ -12,6 +13,7 @@ export default registerTool({
   name: "create-canvas",
   title: "Create Canvas",
   description,
+  outputSchema: canvasOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

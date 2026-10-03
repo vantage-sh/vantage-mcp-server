@@ -5,7 +5,7 @@ import dateValidator from "../../utils/dateValidator";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { groupingDescription, groupingSchema } from "./schemas";
+import { financialCommitmentReportOutputSchema, groupingDescription, groupingSchema } from "./schemas";
 
 const description = `
 Updates a saved Financial Commitment Report. Use list-financial-commitment-reports to discover tokens.
@@ -15,6 +15,7 @@ export default registerTool({
   name: "update-financial-commitment-report",
   title: "Update Financial Commitment Report",
   description,
+  outputSchema: financialCommitmentReportOutputSchema,
   annotations: {
     destructive: true,
     openWorld: false,

@@ -1,6 +1,7 @@
 import z from "zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { resourceReportColumnsOutputSchema } from "./schemas";
 
 const description = `
 List available columns for a resource type. The resource_type is a required parameter, and must be a valid VQL resource type name.
@@ -18,6 +19,7 @@ export default registerTool({
   name: "list-resource-report-columns",
   title: "List Resource Report Columns",
   description,
+  outputSchema: resourceReportColumnsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

@@ -4,7 +4,7 @@ import paginationData from "../../utils/paginationData";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { BUSINESS_METRIC_DATA_LIMIT } from "./schemas";
+import { BUSINESS_METRIC_DATA_LIMIT, listBusinessMetricLabelsOutputSchema } from "./schemas";
 
 const description = `
 List distinct label values for a BusinessMetric. For multi-label metrics, values are flattened across label keys.
@@ -21,6 +21,7 @@ export default registerTool({
   name: "list-business-metric-labels",
   title: "List Business Metric Labels",
   description,
+  outputSchema: listBusinessMetricLabelsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

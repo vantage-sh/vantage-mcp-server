@@ -2,6 +2,7 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { folderOutputSchema } from "./schemas";
 
 const description = `
 Gets a specific Folder by its token.
@@ -11,6 +12,7 @@ export default registerTool({
   name: "get-folder",
   title: "Get Folder",
   description,
+  outputSchema: folderOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

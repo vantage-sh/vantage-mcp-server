@@ -11,6 +11,7 @@ import {
   flowWeightSchemaForUpdate,
   networkFlowReportGroupingOptions,
   networkFlowReportRelativeDateIntervals,
+  queryNetworkFlowLogsOutputSchema,
 } from "./schemas";
 
 const description = `
@@ -21,6 +22,7 @@ export default registerTool({
   name: "query-network-flow-logs",
   title: "Query Network Flow Logs",
   description,
+  outputSchema: queryNetworkFlowLogsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

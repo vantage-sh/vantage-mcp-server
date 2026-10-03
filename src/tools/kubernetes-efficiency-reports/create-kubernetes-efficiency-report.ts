@@ -9,6 +9,7 @@ import {
   dateIntervalSchemaForCreate,
   filterSchema,
   groupingsSchema,
+  kubernetesEfficiencyReportOutputSchema,
   validateCreateDateRange,
 } from "./schemas";
 
@@ -20,6 +21,7 @@ export default registerTool({
   name: "create-kubernetes-efficiency-report",
   title: "Create Kubernetes Efficiency Report",
   description,
+  outputSchema: kubernetesEfficiencyReportOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

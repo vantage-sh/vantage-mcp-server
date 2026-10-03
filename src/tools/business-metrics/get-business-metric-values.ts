@@ -2,7 +2,11 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import paginationData from "../../utils/paginationData";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { BUSINESS_METRIC_DATA_LIMIT, historicalBusinessMetricValueArgs } from "./schemas";
+import {
+  BUSINESS_METRIC_DATA_LIMIT,
+  businessMetricValuesOutputSchema,
+  historicalBusinessMetricValueArgs,
+} from "./schemas";
 
 const description = `
 Get historical values for a BusinessMetric.
@@ -18,6 +22,7 @@ export default registerTool({
   name: "get-business-metric-values",
   title: "Get Business Metric Values",
   description,
+  outputSchema: businessMetricValuesOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

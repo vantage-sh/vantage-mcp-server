@@ -41,6 +41,7 @@ const successData: GetIntegrationsResponse = {
       account_identifier: "123456789012",
       workspace_tokens: ["wrkspc_123"],
       created_at: "2023-01-15T10:30:00Z",
+      enriched_by: [],
       managed_account_tokens: ["accnt_123", "accnt_456"],
     },
     {
@@ -50,6 +51,7 @@ const successData: GetIntegrationsResponse = {
       account_identifier: "sub-456",
       workspace_tokens: ["wrkspc_123"],
       created_at: "2023-01-15T10:30:00Z",
+      enriched_by: [],
       managed_account_tokens: ["accnt_456", "accnt_789"],
     },
   ],
@@ -109,4 +111,21 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   },
 ];
 
-testTool(tool, argumentSchemaTests, executionTests);
+const validOutput = {
+  integrations: successData.integrations,
+  pagination: {
+    hasNextPage: false,
+    nextPage: 0,
+  },
+};
+
+const outputSchemaTests: SchemaTestTableItem<ExtractOutputSchema<typeof tool>>[] = [
+  { name: "valid response", data: validOutput },
+  {
+    name: "rejects an invalid pagination flag",
+    data: { ...validOutput, pagination: { hasNextPage: "true" as any, nextPage: 2 } },
+    expectedIssues: ["Invalid input: expected boolean, received string"],
+  },
+];
+
+testTool(tool, argumentSchemaTests, outputSchemaTests, executionTests);

@@ -5,6 +5,7 @@ import { vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { getRecommendationResourcesOutputSchema } from "./schemas";
 
 const description = `
 Get a paginated list of all infrastructure resources affected by a specific cost optimization recommendation.
@@ -36,6 +37,7 @@ export default registerTool({
   name: "get-recommendation-resources",
   title: "Get Recommendation Resources",
   description,
+  outputSchema: getRecommendationResourcesOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

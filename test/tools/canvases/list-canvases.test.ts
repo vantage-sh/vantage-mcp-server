@@ -40,10 +40,8 @@ const successData = {
     {
       token: "cnvs_abc123",
       title: "Monthly Costs by Provider",
-      status: "draft",
       prompt: "Show me monthly costs by provider",
-      saved: true,
-      data: { table: null },
+      data: { table: { columns: ["provider", "cost"], rows: [["aws", "100.00"]] } },
       workspace_token: "wrkspc_123",
       created_at: "2024-01-01T00:00:00Z",
       updated_at: "2024-01-01T00:00:00Z",
@@ -109,4 +107,21 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   },
 ];
 
-testTool(tool, argumentSchemaTests, executionTests);
+const validOutput = {
+  canvases: successData.canvases,
+  pagination: {
+    hasNextPage: false,
+    nextPage: 0,
+  },
+};
+
+const outputSchemaTests: SchemaTestTableItem<ExtractOutputSchema<typeof tool>>[] = [
+  { name: "valid response", data: validOutput },
+  {
+    name: "rejects an invalid pagination flag",
+    data: { ...validOutput, pagination: { hasNextPage: "true" as any, nextPage: 2 } },
+    expectedIssues: ["Invalid input: expected boolean, received string"],
+  },
+];
+
+testTool(tool, argumentSchemaTests, outputSchemaTests, executionTests);

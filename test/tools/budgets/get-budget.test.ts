@@ -16,6 +16,7 @@ type OutputSchema = ExtractOutputSchema<typeof tool>;
 const success: GetBudgetResponse = {
   token: "bdgt_123",
   name: "Monthly AWS Budget",
+  type: "cost",
   workspace_token: "wrkspc_123",
   created_at: "2023-01-15T10:30:00Z",
   budget_alert_tokens: [],
@@ -28,6 +29,14 @@ const success: GetBudgetResponse = {
   periods: [],
   cost_report_token: "rprt_123",
 };
+
+const successWithPerformance = {
+  ...success,
+  type: "usage",
+  unit: "GB",
+  periods: [{ start_at: "2026-09-01", end_at: "2026-09-30", amount: "100.50" }],
+  performance: [{ date: "2026-09-30", actual: "95.00", amount: "100.50", type: "usage", unit: "GB" }],
+} satisfies GetBudgetResponse;
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
@@ -77,7 +86,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         method: "GET",
         result: {
           ok: true,
-          data: success,
+          data: successWithPerformance,
         },
       },
     ]),
@@ -86,7 +95,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         budget_token: "bdgt_123",
         include_performance: true,
       });
-      expect(res).toEqual(success);
+      expect(res).toEqual(successWithPerformance);
     },
   },
   {
@@ -114,4 +123,24 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   },
 ];
 
-testTool(tool, argumentSchemaTests, executionTests);
+const validOutput = success;
+
+const outputSchemaTests: SchemaTestTableItem<ExtractOutputSchema<typeof tool>>[] = [
+  { name: "valid response", data: validOutput },
+  { name: "usage Budget with periods and performance", data: successWithPerformance },
+  {
+    name: "rejects a numeric performance amount that would lose decimal precision",
+    data: {
+      ...successWithPerformance,
+      performance: [{ ...successWithPerformance.performance[0], amount: 100.5 as any }],
+    },
+    expectedIssues: ["Invalid input: expected string, received number"],
+  },
+  {
+    name: "rejects a non-string resource token",
+    data: { ...validOutput, token: 123 as any },
+    expectedIssues: ["Invalid input: expected string, received number"],
+  },
+];
+
+testTool(tool, argumentSchemaTests, outputSchemaTests, executionTests);

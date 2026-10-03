@@ -7,6 +7,7 @@ import {
 import z from "zod";
 import { pastDateIntervalOptions } from "../../utils/dateIntervalOptions";
 import dateValidator from "../../utils/dateValidator";
+import { monetaryAmountSchema, paginationSchema } from "../../utils/zod/output";
 import MCPUserError from "../structure/MCPUserError";
 
 export const groupingDescription =
@@ -137,3 +138,100 @@ export function validateUpdateDateRange(args: DateRange) {
 export function validateQueryDateRange(args: Pick<DateRange, "start_date" | "end_date">) {
   validateDateOrder(args);
 }
+
+// Output schemas mirror the Vantage client response types.
+export const kubernetesEfficiencyReportResponseSchema = z.object({
+  token: z.string().describe("The token identifying this resource."),
+  title: z.string().describe("The title of the KubernetesEfficiencyReport."),
+  default: z.boolean().describe("Indicates whether the KubernetesEfficiencyReport is the default report."),
+  created_at: z.string().describe("The date and time, in UTC, the report was created. ISO 8601 Formatted."),
+  workspace_token: z.string().describe("The token for the Workspace the KubernetesEfficiencyReport is a part of."),
+  user_token: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The token for the User who created this KubernetesEfficiencyReport."),
+  start_date: z
+    .string()
+    .nullable()
+    .describe(
+      "The start date for the KubernetesEfficiencyReport. Only set for custom date ranges. ISO 8601 Formatted."
+    ),
+  end_date: z
+    .string()
+    .nullable()
+    .describe("The end date for the KubernetesEfficiencyReport. Only set for custom date ranges. ISO 8601 Formatted."),
+  date_interval: z
+    .string()
+    .nullable()
+    .describe(
+      "The date range for the KubernetesEfficiencyReport. Only present if a custom date range is not specified."
+    ),
+  date_bucket: z
+    .string()
+    .describe(
+      "How costs are grouped and displayed in the KubernetesEfficiencyReport. Possible values: day, week, month."
+    ),
+  aggregated_by: z
+    .string()
+    .describe("How costs are aggregated by. Possible values: idle_cost, amount, cost_efficiency."),
+  groupings: z
+    .string()
+    .nullable()
+    .describe(
+      "Grouping values for aggregating costs on the KubernetesEfficiencyReport. Valid groupings: cluster_id, namespace, region, labeled, category, pod, label:<label_name>."
+    ),
+  filter: z
+    .string()
+    .nullable()
+    .describe(
+      "The filter applied to the KubernetesEfficiencyReport. Additional documentation available at https://docs.vantage.sh/vql."
+    ),
+});
+
+export const listKubernetesEfficiencyReportsResponseSchema = z.object({
+  kubernetes_efficiency_reports: z
+    .array(kubernetesEfficiencyReportResponseSchema)
+    .describe("Kubernetes efficiency reports."),
+  pagination: paginationSchema.describe("Pagination information for these results."),
+});
+
+export const kubernetesEfficiencyReportCostLabelResponseSchema = z.object({
+  key: z.string().describe("The Kubernetes label key."),
+  value: z.string().nullable().describe("The Kubernetes label value. Null when the label key is not present."),
+});
+
+export const kubernetesEfficiencyReportCostResponseSchema = z.object({
+  accrued_at: z.string().describe("The date bucket for the cost. YYYY-MM-DD formatted."),
+  amount: z.string().describe("The total cost amount for the row."),
+  idle_cost: z.string().describe("The idle cost amount for the row."),
+  cost_efficiency: z
+    .string()
+    .describe("The cost efficiency ratio for the row, expressed from 0 to 1 under ordinary inputs."),
+  currency: z.string().describe("The ISO 4217 currency code for the costs."),
+  cluster_id: z.string().nullable().optional().describe("The cluster_id grouping value."),
+  namespace: z.string().nullable().optional().describe("The namespace grouping value."),
+  region: z.string().nullable().optional().describe("The region grouping value."),
+  category: z.string().nullable().optional().describe("The category grouping value."),
+  pod: z.string().nullable().optional().describe("The pod grouping value."),
+  labeled: z.boolean().optional().describe("Whether the aggregated Kubernetes records contain any labels."),
+  labels: z
+    .array(kubernetesEfficiencyReportCostLabelResponseSchema)
+    .optional()
+    .describe("The requested Kubernetes label grouping values."),
+});
+
+export const queryKubernetesEfficiencyReportCostsResponseSchema = z.object({
+  costs: z.array(kubernetesEfficiencyReportCostResponseSchema).describe("Costs."),
+  total_amount: monetaryAmountSchema.describe("Total amount."),
+  total_idle_cost: monetaryAmountSchema.describe("Total idle cost."),
+  total_cost_efficiency: z.string().describe("Total cost efficiency."),
+  pagination: paginationSchema.describe("Pagination information for these results."),
+});
+
+export const kubernetesEfficiencyReportOutputSchema = kubernetesEfficiencyReportResponseSchema.shape;
+
+export const listKubernetesEfficiencyReportsOutputSchema = listKubernetesEfficiencyReportsResponseSchema.shape;
+
+export const queryKubernetesEfficiencyReportCostsOutputSchema =
+  queryKubernetesEfficiencyReportCostsResponseSchema.shape;

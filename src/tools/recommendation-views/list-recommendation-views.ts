@@ -4,6 +4,7 @@ import { nonempty, vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listRecommendationViewsOutputSchema } from "./schemas";
 
 const description = `
 List all recommendation views available in the Vantage account. Recommendation views are saved filters for cost optimization recommendations.
@@ -32,6 +33,7 @@ export default registerTool({
   name: "list-recommendation-views",
   title: "List Recommendation Views",
   description,
+  outputSchema: listRecommendationViewsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

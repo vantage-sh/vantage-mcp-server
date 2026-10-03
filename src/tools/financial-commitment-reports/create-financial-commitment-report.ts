@@ -4,7 +4,7 @@ import dateValidator from "../../utils/dateValidator";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { groupingDescription, groupingSchema } from "./schemas";
+import { financialCommitmentReportOutputSchema, groupingDescription, groupingSchema } from "./schemas";
 
 const description = `
 Creates a saved Financial Commitment Report for analyzing committed spend and on-demand costs.
@@ -14,6 +14,7 @@ export default registerTool({
   name: "create-financial-commitment-report",
   title: "Create Financial Commitment Report",
   description,
+  outputSchema: financialCommitmentReportOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

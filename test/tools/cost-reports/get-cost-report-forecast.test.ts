@@ -113,4 +113,28 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   },
 ];
 
-testTool(tool, argumentSchemaTests, executionTests);
+const validOutput = {
+  forecasted_costs: [
+    {
+      amount: "10.0",
+      date: "2023-01-01",
+      provider: "aws" as "aws",
+      service: "AmazonEC2",
+    },
+  ],
+  pagination: {
+    hasNextPage: false,
+    nextPage: 0,
+  },
+};
+
+const outputSchemaTests: SchemaTestTableItem<ExtractOutputSchema<typeof tool>>[] = [
+  { name: "valid response", data: validOutput },
+  {
+    name: "rejects an invalid pagination flag",
+    data: { ...validOutput, pagination: { hasNextPage: "true" as any, nextPage: 2 } },
+    expectedIssues: ["Invalid input: expected boolean, received string"],
+  },
+];
+
+testTool(tool, argumentSchemaTests, outputSchemaTests, executionTests);

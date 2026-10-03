@@ -3,6 +3,7 @@ import paginationData from "../../utils/paginationData";
 import { nonempty, vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { dashboardOutputSchema } from "./schemas";
 
 const description = `
 List all dashboards available in the Vantage account. Dashboards provide visualizations of cost data.
@@ -28,6 +29,15 @@ export default registerTool({
     readOnly: true,
   },
   args,
+  outputSchema: {
+    dashboards: z.array(z.object(dashboardOutputSchema)).describe("The Dashboards available in the Vantage account."),
+    pagination: z
+      .object({
+        hasNextPage: z.boolean().describe("Whether another page of Dashboards is available."),
+        nextPage: z.number().int().describe("The next page number, or 0 when there is no next page."),
+      })
+      .describe("Pagination information for the Dashboard list."),
+  },
   async execute(args, ctx) {
     const requestParams = { ...args, limit: 64 };
     const response = await ctx.callVantageApi("/v2/dashboards", requestParams, "GET");

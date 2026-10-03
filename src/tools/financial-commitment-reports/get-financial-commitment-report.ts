@@ -2,6 +2,7 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { financialCommitmentReportOutputSchema } from "./schemas";
 
 const description = `
 Gets a specific financial commitment report by its token.
@@ -20,6 +21,7 @@ export default registerTool({
   name: "get-financial-commitment-report",
   title: "Get Financial Commitment Report",
   description,
+  outputSchema: financialCommitmentReportOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

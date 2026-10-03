@@ -1,7 +1,12 @@
 import { type GetResourceReportResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/resource-reports/get-resource-report";
-import { requestsInOrder, testTool } from "../../../src/utils/testing";
+import {
+  type ExtractOutputSchema,
+  requestsInOrder,
+  type SchemaTestTableItem,
+  testTool,
+} from "../../../src/utils/testing";
 
 const RESOURCE_REPORT_TOKEN: string = "prvdr_rsrc_rprt_5270d2a0708fd74f";
 const BAD_RESOURCE_REPORT_TOKEN: string = "prvdr_rsrc_rprt_nonexistent";
@@ -17,6 +22,17 @@ const success: GetResourceReportResponse = {
   columns: ["provider", "label", "accrued_costs", "recommendation_savings", "resource", "type", "region", "account"],
 };
 
+const validOutput = success;
+
+const outputSchemaTests: SchemaTestTableItem<ExtractOutputSchema<typeof tool>>[] = [
+  { name: "valid response", data: validOutput },
+  {
+    name: "rejects a non-string resource token",
+    data: { ...validOutput, token: 123 as any },
+    expectedIssues: ["Invalid input: expected string, received number"],
+  },
+];
+
 testTool(
   tool,
   [
@@ -27,6 +43,7 @@ testTool(
       },
     },
   ],
+  outputSchemaTests,
   [
     {
       name: "successful call",

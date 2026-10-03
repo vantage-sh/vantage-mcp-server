@@ -3,6 +3,7 @@ import z from "zod";
 import { nonempty, vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { workspaceOutputSchema } from "./schemas";
 
 const description = `
 Update an existing Workspace. You can update the name, currency conversion settings, currency code, and exchange rate date method.
@@ -12,6 +13,7 @@ export default registerTool({
   name: "update-workspace",
   title: "Update Workspace",
   description,
+  outputSchema: workspaceOutputSchema,
   annotations: {
     destructive: true,
     openWorld: false,

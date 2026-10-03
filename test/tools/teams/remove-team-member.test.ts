@@ -1,12 +1,28 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/teams/remove-team-member";
-import { requestsInOrder, testTool } from "../../../src/utils/testing";
+import {
+  type ExtractOutputSchema,
+  requestsInOrder,
+  type SchemaTestTableItem,
+  testTool,
+} from "../../../src/utils/testing";
 
 const validArguments = {
   team_token: "team_123",
   user_token: "usr_123",
 };
+
+const validOutput = validArguments;
+
+const outputSchemaTests: SchemaTestTableItem<ExtractOutputSchema<typeof tool>>[] = [
+  { name: "valid response", data: validOutput },
+  {
+    name: "rejects a non-string Team token",
+    data: { ...validOutput, team_token: 123 as any },
+    expectedIssues: ["Invalid input: expected string, received number"],
+  },
+];
 
 testTool(
   tool,
@@ -23,6 +39,7 @@ testTool(
       expectedIssues: ["Must be a User token (usr_*)"],
     },
   ],
+  outputSchemaTests,
   [
     {
       name: "successful call",

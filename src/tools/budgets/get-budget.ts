@@ -3,6 +3,7 @@ import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { budgetOutputSchema } from "./schemas";
 
 const description = `
 Gets a specific Budget by its token. Optionally includes performance data showing actual spend vs. budget amounts by period.
@@ -13,6 +14,7 @@ export default registerTool({
   name: "get-budget",
   title: "Get Budget",
   description,
+  outputSchema: budgetOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

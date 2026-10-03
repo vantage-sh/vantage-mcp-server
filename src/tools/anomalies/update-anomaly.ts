@@ -3,6 +3,7 @@ import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { anomalyAlertOutputSchema } from "./schemas";
 
 const description = `
 Updates an existing anomaly alert by its token. Use this to change the status of an anomaly alert (e.g. to archive or ignore it) and optionally provide feedback.
@@ -12,6 +13,7 @@ export default registerTool({
   name: "update-anomaly",
   title: "Update Anomaly",
   description,
+  outputSchema: anomalyAlertOutputSchema,
   annotations: {
     destructive: true,
     openWorld: false,

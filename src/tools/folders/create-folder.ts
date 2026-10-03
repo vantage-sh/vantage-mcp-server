@@ -2,7 +2,7 @@ import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { folderType } from "./schemas";
+import { folderOutputSchema, folderType } from "./schemas";
 
 const description = `
 Create a folder for organizing Cost Reports or Resource Reports. Set type to CostFolder for Cost Reports or ProviderResourceFolder for Resource Reports.
@@ -12,6 +12,7 @@ export default registerTool({
   name: "create-folder",
   title: "Create Folder",
   description,
+  outputSchema: folderOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

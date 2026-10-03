@@ -1,4 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
+import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
@@ -11,6 +12,9 @@ export default registerTool({
   name: "delete-dashboard",
   title: "Delete Dashboard",
   description,
+  outputSchema: {
+    token: z.string().describe("The token of the deleted Dashboard."),
+  },
   annotations: {
     destructive: true,
     openWorld: false,

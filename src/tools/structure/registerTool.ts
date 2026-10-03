@@ -16,6 +16,7 @@ import {
   truncateAttribute,
   type WaitUntil,
 } from "../../tracing";
+import type { InferOutputInput, ToolOutputSchema } from "../../utils/zod/output";
 import MCPUserError from "./MCPUserError";
 
 export type ToolCallContext = {
@@ -33,7 +34,7 @@ export type ToolCallContext = {
   ) => Promise<{ data: Response; ok: true } | { errors: unknown[]; ok: false }>;
 };
 
-export type ToolProperties<Input extends z.ZodRawShape, Output extends z.ZodRawShape | undefined = undefined> = {
+export type ToolProperties<Input extends z.ZodRawShape, Output extends ToolOutputSchema | undefined = undefined> = {
   name: string;
   title: string;
   description: string;
@@ -48,17 +49,13 @@ export type ToolProperties<Input extends z.ZodRawShape, Output extends z.ZodRawS
   execute: (
     args: z.core.$InferObjectOutput<{ -readonly [P in keyof Input]: Input[P] }, Record<string, unknown>>,
     context: ToolCallContext
-  ) => Promise<
-    Output extends undefined
-      ? Record<string, unknown>
-      : z.core.$InferObjectInput<{ -readonly [P in keyof Output]: Output[P] }, Record<string, unknown>>
-  >;
+  ) => Promise<InferOutputInput<Output>>;
 };
 
 const toolSetups = new Map<string, (server: McpServer, generateContext: () => ToolCallContext) => RegisteredTool>();
 
 export type ToolMetadata = Pick<
-  ToolProperties<z.ZodRawShape, z.ZodRawShape | undefined>,
+  ToolProperties<z.ZodRawShape, ToolOutputSchema | undefined>,
   "name" | "title" | "description" | "annotations" | "args" | "outputSchema"
 >;
 const toolDefinitions = new Map<string, ToolMetadata>();
@@ -79,10 +76,10 @@ export function getRegisteredToolNames(): string[] {
 export default function registerTool<Input extends z.ZodRawShape>(
   toolProps: ToolProperties<Input, undefined>
 ): ToolProperties<Input, undefined>;
-export default function registerTool<Input extends z.ZodRawShape, Output extends z.ZodRawShape>(
+export default function registerTool<Input extends z.ZodRawShape, Output extends ToolOutputSchema>(
   toolProps: ToolProperties<Input, Output>
 ): ToolProperties<Input, Output>;
-export default function registerTool<Input extends z.ZodRawShape, Output extends z.ZodRawShape | undefined>(
+export default function registerTool<Input extends z.ZodRawShape, Output extends ToolOutputSchema | undefined>(
   toolProps: ToolProperties<Input, Output>
 ): ToolProperties<Input, Output> {
   const serverSetup = (server: McpServer, generateContext: () => ToolCallContext) => {
@@ -126,14 +123,7 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
             try {
               const res = await toolProps.execute(args, ctx);
 
-              if (toolProps.outputSchema) {
-                // Since there's an output schema, we should return structured content.
-                return {
-                  structuredContent: res,
-                };
-              }
-
-              // There's no output schema, so we should return text content.
+              // Keep text content for clients that do not consume structured output.
               return {
                 content: [
                   {
@@ -141,6 +131,7 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
                     text: JSON.stringify(res, null, 2),
                   },
                 ],
+                ...(toolProps.outputSchema ? { structuredContent: res } : {}),
                 isError: false,
               };
             } catch (e) {

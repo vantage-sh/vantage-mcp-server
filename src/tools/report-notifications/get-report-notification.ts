@@ -2,6 +2,7 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { reportNotificationOutputSchema } from "./schemas";
 
 const description = `
 Gets a specific Report Notification by its token.
@@ -19,6 +20,7 @@ export default registerTool({
   name: "get-report-notification",
   title: "Get Report Notification",
   description,
+  outputSchema: reportNotificationOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

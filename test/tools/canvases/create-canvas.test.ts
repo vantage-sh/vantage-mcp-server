@@ -57,10 +57,8 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 const successData = {
   token: "cnvs_abc123",
   title: "Weekly Spend by Team",
-  status: "draft",
   prompt: "Show me weekly costs grouped by team",
-  saved: true,
-  data: { table: null },
+  data: { table: { columns: ["provider", "cost"], rows: [["aws", "100.00"]] } },
   workspace_token: "wrkspc_123",
   created_at: "2024-01-01T00:00:00Z",
   updated_at: "2024-01-01T00:00:00Z",
@@ -114,4 +112,15 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   },
 ];
 
-testTool(tool, argumentSchemaTests, executionTests);
+const validOutput = successData;
+
+const outputSchemaTests: SchemaTestTableItem<ExtractOutputSchema<typeof tool>>[] = [
+  { name: "valid response", data: validOutput },
+  {
+    name: "rejects a non-string resource token",
+    data: { ...validOutput, token: 123 as any },
+    expectedIssues: ["Invalid input: expected string, received number"],
+  },
+];
+
+testTool(tool, argumentSchemaTests, outputSchemaTests, executionTests);

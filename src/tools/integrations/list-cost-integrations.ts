@@ -3,6 +3,7 @@ import paginationData from "../../utils/paginationData";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listCostIntegrationsOutputSchema } from "./schemas";
 
 const description = `
 List all cost provider integrations available to provide costs data from and their associated accounts.
@@ -21,6 +22,7 @@ export default registerTool({
   name: "list-cost-integrations",
   title: "List Cost Integrations",
   description,
+  outputSchema: listCostIntegrationsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

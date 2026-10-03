@@ -2,7 +2,12 @@ import type { GetSavedFiltersResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/saved-filters/list-saved-filters";
 import { DEFAULT_LIMIT } from "../../../src/tools/structure/constants";
-import { requestsInOrder, testTool } from "../../../src/utils/testing";
+import {
+  type ExtractOutputSchema,
+  requestsInOrder,
+  type SchemaTestTableItem,
+  testTool,
+} from "../../../src/utils/testing";
 
 const savedFilter = {
   token: "svd_fltr_123",
@@ -20,6 +25,20 @@ const success: GetSavedFiltersResponse = {
 const args = { page: 1, q: "AWS", workspace_token: "wrkspc_123" };
 const params = { ...args, limit: DEFAULT_LIMIT };
 
+const validOutput = {
+  saved_filters: [savedFilter],
+  pagination: { hasNextPage: true, nextPage: 2 },
+};
+
+const outputSchemaTests: SchemaTestTableItem<ExtractOutputSchema<typeof tool>>[] = [
+  { name: "valid response", data: validOutput },
+  {
+    name: "rejects an invalid pagination flag",
+    data: { ...validOutput, pagination: { hasNextPage: "true" as any, nextPage: 2 } },
+    expectedIssues: ["Invalid input: expected boolean, received string"],
+  },
+];
+
 testTool(
   tool,
   [
@@ -32,6 +51,7 @@ testTool(
       expectedIssues: ["Must be a Workspace token (wrkspc_*)"],
     },
   ],
+  outputSchemaTests,
   [
     {
       name: "successful call with pagination",

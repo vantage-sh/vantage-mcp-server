@@ -2,6 +2,7 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { businessMetricOutputSchema } from "./schemas";
 
 const description = `
 Get a specific BusinessMetric by token.
@@ -16,6 +17,7 @@ export default registerTool({
   name: "get-business-metric",
   title: "Get Business Metric",
   description,
+  outputSchema: businessMetricOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

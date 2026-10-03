@@ -2,6 +2,7 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { recommendationOutputSchema } from "./schemas";
 
 const description = `
 Get comprehensive details about a specific cost optimization recommendation using its unique token.
@@ -30,6 +31,7 @@ export default registerTool({
   name: "get-recommendation-details",
   title: "Get Recommendation Details",
   description,
+  outputSchema: recommendationOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

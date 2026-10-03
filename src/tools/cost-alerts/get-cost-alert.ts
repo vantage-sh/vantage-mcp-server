@@ -2,6 +2,7 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { costAlertOutputSchema } from "./schemas";
 
 const description = `
 Gets a specific Cost Alert by its token.
@@ -19,6 +20,7 @@ export default registerTool({
   name: "get-cost-alert",
   title: "Get Cost Alert",
   description,
+  outputSchema: costAlertOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

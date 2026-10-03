@@ -4,6 +4,7 @@ import { nonempty, vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listNetworkFlowReportsOutputSchema } from "./schemas";
 
 const description = `
 Lists saved Network Flow Reports. Use get-network-flow-report for a report's configuration.
@@ -13,6 +14,7 @@ export default registerTool({
   name: "list-network-flow-reports",
   title: "List Network Flow Reports",
   description,
+  outputSchema: listNetworkFlowReportsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

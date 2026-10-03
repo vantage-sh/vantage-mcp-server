@@ -7,6 +7,7 @@ import {
   valueUpdateFields,
   virtualTagConfigToken,
   virtualTagConfigValueFilter,
+  virtualTagConfigValueOutputSchema,
   virtualTagConfigValueToken,
   virtualTagConfigValueUpdateOptionalArgs,
 } from "./schemas";
@@ -19,6 +20,7 @@ export default registerTool({
   name: "update-virtual-tag-config-value",
   title: "Update Virtual Tag Config Value",
   description,
+  outputSchema: virtualTagConfigValueOutputSchema,
   annotations: {
     destructive: true,
     openWorld: false,

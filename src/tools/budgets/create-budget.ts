@@ -2,7 +2,7 @@ import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { budgetPeriod, budgetType, budgetUnit, periodCadence } from "./schemas";
+import { budgetOutputSchema, budgetPeriod, budgetType, budgetUnit, periodCadence } from "./schemas";
 
 const description = `
 Creates a budget based on the parameters specified. This is useful if you have been tasked with managing budgets
@@ -13,6 +13,7 @@ export default registerTool({
   name: "create-budget",
   title: "Create Budget",
   description,
+  outputSchema: budgetOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

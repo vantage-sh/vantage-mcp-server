@@ -4,6 +4,7 @@ import { nonempty, vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listCanvasesOutputSchema } from "./schemas";
 
 const description = `
 List all saved Canvases available in the Vantage account. Canvases are AI-generated cost analysis views created from natural language prompts.
@@ -23,6 +24,7 @@ export default registerTool({
   name: "list-canvases",
   title: "List Canvases",
   description,
+  outputSchema: listCanvasesOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

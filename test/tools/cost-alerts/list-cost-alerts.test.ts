@@ -162,4 +162,21 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   },
 ];
 
-testTool(tool, argumentSchemaTests, executionTests);
+const validOutput = {
+  cost_alerts: successData.cost_alerts,
+  pagination: {
+    hasNextPage: false,
+    nextPage: 0,
+  },
+};
+
+const outputSchemaTests: SchemaTestTableItem<ExtractOutputSchema<typeof tool>>[] = [
+  { name: "valid response", data: validOutput },
+  {
+    name: "rejects an invalid pagination flag",
+    data: { ...validOutput, pagination: { hasNextPage: "true" as any, nextPage: 2 } },
+    expectedIssues: ["Invalid input: expected boolean, received string"],
+  },
+];
+
+testTool(tool, argumentSchemaTests, outputSchemaTests, executionTests);

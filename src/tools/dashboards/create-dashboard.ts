@@ -2,7 +2,14 @@ import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { dateBinSchema, dateIntervalSchema, endDateSchema, startDateSchema, widgetSchema } from "./schemas";
+import {
+  dashboardOutputSchema,
+  dateBinSchema,
+  dateIntervalSchema,
+  endDateSchema,
+  startDateSchema,
+  widgetSchema,
+} from "./schemas";
 
 const description = `
 Create a new Dashboard in Vantage.
@@ -29,6 +36,7 @@ export default registerTool({
   name: "create-dashboard",
   title: "Create Dashboard",
   description,
+  outputSchema: dashboardOutputSchema,
   args: {
     title: z.string().min(1).describe("The title of the dashboard"),
     workspace_token: vantageToken("workspace"),

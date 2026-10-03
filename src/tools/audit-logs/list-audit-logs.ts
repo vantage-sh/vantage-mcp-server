@@ -5,6 +5,7 @@ import { vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listAuditLogsOutputSchema } from "./schemas";
 
 const AUDIT_LOG_ACTIONS = ["create", "update", "delete"] as const;
 const AUDIT_LOG_SOURCES = ["console", "api", "finops_agent"] as const;
@@ -95,6 +96,7 @@ export default registerTool({
   name: "list-audit-logs",
   title: "List Audit Logs",
   description,
+  outputSchema: listAuditLogsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

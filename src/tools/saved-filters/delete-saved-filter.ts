@@ -1,5 +1,6 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import { vantageToken } from "../../utils/zod";
+import { deletedTokenOutputSchema } from "../../utils/zod/output";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -7,6 +8,7 @@ export default registerTool({
   name: "delete-saved-filter",
   title: "Delete Saved Filter",
   description: "Delete a Saved Filter by token.",
+  outputSchema: deletedTokenOutputSchema,
   annotations: { readOnly: false, destructive: true, openWorld: false },
   args: { saved_filter_token: vantageToken("saved_filter") },
   async execute(args, ctx) {

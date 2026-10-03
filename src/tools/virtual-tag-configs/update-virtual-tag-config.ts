@@ -4,7 +4,7 @@ import dateValidator from "../../utils/dateValidator";
 import { nonempty, vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { collapsedTagKeySchema, virtualTagConfigValueSchema } from "./schemas";
+import { collapsedTagKeySchema, updateVirtualTagConfigOutputSchema, virtualTagConfigValueSchema } from "./schemas";
 
 const description = `
 Updates an existing Virtual Tag's config-level settings or complete ordered mappings/values. Supplying values replaces the entire list in that order, and an empty array clears it; use the value-level tools to append, partially edit, or delete one mapping.
@@ -16,6 +16,7 @@ export default registerTool({
   name: "update-virtual-tag-config",
   title: "Update Virtual Tag Config",
   description,
+  outputSchema: updateVirtualTagConfigOutputSchema,
   annotations: {
     destructive: true,
     openWorld: false,

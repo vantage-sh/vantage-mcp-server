@@ -1,7 +1,23 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/teams/delete-team";
-import { requestsInOrder, testTool } from "../../../src/utils/testing";
+import {
+  type ExtractOutputSchema,
+  requestsInOrder,
+  type SchemaTestTableItem,
+  testTool,
+} from "../../../src/utils/testing";
+
+const validOutput = { token: "team_123" };
+
+const outputSchemaTests: SchemaTestTableItem<ExtractOutputSchema<typeof tool>>[] = [
+  { name: "valid response", data: validOutput },
+  {
+    name: "rejects a non-string resource token",
+    data: { ...validOutput, token: 123 as any },
+    expectedIssues: ["Invalid input: expected string, received number"],
+  },
+];
 
 testTool(
   tool,
@@ -16,6 +32,7 @@ testTool(
       expectedIssues: ["Must be a Team token (team_*)"],
     },
   ],
+  outputSchemaTests,
   [
     {
       name: "successful call",

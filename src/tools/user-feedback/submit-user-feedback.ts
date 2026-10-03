@@ -1,6 +1,7 @@
 import z from "zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { userFeedbackOutputSchema } from "./schemas";
 
 const description = `
 Submit feedback on using the Vantage MCP Server. Ask the user if they'd like to provide feedback any time you sense they might be frustrated.
@@ -15,6 +16,7 @@ export default registerTool({
   name: "submit-user-feedback",
   title: "Submit User Feedback",
   description,
+  outputSchema: userFeedbackOutputSchema,
   annotations: {
     destructive: true,
     openWorld: true,

@@ -179,4 +179,25 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   },
 ];
 
-testTool(tool, argumentSchemaTests, executionTests);
+const validOutput = {
+  costs: successData.costs,
+  total_amount: successData.total_amount,
+  total_gross_amount: successData.total_gross_amount,
+  notes:
+    "Costs records represent one month; accrued_at is the first day of the month. If your date range is shorter than a month, the record covers only that range.",
+  pagination: {
+    hasNextPage: false,
+    nextPage: 0,
+  },
+};
+
+const outputSchemaTests: SchemaTestTableItem<ExtractOutputSchema<typeof tool>>[] = [
+  { name: "valid response", data: validOutput },
+  {
+    name: "rejects an invalid pagination flag",
+    data: { ...validOutput, pagination: { hasNextPage: "true" as any, nextPage: 2 } },
+    expectedIssues: ["Invalid input: expected boolean, received string"],
+  },
+];
+
+testTool(tool, argumentSchemaTests, outputSchemaTests, executionTests);

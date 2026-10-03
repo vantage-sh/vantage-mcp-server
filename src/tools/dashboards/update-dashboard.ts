@@ -3,7 +3,14 @@ import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { endDateSchema, startDateSchema, updateDateBinSchema, updateDateIntervalSchema, widgetSchema } from "./schemas";
+import {
+  dashboardOutputSchema,
+  endDateSchema,
+  startDateSchema,
+  updateDateBinSchema,
+  updateDateIntervalSchema,
+  widgetSchema,
+} from "./schemas";
 
 const description = `
 Updates an existing Dashboard's title, widgets, saved filters, or date range.
@@ -15,6 +22,7 @@ export default registerTool({
   name: "update-dashboard",
   title: "Update Dashboard",
   description,
+  outputSchema: dashboardOutputSchema,
   annotations: {
     destructive: true,
     openWorld: false,

@@ -1,5 +1,6 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import { vantageToken } from "../../utils/zod";
+import { deletedTokenOutputSchema } from "../../utils/zod/output";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
@@ -11,6 +12,7 @@ export default registerTool({
   name: "delete-cost-alert",
   title: "Delete Cost Alert",
   description,
+  outputSchema: deletedTokenOutputSchema,
   annotations: {
     destructive: true,
     openWorld: false,

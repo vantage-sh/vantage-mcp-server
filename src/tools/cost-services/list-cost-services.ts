@@ -1,6 +1,7 @@
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listCostServicesOutputSchema } from "./schemas";
 
 const description = `
 List cost service display names for a workspace. These names may NOT match VQL costs.service identifiers used in query-costs filters.
@@ -15,6 +16,7 @@ export default registerTool({
   name: "list-cost-services",
   title: "List Cost Services",
   description,
+  outputSchema: listCostServicesOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

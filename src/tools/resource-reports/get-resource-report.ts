@@ -2,6 +2,7 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { resourceReportOutputSchema } from "./schemas";
 
 const description = `
 Gets a specific resource report by its token. The token of a report can be used to generate a link to the resource report in the Vantage Web UI: https://console.vantage.sh/go/<token>
@@ -15,6 +16,7 @@ export default registerTool({
   name: "get-resource-report",
   title: "Get Resource Report",
   description,
+  outputSchema: resourceReportOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

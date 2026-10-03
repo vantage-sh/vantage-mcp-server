@@ -3,6 +3,7 @@ import paginationData from "../../utils/paginationData";
 import { vantageToken } from "../../utils/zod/vantage-token";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listAnnotationsOutputSchema } from "./schemas";
 
 const ANNOTATIONS_DEFAULT_LIMIT = 100;
 
@@ -29,6 +30,7 @@ export default registerTool({
   name: "list-annotations",
   title: "List Annotations",
   description,
+  outputSchema: listAnnotationsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

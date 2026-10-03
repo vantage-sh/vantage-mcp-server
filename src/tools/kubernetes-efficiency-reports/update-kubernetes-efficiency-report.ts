@@ -8,6 +8,7 @@ import {
   dateIntervalSchemaForUpdate,
   filterSchema,
   groupingsSchema,
+  kubernetesEfficiencyReportOutputSchema,
   updateEndDateSchema,
   updateStartDateSchema,
   validateUpdateDateRange,
@@ -21,6 +22,7 @@ export default registerTool({
   name: "update-kubernetes-efficiency-report",
   title: "Update Kubernetes Efficiency Report",
   description,
+  outputSchema: kubernetesEfficiencyReportOutputSchema,
   annotations: {
     destructive: true,
     openWorld: false,

@@ -2,6 +2,7 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { canvasOutputSchema } from "./schemas";
 
 const description = `
 Gets a specific Canvas by its token. Returns the canvas details including its title, prompt, status, and structured table data.
@@ -12,6 +13,7 @@ export default registerTool({
   name: "get-canvas",
   title: "Get Canvas",
   description,
+  outputSchema: canvasOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

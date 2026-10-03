@@ -1,7 +1,12 @@
 import type { GetResourceReportColumnsResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/resource-reports/list-resource-report-columns";
-import { requestsInOrder, testTool } from "../../../src/utils/testing";
+import {
+  type ExtractOutputSchema,
+  requestsInOrder,
+  type SchemaTestTableItem,
+  testTool,
+} from "../../../src/utils/testing";
 
 const success: GetResourceReportColumnsResponse = {
   columns: [
@@ -60,6 +65,17 @@ const success: GetResourceReportColumnsResponse = {
 const RESOURCE_TYPE: string = "aws_instance";
 const INVALID_RESOURCE_TYPE: string = "invalid";
 
+const validOutput = success;
+
+const outputSchemaTests: SchemaTestTableItem<ExtractOutputSchema<typeof tool>>[] = [
+  { name: "valid response", data: validOutput },
+  {
+    name: "rejects a non-string resource report column",
+    data: { ...validOutput, columns: [123 as any] },
+    expectedIssues: ["Invalid input: expected string, received number"],
+  },
+];
+
 testTool(
   tool,
   [
@@ -70,6 +86,7 @@ testTool(
       },
     },
   ],
+  outputSchemaTests,
   [
     {
       name: "successful call",

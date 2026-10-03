@@ -2,6 +2,7 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { recommendationViewOutputSchema } from "./schemas";
 
 const description = `
 Gets a specific recommendation view by its token.
@@ -15,6 +16,7 @@ export default registerTool({
   name: "get-recommendation-view",
   title: "Get Recommendation View",
   description,
+  outputSchema: recommendationViewOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

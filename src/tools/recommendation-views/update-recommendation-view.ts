@@ -4,6 +4,7 @@ import dateValidator from "../../utils/dateValidator";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { recommendationViewOutputSchema } from "./schemas";
 
 const description = `
 Updates an existing Recommendation View. Use this to change the view title or the filters applied to saved recommendation views.
@@ -17,6 +18,7 @@ export default registerTool({
   name: "update-recommendation-view",
   title: "Update Recommendation View",
   description,
+  outputSchema: recommendationViewOutputSchema,
   annotations: {
     destructive: true,
     openWorld: false,

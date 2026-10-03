@@ -6,6 +6,7 @@ import { vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { getCostReportForecastOutputSchema } from "./schemas";
 
 const description = `
 Given a Cost Report Token, Vantage can forecast the costs for a given time range. Vantage will return costs that are *predicted*, but have not yet been actually incurred.
@@ -31,6 +32,7 @@ export default registerTool({
   name: "get-cost-report-forecast",
   title: "Get Cost Report Forecast",
   description,
+  outputSchema: getCostReportForecastOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

@@ -1,7 +1,12 @@
 import { type GetFinancialCommitmentReportResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/financial-commitment-reports/get-financial-commitment-report";
-import { requestsInOrder, testTool } from "../../../src/utils/testing";
+import {
+  type ExtractOutputSchema,
+  requestsInOrder,
+  type SchemaTestTableItem,
+  testTool,
+} from "../../../src/utils/testing";
 
 const success: GetFinancialCommitmentReportResponse = {
   token: "fncl_cmnt_rprt_86a93126175f91ed",
@@ -18,6 +23,17 @@ const success: GetFinancialCommitmentReportResponse = {
   on_demand_costs_scope: "discountable",
   filter: "(financial_commitments.provider = 'aws')",
 };
+
+const validOutput = success;
+
+const outputSchemaTests: SchemaTestTableItem<ExtractOutputSchema<typeof tool>>[] = [
+  { name: "valid response", data: validOutput },
+  {
+    name: "rejects a non-string resource token",
+    data: { ...validOutput, token: 123 as any },
+    expectedIssues: ["Invalid input: expected string, received number"],
+  },
+];
 
 testTool(
   tool,
@@ -36,6 +52,7 @@ testTool(
       expectedIssues: ["Too small: expected string to have >=1 characters"],
     },
   ],
+  outputSchemaTests,
   [
     {
       name: "successful call",

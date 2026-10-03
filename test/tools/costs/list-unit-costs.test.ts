@@ -70,6 +70,7 @@ function makeUnitCost(token: string) {
   return {
     business_metric_token: token,
     business_metric_title: `Unit ${token}`,
+    calculation_type: "unit_cost" as const,
     unit_cost_amount: "100.5",
     business_metric_amount: "100.5",
     scale: 1,
@@ -152,4 +153,21 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   },
 ];
 
-testTool(tool, argumentSchemaTests, executionTests);
+const validOutput = {
+  unit_costs: successData.unit_costs,
+  pagination: {
+    hasNextPage: true,
+    nextPage: 2,
+  },
+};
+
+const outputSchemaTests: SchemaTestTableItem<ExtractOutputSchema<typeof tool>>[] = [
+  { name: "valid response", data: validOutput },
+  {
+    name: "rejects an invalid pagination flag",
+    data: { ...validOutput, pagination: { hasNextPage: "true" as any, nextPage: 2 } },
+    expectedIssues: ["Invalid input: expected boolean, received string"],
+  },
+];
+
+testTool(tool, argumentSchemaTests, outputSchemaTests, executionTests);

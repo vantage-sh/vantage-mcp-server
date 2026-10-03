@@ -2,6 +2,7 @@ import paginationData from "../../utils/paginationData";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listCostProvidersOutputSchema } from "./schemas";
 
 const description = `
 List of cost providers available to query for a given Workspace. Can be used to filter costs down to a specific provider in VQL queries.
@@ -15,6 +16,7 @@ export default registerTool({
   name: "list-cost-providers",
   title: "List Cost Providers",
   description,
+  outputSchema: listCostProvidersOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

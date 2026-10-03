@@ -2,6 +2,7 @@ import { pathEncode } from "@vantage-sh/vantage-client";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { scenarioModelOutputSchema } from "./schemas";
 
 const description = `
 Get a specific ScenarioModel by token.
@@ -18,6 +19,7 @@ export default registerTool({
   name: "get-scenario-model",
   title: "Get Scenario Model",
   description,
+  outputSchema: scenarioModelOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

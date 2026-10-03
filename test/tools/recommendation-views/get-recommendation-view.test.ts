@@ -1,7 +1,12 @@
 import { type GetRecommendationViewResponse, pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/recommendation-views/get-recommendation-view";
-import { requestsInOrder, testTool } from "../../../src/utils/testing";
+import {
+  type ExtractOutputSchema,
+  requestsInOrder,
+  type SchemaTestTableItem,
+  testTool,
+} from "../../../src/utils/testing";
 
 const success: GetRecommendationViewResponse = {
   token: "rec_vw_be3f24eb1b5aabf6",
@@ -19,6 +24,17 @@ const success: GetRecommendationViewResponse = {
   created_by: "team_73f6001f98e9012b",
 };
 
+const validOutput = success;
+
+const outputSchemaTests: SchemaTestTableItem<ExtractOutputSchema<typeof tool>>[] = [
+  { name: "valid response", data: validOutput },
+  {
+    name: "rejects a non-string resource token",
+    data: { ...validOutput, token: 123 as any },
+    expectedIssues: ["Invalid input: expected string, received number"],
+  },
+];
+
 testTool(
   tool,
   [
@@ -29,6 +45,7 @@ testTool(
       },
     },
   ],
+  outputSchemaTests,
   [
     {
       name: "successful call",

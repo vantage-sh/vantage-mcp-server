@@ -1,7 +1,7 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { virtualTagConfigToken, virtualTagConfigValueToken } from "./schemas";
+import { virtualTagConfigToken, virtualTagConfigValueOutputSchema, virtualTagConfigValueToken } from "./schemas";
 
 const description = `
 Returns one mapping/value from an existing Virtual Tag Config, including its filter and allocation settings. Use this to inspect one mapping before editing it.
@@ -11,6 +11,7 @@ export default registerTool({
   name: "get-virtual-tag-config-value",
   title: "Get Virtual Tag Config Value",
   description,
+  outputSchema: virtualTagConfigValueOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

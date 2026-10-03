@@ -9,6 +9,7 @@ import {
   businessMetricTokenForUpdate,
   chartSettings,
   chartTypes,
+  costReportOutputSchema,
   costReportSettingsForUpdate,
   dateBins,
 } from "./schemas";
@@ -23,6 +24,7 @@ export default registerTool({
   name: "update-cost-report",
   title: "Update Cost Report",
   description,
+  outputSchema: costReportOutputSchema,
   annotations: {
     destructive: true,
     openWorld: false,

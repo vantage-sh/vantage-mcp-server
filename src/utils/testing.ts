@@ -8,50 +8,39 @@ import { describe, expect, it, test, vi } from "vitest";
 import z from "zod";
 import MCPUserError from "../tools/structure/MCPUserError";
 import { setupRegisteredTools, type ToolCallContext, type ToolProperties } from "../tools/structure/registerTool";
+import { type InferOutput, type InferOutputInput, outputSchemaAsObject, type ToolOutputSchema } from "./zod/output";
 
 export type ExtractValidators<T> = T extends ToolProperties<infer V, infer _> ? V : never;
 
 export type ExtractOutputSchema<T> = T extends ToolProperties<infer _, infer O> ? O : undefined;
 
-export type InferValidators<T extends z.ZodRawShape> = {
-  [K in keyof T]: z.input<T[K]>;
-};
+export type InferValidators<T extends ToolOutputSchema> = InferOutputInput<T>;
 
-export type SchemaTestTableItem<Validators extends z.ZodRawShape> = {
+export type SchemaTestTableItem<Validators extends ToolOutputSchema> = {
   name: string;
   data: InferValidators<Validators>;
   expectedIssues?: string[];
 };
 
-export type TestHandlerContext<Input extends z.ZodRawShape, Output extends z.ZodRawShape | undefined> = {
-  callExpectingSuccess: (
-    args: InferValidators<Input>
-  ) => Promise<
-    Output extends undefined
-      ? Record<string, unknown>
-      : z.core.$InferObjectOutput<{ -readonly [P in keyof Output]: Output[P] }, Record<string, unknown>>
-  >;
+export type TestHandlerContext<Input extends z.ZodRawShape, Output extends ToolOutputSchema | undefined> = {
+  callExpectingSuccess: (args: InferValidators<Input>) => Promise<InferOutput<Output>>;
   callExpectingError: (args: InferValidators<Input>) => Promise<Error>;
   callExpectingMCPUserError: (args: InferValidators<Input>) => Promise<MCPUserError>;
 };
 
-export type ExecutionTestTableItem<Input extends z.ZodRawShape, Output extends z.ZodRawShape | undefined> = {
+export type ExecutionTestTableItem<Input extends z.ZodRawShape, Output extends ToolOutputSchema | undefined> = {
   name: string;
   handler: (context: TestHandlerContext<Input, Output>) => Promise<void>;
   apiCallHandler?: ToolCallContext["callVantageApi"];
 };
 
-export function makeTestHandlerContext<Input extends z.ZodRawShape, Output extends z.ZodRawShape | undefined>(
+export function makeTestHandlerContext<Input extends z.ZodRawShape, Output extends ToolOutputSchema | undefined>(
   inputSchema: Input,
   outputSchema: Output,
   execute: (
     args: z.core.$InferObjectOutput<{ -readonly [P in keyof Input]: Input[P] }, Record<string, unknown>>,
     context: ToolCallContext
-  ) => Promise<
-    Output extends undefined
-      ? Record<string, unknown>
-      : z.core.$InferObjectInput<{ -readonly [P in keyof Output]: Output[P] }, Record<string, unknown>>
-  >,
+  ) => Promise<InferOutputInput<Output>>,
   apiCallHandler?: ExecutionTestTableItem<Input, Output>["apiCallHandler"]
 ) {
   const mcpFunctionContext: ToolCallContext = {
@@ -71,7 +60,7 @@ export function makeTestHandlerContext<Input extends z.ZodRawShape, Output exten
       const result = await execute(parsed, mcpFunctionContext);
       if (outputSchema) {
         // TS gets a bit confused by the multiple return types, so we use any here.
-        return z.object(outputSchema).parse(result) as any;
+        return outputSchemaAsObject(outputSchema).parse(result) as any;
       }
       return result as Record<string, unknown>;
     },
@@ -114,18 +103,18 @@ export function makeTestHandlerContext<Input extends z.ZodRawShape, Output exten
   return toolHandlerContext;
 }
 
-export function testTool<Input extends z.ZodRawShape, Output extends z.ZodRawShape>(
+export function testTool<Input extends z.ZodRawShape, Output extends ToolOutputSchema>(
   tool: ToolProperties<Input, Output>,
   argumentSchemaTests: SchemaTestTableItem<Input>[],
   outputSchemaTests: SchemaTestTableItem<Output>[],
   executionTests: ExecutionTestTableItem<Input, Output>[]
 ): void;
-export function testTool<Input extends z.ZodRawShape, _Output extends undefined>(
+export function testTool<Input extends z.ZodRawShape>(
   tool: ToolProperties<Input, undefined>,
   argumentSchemaTests: SchemaTestTableItem<Input>[],
   executionTests: ExecutionTestTableItem<Input, undefined>[]
 ): void;
-export function testTool<Input extends z.ZodRawShape, Output extends z.ZodRawShape | undefined>(
+export function testTool<Input extends z.ZodRawShape, Output extends ToolOutputSchema | undefined>(
   tool: ToolProperties<Input, Output>,
   argumentSchemaTests: SchemaTestTableItem<Input>[],
   executionTestsOrSchemaTests: any,
@@ -142,7 +131,7 @@ export function testTool<Input extends z.ZodRawShape, Output extends z.ZodRawSha
     describe(`${tool.name} output schema`, () => {
       for (const testCase of outputSchemaTests) {
         it(testCase.name, () => {
-          const result = z.object(tool.outputSchema).safeParse(testCase.data);
+          const result = outputSchemaAsObject(tool.outputSchema!).safeParse(testCase.data);
           if (!result.error) {
             if (testCase.expectedIssues) {
               throw new Error(`Expected issues: ${testCase.expectedIssues.join(", ")}, but got none.`);

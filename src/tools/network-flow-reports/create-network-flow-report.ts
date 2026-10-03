@@ -9,6 +9,7 @@ import {
   flowDirectionSchema,
   flowWeightSchemaForCreate,
   groupingsSchema,
+  networkFlowReportOutputSchema,
   startDateSchema,
   validateNetworkFlowReportDateRange,
 } from "./schemas";
@@ -21,6 +22,7 @@ export default registerTool({
   name: "create-network-flow-report",
   title: "Create Network Flow Report",
   description,
+  outputSchema: networkFlowReportOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

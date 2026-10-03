@@ -3,7 +3,7 @@ import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { nullableBusinessMetricToken, scenarioModelTokens, setAsDefault } from "./schemas";
+import { nullableBusinessMetricToken, reportForecastOutputSchema, scenarioModelTokens, setAsDefault } from "./schemas";
 
 const description = `
 Create a scenario-model ReportForecast for a Cost Report.
@@ -15,6 +15,7 @@ export default registerTool({
   name: "create-report-forecast",
   title: "Create Report Forecast",
   description,
+  outputSchema: reportForecastOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

@@ -4,6 +4,7 @@ import { nonempty, vantageToken } from "../../utils/zod";
 import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import { listCostAlertsOutputSchema } from "./schemas";
 
 const description = `
 List Cost Alerts available in the Vantage account. Cost Alerts are threshold-based spending alerts for Cost Reports.
@@ -33,6 +34,7 @@ export default registerTool({
   name: "list-cost-alerts",
   title: "List Cost Alerts",
   description,
+  outputSchema: listCostAlertsOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

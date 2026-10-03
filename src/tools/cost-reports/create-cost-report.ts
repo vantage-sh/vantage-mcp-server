@@ -8,6 +8,7 @@ import {
   businessMetricTokenForCreate,
   chartSettings,
   chartTypes,
+  costReportOutputSchema,
   costReportSettingsForCreate,
   dateBins,
 } from "./schemas";
@@ -43,6 +44,7 @@ export default registerTool({
   name: "create-cost-report",
   title: "Create Cost Report",
   description,
+  outputSchema: costReportOutputSchema,
   annotations: {
     destructive: false,
     openWorld: false,

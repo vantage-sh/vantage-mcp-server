@@ -1,4 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
+import { deletedTokenOutputSchema } from "../../utils/zod/output";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import { virtualTagConfigToken, virtualTagConfigValueToken } from "./schemas";
@@ -11,6 +12,7 @@ export default registerTool({
   name: "delete-virtual-tag-config-value",
   title: "Delete Virtual Tag Config Value",
   description,
+  outputSchema: deletedTokenOutputSchema,
   annotations: {
     destructive: true,
     openWorld: false,
