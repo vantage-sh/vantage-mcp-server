@@ -25,6 +25,13 @@ test("rejects a token with the wrong prefix", () => {
   expect(result.error.issues[0]?.message).toBe("Must be a Workspace token (wrkspc_*)");
 });
 
+test("does not accept a Dashboard Notification token as a Report Notification token", () => {
+  const dashboardNotificationToken = "rprtbl_ntfctn_5a727210453f6dbc";
+
+  expect(vantageToken("report_notification").safeParse(dashboardNotificationToken).success).toBe(false);
+  expect(vantageToken("dashboard_notification").safeParse(dashboardNotificationToken).success).toBe(true);
+});
+
 test("does not accept a Dashboard Widget token as a Dashboard token", () => {
   const widgetToken = "dshbrd_wdgt_5a727210453f6dbc";
 

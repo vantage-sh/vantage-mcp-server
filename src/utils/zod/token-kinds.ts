@@ -70,6 +70,10 @@ export const TOKEN_KINDS = {
     prefix: "dshbrd",
     label: "Dashboard",
   },
+  dashboard_notification: {
+    prefix: "rprtbl_ntfctn",
+    label: "Dashboard Notification",
+  },
   dashboard_widget: {
     prefix: "dshbrd_wdgt",
     label: "Dashboard Widget",
