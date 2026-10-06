@@ -38,8 +38,8 @@ const widgetGridSchema = z.object({
 });
 
 const widgetContentSchema = z.object({
-  type: z.literal("doc").describe("The TipTap document root type."),
-  content: z.array(z.record(z.string(), z.any())).optional().describe("TipTap document nodes."),
+  type: z.literal("doc").describe("The rich-text document root type."),
+  content: z.array(z.record(z.string(), z.any())).optional().describe("Rich-text document nodes."),
 });
 
 export const widgetSettingsSchema = z.object({
@@ -68,7 +68,7 @@ export const widgetSchema = z.object({
     .optional(),
   content: widgetContentSchema
     .optional()
-    .describe("TipTap document for a free text widget. Required when widgetable_type is free_text."),
+    .describe("Rich-text document for a free text widget. Required when widgetable_type is free_text."),
   settings: widgetSettingsSchema.optional(),
 });
 

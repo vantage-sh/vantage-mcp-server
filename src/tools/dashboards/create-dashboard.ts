@@ -27,7 +27,7 @@ The list of supported widgets is:
 - kubernetes efficiency reports
 - financial commitment reports
 - recommendation saved views
-- free text widgets (widgetable_type free_text plus TipTap content)
+- free text widgets (widgetable_type free_text plus a rich-text document)
 
 Set settings.grid (x, y, w, h) to place a widget on the 12-column layout.
 
