@@ -127,6 +127,9 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
           widgetable_type: "free_text",
           title: "Notes",
           content: { type: "doc" },
+          settings: {
+            grid: { x: 0, y: 4, w: 12, h: 2 },
+          },
         },
         {
           widgetable_token: "rprt_123",
@@ -230,6 +233,41 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       expect(err.exception).toEqual({
         errors: [{ message: "widgets[0] must not include widgetable_token when widgetable_type is free_text." }],
       });
+    },
+  },
+  {
+    name: "free text widget grid omits display type",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: `/v2/dashboards/${pathEncode("dshbrd_123")}`,
+        params: {
+          widgets: [
+            {
+              widgetable_type: "free_text",
+              content: { type: "doc" },
+              settings: { grid: { x: 0, y: 2, w: 6, h: 2 } },
+            },
+          ],
+        },
+        method: "PUT",
+        result: {
+          ok: true,
+          data: successData,
+        },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const res = await callExpectingSuccess({
+        ...minimalValidInputArguments,
+        widgets: [
+          {
+            widgetable_type: "free_text",
+            content: { type: "doc" },
+            settings: { grid: { x: 0, y: 2, w: 6, h: 2 } },
+          },
+        ],
+      });
+      expect(res).toEqual(successData);
     },
   },
 ];

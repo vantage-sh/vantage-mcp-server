@@ -133,6 +133,9 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
             type: "doc",
             content: [{ type: "paragraph", text: "Context for this dashboard." }],
           },
+          settings: {
+            grid: { x: 6, y: 4, w: 6, h: 2 },
+          },
         },
         {
           widgetable_token: "rprt_123",
@@ -246,6 +249,89 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       });
       expect(err.exception).toEqual({
         errors: [{ message: "widgets[0] requires widgetable_token." }],
+      });
+    },
+  },
+  {
+    name: "free text widget grid omits display type",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/dashboards",
+        params: {
+          ...minimalValidInputArguments,
+          widgets: [
+            {
+              widgetable_type: "free_text",
+              title: "Notes",
+              content: { type: "doc" },
+              settings: { grid: { x: 0, y: 1, w: 12, h: 2 } },
+            },
+          ],
+        },
+        method: "POST",
+        result: {
+          ok: true,
+          data: successData,
+        },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const res = await callExpectingSuccess({
+        ...minimalValidInputArguments,
+        widgets: [
+          {
+            widgetable_type: "free_text",
+            title: "Notes",
+            content: { type: "doc" },
+            settings: { grid: { x: 0, y: 1, w: 12, h: 2 } },
+          },
+        ],
+      });
+      expect(res).toEqual(successData);
+    },
+  },
+  {
+    name: "free text widget rejects display settings",
+    apiCallHandler: requestsInOrder([]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError({
+        ...minimalValidInputArguments,
+        widgets: [
+          {
+            widgetable_type: "free_text",
+            content: { type: "doc" },
+            settings: {
+              display_type: "chart",
+              grid: { x: 0, y: 0, w: 6, h: 2 },
+            },
+          },
+        ],
+      });
+      expect(err.exception).toEqual({
+        errors: [
+          {
+            message:
+              "widgets[0] must not include settings.display_type when widgetable_type is free_text. Set settings.grid to place the widget.",
+          },
+        ],
+      });
+    },
+  },
+  {
+    name: "report widget settings require display_type",
+    apiCallHandler: requestsInOrder([]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError({
+        ...minimalValidInputArguments,
+        widgets: [
+          {
+            widgetable_token: "rprt_123",
+            settings: { grid: { x: 0, y: 0, w: 4, h: 3 } },
+          },
+        ],
+      });
+      expect(err.exception).toEqual({
+        errors: [{ message: "widgets[0] requires settings.display_type." }],
       });
     },
   },

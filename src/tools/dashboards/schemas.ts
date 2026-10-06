@@ -46,9 +46,13 @@ const widgetContentSchema = z.object({
 });
 
 export const widgetSettingsSchema = z.object({
-  display_type: displayTypeSchema,
+  display_type: displayTypeSchema.optional(),
   ...widgetSettingsFields,
-  grid: widgetGridSchema.optional().describe("Where this widget sits on the dashboard's 12-column grid."),
+  grid: widgetGridSchema
+    .optional()
+    .describe(
+      "Where this widget sits on the dashboard's 12-column grid. This is the only settings field for a free_text widget."
+    ),
 });
 
 export const widgetSettingsUpdateSchema = z.object({
@@ -80,10 +84,14 @@ export const widgetSchema = z.object({
     ),
   settings: widgetSettingsSchema
     .optional()
-    .describe("How the widget is drawn and where it sits. Include display_type when settings is set."),
+    .describe(
+      "How the widget is drawn and where it sits. A report widget requires display_type. A free_text widget includes only grid."
+    ),
 });
 
 type DashboardWidgetInput = z.infer<typeof widgetSchema>;
+
+const reportOnlySettingKeys = ["display_type", "kpi_calculation", "kpi_type", "kpi_usage_unit"] as const;
 
 export function validateDashboardWidgets(widgets: DashboardWidgetInput[] | undefined) {
   if (widgets === undefined) {
@@ -103,6 +111,22 @@ export function validateDashboardWidgets(widgets: DashboardWidgetInput[] | undef
           errors: [{ message: `${label} must not include widgetable_token when widgetable_type is free_text.` }],
         });
       }
+      const reportSettings = reportOnlySettingKeys.filter((key) => widget.settings?.[key] !== undefined);
+      if (reportSettings.length > 0) {
+        const fields = reportSettings.map((key) => `settings.${key}`).join(", ");
+        throw new MCPUserError({
+          errors: [
+            {
+              message: `${label} must not include ${fields} when widgetable_type is free_text. Set settings.grid to place the widget.`,
+            },
+          ],
+        });
+      }
+      if (widget.settings !== undefined && widget.settings.grid === undefined) {
+        throw new MCPUserError({
+          errors: [{ message: `${label} settings must include grid when widgetable_type is free_text.` }],
+        });
+      }
       continue;
     }
 
@@ -114,6 +138,11 @@ export function validateDashboardWidgets(widgets: DashboardWidgetInput[] | undef
     if (widget.content !== undefined) {
       throw new MCPUserError({
         errors: [{ message: `${label} content is only valid when widgetable_type is free_text.` }],
+      });
+    }
+    if (widget.settings !== undefined && widget.settings.display_type === undefined) {
+      throw new MCPUserError({
+        errors: [{ message: `${label} requires settings.display_type.` }],
       });
     }
   }
