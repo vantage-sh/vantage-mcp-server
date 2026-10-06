@@ -51,7 +51,7 @@ export const virtualTagConfigValueCreateOptionalArgs = {
     .nullable()
     .optional()
     .describe(
-      "Business Metric row filters. Every key must match, and values within a key are alternatives. Cannot include the fan-out label_key. Null or an empty object leaves stored filters unchanged."
+      "Business Metric row filters. Every key must match, and values within a key are alternatives. Do not repeat label_key here; use label_values to limit that label. Null or an empty object leaves stored filters unchanged."
     ),
   display_name: nonempty().optional().describe("Display name for a cost metric or percentage allocation value."),
   label_transforms: z.array(labelTransform).optional().describe("Transforms applied to Business Metric labels."),

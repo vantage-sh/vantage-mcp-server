@@ -53,7 +53,7 @@ export const virtualTagConfigValueSchema = z.object({
     .nullable()
     .optional()
     .describe(
-      "Business Metric row filters. Every key must match, and values within a key are alternatives. Cannot include the fan-out label_key. Null or an empty object clears stored filters."
+      "Business Metric row filters. Every key must match, and values within a key are alternatives. Do not repeat label_key here; use label_values to limit that label. Null or an empty object clears stored filters."
     ),
   display_name: nonempty().optional().describe("Display name for a cost metric or percentage allocation value."),
   label_transforms: z.array(labelTransformSchema).optional().describe("Transforms applied to Business Metric labels."),
