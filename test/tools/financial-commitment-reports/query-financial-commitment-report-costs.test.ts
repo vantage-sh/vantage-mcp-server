@@ -51,7 +51,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     name: "rejects invalid grouping",
     data: {
       financial_commitment_report_token: "fncl_cmnt_rprt_123",
-      groupings: ["provider"],
+      groupings: ["account"],
     },
     expectedIssues: ["Grouping dimensions for returned costs. Use tag:<tag_key> to group by tag."],
   },

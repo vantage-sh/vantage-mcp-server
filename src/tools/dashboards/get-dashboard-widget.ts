@@ -4,25 +4,23 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
 const description = `
-Returns one Dashboard. Widget tokens in the response are used by get-dashboard-widget, update-dashboard-widget, and delete-dashboard-widget. Link to the dashboard with https://console.vantage.sh/go/<token>
+Returns one Dashboard Widget. Widget tokens come from get-dashboard.
 `.trim();
 
-const args = {
-  dashboard_token: vantageToken("dashboard"),
-};
-
 export default registerTool({
-  name: "get-dashboard",
-  title: "Get Dashboard",
+  name: "get-dashboard-widget",
+  title: "Get Dashboard Widget",
   description,
   annotations: {
     destructive: false,
     openWorld: false,
     readOnly: true,
   },
-  args,
+  args: {
+    widget_token: vantageToken("dashboard_widget"),
+  },
   async execute(args, ctx) {
-    const response = await ctx.callVantageApi(`/v2/dashboards/${pathEncode(args.dashboard_token)}`, {}, "GET");
+    const response = await ctx.callVantageApi(`/v2/widgets/${pathEncode(args.widget_token)}`, {}, "GET");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }
