@@ -8,6 +8,10 @@ export function renderConsentScreen({
   // clientLogo, // TODO: Implement logo display
   // clientUri, // TODO: Implement client URI display
   redirectUri,
+  redirectHost,
+  isRecognisedClient,
+  isLoopbackRedirect,
+  claimsKnownClient,
   requestedScopes,
   transactionState,
   consentToken,
@@ -17,6 +21,10 @@ export function renderConsentScreen({
   clientLogo: string;
   clientUri: string;
   redirectUri: string;
+  redirectHost: string;
+  isRecognisedClient: boolean;
+  isLoopbackRedirect: boolean;
+  claimsKnownClient: boolean;
   requestedScopes: string[];
   transactionState: string;
   consentToken: string;
@@ -253,6 +261,36 @@ export function renderConsentScreen({
               <strong>Vantage API</strong> using your account. Please review the
               permissions before proceeding.
             </p>
+
+            ${
+              isRecognisedClient
+                ? ""
+                : isLoopbackRedirect
+                  ? html`<div class="deprecation-notice" role="note">
+                  <strong>Local application</strong>
+                  <p>
+                    This will send your authorization back to an app running on this
+                    computer (<code>${redirectHost}</code>). Only continue if you just
+                    started connecting <strong>${clientName}</strong> yourself.
+                  </p>
+                </div>`
+                  : html`<div class="deprecation-notice" role="alert">
+                  <strong>Unverified application</strong>
+                  <p>
+                    Vantage has not verified <strong>${clientName}</strong>. Anyone can
+                    choose this name.
+                    ${
+                      claimsKnownClient
+                        ? html`This app uses the name of a well-known client but is not
+                          connecting to that client's own address.`
+                        : ""
+                    }
+                    If you approve, your authorization will be sent to
+                    <strong><code>${redirectHost}</code></strong>. Only continue if you
+                    started this connection yourself and recognize that address.
+                  </p>
+                </div>`
+            }
 
             ${
               sseMigrationUrl

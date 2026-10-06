@@ -9,6 +9,11 @@ export type LogTagHints = {
   oauth_error_code?: string;
   oauth_error_reason?: string;
   oauth_error_status?: number;
+  oauth_client_name?: string;
+  oauth_client_recognised?: boolean;
+  oauth_redirect_hosts?: string;
+  oauth_registration_outcome?: "accepted" | "rejected";
+  oauth_registration_reason?: string;
   ok?: boolean;
   /** JSON-serialized API error payload for failed Vantage calls. */
   api_errors?: string;
