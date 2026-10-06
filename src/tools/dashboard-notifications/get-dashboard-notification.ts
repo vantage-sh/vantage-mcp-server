@@ -4,9 +4,7 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
 const description = `
-Returns one Dashboard Notification by token, including the Dashboard, recipients, and frequency.
-
-Do not use this for Report Notifications, Cost Alerts, or Budget Alerts.
+Returns one Dashboard Notification. Tokens come from list-dashboard-notifications. Do not use this for Report Notifications, Cost Alerts, or Budget Alerts.
 `.trim();
 
 const args = {

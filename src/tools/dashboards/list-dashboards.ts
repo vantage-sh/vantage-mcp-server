@@ -5,9 +5,7 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
 const description = `
-List all dashboards available in the Vantage account. Dashboards provide visualizations of cost data.
-Use the page value of 1 to start.
-The token of a dashboard can be used to link the user to the dashboard in the Vantage Web UI. Build the link like this: https://console.vantage.sh/go/<token>
+Lists Dashboards. Start at page 1. A dashboard token links to https://console.vantage.sh/go/<token>. For scheduled dashboard emails, use list-dashboard-notifications.
 `.trim();
 
 const args = {

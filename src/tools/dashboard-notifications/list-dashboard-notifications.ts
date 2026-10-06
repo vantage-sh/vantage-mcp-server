@@ -6,14 +6,12 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
 const description = `
-Lists scheduled Dashboard emails. Use page 1 to start.
-
-Do not use this for Report Notifications, Cost Alerts, or Budget Alerts.
+Lists scheduled Dashboard emails. Start at page 1. Do not use this for Report Notifications, Cost Alerts, or Budget Alerts.
 `.trim();
 
 const args = {
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
-  q: nonempty().optional().describe("Search Dashboard Notifications by title."),
+  q: nonempty().optional().describe("Match notification titles."),
 };
 
 export default registerTool({

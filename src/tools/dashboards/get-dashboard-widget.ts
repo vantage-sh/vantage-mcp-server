@@ -4,7 +4,7 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
 const description = `
-Returns one Dashboard Widget by its token. Widget tokens come from get-dashboard.
+Returns one Dashboard Widget. Widget tokens come from get-dashboard.
 `.trim();
 
 export default registerTool({

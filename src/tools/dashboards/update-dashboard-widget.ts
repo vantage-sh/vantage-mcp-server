@@ -6,7 +6,7 @@ import registerTool from "../structure/registerTool";
 import { widgetSettingsUpdateSchema } from "./schemas";
 
 const description = `
-Updates one Dashboard Widget's resource, title, or display settings. Omitted fields stay unchanged. To replace the whole widget list, including grid layout or free text content, use update-dashboard.
+Updates one report-backed Dashboard Widget's linked resource, title, or display settings. Omitted fields stay unchanged. To change grid position or free-text content, send the full widget list to update-dashboard.
 `.trim();
 
 const mutableFields = ["widgetable_token", "title", "settings"] as const;
@@ -22,9 +22,14 @@ export default registerTool({
   },
   args: {
     widget_token: vantageToken("dashboard_widget"),
-    widgetable_token: z.string().optional().describe("The token of the Resource represented by the Widget."),
-    title: z.string().optional().describe("The title of the Widget."),
-    settings: widgetSettingsUpdateSchema.optional().describe("Display settings for the Widget."),
+    widgetable_token: z
+      .string()
+      .optional()
+      .describe("Report or saved-view token this widget shows. Use update-dashboard to change free-text content."),
+    title: z.string().optional().describe("Widget title."),
+    settings: widgetSettingsUpdateSchema
+      .optional()
+      .describe("Display settings. This does not change grid position; use update-dashboard for that."),
   },
   async execute(args, ctx) {
     if (!mutableFields.some((field) => args[field] !== undefined)) {

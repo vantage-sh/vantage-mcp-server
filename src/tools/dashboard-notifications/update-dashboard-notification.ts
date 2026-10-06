@@ -5,9 +5,7 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
 const description = `
-Updates a Dashboard Notification's title, Dashboard, recipients, or frequency. Omitted fields stay unchanged. Retargeting the Dashboard requires edit access to the new Dashboard.
-
-Do not use this for Report Notifications, Cost Alerts, or Budget Alerts.
+Updates a Dashboard Notification. Omitted fields stay unchanged. Setting dashboard_token points the email at that Dashboard and requires edit access to it. Do not use this for Report Notifications, Cost Alerts, or Budget Alerts.
 `.trim();
 
 export default registerTool({
@@ -21,19 +19,19 @@ export default registerTool({
   },
   args: {
     dashboard_notification_token: vantageToken("dashboard_notification"),
-    title: z.string().min(1).optional().describe("Updated title for the Dashboard Notification."),
+    title: z.string().min(1).optional().describe("New name for this notification."),
     dashboard_token: vantageToken("dashboard").optional(),
-    user_tokens: z.array(vantageToken("user")).optional().describe("Updated users that receive the notification."),
+    user_tokens: z
+      .array(vantageToken("user"))
+      .optional()
+      .describe("Vantage users who receive the email. Use get-users to find tokens."),
     recipient_emails: z
       .array(z.email())
       .optional()
       .describe(
-        "Updated email addresses that receive the notification. Each address must be an organization user, on the account's SSO domain, or an approved third-party service address."
+        "Email addresses that receive the Dashboard. Each address must be an organization user, on the account SSO domain, or an approved external address."
       ),
-    frequency: z
-      .enum(["daily", "weekly", "monthly"])
-      .optional()
-      .describe("Updated frequency for the Dashboard Notification."),
+    frequency: z.enum(["daily", "weekly", "monthly"]).optional().describe("How often the email is sent."),
   },
   async execute(args, ctx) {
     const { dashboard_notification_token, ...body } = args;

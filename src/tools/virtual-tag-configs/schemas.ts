@@ -43,17 +43,21 @@ export const virtualTagConfigValueSchema = z.object({
   business_metric_token: vantageToken("business_metric", {
     description: "Associates this value with a Business Metric.",
   }).optional(),
-  label_key: nonempty().optional().describe("Business Metric label key used by this value."),
+  label_key: nonempty()
+    .optional()
+    .describe(
+      "Business Metric label this value is built from. Each value of this label becomes its own virtual tag value, unless label_values limits them."
+    ),
   label_values: z
     .array(z.string())
     .optional()
-    .describe("Business Metric label values. An empty array includes every value for the label key."),
+    .describe("Which values of label_key to include. An empty array includes every value of that label."),
   label_filters: z
     .record(z.string(), z.array(z.string()))
     .nullable()
     .optional()
     .describe(
-      "Business Metric row filters. Every key must match, and values within a key are alternatives. Do not repeat label_key here; use label_values to limit that label. Null or an empty object clears stored filters."
+      "Other Business Metric labels that limit which rows are included. Every key must match, and the values under one key are alternatives. Do not include label_key here; use label_values for that label. Null or {} clears saved filters."
     ),
   display_name: nonempty().optional().describe("Display name for a cost metric or percentage allocation value."),
   label_transforms: z.array(labelTransformSchema).optional().describe("Transforms applied to Business Metric labels."),

@@ -31,21 +31,24 @@ const widgetSettingsFields = {
 };
 
 const widgetGridSchema = z.object({
-  x: z.number().int().describe("The zero-based horizontal position in the 12-column grid."),
-  y: z.number().int().describe("The zero-based vertical position in the grid."),
-  w: z.number().int().describe("The widget width in grid columns."),
-  h: z.number().int().describe("The widget height in grid rows."),
+  x: z.number().int().describe("Column where the widget starts. 0 is the left edge of the 12-column grid."),
+  y: z.number().int().describe("Row where the widget starts. 0 is the top."),
+  w: z.number().int().describe("Width in columns."),
+  h: z.number().int().describe("Height in rows."),
 });
 
 const widgetContentSchema = z.object({
-  type: z.literal("doc").describe("The rich-text document root type."),
-  content: z.array(z.record(z.string(), z.any())).optional().describe("Rich-text document nodes."),
+  type: z.literal("doc").describe("Document root. Use doc."),
+  content: z
+    .array(z.record(z.string(), z.any()))
+    .optional()
+    .describe("Document body. Each item is a node, such as a paragraph containing text."),
 });
 
 export const widgetSettingsSchema = z.object({
   display_type: displayTypeSchema,
   ...widgetSettingsFields,
-  grid: widgetGridSchema.optional().describe("The widget's size and position in the dashboard's 12-column grid."),
+  grid: widgetGridSchema.optional().describe("Where this widget sits on the dashboard's 12-column grid."),
 });
 
 export const widgetSettingsUpdateSchema = z.object({
@@ -57,19 +60,27 @@ export const widgetSchema = z.object({
   widgetable_token: z
     .string()
     .optional()
-    .describe("The token of the represented Resource. Required for report-backed widgets."),
+    .describe(
+      "Token of the report or saved view this widget shows. Required unless widgetable_type is free_text. Use a Cost Report (rprt_*), resource report (prvdr_rsrc_rprt_*), Kubernetes efficiency report (kbnts_eff_rprt_*), financial commitment report (fncl_cmnt_rprt_*), or recommendation saved view (rec_vw_*)."
+    ),
   widgetable_type: z
     .enum(["free_text"])
     .optional()
-    .describe("Use free_text for a free text widget. Omit for report-backed widgets."),
+    .describe(
+      "Set free_text for a text widget. Leave unset for a report or saved view. Requires content and must omit widgetable_token."
+    ),
   title: z
     .string()
-    .describe("The title of the Widget (defaults to the Resource title, or Free Text for a free text widget).")
+    .describe("Widget title. Defaults to the linked resource's title, or Free Text for a free_text widget.")
     .optional(),
   content: widgetContentSchema
     .optional()
-    .describe("Rich-text document for a free text widget. Required when widgetable_type is free_text."),
-  settings: widgetSettingsSchema.optional(),
+    .describe(
+      'Rich-text document. Required when widgetable_type is free_text. Example: {"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Note"}]}]}.'
+    ),
+  settings: widgetSettingsSchema
+    .optional()
+    .describe("How the widget is drawn and where it sits. Include display_type when settings is set."),
 });
 
 type DashboardWidgetInput = z.infer<typeof widgetSchema>;

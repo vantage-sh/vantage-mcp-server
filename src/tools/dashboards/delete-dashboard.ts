@@ -4,7 +4,7 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
 const description = `
-Deletes a Dashboard by its token. This action is irreversible.
+Deletes a Dashboard and its widgets. This cannot be undone. To remove one widget and keep the Dashboard, use delete-dashboard-widget.
 `.trim();
 
 export default registerTool({

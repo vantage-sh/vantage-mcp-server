@@ -4,9 +4,7 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
 const description = `
-Deletes a Dashboard Notification. This stops the scheduled Dashboard email.
-
-Do not use this for Report Notifications, Cost Alerts, or Budget Alerts.
+Deletes a Dashboard Notification and stops its scheduled email. This cannot be undone. Do not use this for Report Notifications, Cost Alerts, or Budget Alerts.
 `.trim();
 
 const args = {

@@ -13,9 +13,7 @@ import {
 } from "./schemas";
 
 const description = `
-Updates an existing Dashboard's title, widgets, saved filters, or date range.
-
-Passing widgets replaces the Dashboard's entire widget list, including free text widgets and grid positions. To edit one report-backed widget's resource, title, or display settings, use update-dashboard-widget. To remove one widget, use delete-dashboard-widget. Change grid layout or free text content by sending the full widget list here.
+Updates a Dashboard. Sending widgets replaces the entire widget list. Use update-dashboard-widget to change one report-backed widget's linked resource, title, or display settings, and delete-dashboard-widget to remove one widget. Change grid position or free-text content only by sending the full widget list here.
 `.trim();
 
 export default registerTool({
@@ -30,7 +28,12 @@ export default registerTool({
   args: {
     dashboard_token: vantageToken("dashboard"),
     title: z.string().min(1).optional().describe("The updated title of the dashboard."),
-    widgets: z.array(widgetSchema).describe("The updated widgets for the dashboard.").optional(),
+    widgets: z
+      .array(widgetSchema)
+      .describe(
+        "Full replacement widget list. Omit to keep the current widgets. Include every widget to keep. An empty array removes all widgets."
+      )
+      .optional(),
     saved_filter_tokens: z
       .array(vantageToken("saved_filter"))
       .describe("The updated tokens of the Saved Filters used in the Dashboard.")
@@ -40,7 +43,7 @@ export default registerTool({
     end_date: endDateSchema,
     date_interval: updateDateIntervalSchema,
     workspace_token: vantageToken("workspace", {
-      description: "Move the Dashboard to a different Workspace.",
+      description: "Required when updating widgets if the API token belongs to multiple Workspaces.",
     }).optional(),
   },
   async execute(args, ctx) {

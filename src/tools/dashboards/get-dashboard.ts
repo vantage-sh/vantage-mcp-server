@@ -4,7 +4,7 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
 const description = `
-Gets a specific dashboard by its token. Widgets may be report-backed or free text and can include a grid layout. Each widget includes a token for get-dashboard-widget, update-dashboard-widget, and delete-dashboard-widget. The dashboard token can be used to generate a link in the Vantage Web UI: https://console.vantage.sh/go/<token>
+Returns one Dashboard. Widget tokens in the response are used by get-dashboard-widget, update-dashboard-widget, and delete-dashboard-widget. Link to the dashboard with https://console.vantage.sh/go/<token>
 `.trim();
 
 const args = {
