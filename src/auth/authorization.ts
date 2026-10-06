@@ -4,7 +4,9 @@ import type { Context } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import * as oauth from "oauth4webapi";
 import type { AppEnv } from "../env";
+import { logger } from "../logger";
 import { isLegacySseResource } from "../sse-deprecation";
+import { describeRedirectTarget, isLoopbackRedirect, isRecognisedClient } from "./client-policy";
 import { renderConsentScreen } from "./consent-screen";
 import { getOidcConfig } from "./oidc";
 import type { Auth0AuthRequest } from "./types";
@@ -79,6 +81,16 @@ export async function authorize(c: Context<{ Bindings: AppEnv & { OAUTH_PROVIDER
   const clientUri = client.clientUri || "#";
   const requestedScopes = (c.env.AUTH0_SCOPE || "").split(" ");
 
+  const recognised = isRecognisedClient(client.clientName, client.redirectUris ?? []);
+  const redirectHost = describeRedirectTarget(mcpClientAuthRequest.redirectUri);
+  logger
+    .withTags({
+      oauth_client_name: clientName.slice(0, 100),
+      oauth_client_recognised: recognised,
+      oauth_redirect_hosts: redirectHost,
+    })
+    .info("OAuth consent shown");
+
   // Render the consent screen with CSRF protection
   return c.html(
     renderConsentScreen({
@@ -86,6 +98,9 @@ export async function authorize(c: Context<{ Bindings: AppEnv & { OAUTH_PROVIDER
       clientName,
       clientUri,
       consentToken,
+      isLoopbackRedirect: isLoopbackRedirect(mcpClientAuthRequest.redirectUri),
+      isRecognisedClient: recognised,
+      redirectHost,
       redirectUri: mcpClientAuthRequest.redirectUri,
       requestedScopes,
       sseMigrationUrl: isLegacySseResource(mcpClientAuthRequest.resource, c.req.url)

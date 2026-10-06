@@ -15,6 +15,7 @@ import { McpAgent } from "agents/mcp";
 import { Hono } from "hono";
 import { withLogTags } from "workers-tagged-logger";
 import { authorize, callback, confirmConsent, tokenExchangeCallback, type UserProps } from "./auth";
+import { describeRedirectTarget, isRecognisedClient, validateClientRegistration } from "./auth/client-policy";
 import type { AppEnv } from "./env";
 import { HeaderAuthProvider } from "./header-auth-provider";
 import homepage from "./homepage";
@@ -186,6 +187,26 @@ function createMcpServer(
       apiHandler,
       apiRoute: sse ? "/sse" : "/mcp",
       authorizeEndpoint: "/authorize",
+      clientRegistrationCallback: ({ clientMetadata }) => {
+        const description = validateClientRegistration(clientMetadata);
+        const redirectUris = Array.isArray(clientMetadata.redirect_uris)
+          ? clientMetadata.redirect_uris.filter((u): u is string => typeof u === "string")
+          : [];
+        const clientName = typeof clientMetadata.client_name === "string" ? clientMetadata.client_name : undefined;
+        // Attacker-controlled input: log the name truncated and only redirect hosts, never full URIs.
+        logger
+          .withTags({
+            oauth_client_name: clientName?.slice(0, 100),
+            oauth_client_recognised: isRecognisedClient(clientName, redirectUris),
+            oauth_redirect_hosts: redirectUris.map(describeRedirectTarget).join(","),
+            oauth_registration_outcome: description ? "rejected" : "accepted",
+            oauth_registration_reason: description,
+          })
+          .info("OAuth client registration");
+        if (description) {
+          return { code: "invalid_client_metadata", description };
+        }
+      },
       clientRegistrationTTL: undefined,
       clientRegistrationEndpoint: "/register",
       defaultHandler: app,
