@@ -11,6 +11,7 @@ export function renderConsentScreen({
   redirectHost,
   isRecognisedClient,
   isLoopbackRedirect,
+  claimsKnownClient,
   requestedScopes,
   transactionState,
   consentToken,
@@ -23,6 +24,7 @@ export function renderConsentScreen({
   redirectHost: string;
   isRecognisedClient: boolean;
   isLoopbackRedirect: boolean;
+  claimsKnownClient: boolean;
   requestedScopes: string[];
   transactionState: string;
   consentToken: string;
@@ -276,7 +278,14 @@ export function renderConsentScreen({
                   <strong>Unverified application</strong>
                   <p>
                     Vantage has not verified <strong>${clientName}</strong>. Anyone can
-                    choose this name. If you approve, your authorization will be sent to
+                    choose this name.
+                    ${
+                      claimsKnownClient
+                        ? html`This app uses the name of a well-known client but is not
+                          connecting to that client's own address.`
+                        : ""
+                    }
+                    If you approve, your authorization will be sent to
                     <strong><code>${redirectHost}</code></strong>. Only continue if you
                     started this connection yourself and recognize that address.
                   </p>

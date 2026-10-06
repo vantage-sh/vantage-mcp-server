@@ -6,7 +6,12 @@ import * as oauth from "oauth4webapi";
 import type { AppEnv } from "../env";
 import { logger } from "../logger";
 import { isLegacySseResource } from "../sse-deprecation";
-import { describeRedirectTarget, isLoopbackRedirect, isRecognisedClient } from "./client-policy";
+import {
+  claimsUnrecognisedBrand,
+  describeRedirectTarget,
+  isLoopbackRedirect,
+  isRecognisedClient,
+} from "./client-policy";
 import { renderConsentScreen } from "./consent-screen";
 import { getOidcConfig } from "./oidc";
 import type { Auth0AuthRequest } from "./types";
@@ -98,6 +103,7 @@ export async function authorize(c: Context<{ Bindings: AppEnv & { OAUTH_PROVIDER
       clientName,
       clientUri,
       consentToken,
+      claimsKnownClient: claimsUnrecognisedBrand(client.clientName, client.redirectUris ?? []),
       isLoopbackRedirect: isLoopbackRedirect(mcpClientAuthRequest.redirectUri),
       isRecognisedClient: recognised,
       redirectHost,

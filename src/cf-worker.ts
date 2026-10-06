@@ -15,7 +15,12 @@ import { McpAgent } from "agents/mcp";
 import { Hono } from "hono";
 import { withLogTags } from "workers-tagged-logger";
 import { authorize, callback, confirmConsent, tokenExchangeCallback, type UserProps } from "./auth";
-import { describeRedirectTarget, isRecognisedClient, validateClientRegistration } from "./auth/client-policy";
+import {
+  claimsUnrecognisedBrand,
+  describeRedirectTarget,
+  isRecognisedClient,
+  validateClientRegistration,
+} from "./auth/client-policy";
 import type { AppEnv } from "./env";
 import { HeaderAuthProvider } from "./header-auth-provider";
 import homepage from "./homepage";
@@ -200,7 +205,9 @@ function createMcpServer(
             oauth_client_recognised: isRecognisedClient(clientName, redirectUris),
             oauth_redirect_hosts: redirectUris.map(describeRedirectTarget).join(","),
             oauth_registration_outcome: description ? "rejected" : "accepted",
-            oauth_registration_reason: description,
+            oauth_registration_reason:
+              description ??
+              (claimsUnrecognisedBrand(clientName, redirectUris) ? "brand_name_unrecognised_redirect" : undefined),
           })
           .info("OAuth client registration");
         if (description) {

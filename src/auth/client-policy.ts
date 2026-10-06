@@ -2,10 +2,10 @@
  * Policy for dynamically registered (RFC 7591) MCP OAuth clients.
  *
  * Registration is open by design, so any client can claim any name. We
- * therefore (1) reject registrations that are unsafe or that claim a
- * well-known client's name without using that client's redirect URIs, and
- * (2) let the consent screen tell users whether a client's redirect target is
- * one we recognise.
+ * therefore (1) reject registrations with unsafe metadata, and (2) let the
+ * consent screen tell users whether a client's redirect target is one we
+ * recognise, warning harder when a name claims a well-known client but its
+ * redirects are not that client's.
  */
 
 type TrustedClient = {
@@ -15,12 +15,12 @@ type TrustedClient = {
   matchesRedirect: (uri: URL) => boolean;
 };
 
-const isLoopback = (uri: URL) =>
-  uri.protocol === "http:" && ["localhost", "127.0.0.1", "[::1]"].includes(uri.hostname);
+const isLoopback = (uri: URL) => uri.protocol === "http:" && ["localhost", "127.0.0.1", "[::1]"].includes(uri.hostname);
 
 // Redirect URIs checked against vendor docs/reports on 2026-10-06:
 // - Claude: https://claude.ai/api/mcp/auth_callback (claude.com may follow); Claude Code uses loopback.
-// - Cursor: cursor://anysphere.cursor-mcp/oauth/callback, newer builds use http://localhost.
+// - Cursor: cursor://anysphere.cursor-mcp/oauth/callback, newer builds use http://localhost,
+//   cloud agents use https://www.cursor.com/agents/mcp/oauth/callback (often sent alongside the others).
 // - ChatGPT: https://chatgpt.com/connector_platform_oauth_redirect and /connector/oauth/{callback_id}.
 // - VS Code: https://vscode.dev/redirect, https://insiders.vscode.dev/redirect, http://127.0.0.1[:port].
 const TRUSTED_CLIENTS: TrustedClient[] = [
@@ -31,7 +31,10 @@ const TRUSTED_CLIENTS: TrustedClient[] = [
   },
   {
     namePattern: /cursor/,
-    matchesRedirect: (u) => u.protocol === "cursor:" || isLoopback(u),
+    matchesRedirect: (u) =>
+      u.protocol === "cursor:" ||
+      (u.protocol === "https:" && ["www.cursor.com", "cursor.com"].includes(u.hostname)) ||
+      isLoopback(u),
   },
   {
     namePattern: /chatgpt|openai/,
@@ -95,7 +98,6 @@ export function validateClientRegistration(metadata: Record<string, unknown>): s
     }
   }
 
-  const urls: URL[] = [];
   for (const raw of redirectUris) {
     const url = typeof raw === "string" ? parseRedirect(raw) : null;
     if (!url) return "redirect_uris must contain valid absolute URIs";
@@ -105,15 +107,18 @@ export function validateClientRegistration(metadata: Record<string, unknown>): s
     if (url.protocol === "http:" && !isLoopback(url)) {
       return "redirect_uris must use https, a custom scheme, or an http loopback address";
     }
-    urls.push(url);
-  }
-
-  const trusted = claimedClient(name);
-  if (trusted && !urls.every((u) => trusted.matchesRedirect(u))) {
-    return "client_name matches a well-known client but redirect_uris do not belong to it";
   }
 
   return undefined;
+}
+
+/**
+ * True when a name claims a well-known client but at least one redirect URI is not one we
+ * know for it. Registration is allowed (we can't list every legitimate redirect, and
+ * rejecting would break real clients), but the consent screen warns harder and we log it.
+ */
+export function claimsUnrecognisedBrand(clientName: string | undefined, redirectUris: string[]): boolean {
+  return !!claimedClient(clientName) && !isRecognisedClient(clientName, redirectUris);
 }
 
 /**

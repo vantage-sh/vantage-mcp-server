@@ -31,6 +31,14 @@ describe("consent screen client warnings", () => {
     expect(html).not.toContain("Local application");
   });
 
+  it("adds a stronger line when an unverified client borrows a well-known name", async () => {
+    const html = await consentPage("Claude", "https://attacker.example/cb");
+    expect(html).toContain("Unverified application");
+    expect(html).toContain("uses the name of a well-known client");
+    const plain = await consentPage("Acme Cost Reports", "https://attacker.example/cb");
+    expect(plain).not.toContain("uses the name of a well-known client");
+  });
+
   it("shows a milder local-application note for loopback redirects", async () => {
     const html = await consentPage("pi", "http://localhost:3118/callback");
     expect(html).toContain("Local application");
