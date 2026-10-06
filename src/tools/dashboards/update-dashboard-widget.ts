@@ -6,7 +6,7 @@ import registerTool from "../structure/registerTool";
 import { widgetSettingsUpdateSchema } from "./schemas";
 
 const description = `
-Updates one Dashboard Widget's resource, title, or display settings. Omitted fields stay unchanged. To replace the whole widget list, use update-dashboard.
+Updates one Dashboard Widget's resource, title, or display settings. Omitted fields stay unchanged. To replace the whole widget list, including grid layout or free text content, use update-dashboard.
 `.trim();
 
 const mutableFields = ["widgetable_token", "title", "settings"] as const;

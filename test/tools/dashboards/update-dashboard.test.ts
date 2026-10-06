@@ -118,6 +118,26 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     },
     expectedIssues: ['Invalid option: expected one of "sum"|"average"'],
   },
+  {
+    name: "valid free text widget with grid",
+    data: {
+      ...minimalValidInputArguments,
+      widgets: [
+        {
+          widgetable_type: "free_text",
+          title: "Notes",
+          content: { type: "doc" },
+        },
+        {
+          widgetable_token: "rprt_123",
+          settings: {
+            display_type: "chart",
+            grid: { x: 6, y: 0, w: 6, h: 4 },
+          },
+        },
+      ],
+    },
+  },
 ];
 
 const successData: UpdateDashboardResponse = {
@@ -190,6 +210,25 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       const err = await callExpectingMCPUserError(minimalValidInputArguments);
       expect(err.exception).toEqual({
         errors: [{ message: "Dashboard not found" }],
+      });
+    },
+  },
+  {
+    name: "free text widget cannot include widgetable_token",
+    apiCallHandler: requestsInOrder([]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError({
+        ...minimalValidInputArguments,
+        widgets: [
+          {
+            widgetable_type: "free_text",
+            widgetable_token: "rprt_123",
+            content: { type: "doc" },
+          },
+        ],
+      });
+      expect(err.exception).toEqual({
+        errors: [{ message: "widgets[0] must not include widgetable_token when widgetable_type is free_text." }],
       });
     },
   },

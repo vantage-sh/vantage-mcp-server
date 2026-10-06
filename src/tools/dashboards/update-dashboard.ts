@@ -3,12 +3,19 @@ import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { endDateSchema, startDateSchema, updateDateBinSchema, updateDateIntervalSchema, widgetSchema } from "./schemas";
+import {
+  endDateSchema,
+  startDateSchema,
+  updateDateBinSchema,
+  updateDateIntervalSchema,
+  validateDashboardWidgets,
+  widgetSchema,
+} from "./schemas";
 
 const description = `
 Updates an existing Dashboard's title, widgets, saved filters, or date range.
 
-Passing widgets replaces the Dashboard's entire widget list. To edit or remove one widget, use update-dashboard-widget or delete-dashboard-widget.
+Passing widgets replaces the Dashboard's entire widget list, including free text widgets and grid positions. To edit one report-backed widget's resource, title, or display settings, use update-dashboard-widget. To remove one widget, use delete-dashboard-widget. Change grid layout or free text content by sending the full widget list here.
 `.trim();
 
 export default registerTool({
@@ -37,6 +44,7 @@ export default registerTool({
     }).optional(),
   },
   async execute(args, ctx) {
+    validateDashboardWidgets(args.widgets);
     const { dashboard_token, ...body } = args;
     const response = await ctx.callVantageApi(`/v2/dashboards/${pathEncode(dashboard_token)}`, body, "PUT");
     if (!response.ok) {

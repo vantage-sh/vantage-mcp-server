@@ -2,7 +2,14 @@ import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { dateBinSchema, dateIntervalSchema, endDateSchema, startDateSchema, widgetSchema } from "./schemas";
+import {
+  dateBinSchema,
+  dateIntervalSchema,
+  endDateSchema,
+  startDateSchema,
+  validateDashboardWidgets,
+  widgetSchema,
+} from "./schemas";
 
 const description = `
 Create a new Dashboard in Vantage.
@@ -20,6 +27,9 @@ The list of supported widgets is:
 - kubernetes efficiency reports
 - financial commitment reports
 - recommendation saved views
+- free text widgets (widgetable_type free_text plus TipTap content)
+
+Set settings.grid (x, y, w, h) to place a widget on the 12-column layout.
 
 The token returned in the response can be used to link to the Dashboard in the Vantage Web UI:
 https://console.vantage.sh/go/<token>
@@ -48,6 +58,7 @@ export default registerTool({
     readOnly: false,
   },
   async execute(args, ctx) {
+    validateDashboardWidgets(args.widgets);
     const response = await ctx.callVantageApi("/v2/dashboards", args, "POST");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });

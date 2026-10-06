@@ -121,6 +121,55 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     },
     expectedIssues: ['Invalid option: expected one of "cost"|"usage"|"count"|"business_metric"'],
   },
+  {
+    name: "valid free text widget with grid",
+    data: {
+      ...minimalValidInputArguments,
+      widgets: [
+        {
+          widgetable_type: "free_text",
+          title: "Notes",
+          content: {
+            type: "doc",
+            content: [{ type: "paragraph", text: "Context for this dashboard." }],
+          },
+        },
+        {
+          widgetable_token: "rprt_123",
+          settings: {
+            display_type: "chart",
+            grid: { x: 0, y: 0, w: 6, h: 4 },
+          },
+        },
+      ],
+    },
+  },
+  {
+    name: "invalid widgetable_type",
+    data: {
+      ...minimalValidInputArguments,
+      widgets: [
+        {
+          widgetable_type: "markdown" as any,
+          content: { type: "doc" },
+        },
+      ],
+    },
+    expectedIssues: ['Invalid input: expected "free_text"'],
+  },
+  {
+    name: "invalid free text content root",
+    data: {
+      ...minimalValidInputArguments,
+      widgets: [
+        {
+          widgetable_type: "free_text",
+          content: { type: "paragraph" as any },
+        },
+      ],
+    },
+    expectedIssues: ['Invalid input: expected "doc"'],
+  },
 ];
 
 const successData = {
@@ -171,6 +220,32 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       const err = await callExpectingMCPUserError(minimalValidInputArguments);
       expect(err.exception).toEqual({
         errors: [{ message: "Workspace not found" }],
+      });
+    },
+  },
+  {
+    name: "free text widget requires content",
+    apiCallHandler: requestsInOrder([]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError({
+        ...minimalValidInputArguments,
+        widgets: [{ widgetable_type: "free_text", title: "Notes" }],
+      });
+      expect(err.exception).toEqual({
+        errors: [{ message: "widgets[0] requires content when widgetable_type is free_text." }],
+      });
+    },
+  },
+  {
+    name: "report-backed widget requires widgetable_token",
+    apiCallHandler: requestsInOrder([]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError({
+        ...minimalValidInputArguments,
+        widgets: [{ title: "Missing resource" }],
+      });
+      expect(err.exception).toEqual({
+        errors: [{ message: "widgets[0] requires widgetable_token." }],
       });
     },
   },
