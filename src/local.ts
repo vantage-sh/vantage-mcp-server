@@ -14,12 +14,20 @@ async function main() {
   }
 
   const ctx: ToolCallContext = {
-    callVantageApi: async (endpoint, params, method) => {
+    callVantageApi: async (endpoint, params, method, signal) => {
       const headers: Record<string, string> = {
         Authorization: `Bearer ${process.env.VANTAGE_TOKEN}`,
       };
 
-      return callApi(process.env.VANTAGE_API_HOST || "https://api.vantage.sh", headers, params, method, endpoint);
+      return callApi(
+        process.env.VANTAGE_API_HOST || "https://api.vantage.sh",
+        headers,
+        params,
+        method,
+        endpoint,
+        undefined,
+        signal
+      );
     },
   };
 
