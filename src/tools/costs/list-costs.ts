@@ -18,8 +18,6 @@ with the accrued_at field set to the first day of the week, but the spend item r
 Same with DateBin=month, each record returned covers a month of data. This lets you get answers with processing fewer
 records. If omitted, the API uses the cost report's configured date bin, or day if the report has no override.
 
-Sorting applies to stored field values across all results before pagination. Equal values are ordered by date descending, then by the other groupings ascending. Segment values are IDs. Each page contains dated cost records.
-
 Cost settings (credits, refunds, discounts, tax, amortization, etc.) default to the report's own settings.
 Only provide these parameters if you need to override the report's defaults.
 

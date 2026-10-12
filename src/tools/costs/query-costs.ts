@@ -45,8 +45,6 @@ with the accrued_at field set to the first day of the week, but the spend item r
 Same with DateBin=month, each record returned covers a month of data. This lets you get answers with processing fewer
 records. If omitted, DateBin defaults to day.
 
-Sorting applies to stored field values across all results before pagination. Equal values are ordered by date descending, then by the other groupings ascending. Segment values are IDs. Each page contains dated cost records.
-
 Cost settings (credits, refunds, discounts, tax, amortization, etc.) default to the workspace's default report settings.
 Only provide these parameters if you need to override those defaults.
 
