@@ -36,6 +36,8 @@ const validArguments: InferValidators<Validators> = {
   start_date: "2023-01-01",
   end_date: "2023-01-31",
   date_bin: "month",
+  sort_column: undefined,
+  sort_direction: undefined,
   settings_include_credits: undefined,
   settings_include_refunds: undefined,
   settings_include_discounts: undefined,
@@ -84,6 +86,16 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       settings_aggregate_by: "count",
     },
   },
+  {
+    name: "blank sort column",
+    data: { ...validArguments, sort_column: "" },
+    expectedIssues: ["Too small: expected string to have >=1 characters"],
+  },
+  {
+    name: "invalid sort direction",
+    data: { ...validArguments, sort_direction: "descending" as "asc" },
+    expectedIssues: ['Invalid option: expected one of "asc"|"desc"'],
+  },
   poisonOneValue(validArguments, "start_date", dateValidatorPoisoner),
   poisonOneValue(validArguments, "end_date", dateValidatorPoisoner),
 ];
@@ -123,6 +135,34 @@ const countSuccessData: GetCostsResponse = {
 };
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
+  {
+    name: "rejects sort_direction without sort_column before calling the API",
+    apiCallHandler: requestsInOrder([]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const error = await callExpectingMCPUserError({ ...validArguments, sort_direction: "desc" });
+      expect(error.exception).toEqual({
+        errors: [{ message: "sort_direction requires sort_column" }],
+      });
+    },
+  },
+  ...(["asc", "desc", undefined] as const).map((sort_direction): ExecutionTestTableItem<Validators, OutputSchema> => {
+    const sortParams = { sort_column: "service", ...(sort_direction ? { sort_direction } : {}) };
+    return {
+      name: `forwards grouping sorting with direction ${sort_direction ?? "omitted"}`,
+      apiCallHandler: requestsInOrder([
+        {
+          endpoint: "/v2/costs",
+          params: { ...baseApiParams, ...sortParams },
+          method: "GET",
+          result: { ok: true, data: successData },
+        },
+      ]),
+      handler: async ({ callExpectingSuccess }) => {
+        const result = await callExpectingSuccess({ ...validArguments, ...sortParams });
+        expect(result.costs).toEqual(successData.costs);
+      },
+    };
+  }),
   {
     name: "successful call with month date_bin omits settings so API uses report defaults",
     apiCallHandler: requestsInOrder([
