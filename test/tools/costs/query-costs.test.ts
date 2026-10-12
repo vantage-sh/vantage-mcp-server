@@ -37,6 +37,8 @@ const validInputArguments = {
   end_date: "2023-01-31",
   workspace_token: "wrkspc_123",
   date_bin: "month",
+  sort_column: undefined,
+  sort_direction: undefined,
   settings_include_credits: undefined,
   settings_include_refunds: undefined,
   settings_include_discounts: undefined,
@@ -58,6 +60,8 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       end_date: undefined,
       workspace_token: "wrkspc_123",
       date_bin: undefined,
+      sort_column: undefined,
+      sort_direction: undefined,
       settings_include_credits: undefined,
       settings_include_refunds: undefined,
       settings_include_discounts: undefined,
@@ -109,6 +113,16 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       date_bin: "week",
     },
   },
+  {
+    name: "blank sort column",
+    data: { ...validInputArguments, sort_column: "" },
+    expectedIssues: ["Too small: expected string to have >=1 characters"],
+  },
+  {
+    name: "invalid sort direction",
+    data: { ...validInputArguments, sort_direction: "descending" as "asc" },
+    expectedIssues: ['Invalid option: expected one of "asc"|"desc"'],
+  },
   poisonOneValue(validInputArguments, "start_date", dateValidatorPoisoner),
   poisonOneValue(validInputArguments, "end_date", dateValidatorPoisoner),
 ];
@@ -151,6 +165,34 @@ const countSuccessData: GetCostsResponse = {
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   {
+    name: "rejects sort_direction without sort_column before calling the API",
+    apiCallHandler: requestsInOrder([]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const error = await callExpectingMCPUserError({ ...validInputArguments, sort_direction: "desc" });
+      expect(error.exception).toEqual({
+        errors: [{ message: "sort_direction requires sort_column" }],
+      });
+    },
+  },
+  ...(["asc", "desc", undefined] as const).map((sort_direction): ExecutionTestTableItem<Validators, OutputSchema> => {
+    const sortParams = { sort_column: "service", ...(sort_direction ? { sort_direction } : {}) };
+    return {
+      name: `forwards grouping sorting with direction ${sort_direction ?? "omitted"}`,
+      apiCallHandler: requestsInOrder([
+        {
+          endpoint: "/v2/costs",
+          params: { ...baseApiParams, ...sortParams },
+          method: "GET",
+          result: { ok: true, data: successData },
+        },
+      ]),
+      handler: async ({ callExpectingSuccess }) => {
+        const result = await callExpectingSuccess({ ...validInputArguments, ...sortParams });
+        expect(result.costs).toEqual(successData.costs);
+      },
+    };
+  }),
+  {
     name: "successful call omits settings so API uses workspace defaults",
     apiCallHandler: requestsInOrder([
       {
@@ -176,6 +218,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         end_date: undefined,
         workspace_token: "wrkspc_123",
         date_bin: undefined,
+        sort_column: undefined,
+        sort_direction: undefined,
         settings_include_credits: undefined,
         settings_include_refunds: undefined,
         settings_include_discounts: undefined,
@@ -376,6 +420,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         end_date: undefined,
         workspace_token: "wrkspc_123",
         date_bin: undefined,
+        sort_column: undefined,
+        sort_direction: undefined,
         settings_include_credits: undefined,
         settings_include_refunds: undefined,
         settings_include_discounts: undefined,

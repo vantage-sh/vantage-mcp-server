@@ -6,6 +6,8 @@ import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
+import { groupingSortArgs } from "./schemas";
+
 const description = `
 List the cost items inside a report. The Token of a Report must be provided. Use the page value of 1 to start.
 The report token can be used to link the user to the report in the Vantage Web UI. Build the link like this: https://console.vantage.sh/go/<CostReportToken>
@@ -24,6 +26,7 @@ When aggregate_by is count, the response includes total_count and counts (date-b
 `.trim();
 
 const args = {
+  ...groupingSortArgs,
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
   cost_report_token: vantageToken("cost_report"),
   start_date: dateValidator("Start date to filter costs by, format=YYYY-MM-DD").optional(),
@@ -72,7 +75,7 @@ const args = {
     .array(z.string())
     .default(["provider", "service", "account_id"])
     .describe(
-      "Group the results by specific field(s). Defaults to provider, service, account_id. Valid groupings: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, tag:<tag_value>. Let Groupings default unless explicitly asked for."
+      "Group the results by specific field(s). Defaults to provider, service, account_id. Valid groupings: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, usage_unit, tag:<tag_value>. Let Groupings default unless explicitly asked for."
     ),
 };
 
@@ -87,6 +90,10 @@ export default registerTool({
   },
   args,
   async execute(args, ctx) {
+    if (args.sort_direction !== undefined && args.sort_column === undefined) {
+      throw new MCPUserError({ errors: [{ message: "sort_direction requires sort_column" }] });
+    }
+
     // Build request params. Settings that are not explicitly provided are left out
     // so the API uses the cost report's own configured settings.
     const requestParams: Record<string, any> = {
@@ -94,6 +101,7 @@ export default registerTool({
     };
     for (const key of Object.keys(args)) {
       const typedKey = key as keyof typeof args;
+      if ((key === "sort_column" || key === "sort_direction") && args[typedKey] === undefined) continue;
       if (key.startsWith("settings_")) {
         const value = args[typedKey];
         if (value !== undefined) {
