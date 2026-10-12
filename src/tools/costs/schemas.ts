@@ -6,7 +6,7 @@ export const groupingSortArgs = {
     .min(1)
     .optional()
     .describe(
-      "A selected logical grouping (including tag:<key> or segment) to sort by raw value across all matching records before pagination. Segment values sort by ID, not title. Ties use date descending, then remaining groupings ascending. Pages contain date × grouping records, not whole groups. Omit to keep existing date-first ordering."
+      "Sort results by one of the fields in groupings. Valid groupings: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, usage_unit, tag:<tag_value>. Segment reports also support segment. Defaults to sorting by date."
     ),
   sort_direction: z
     .enum(["asc", "desc"])

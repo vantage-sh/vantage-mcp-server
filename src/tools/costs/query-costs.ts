@@ -45,6 +45,8 @@ with the accrued_at field set to the first day of the week, but the spend item r
 Same with DateBin=month, each record returned covers a month of data. This lets you get answers with processing fewer
 records. If omitted, DateBin defaults to day.
 
+Sorting applies to stored field values across all results before pagination. Equal values are ordered by date descending, then by the other groupings ascending. Segment values are IDs. Each page contains dated cost records.
+
 Cost settings (credits, refunds, discounts, tax, amortization, etc.) default to the workspace's default report settings.
 Only provide these parameters if you need to override those defaults.
 
@@ -103,7 +105,7 @@ const args = {
     .array(z.string())
     .default(["provider", "service", "region"])
     .describe(
-      "Group the results by specific field(s). Defaults to provider, service, region. Valid groupings: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, tag:<tag_value>. Include every grouping you need in one call rather than issuing separate calls per grouping."
+      "Group the results by specific field(s). Defaults to provider, service, region. Valid groupings: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, usage_unit, tag:<tag_value>. Include every grouping you need in one call rather than issuing separate calls per grouping."
     ),
 };
 
