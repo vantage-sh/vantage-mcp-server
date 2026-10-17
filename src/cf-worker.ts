@@ -13,7 +13,6 @@ import type {
 } from "@vantage-sh/vantage-client";
 import { McpAgent } from "agents/mcp";
 import { Hono } from "hono";
-import { withLogTags } from "workers-tagged-logger";
 import { authorize, callback, confirmConsent, tokenExchangeCallback, type UserProps } from "./auth";
 import {
   claimsUnrecognisedBrand,
@@ -21,32 +20,21 @@ import {
   isRecognisedClient,
   validateClientRegistration,
 } from "./auth/client-policy";
+import { createAuthRouter } from "./auth/request-router";
+import { callCoreApi, coreApiHeaders } from "./core-api";
 import type { AppEnv } from "./env";
-import { HeaderAuthProvider } from "./header-auth-provider";
 import homepage from "./homepage";
 import { logger } from "./logger";
+import { withStatelessMcp } from "./mcp/stateless";
 import setupRegisteredResources from "./resources";
-import { callApi, serverMeta } from "./shared";
+import { serverMeta } from "./shared";
 import { createHostedMcpServer } from "./sse-deprecation";
 import { hideAccessPolicyToolsFromNonOwners } from "./tools/access-policies/gating";
 import { setupRegisteredTools } from "./tools/structure/registerTool";
-import { datadogTraceLogTags, formatErrorsForTelemetry, tracer } from "./tracing";
+import { tracer } from "./tracing";
 
 // Side effect import to register all tools
 import "./tools";
-
-function tokenFromProps(props: UserProps, env?: AppEnv): string {
-  // Check if VANTAGE_MCP_TOKEN is provided in environment
-  if (env?.VANTAGE_MCP_TOKEN) {
-    return env.VANTAGE_MCP_TOKEN;
-  }
-
-  const token = props?.tokenSet?.accessToken;
-  if (!token) {
-    throw new Error("Access token is not available in given props.");
-  }
-  return token;
-}
 
 export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> {
   // Created in init(), before McpAgent connects the transport.
@@ -69,67 +57,19 @@ export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> 
     method: M,
     signal?: AbortSignal
   ): Promise<{ data: Response; ok: true } | { errors: unknown[]; ok: false }> {
-    return withLogTags({}, async () => {
-      const clientVersion = this.server.server.getClientVersion();
-      if (clientVersion) {
-        logger.setTags({
-          mcp_client_name: clientVersion.name,
-          mcp_client_version: clientVersion.version,
-        });
-      }
-
-      logger.setTags({
-        endpoint: endpoint as string,
-        method: method as string,
-        ...datadogTraceLogTags(tracer.getActiveTraceContext()),
-      });
-
-      const vantageHeaders =
-        (this.props as UserProps & { vantageHeaders?: Record<string, string> })?.vantageHeaders || {};
-
-      // Try to get token, but don't fail if not available (when using vantage headers only)
-      let token: string | null = null;
-      try {
-        token = tokenFromProps(this.props!, this.env);
-      } catch (_error) {
-        // If no token is available, we'll rely on vantage headers for authentication
-        if (Object.keys(vantageHeaders).length === 0) {
-          throw new Error("No authentication method available - missing both token and vantage headers");
-        }
-      }
-
-      const headers: Record<string, string> = {
-        ...vantageHeaders,
-      };
-
-      if (token) {
-        headers.Authorization = `Bearer ${token}`;
-      }
-
-      const result = await callApi<P, M, Request, Response>(
-        this.env.VANTAGE_API_HOST,
-        headers,
-        params,
-        method,
-        endpoint,
-        this.env,
-        signal
-      );
-
-      logger.setTags({
-        ok: result.ok,
-        ...datadogTraceLogTags(tracer.getActiveTraceContext()),
-      });
-
-      if (!result.ok) {
-        logger.setTags({ api_errors: formatErrorsForTelemetry(result.errors) });
-        logger.error("Vantage API request failed");
-      } else {
-        logger.info("Vantage API request");
-      }
-
-      return result;
-    });
+    const headers = coreApiHeaders(this.props, this.env);
+    if (!headers) {
+      throw new Error("No authentication method available - missing both token and vantage headers");
+    }
+    return callCoreApi<P, M, Request, Response>(
+      this.env,
+      headers,
+      this.server.server.getClientVersion(),
+      endpoint,
+      params,
+      method,
+      signal
+    );
   }
 
   async init() {
@@ -161,92 +101,67 @@ app.get("/", (ctx) => {
   return ctx.html(homepage());
 });
 
-function hasValidAuthHeader(request: Request): boolean {
-  const authHeader = request.headers.get("authorization");
-  return !!(authHeader?.trim() && authHeader.indexOf("Bearer vntg_tkn") === 0);
-}
+type ApiHandler = {
+  fetch(request: Request, env: AppEnv, ctx: ExecutionContext): Response | Promise<Response>;
+};
 
-function hasVantageHeaders(request: Request): boolean {
-  for (const [key] of request.headers.entries()) {
-    if (key.toLowerCase().startsWith("x-vantage-")) {
-      return true;
-    }
-  }
-  return false;
-}
+const mcpHandler = withStatelessMcp(VantageMCP.serve("/mcp") as unknown as ApiHandler);
+const sseHandler = VantageMCP.mount("/sse") as unknown as ApiHandler;
 
-function createMcpServer(
-  request: Request,
-  sse: boolean,
-  env: AppEnv
-): HeaderAuthProvider<AppEnv> | OAuthProvider<AppEnv> {
-  const apiHandler = (sse ? VantageMCP.mount("/sse") : VantageMCP.serve("/mcp")) as unknown as {
-    fetch(request: Request, env: AppEnv, ctx: ExecutionContext): Response | Promise<Response>;
+function createMcpServer(env: AppEnv): OAuthProvider<AppEnv> {
+  const oauthOptions: OAuthProviderOptions<AppEnv> = {
+    // Direct Vantage API bearer tokens are retired. Only provider-issued
+    // tokens reach these API handlers; agent headers use the narrow pre-router.
+    apiHandlers: { "/mcp": mcpHandler, "/sse": sseHandler },
+    authorizeEndpoint: "/authorize",
+    clientRegistrationCallback: ({ clientMetadata }) => {
+      const description = validateClientRegistration(clientMetadata);
+      const redirectUris = Array.isArray(clientMetadata.redirect_uris)
+        ? clientMetadata.redirect_uris.filter((u): u is string => typeof u === "string")
+        : [];
+      const clientName = typeof clientMetadata.client_name === "string" ? clientMetadata.client_name : undefined;
+      // Attacker-controlled input: log the name truncated and only redirect hosts, never full URIs.
+      logger
+        .withTags({
+          oauth_client_name: clientName?.slice(0, 100),
+          oauth_client_recognised: isRecognisedClient(clientName, redirectUris),
+          oauth_redirect_hosts: redirectUris.map(describeRedirectTarget).join(","),
+          oauth_registration_outcome: description ? "rejected" : "accepted",
+          oauth_registration_reason:
+            description ??
+            (claimsUnrecognisedBrand(clientName, redirectUris) ? "brand_name_unrecognised_redirect" : undefined),
+        })
+        .info("OAuth client registration");
+      if (description) {
+        return { code: "invalid_client_metadata", description };
+      }
+    },
+    clientRegistrationTTL: undefined,
+    clientRegistrationEndpoint: "/register",
+    defaultHandler: app,
+    onError: ({ code, description, headers, internal, status }) => {
+      const tags = {
+        oauth_error_code: code,
+        oauth_error_status: status,
+        oauth_error_category: internal?.category,
+        oauth_error_reason: internal?.reason,
+      };
+      logger.withTags(tags).error("OAuth error response", description);
+      Sentry.captureMessage("OAuth error response", {
+        level: "error",
+        tags,
+        extra: {
+          description,
+          headers,
+          internal,
+        },
+      });
+    },
+    refreshTokenTTL: undefined,
+    tokenEndpoint: "/token",
+    tokenExchangeCallback: (options) => tokenExchangeCallback(options, env, () => getOAuthApi(oauthOptions, env)),
   };
-
-  if (hasVantageHeaders(request) || hasValidAuthHeader(request)) {
-    // Vantage headers or token is passed through headers, use HeaderAuthProvider
-    // Can be used when programmatically accessing the server
-    return new HeaderAuthProvider<AppEnv>({
-      apiHandler,
-      apiRoute: sse ? "/sse" : "/mcp",
-      defaultHandler: app,
-    });
-  } else {
-    // OAuth mode - use the full OAuth provider setup
-    const oauthOptions: OAuthProviderOptions<AppEnv> = {
-      apiHandler,
-      apiRoute: sse ? "/sse" : "/mcp",
-      authorizeEndpoint: "/authorize",
-      clientRegistrationCallback: ({ clientMetadata }) => {
-        const description = validateClientRegistration(clientMetadata);
-        const redirectUris = Array.isArray(clientMetadata.redirect_uris)
-          ? clientMetadata.redirect_uris.filter((u): u is string => typeof u === "string")
-          : [];
-        const clientName = typeof clientMetadata.client_name === "string" ? clientMetadata.client_name : undefined;
-        // Attacker-controlled input: log the name truncated and only redirect hosts, never full URIs.
-        logger
-          .withTags({
-            oauth_client_name: clientName?.slice(0, 100),
-            oauth_client_recognised: isRecognisedClient(clientName, redirectUris),
-            oauth_redirect_hosts: redirectUris.map(describeRedirectTarget).join(","),
-            oauth_registration_outcome: description ? "rejected" : "accepted",
-            oauth_registration_reason:
-              description ??
-              (claimsUnrecognisedBrand(clientName, redirectUris) ? "brand_name_unrecognised_redirect" : undefined),
-          })
-          .info("OAuth client registration");
-        if (description) {
-          return { code: "invalid_client_metadata", description };
-        }
-      },
-      clientRegistrationTTL: undefined,
-      clientRegistrationEndpoint: "/register",
-      defaultHandler: app,
-      onError: ({ code, description, headers, internal, status }) => {
-        const tags = {
-          oauth_error_code: code,
-          oauth_error_status: status,
-          oauth_error_category: internal?.category,
-          oauth_error_reason: internal?.reason,
-        };
-        logger.withTags(tags).error("OAuth error response", description);
-        Sentry.captureMessage("OAuth error response", {
-          level: "error",
-          tags,
-          extra: {
-            description,
-            headers,
-            internal,
-          },
-        });
-      },
-      refreshTokenTTL: undefined,
-      tokenEndpoint: "/token",
-      tokenExchangeCallback: (options) => tokenExchangeCallback(options, env, () => getOAuthApi(oauthOptions, env)),
-    };
-    return new OAuthProvider<AppEnv>(oauthOptions);
-  }
+  return new OAuthProvider<AppEnv>(oauthOptions);
 }
 
 // Forwards the Worker span's W3C traceparent onto the request so downstream
@@ -268,16 +183,12 @@ const fetchHandler = async (request: Request, env: AppEnv, ctx: ExecutionContext
   const tracedRequest = withActiveTrace(request);
   const sse = new URL(tracedRequest.url).pathname.startsWith("/sse");
   if (env.VANTAGE_MCP_TOKEN) {
-    // Direct token mode - bypass OAuth and serve MCP directly
-    // Can be used for easy local development or for MCP clients without
-    // OAuth support or the ability to pass headers.
-    if (sse) {
-      return VantageMCP.mount("/sse").fetch(tracedRequest, env, ctx);
-    }
-    return VantageMCP.serve("/mcp").fetch(tracedRequest, env, ctx);
+    // Preserve the local development override, which bypasses OAuth.
+    return (sse ? sseHandler : mcpHandler).fetch(tracedRequest, env, ctx);
   }
 
-  const mcpServer = createMcpServer(tracedRequest, sse, env);
+  const oauthProvider = createMcpServer(env);
+  const authRouter = createAuthRouter(oauthProvider, mcpHandler, sseHandler);
 
   const sentryHandler = Sentry.withSentry((env: AppEnv) => {
     const { id: versionId } = env.CF_VERSION_METADATA;
@@ -293,7 +204,7 @@ const fetchHandler = async (request: Request, env: AppEnv, ctx: ExecutionContext
       // https://docs.sentry.io/platforms/javascript/configuration/options/#traces-sample-rate
       tracesSampleRate: 1.0,
     };
-  }, mcpServer);
+  }, authRouter);
 
   return sentryHandler.fetch!(tracedRequest as any, env, ctx);
 };
