@@ -22,7 +22,6 @@ import MCPUserError from "./MCPUserError";
 export type ToolCallContext = {
   env?: AppEnv;
   waitUntil?: WaitUntil;
-  signal?: AbortSignal;
   callVantageApi: <
     P extends Path,
     M extends SupportedMethods<P>,
@@ -112,7 +111,6 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
         const ctx: ToolCallContext = signal
           ? {
               ...baseContext,
-              signal,
               callVantageApi: (endpoint, params, method) => {
                 signal.throwIfAborted();
                 return baseContext.callVantageApi(endpoint, params, method, signal);
@@ -121,7 +119,7 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
           : baseContext;
         const rawHeaders = extra?.requestInfo?.headers as HeadersInit | undefined;
         const headers = rawHeaders ? new Headers(rawHeaders) : undefined;
-        const parent = mcpTraceContext(extra?._meta, headers);
+        const { parent, links } = mcpTraceContext(extra?._meta, headers);
         const source = headers?.get("x-trace-source") ?? undefined;
 
         return tracer.runWithSpan(
@@ -131,6 +129,7 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
             waitUntil: ctx.waitUntil,
             kind: "server",
             parent,
+            links,
             attributes: {
               "mcp.tool.name": toolProps.name,
               "mcp.method.name": "tools/call",
@@ -141,7 +140,6 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
             try {
               signal?.throwIfAborted();
               const res = await toolProps.execute(args, ctx);
-              signal?.throwIfAborted();
 
               if (toolProps.outputSchema) {
                 // Since there's an output schema, we should return structured content.
@@ -177,6 +175,11 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
                   ],
                   isError: true,
                 };
+              }
+              if (signal?.aborted) {
+                // A client cancellation is not a server error.
+                span.status = { code: 0 };
+                span.attributes["mcp.request.cancelled"] = true;
               }
               throw e;
             }
