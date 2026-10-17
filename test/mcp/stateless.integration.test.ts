@@ -114,13 +114,13 @@ it("keeps stateless routing off by default", async () => {
 it.each(["v1", "v2"])(
   "serves %s HTTP clients through real OAuth verification without Durable Objects or session IDs",
   async (version) => {
-    const apiCalls: { auth: string | null; trace: string | null }[] = [];
+    const apiCalls: { url: string; auth: string | null; trace: string | null }[] = [];
     vi.stubGlobal(
       "fetch",
-      vi.fn(async (_input: unknown, init: RequestInit) => {
+      vi.fn(async (input: unknown, init: RequestInit) => {
         const headers = new Headers(init.headers);
         const auth = headers.get("authorization");
-        apiCalls.push({ auth, trace: headers.get("traceparent") });
+        apiCalls.push({ url: String(input), auth, trace: headers.get("traceparent") });
         return Response.json({ is_account_owner: auth === "Bearer owner", workspaces: [], name: auth });
       })
     );
@@ -193,8 +193,14 @@ it.each(["v1", "v2"])(
       expect(await member.readResource({ uri: resources.resources[0].uri })).toMatchObject({
         contents: [{ mimeType: "text/markdown" }],
       });
-      // A fresh owner lookup occurs for each exchange, not once at initialize.
-      expect(apiCalls.filter((call) => call.auth === "Bearer member").length).toBeGreaterThan(4);
+      // Only tools/list needed the owner lookup; the other call is get-myself itself.
+      expect(apiCalls.filter((call) => call.auth === "Bearer member")).toHaveLength(2);
+      // An Access Policy call runs the owner lookup and is refused for members.
+      await member.callTool({ name: "list-access-policies", arguments: {} }).catch(() => undefined);
+      expect(apiCalls.filter((call) => call.auth === "Bearer member")).toHaveLength(3);
+      expect(apiCalls.some((call) => call.auth === "Bearer member" && call.url.includes("access_policies"))).toBe(
+        false
+      );
       if (version === "v2") {
         expect(
           requests.some(
@@ -250,12 +256,11 @@ it("aborts the Core fetch when the modern HTTP exchange is cancelled while anoth
   const coreAborted = new Promise<void>((resolve) => {
     aborted = resolve;
   });
-  let cancelledCalls = 0;
   let coreSignal: AbortSignal | undefined;
   vi.stubGlobal(
     "fetch",
     vi.fn(async (_input: unknown, init: RequestInit) => {
-      if (new Headers(init.headers).get("authorization") === "Bearer cancelled" && ++cancelledCalls === 2) {
+      if (new Headers(init.headers).get("authorization") === "Bearer cancelled") {
         coreSignal = init.signal!;
         started();
         return new Promise<Response>((_resolve, reject) =>

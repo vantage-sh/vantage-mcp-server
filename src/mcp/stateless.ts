@@ -1,91 +1,79 @@
 import { createMcpHandler, McpServer } from "@modelcontextprotocol/server";
-import type {
-  Path,
-  RequestBodyForPathAndMethod,
-  ResponseBodyForPathAndMethod,
-  SupportedMethods,
-} from "@vantage-sh/vantage-client";
-import { withLogTags } from "workers-tagged-logger";
-import type { UserProps } from "../auth";
+import { type CoreCredentialProps, callCoreApi, coreApiHeaders } from "../core-api";
 import type { AppEnv } from "../env";
-import { logger } from "../logger";
 import setupRegisteredResources from "../resources";
-import { callApi, serverMeta } from "../shared";
-import { hideAccessPolicyToolsFromNonOwners } from "../tools/access-policies/gating";
+import { serverMeta } from "../shared";
+import { ACCESS_POLICY_TOOL_NAMES, hideAccessPolicyToolsFromNonOwners } from "../tools/access-policies/gating";
 import { setupRegisteredTools, type ToolCallContext } from "../tools/structure/registerTool";
-import { datadogTraceLogTags, formatErrorsForTelemetry, tracer } from "../tracing";
 import "../tools";
 
 export type McpApiHandler = {
   fetch(request: Request, env: AppEnv, ctx: ExecutionContext): Response | Promise<Response>;
 };
 
+type JsonRpcMessage = { method?: unknown; params?: { name?: unknown } };
+
+async function readJsonRpcBody(request: Request): Promise<unknown> {
+  if (request.method !== "POST") return undefined;
+  try {
+    return await request.clone().json();
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Only tool listings and Access Policy calls depend on account ownership.
+ * Unparseable bodies are treated as needing the check so the gate fails closed.
+ */
+function needsOwnerCheck(body: unknown): boolean {
+  if (body === undefined) return true;
+  const messages = (Array.isArray(body) ? body : [body]) as JsonRpcMessage[];
+  return messages.some(
+    (message) =>
+      message?.method === "tools/list" ||
+      (message?.method === "tools/call" && ACCESS_POLICY_TOOL_NAMES.includes(message.params?.name as string))
+  );
+}
+
 // This handler runs behind the authentication provider. Credentials come only
 // from its validated props (or the existing development token override).
 export const statelessMcpHandler: McpApiHandler = {
   async fetch(request, env, executionCtx) {
-    const props = executionCtx.props as UserProps & { vantageHeaders?: Record<string, string> };
-    const token = env.VANTAGE_MCP_TOKEN || props?.tokenSet?.accessToken;
-    const vantageHeaders = props?.vantageHeaders ?? {};
-    if (!token && Object.keys(vantageHeaders).length === 0) return new Response("Unauthorized", { status: 401 });
-
     // Capture credentials per HTTP exchange. No principal, server, or transport
     // is cached in module state or stored in a Durable Object.
-    const headers = { ...vantageHeaders, ...(token ? { Authorization: `Bearer ${token}` } : {}) };
+    const headers = coreApiHeaders(executionCtx.props as CoreCredentialProps | undefined, env);
+    if (!headers) return new Response("Unauthorized", { status: 401 });
+
+    const parsedBody = await readJsonRpcBody(request);
+    const checkOwner = needsOwnerCheck(parsedBody);
     const handler = createMcpHandler(
       async () => {
         const server = new McpServer(serverMeta);
         const context: ToolCallContext = {
           env,
           waitUntil: (promise) => executionCtx.waitUntil(promise),
-          callVantageApi: <
-            P extends Path,
-            M extends SupportedMethods<P>,
-            ApiRequest extends RequestBodyForPathAndMethod<P, M>,
-            ApiResponse extends ResponseBodyForPathAndMethod<P, M>,
-          >(
-            endpoint: P,
-            params: ApiRequest,
-            method: M,
-            signal?: AbortSignal
-          ) =>
-            withLogTags({}, async () => {
-              const client = server.server.getClientVersion();
-              logger.setTags({
-                endpoint,
-                method,
-                ...(client ? { mcp_client_name: client.name, mcp_client_version: client.version } : {}),
-                ...datadogTraceLogTags(tracer.getActiveTraceContext()),
-              });
-              const apiSignal = signal ? AbortSignal.any([signal, request.signal]) : request.signal;
-              apiSignal.throwIfAborted();
-              const result = await callApi<P, M, ApiRequest, ApiResponse>(
-                env.VANTAGE_API_HOST,
-                headers,
-                params,
-                method,
-                endpoint,
-                env,
-                apiSignal
-              );
-              logger.setTags({ ok: result.ok, ...datadogTraceLogTags(tracer.getActiveTraceContext()) });
-              if (!result.ok) {
-                logger.setTags({ api_errors: formatErrorsForTelemetry(result.errors) });
-                logger.error("Vantage API request failed");
-              } else logger.info("Vantage API request");
-              return result;
-            }),
+          callVantageApi: (endpoint, params, method, signal) =>
+            callCoreApi(
+              env,
+              headers,
+              server.server.getClientVersion(),
+              endpoint,
+              params,
+              method,
+              signal ? AbortSignal.any([signal, request.signal]) : request.signal
+            ),
         };
         const tools = setupRegisteredTools(server, () => context);
         setupRegisteredResources(server);
-        await hideAccessPolicyToolsFromNonOwners(tools, context);
+        if (checkOwner) await hideAccessPolicyToolsFromNonOwners(tools, context);
         return server;
       },
       { legacy: "stateless" }
     );
     // Keep the handler alive until the response is consumed; closing it here
     // would abort streamed results. The SDK owns per-request server teardown.
-    return handler.fetch(request);
+    return handler.fetch(request, parsedBody === undefined ? undefined : { parsedBody });
   },
 };
 
