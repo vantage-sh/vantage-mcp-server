@@ -1,6 +1,5 @@
-import OAuthProvider from "@cloudflare/workers-oauth-provider";
 import { describe, expect, it, vi } from "vitest";
-import { cleanupOAuthKv, OAUTH_CLEANUP_BATCH_SIZE } from "../../src/auth/kv-cleanup";
+import { cleanupOAuthKv, OAUTH_CLEANUP_STATE_KEY } from "../../src/auth/kv-cleanup";
 import { inventoryOAuthKv } from "../../src/auth/kv-inventory";
 import type { AppEnv } from "../../src/env";
 
@@ -9,9 +8,10 @@ vi.mock("../../src/logger", () => ({ logger: { warn: vi.fn(), withTags: () => ({
 function makeKv(records: Record<string, object>) {
   const values = new Map(Object.entries(records).map(([key, value]) => [key, JSON.stringify(value)]));
   const kv = {
-    async get(key: string, options?: { type?: string }) {
+    async get(key: string, options?: string | { type?: string }) {
       const value = values.get(key);
-      return options?.type === "json" && value ? JSON.parse(value) : (value ?? null);
+      const type = typeof options === "string" ? options : options?.type;
+      return type === "json" && value ? JSON.parse(value) : (value ?? null);
     },
     async put(key: string, value: string) {
       values.set(key, value);
@@ -19,84 +19,99 @@ function makeKv(records: Record<string, object>) {
     async delete(key: string) {
       values.delete(key);
     },
-    async list(options?: { prefix?: string; limit?: number }) {
+    list: vi.fn(async (options?: { prefix?: string; limit?: number; cursor?: string }) => {
       const keys = [...values.keys()].filter((name) => name.startsWith(options?.prefix || "")).sort();
+      const start = options?.cursor ? Number(options.cursor) : 0;
+      const end = start + (options?.limit ?? 1000);
+      const complete = end >= keys.length;
       return {
-        keys: keys.slice(0, options?.limit).map((name) => ({ name })),
-        list_complete: keys.length <= (options?.limit ?? Infinity),
+        keys: keys.slice(start, end).map((name) => ({ name })),
+        list_complete: complete,
+        ...(complete ? {} : { cursor: String(end) }),
       };
-    },
+    }),
   };
   return { kv, values };
 }
 
+const records = {
+  "client:live": { clientId: "live" },
+  "grant:u:cimd": { id: "cimd", userId: "u", clientId: "https://client.example/metadata.json" },
+  "grant:u:expired": { id: "expired", userId: "u", clientId: "live", expiresAt: 1 },
+  "grant:u:live": { id: "live", userId: "u", clientId: "live" },
+  "grant:u:orphan": { id: "orphan", userId: "u", clientId: "missing" },
+  "token:u:cimd:t": { grantId: "cimd", userId: "u" },
+  "token:u:expired:t": { grantId: "expired", userId: "u" },
+  "token:u:live:t": { grantId: "live", userId: "u" },
+  "token:u:missing:t": { grantId: "missing", userId: "u" },
+};
+
+const survivors = ["client:live", "grant:u:cimd", "grant:u:live", "token:u:cimd:t", "token:u:live:t"];
+
+function enabledEnv(kv: unknown) {
+  return { OAUTH_KV: kv, OAUTH_KV_CLEANUP_ENABLED: "true" } as unknown as AppEnv;
+}
+
+function oauthKeys(values: Map<string, string>) {
+  return [...values.keys()].filter((key) => key !== OAUTH_CLEANUP_STATE_KEY).sort();
+}
+
 describe("OAuth KV cleanup", () => {
   it("does not access storage when disabled", async () => {
+    const get = vi.fn();
     const list = vi.fn();
-    const purgeExpiredData = vi.fn();
-    await cleanupOAuthKv({ OAUTH_KV: { list } } as unknown as AppEnv, { purgeExpiredData });
+    await cleanupOAuthKv({ OAUTH_KV: { get, list } } as unknown as AppEnv);
+    expect(get).not.toHaveBeenCalled();
     expect(list).not.toHaveBeenCalled();
-    expect(purgeExpiredData).not.toHaveBeenCalled();
   });
 
-  it.each(["grants", "tokens", "incomplete"])("skips a partial sweep: %s", async (phase) => {
-    const list = vi
-      .fn()
-      .mockResolvedValueOnce({
-        keys: phase === "grants" ? Array(51).fill({ name: "grant" }) : [],
-        list_complete: phase !== "incomplete",
-      })
-      .mockResolvedValueOnce({
-        keys: phase === "tokens" ? Array(51).fill({ name: "token" }) : [],
-        list_complete: true,
-      });
-    const purgeExpiredData = vi.fn();
-    await cleanupOAuthKv({ OAUTH_KV: { list }, OAUTH_KV_CLEANUP_ENABLED: "true" } as unknown as AppEnv, {
-      purgeExpiredData,
-    });
-    expect(list).toHaveBeenCalledWith({ prefix: "grant:", limit: OAUTH_CLEANUP_BATCH_SIZE + 1 });
-    expect(purgeExpiredData).not.toHaveBeenCalled();
+  it("purges expired/orphaned records with the provider and preserves active DCR and CIMD grants", async () => {
+    const { kv, values } = makeKv(records);
+    await cleanupOAuthKv(enabledEnv(kv));
+    expect(oauthKeys(values)).toEqual(survivors);
+    expect(JSON.parse(values.get(OAUTH_CLEANUP_STATE_KEY)!)).toEqual({ phase: "grant" });
   });
 
-  it("purges expired/orphaned records and preserves active DCR and CIMD grants", async () => {
-    const { kv, values } = makeKv({
-      "client:live": { clientId: "live" },
-      "grant:u:live": { id: "live", userId: "u", clientId: "live" },
-      "grant:u:cimd": { id: "cimd", userId: "u", clientId: "https://client.example/metadata.json" },
-      "grant:u:expired": { id: "expired", userId: "u", clientId: "live", expiresAt: 1 },
-      "grant:u:orphan": { id: "orphan", userId: "u", clientId: "missing" },
-      "token:u:live:t": { grantId: "live", userId: "u" },
-      "token:u:cimd:t": { grantId: "cimd", userId: "u" },
-      "token:u:expired:t": { grantId: "expired", userId: "u" },
-      "token:u:missing:t": { grantId: "missing", userId: "u" },
-    });
-    const env = { OAUTH_KV: kv, OAUTH_KV_CLEANUP_ENABLED: "true" } as unknown as AppEnv;
-    const handler = { fetch: async () => new Response("ok") };
-    const provider = new OAuthProvider<AppEnv>({
-      apiHandler: handler,
-      apiRoute: "/mcp",
-      defaultHandler: handler,
-      authorizeEndpoint: "/authorize",
-      tokenEndpoint: "/token",
-      refreshTokenTTL: undefined,
-      clientRegistrationTTL: undefined,
-    });
-    await cleanupOAuthKv(env, provider);
-    expect([...values.keys()].sort()).toEqual([
-      "client:live",
-      "grant:u:cimd",
-      "grant:u:live",
-      "token:u:cimd:t",
-      "token:u:live:t",
+  it("resumes from the persisted cursor across invocations", async () => {
+    const { kv, values } = makeKv(records);
+    const env = enabledEnv(kv);
+    await cleanupOAuthKv(env, undefined, 2);
+    expect(JSON.parse(values.get(OAUTH_CLEANUP_STATE_KEY)!)).toEqual({ phase: "grant", cursor: "2" });
+    expect(values.has("grant:u:expired")).toBe(false);
+    expect(values.has("grant:u:orphan")).toBe(true);
+
+    const callsBefore = kv.list.mock.calls.length;
+    await cleanupOAuthKv(env, undefined, 2);
+    expect(kv.list.mock.calls[callsBefore][0]).toEqual(expect.objectContaining({ prefix: "grant:", cursor: "2" }));
+    expect(values.has("grant:u:orphan")).toBe(false);
+
+    for (let run = 0; run < 3; run++) await cleanupOAuthKv(env, undefined, 2);
+    expect(oauthKeys(values)).toEqual(survivors);
+    expect(JSON.parse(values.get(OAUTH_CLEANUP_STATE_KEY)!)).toEqual({ phase: "grant" });
+  });
+
+  it("restarts a phase when KV rejects a persisted cursor", async () => {
+    const { kv, values } = makeKv({ ...records, [OAUTH_CLEANUP_STATE_KEY]: { phase: "token", cursor: "stale" } });
+    kv.list.mockRejectedValueOnce(new Error("invalid cursor"));
+    await cleanupOAuthKv(enabledEnv(kv));
+    expect(kv.list.mock.calls[1][0]).toEqual(expect.objectContaining({ prefix: "token:", cursor: undefined }));
+    expect(values.has("token:u:missing:t")).toBe(false);
+  });
+
+  it("uses injected helpers to revoke grants", async () => {
+    const { kv } = makeKv(records);
+    const revokeGrant = vi.fn();
+    await cleanupOAuthKv(enabledEnv(kv), { revokeGrant });
+    expect(revokeGrant.mock.calls).toEqual([
+      ["expired", "u"],
+      ["orphan", "u"],
     ]);
   });
 
   it("surfaces storage failures to the scheduled handler", async () => {
     const list = vi.fn().mockRejectedValue(new Error("KV unavailable"));
     await expect(
-      cleanupOAuthKv({ OAUTH_KV: { list }, OAUTH_KV_CLEANUP_ENABLED: "true" } as unknown as AppEnv, {
-        purgeExpiredData: vi.fn(),
-      })
+      cleanupOAuthKv(enabledEnv({ get: vi.fn().mockResolvedValue(null), list }), { revokeGrant: vi.fn() })
     ).rejects.toThrow("KV unavailable");
   });
 });
