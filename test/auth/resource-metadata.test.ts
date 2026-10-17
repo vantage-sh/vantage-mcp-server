@@ -87,12 +87,27 @@ describe("canonical protected resource metadata", () => {
         MCP_OAUTH_METADATA_ENABLED: "false",
       })
     ).toEqual({});
-    const { provider, env } = makeProvider(undefined, "false");
-    const response = await provider.fetch(
-      new Request("https://mcp.vantage.sh/.well-known/oauth-protected-resource/mcp"),
-      env
-    );
-    expect(await response.json()).toMatchObject({ resource: "https://mcp.vantage.sh/mcp" });
+    vi.stubGlobal("Cloudflare", { compatibilityFlags: { global_fetch_strictly_public: true } });
+    const fetch = vi.fn();
+    vi.stubGlobal("fetch", fetch);
+    const { helpers } = makeProvider(undefined, "false");
+    expect(await helpers.lookupClient("https://client.example/metadata.json")).toBeNull();
+    expect(fetch).not.toHaveBeenCalled();
+
+    const client = await helpers.createClient({
+      redirectUris: ["http://localhost/callback"],
+      tokenEndpointAuthMethod: "none",
+    });
+    const url = new URL("https://mcp.vantage.sh/authorize");
+    url.search = new URLSearchParams({
+      client_id: client.clientId,
+      redirect_uri: "http://localhost/callback",
+      response_type: "code",
+      code_challenge: "v".repeat(43),
+      code_challenge_method: "S256",
+      resource: "https://mcp.vantage.sh/sse",
+    }).toString();
+    expect((await helpers.parseAuthRequest(new Request(url))).resource).toBe("https://mcp.vantage.sh/sse");
   });
 
   it("retains DCR and requires the exact canonical resource", async () => {
