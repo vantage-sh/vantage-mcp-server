@@ -241,6 +241,36 @@ it("rejects tampered or mismatched HTTP continuation state before any mutation",
   expect(mutations).toHaveLength(1);
 });
 
+it("binds OAuth confirmations to the user so a token refresh does not void them", async () => {
+  const mutations = apiFixture();
+  const oauth = (sub: string, accessToken: string) =>
+    ({ props: { claims: { sub }, tokenSet: { accessToken } }, waitUntil: vi.fn() }) as unknown as ExecutionContext;
+  const first = await statelessMcpHandler.fetch(rawRequest(calls[2]), env, oauth("auth0|alice", "before-refresh"));
+  const { result } = (await first.json()) as {
+    result: { requestState: string; inputRequests: Record<string, unknown> };
+  };
+  const responseKey = Object.keys(result.inputRequests)[0];
+  const continuation = {
+    requestState: result.requestState,
+    inputResponses: { [responseKey]: { action: "accept", content: { confirm: true } } },
+  };
+  const otherUser = await statelessMcpHandler.fetch(
+    rawRequest(calls[2], continuation),
+    env,
+    oauth("auth0|bob", "before-refresh")
+  );
+  const rejected = (await otherUser.json()) as { error?: unknown; result?: { isError: boolean } };
+  expect(rejected.error || rejected.result?.isError).toBeTruthy();
+  expect(mutations).toHaveLength(0);
+  const refreshed = await statelessMcpHandler.fetch(
+    rawRequest(calls[2], continuation),
+    env,
+    oauth("auth0|alice", "after-refresh")
+  );
+  expect(await refreshed.json()).toMatchObject({ result: { isError: false } });
+  expect(mutations.map((mutation) => mutation.headers.get("authorization"))).toEqual(["Bearer after-refresh"]);
+});
+
 it("rejects invalid headers and missing signing configuration instead of silently skipping confirmations", async () => {
   const mutations = apiFixture();
   const badPolicy = new Request("https://mcp.example/mcp", { headers: { "X-MCP-Confirm": "all,delete" } });

@@ -4,8 +4,8 @@ import type { AppEnv } from "../env";
 import setupRegisteredResources from "../resources";
 import { serverMeta } from "../shared";
 import { ACCESS_POLICY_TOOL_NAMES, hideAccessPolicyToolsFromNonOwners } from "../tools/access-policies/gating";
-import { getRegisteredToolNames, setupRegisteredTools, type ToolCallContext } from "../tools/structure/registerTool";
-import { createMutationConfirmation } from "./confirm-mutation";
+import { getRegisteredTools, setupRegisteredTools, type ToolCallContext } from "../tools/structure/registerTool";
+import { createMutationConfirmation, sha256Hex } from "./confirm-mutation";
 import { CONFIRMATION_HEADER, parseConfirmationPolicy } from "./confirmation-policy";
 import "../tools";
 
@@ -38,17 +38,34 @@ function needsOwnerCheck(body: unknown): boolean {
   );
 }
 
+/**
+ * Signed confirmation state is bound to the OAuth user rather than the bearer
+ * token, so a token refresh between challenge and approval does not void it.
+ * Other credentials are bound by digest.
+ */
+async function confirmationPrincipal(
+  env: AppEnv,
+  props: CoreCredentialProps | undefined,
+  headers: Record<string, string>
+): Promise<string> {
+  const subject = env.VANTAGE_MCP_TOKEN ? undefined : props?.claims?.sub;
+  if (subject) return JSON.stringify([env.VANTAGE_API_HOST, "user", subject]);
+  const credential = await sha256Hex(JSON.stringify(Object.entries(headers).sort()));
+  return JSON.stringify([env.VANTAGE_API_HOST, "credential", credential]);
+}
+
 // This handler runs behind the authentication provider. Credentials come only
 // from its validated props (or the existing development token override).
 export const statelessMcpHandler: McpApiHandler = {
   async fetch(request, env, executionCtx) {
     // Capture credentials per HTTP exchange. No principal, server, or transport
     // is cached in module state or stored in a Durable Object.
-    const headers = coreApiHeaders(executionCtx.props as CoreCredentialProps | undefined, env);
+    const props = executionCtx.props as CoreCredentialProps | undefined;
+    const headers = coreApiHeaders(props, env);
     if (!headers) return new Response("Unauthorized", { status: 401 });
     let policy: ReturnType<typeof parseConfirmationPolicy>;
     try {
-      policy = parseConfirmationPolicy(request.headers.get(CONFIRMATION_HEADER), getRegisteredToolNames());
+      policy = parseConfirmationPolicy(request.headers.get(CONFIRMATION_HEADER), getRegisteredTools());
     } catch (error) {
       return new Response((error as Error).message, { status: 400 });
     }
@@ -58,6 +75,7 @@ export const statelessMcpHandler: McpApiHandler = {
       });
     }
 
+    const principal = policy.selectors.size ? await confirmationPrincipal(env, props, headers) : "";
     const parsedBody = await readJsonRpcBody(request);
     const checkOwner = needsOwnerCheck(parsedBody);
     const handler = createMcpHandler(
@@ -66,7 +84,7 @@ export const statelessMcpHandler: McpApiHandler = {
           ? createMutationConfirmation({
               policy,
               key: env.MCP_CONFIRMATION_SECRET!,
-              principal: JSON.stringify([env.VANTAGE_API_HOST, headers]),
+              principal,
               clientCapabilities: () => server.server.getClientCapabilities(),
             })
           : undefined;
@@ -105,7 +123,7 @@ export function withoutConfirmations(legacy: McpApiHandler): McpApiHandler {
     fetch(request, env, ctx) {
       if (request.headers.has(CONFIRMATION_HEADER)) {
         try {
-          const policy = parseConfirmationPolicy(request.headers.get(CONFIRMATION_HEADER), getRegisteredToolNames());
+          const policy = parseConfirmationPolicy(request.headers.get(CONFIRMATION_HEADER), getRegisteredTools());
           if (policy.selectors.size)
             return new Response("Requested confirmations require the stateless SDK v2 /mcp endpoint.", { status: 503 });
         } catch (error) {

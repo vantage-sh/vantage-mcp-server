@@ -1,18 +1,34 @@
 export const CONFIRMATION_HEADER = "X-MCP-Confirm";
 export type MutationOperation = "create" | "update" | "delete";
 export type ConfirmationPolicy = { selectors: ReadonlySet<string>; key: string };
+export type ConfirmableTool = { name: string; annotations: { readOnly: boolean } };
 
-export function mutationOperation(name: string): MutationOperation | undefined {
-  return /^(create|update|delete)-/.exec(name)?.[1] as MutationOperation | undefined;
+const OPERATION_BY_VERB: Record<string, MutationOperation> = {
+  create: "create",
+  add: "create",
+  submit: "create",
+  update: "update",
+  delete: "delete",
+  remove: "delete",
+};
+
+/**
+ * Every tool not annotated read-only is a mutation. Its leading verb picks the
+ * category; any other state change counts as an update so it is never ungated.
+ */
+export function mutationOperation(tool: ConfirmableTool): MutationOperation | undefined {
+  if (tool.annotations.readOnly) return undefined;
+  return OPERATION_BY_VERB[tool.name.split("-")[0]] ?? "update";
 }
 
 export function parseConfirmationPolicy(
   value: string | null | undefined,
-  toolNames: readonly string[]
+  tools: readonly ConfirmableTool[]
 ): ConfirmationPolicy {
   if (value == null) return { selectors: new Set(), key: "none" };
   const parts = value.split(",").map((part) => part.trim().toLowerCase());
-  const valid = new Set(["all", "none", "create", "update", "delete", ...toolNames.filter(mutationOperation)]);
+  const mutationNames = tools.filter((tool) => mutationOperation(tool)).map((tool) => tool.name);
+  const valid = new Set(["all", "none", "create", "update", "delete", ...mutationNames]);
   if (
     value.length > 8192 ||
     parts.some((part) => !valid.has(part)) ||
@@ -26,9 +42,9 @@ export function parseConfirmationPolicy(
   return { selectors, key: [...selectors].sort().join(",") || "none" };
 }
 
-export function requiresConfirmation(policy: ConfirmationPolicy, toolName: string): boolean {
-  const operation = mutationOperation(toolName);
+export function requiresConfirmation(policy: ConfirmationPolicy, tool: ConfirmableTool): boolean {
+  const operation = mutationOperation(tool);
   return (
-    !!operation && (policy.selectors.has("all") || policy.selectors.has(operation) || policy.selectors.has(toolName))
+    !!operation && (policy.selectors.has("all") || policy.selectors.has(operation) || policy.selectors.has(tool.name))
   );
 }
