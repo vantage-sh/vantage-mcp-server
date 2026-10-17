@@ -26,10 +26,13 @@ export type SpanStatus = {
   message?: string;
 };
 
+export type SpanLink = Pick<TraceContext, "traceId" | "spanId" | "tracestate">;
+
 export type TraceSpan = TraceContext & {
   name: string;
   kind: SpanKind;
   parentSpanId?: string;
+  links?: SpanLink[];
   startedAt: number;
   attributes: TraceAttributes;
   /** Optional status applied when the span ends successfully via runWithSpan. */
@@ -40,6 +43,7 @@ export type StartSpanOptions = {
   attributes?: TraceAttributes;
   env?: AppEnv;
   kind?: SpanKind;
+  links?: SpanLink[];
   parent?: TraceContext;
   requestId?: string;
   tracestate?: string;
@@ -168,6 +172,7 @@ export class CloudflareWorkerTracer {
       name,
       kind: options.kind ?? "internal",
       parentSpanId: parent?.spanId,
+      ...(options.links?.length ? { links: options.links } : {}),
       startedAt: Date.now(),
       attributes: cleanAttributes(options.attributes),
     };
@@ -242,7 +247,7 @@ export class CloudflareWorkerTracer {
         this.endSpan(span, {
           env: options.env,
           error,
-          status: {
+          status: span.status ?? {
             code: 2,
             message: error instanceof Error ? error.message : "Unhandled error",
           },

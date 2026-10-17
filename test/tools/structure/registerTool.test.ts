@@ -5,8 +5,12 @@ import registerTool, {
   clearRegisteredToolsForTesting,
   setupRegisteredTools,
 } from "../../../src/tools/structure/registerTool";
+import { tracer } from "../../../src/tracing";
 
-afterEach(() => clearRegisteredToolsForTesting());
+afterEach(() => {
+  clearRegisteredToolsForTesting();
+  vi.restoreAllMocks();
+});
 
 const mockContext = { callVantageApi: vi.fn() };
 
@@ -217,4 +221,69 @@ test("tool output schema is typed and loaded properly", () => {
   const outputSchemaFromTool = toolRaw[1].outputSchema;
   expect(outputSchemaFromTool).toBeDefined();
   expect(outputSchemaFromTool).toBe(outputSchema);
+});
+
+describe("request cancellation", () => {
+  function registerCancellable(execute: any) {
+    registerTool({
+      name: "cancel-tool",
+      title: "Cancel Tool",
+      description: "Test",
+      args: {},
+      annotations: { readOnly: true, destructive: false, openWorld: false },
+      execute,
+    });
+    const mockServer = { registerTool: vi.fn() } as any;
+    const ctx = { callVantageApi: vi.fn().mockResolvedValue({ ok: true, data: {} }) };
+    setupRegisteredTools(mockServer, () => ctx);
+    return { handler: mockServer.registerTool.mock.calls[0][2], ctx };
+  }
+
+  it("does not execute an already cancelled request", async () => {
+    const execute = vi.fn();
+    const { handler } = registerCancellable(execute);
+    const signal = AbortSignal.abort(new Error("cancelled"));
+    await expect(handler({}, { signal })).rejects.toThrow("cancelled");
+    expect(execute).not.toHaveBeenCalled();
+  });
+
+  it("stops a later API call after cancellation and keeps the base context isolated", async () => {
+    const controller = new AbortController();
+    const { handler, ctx } = registerCancellable(async (_args: any, context: any) => {
+      await context.callVantageApi("/v2/workspaces", {}, "GET");
+      controller.abort(new Error("cancelled"));
+      await context.callVantageApi("/v2/workspaces", {}, "GET");
+      return {};
+    });
+    await expect(handler({}, { signal: controller.signal })).rejects.toThrow("cancelled");
+    expect(ctx.callVantageApi).toHaveBeenCalledExactlyOnceWith("/v2/workspaces", {}, "GET", controller.signal);
+    expect(ctx).not.toHaveProperty("signal");
+  });
+
+  it("records a cancelled call without marking the span as an error", async () => {
+    const endSpan = vi.spyOn(tracer, "endSpan");
+    const { handler } = registerCancellable(vi.fn());
+    await expect(handler({}, { signal: AbortSignal.abort(new Error("cancelled")) })).rejects.toThrow("cancelled");
+    const [span, options] = endSpan.mock.calls.at(-1)!;
+    expect(span.attributes["mcp.request.cancelled"]).toBe(true);
+    expect(options?.status).toEqual({ code: 0 });
+  });
+
+  it("links the HTTP transport span when metadata supplies the parent", async () => {
+    const startSpan = vi.spyOn(tracer, "startSpan");
+    const { handler } = registerCancellable(async () => ({}));
+    await handler(
+      {},
+      {
+        _meta: { traceparent: "00-11111111111111111111111111111111-2222222222222222-01" },
+        requestInfo: { headers: { traceparent: "00-33333333333333333333333333333333-4444444444444444-01" } },
+      }
+    );
+    const toolSpan = startSpan.mock.results.find((result) => result.value.name === "tool/cancel-tool")!.value;
+    expect(toolSpan).toMatchObject({
+      traceId: "1".repeat(32),
+      parentSpanId: "2".repeat(16),
+      links: [{ traceId: "3".repeat(32), spanId: "4".repeat(16) }],
+    });
+  });
 });
