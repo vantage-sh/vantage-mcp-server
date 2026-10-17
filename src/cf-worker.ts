@@ -270,8 +270,6 @@ const fetchHandler = async (request: Request, env: AppEnv, ctx: ExecutionContext
 export default {
   fetch: tracer.wrapFetchHandler<AppEnv>(fetchHandler),
   scheduled(_controller: ScheduledController, env: AppEnv, ctx: ExecutionContext) {
-    if (env.OAUTH_KV_CLEANUP_ENABLED !== "true") return;
-    const provider = createMcpServer(env);
-    ctx.waitUntil(cleanupOAuthKv(env, provider));
+    ctx.waitUntil(cleanupOAuthKv(env));
   },
 };
