@@ -5,8 +5,12 @@ import registerTool, {
   clearRegisteredToolsForTesting,
   setupRegisteredTools,
 } from "../../../src/tools/structure/registerTool";
+import { tracer } from "../../../src/tracing";
 
-afterEach(() => clearRegisteredToolsForTesting());
+afterEach(() => {
+  clearRegisteredToolsForTesting();
+  vi.restoreAllMocks();
+});
 
 const mockContext = { callVantageApi: vi.fn() };
 
@@ -254,5 +258,32 @@ describe("request cancellation", () => {
     await expect(handler({}, { signal: controller.signal })).rejects.toThrow("cancelled");
     expect(ctx.callVantageApi).toHaveBeenCalledExactlyOnceWith("/v2/workspaces", {}, "GET", controller.signal);
     expect(ctx).not.toHaveProperty("signal");
+  });
+
+  it("records a cancelled call without marking the span as an error", async () => {
+    const endSpan = vi.spyOn(tracer, "endSpan");
+    const { handler } = registerCancellable(vi.fn());
+    await expect(handler({}, { signal: AbortSignal.abort(new Error("cancelled")) })).rejects.toThrow("cancelled");
+    const [span, options] = endSpan.mock.calls.at(-1)!;
+    expect(span.attributes["mcp.request.cancelled"]).toBe(true);
+    expect(options?.status).toEqual({ code: 0 });
+  });
+
+  it("links the HTTP transport span when metadata supplies the parent", async () => {
+    const startSpan = vi.spyOn(tracer, "startSpan");
+    const { handler } = registerCancellable(async () => ({}));
+    await handler(
+      {},
+      {
+        _meta: { traceparent: "00-11111111111111111111111111111111-2222222222222222-01" },
+        requestInfo: { headers: { traceparent: "00-33333333333333333333333333333333-4444444444444444-01" } },
+      }
+    );
+    const toolSpan = startSpan.mock.results.find((result) => result.value.name === "tool/cancel-tool")!.value;
+    expect(toolSpan).toMatchObject({
+      traceId: "1".repeat(32),
+      parentSpanId: "2".repeat(16),
+      links: [{ traceId: "3".repeat(32), spanId: "4".repeat(16) }],
+    });
   });
 });

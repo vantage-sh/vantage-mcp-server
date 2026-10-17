@@ -1,7 +1,15 @@
 import { tracer } from "./index";
+import type { SpanLink, TraceContext } from "./tracer";
 
-/** Prefer the tool request's trace over a shared HTTP/session transport trace. */
-export function mcpTraceContext(meta: Record<string, unknown> | undefined, headers?: HeadersInit) {
+/**
+ * Prefer the tool request's trace over the HTTP/session transport trace. When
+ * both are present, link the transport span so the Worker request stays
+ * reachable from the tool span.
+ */
+export function mcpTraceContext(
+  meta: Record<string, unknown> | undefined,
+  headers?: HeadersInit
+): { parent?: TraceContext; links: SpanLink[] } {
   const metadataHeaders =
     typeof meta?.traceparent === "string"
       ? {
@@ -9,7 +17,14 @@ export function mcpTraceContext(meta: Record<string, unknown> | undefined, heade
           ...(validTracestate(meta.tracestate) ? { tracestate: meta.tracestate as string } : {}),
         }
       : undefined;
-  return tracer.extractTraceContext(metadataHeaders) ?? tracer.extractTraceContext(headers);
+  const metadataParent = tracer.extractTraceContext(metadataHeaders);
+  const transportParent = tracer.extractTraceContext(headers);
+  if (!metadataParent) return { parent: transportParent, links: [] };
+  const links =
+    transportParent && transportParent.spanId !== metadataParent.spanId
+      ? [{ traceId: transportParent.traceId, spanId: transportParent.spanId, tracestate: transportParent.tracestate }]
+      : [];
+  return { parent: metadataParent, links };
 }
 
 // Metadata is JSON, so unlike HTTP headers it can contain control characters.

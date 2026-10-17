@@ -85,6 +85,15 @@ export function buildOtlpExportPayload(
               traceId: span.traceId,
               spanId: span.spanId,
               ...(span.parentSpanId ? { parentSpanId: span.parentSpanId } : {}),
+              ...(span.links?.length
+                ? {
+                    links: span.links.map((link) => ({
+                      traceId: link.traceId,
+                      spanId: link.spanId,
+                      ...(link.tracestate ? { traceState: link.tracestate } : {}),
+                    })),
+                  }
+                : {}),
               name: span.name,
               kind: toOtlpSpanKind(span.kind),
               startTimeUnixNano: toUnixNanos(span.startedAt),

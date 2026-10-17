@@ -27,7 +27,6 @@ export async function callApi<
   env?: AppEnv,
   signal?: AbortSignal
 ): Promise<{ data: Response; ok: true } | { errors: unknown[]; ok: false }> {
-  signal?.throwIfAborted();
   headers["User-Agent"] = `vantage-mcp-server/${serverMeta.version}`;
 
   const url = new URL(endpoint, baseUrl);
