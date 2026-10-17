@@ -22,6 +22,22 @@ export async function listToolCatalog(server: McpServer): Promise<Tool[]> {
   }
 }
 
+// SDK v2 adds a JSON Schema dialect to every schema; it is not a tool change.
+function comparableSchema(schema: Tool["inputSchema"] | Tool["outputSchema"]): string {
+  if (!schema) return "undefined";
+  const { $schema: _dialect, ...rest } = schema as Record<string, unknown>;
+  return JSON.stringify(rest);
+}
+
+export function toolDefinitionChanged(tagTool: Tool, mainTool: Tool): boolean {
+  return (
+    tagTool.description !== mainTool.description ||
+    JSON.stringify(tagTool.annotations) !== JSON.stringify(mainTool.annotations) ||
+    comparableSchema(tagTool.inputSchema) !== comparableSchema(mainTool.inputSchema) ||
+    comparableSchema(tagTool.outputSchema) !== comparableSchema(mainTool.outputSchema)
+  );
+}
+
 /** A tag owns its SDK objects; only serialized tool definitions leave its bundle. */
 export function taggedCatalogSource(usesV2: boolean): string {
   const imports = usesV2
