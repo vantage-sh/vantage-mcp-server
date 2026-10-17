@@ -1,11 +1,11 @@
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { join, resolve } from "node:path";
-import { McpServer } from "@modelcontextprotocol/server";
+import { McpServer, type Tool } from "@modelcontextprotocol/server";
 import { buildSync } from "esbuild";
 import { expect, it } from "vitest";
 import { serverMeta } from "../../../src/shared";
-import { listToolCatalog, taggedCatalogSource } from "../../../src/tools/bin/tool-catalog";
+import { listToolCatalog, taggedCatalogSource, toolDefinitionChanged } from "../../../src/tools/bin/tool-catalog";
 import { setupRegisteredTools } from "../../../src/tools/structure/registerTool";
 import "../../../src/tools";
 
@@ -28,21 +28,13 @@ it.each([false, true])(
       }));
       const currentTools = await listToolCatalog(server);
       expect(taggedTools.length).toBeGreaterThan(100);
-      // SDK v2 emits draft-07 and a default task-support hint. Compare the
-      // application-owned definitions; the version script still sees schema changes.
-      const definitions = (tools: typeof currentTools) =>
-        tools.map((tool) => {
-          const { $schema: _dialect, ...inputSchema } = tool.inputSchema;
-          return {
-            name: tool.name,
-            description: tool.description,
-            title: tool.title,
-            annotations: tool.annotations,
-            inputSchema,
-          };
-        });
-      expect(definitions(taggedTools)).toEqual(definitions(currentTools));
+      const tagged = new Map(taggedTools.map((tool: Tool) => [tool.name, tool]));
+      expect([...tagged.keys()].sort()).toEqual(currentTools.map((tool) => tool.name).sort());
+      // The version script must not report the v1 to v2 schema dialect change as tool changes.
+      expect(currentTools.filter((tool) => toolDefinitionChanged(tagged.get(tool.name)!, tool))).toEqual([]);
       expect(JSON.parse(JSON.stringify(taggedTools))).toEqual(taggedTools);
+      const [first] = currentTools;
+      expect(toolDefinitionChanged(first, { ...first, description: `${first.description} changed` })).toBe(true);
     } finally {
       rmSync(entry, { force: true });
       rmSync(dir, { recursive: true, force: true });

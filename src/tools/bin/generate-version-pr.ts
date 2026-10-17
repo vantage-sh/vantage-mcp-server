@@ -5,7 +5,7 @@ import { McpServer, type Tool } from "@modelcontextprotocol/server";
 import { buildSync } from "esbuild";
 import { serverMeta } from "../../shared";
 import { setupRegisteredTools } from "../structure/registerTool";
-import { listToolCatalog, taggedCatalogSource } from "./tool-catalog";
+import { listToolCatalog, taggedCatalogSource, toolDefinitionChanged } from "./tool-catalog";
 
 // Side affect import for the tools in this branch
 import "..";
@@ -95,29 +95,6 @@ try {
 // Switch back to main
 runCommandAndPipeToUser("git", ["checkout", "main"], false);
 
-function zodStringify(schema: any): string {
-  if (!schema) {
-    return "undefined";
-  }
-  return JSON.stringify(schema);
-}
-
-function checkIfChanges(tagTool: Tool, mainTool: Tool): boolean {
-  if (tagTool.description !== mainTool.description) {
-    return true;
-  }
-  if (JSON.stringify(tagTool.annotations) !== JSON.stringify(mainTool.annotations)) {
-    return true;
-  }
-  if (
-    zodStringify(tagTool.inputSchema) !== zodStringify(mainTool.inputSchema) ||
-    zodStringify(tagTool.outputSchema) !== zodStringify(mainTool.outputSchema)
-  ) {
-    return true;
-  }
-  return false;
-}
-
 function getToolStructureChanges(tagTools: Tool[], mainTools: Tool[]): string[] {
   const mainSet = new Set(mainTools.map((tool) => tool.name));
 
@@ -125,7 +102,7 @@ function getToolStructureChanges(tagTools: Tool[], mainTools: Tool[]): string[] 
   for (const tool of mainTools) {
     const tagTool = tagTools.find((t) => t.name === tool.name);
     if (tagTool) {
-      const changed = checkIfChanges(tagTool, tool);
+      const changed = toolDefinitionChanged(tagTool, tool);
       if (changed) {
         changes.push(`- Updated tool: ${tool.name}`);
       }
