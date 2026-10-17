@@ -10,7 +10,12 @@ import {
 import * as oauth from "oauth4webapi";
 import { afterEach, expect, it, vi } from "vitest";
 import type { AppEnv } from "../../src/env";
-import { statelessMcpHandler, withStatelessMcp } from "../../src/mcp/stateless";
+import {
+  type McpApiHandler,
+  statelessMcpHandler,
+  withoutConfirmations,
+  withStatelessMcp,
+} from "../../src/mcp/stateless";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -108,6 +113,22 @@ it("keeps stateless routing off by default", async () => {
   expect(legacy.fetch).toHaveBeenCalledTimes(2);
   const stateless = await handler.fetch(request(), { MCP_STATELESS_ENABLED: "true" } as AppEnv, executionContext());
   expect(stateless.status).toBe(401);
+  expect(legacy.fetch).toHaveBeenCalledTimes(2);
+});
+
+it.each([
+  ["legacy /mcp", (legacy: McpApiHandler) => withStatelessMcp(legacy)],
+  ["/sse", (legacy: McpApiHandler) => withoutConfirmations(legacy)],
+])("refuses requested confirmations on the %s McpAgent handler", async (_name, wrap) => {
+  const legacy = { fetch: vi.fn(async () => new Response("legacy")) };
+  const handler = wrap(legacy);
+  const env = {} as AppEnv;
+  const request = (confirm?: string) =>
+    new Request("https://mcp.example/mcp", confirm ? { headers: { "X-MCP-Confirm": confirm } } : undefined);
+  expect(await (await handler.fetch(request(), env, executionContext())).text()).toBe("legacy");
+  expect(await (await handler.fetch(request("none"), env, executionContext())).text()).toBe("legacy");
+  expect((await handler.fetch(request("delete"), env, executionContext())).status).toBe(503);
+  expect((await handler.fetch(request("typo"), env, executionContext())).status).toBe(400);
   expect(legacy.fetch).toHaveBeenCalledTimes(2);
 });
 
