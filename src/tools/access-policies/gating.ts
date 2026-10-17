@@ -1,4 +1,4 @@
-import type { RegisteredTool } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { ToolHandle } from "../../mcp/registration";
 import type { ToolCallContext } from "../structure/registerTool";
 
 export const ACCESS_POLICY_TOOL_NAMES = [
@@ -17,7 +17,7 @@ export const ACCESS_POLICY_TOOL_NAMES = [
  * `tools/list` response.
  */
 export async function hideAccessPolicyToolsFromNonOwners(
-  tools: Map<string, RegisteredTool>,
+  tools: Map<string, ToolHandle>,
   ctx: ToolCallContext
 ): Promise<void> {
   if (await isAccountOwner(ctx)) {
