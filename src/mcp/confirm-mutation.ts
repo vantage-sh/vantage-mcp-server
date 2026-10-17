@@ -9,7 +9,7 @@ import {
 } from "@modelcontextprotocol/server";
 import z from "zod";
 import MCPUserError from "../tools/structure/MCPUserError";
-import { type ConfirmationPolicy, requiresConfirmation } from "./confirmation-policy";
+import { type ConfirmableTool, type ConfirmationPolicy, requiresConfirmation } from "./confirmation-policy";
 import type { ToolRequestContext } from "./registration";
 
 const confirmationSchema = z.object({
@@ -17,7 +17,7 @@ const confirmationSchema = z.object({
 });
 type PendingConfirmation = { version: 1; tool: string; argsHash: string; responseKey: string };
 export type MutationConfirmation = (
-  tool: { name: string; title: string },
+  tool: ConfirmableTool & { title: string },
   args: unknown,
   context: ToolRequestContext
 ) => Promise<InputRequiredResult | undefined>;
@@ -35,7 +35,7 @@ export function createMutationConfirmation(options: {
     bind: (context) => JSON.stringify([options.principal, options.policy.key, context.mcpReq.method]),
   });
   const confirm: MutationConfirmation = async (tool, args, context) => {
-    if (!requiresConfirmation(options.policy, tool.name)) return;
+    if (!requiresConfirmation(options.policy, tool)) return;
     context.mcpReq?.signal.throwIfAborted();
     // Modern stdio carries capabilities on each request rather than the
     // legacy initialize state exposed by getClientCapabilities().
@@ -100,9 +100,13 @@ function canonical(value: unknown): unknown {
   return value;
 }
 
-async function hashArguments(args: unknown): Promise<string> {
-  const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(JSON.stringify(canonical(args))));
+export async function sha256Hex(text: string): Promise<string> {
+  const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
   return [...new Uint8Array(hash)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function hashArguments(args: unknown): Promise<string> {
+  return sha256Hex(JSON.stringify(canonical(args)));
 }
 
 function argumentPreview(args: unknown): string {

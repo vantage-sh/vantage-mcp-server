@@ -4,7 +4,9 @@ import { createMutationConfirmation } from "../../src/mcp/confirm-mutation";
 import { parseConfirmationPolicy } from "../../src/mcp/confirmation-policy";
 
 afterEach(() => vi.restoreAllMocks());
-const tool = { name: "delete-folder", title: "Delete Folder" };
+const mutation = { annotations: { readOnly: false } };
+const tool = { name: "delete-folder", title: "Delete Folder", ...mutation };
+const updateTool = { name: "update-folder", title: "Update Folder", ...mutation };
 const args = { folder_token: "fldr_target" };
 const key = "test-only-key-with-at-least-32-bytes";
 const context = () =>
@@ -15,7 +17,7 @@ function runtime(principal = "alice", policy = "all", ttlSeconds = 300) {
   return createMutationConfirmation({
     key,
     principal,
-    policy: parseConfirmationPolicy(policy, [tool.name, "update-folder"]),
+    policy: parseConfirmationPolicy(policy, [tool, updateTool]),
     ttlSeconds,
     clientCapabilities: () => ({ elicitation: { form: {} } }),
   });
@@ -53,7 +55,7 @@ it("rejects changed arguments, changed tool, or acceptance without a challenge",
   retry.mcpReq.inputResponses = { [responseKey]: { action: "accept", content: { confirm: true } } };
   for (const [changedTool, changedArgs] of [
     [tool, { folder_token: "fldr_other" }],
-    [{ name: "update-folder", title: "Update Folder" }, args],
+    [updateTool, args],
   ] as const) {
     await expect(gate.confirm(changedTool, changedArgs, retry)).rejects.toMatchObject({
       exception: { errors: [{ message: expect.stringContaining("does not match") }] },
@@ -81,7 +83,7 @@ it("refuses unsupported elicitation and honours cancellation", async () => {
   const gate = createMutationConfirmation({
     key,
     principal: "alice",
-    policy: parseConfirmationPolicy("all", [tool.name]),
+    policy: parseConfirmationPolicy("all", [tool]),
     clientCapabilities: () => ({}),
   });
   await expect(gate.confirm(tool, args, context())).rejects.toMatchObject({

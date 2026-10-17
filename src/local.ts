@@ -5,7 +5,7 @@ import { parseConfirmationPolicy } from "./mcp/confirmation-policy";
 import setupRegisteredResources from "./resources";
 import { callApi, serverMeta } from "./shared";
 import { hideAccessPolicyToolsFromNonOwners } from "./tools/access-policies/gating";
-import { getRegisteredToolNames, setupRegisteredTools, type ToolCallContext } from "./tools/structure/registerTool";
+import { getRegisteredTools, setupRegisteredTools, type ToolCallContext } from "./tools/structure/registerTool";
 
 // Side effect import to register all tools
 import "./tools";
@@ -15,7 +15,7 @@ async function main() {
     throw new Error("VANTAGE_TOKEN environment variable is required.");
   }
 
-  const policy = parseConfirmationPolicy(process.env.VANTAGE_MCP_CONFIRM, getRegisteredToolNames());
+  const policy = parseConfirmationPolicy(process.env.VANTAGE_MCP_CONFIRM, getRegisteredTools());
   const confirmationKey = crypto.getRandomValues(new Uint8Array(32));
   serveStdio(
     async () => {

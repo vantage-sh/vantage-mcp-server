@@ -82,6 +82,10 @@ export function getRegisteredToolNames(): string[] {
   return Array.from(toolDefinitions.keys());
 }
 
+export function getRegisteredTools(): ToolMetadata[] {
+  return Array.from(toolDefinitions.values());
+}
+
 export default function registerTool<Input extends z.ZodRawShape>(
   toolProps: ToolProperties<Input, undefined>
 ): ToolProperties<Input, undefined>;
@@ -156,11 +160,11 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
               } else if (headers?.has(CONFIRMATION_HEADER)) {
                 let policy: ReturnType<typeof parseConfirmationPolicy>;
                 try {
-                  policy = parseConfirmationPolicy(headers.get(CONFIRMATION_HEADER), getRegisteredToolNames());
+                  policy = parseConfirmationPolicy(headers.get(CONFIRMATION_HEADER), getRegisteredTools());
                 } catch (error) {
                   throw new MCPUserError({ errors: [{ message: (error as Error).message }] });
                 }
-                if (requiresConfirmation(policy, toolProps.name)) {
+                if (requiresConfirmation(policy, toolProps)) {
                   throw new MCPUserError({
                     errors: [{ message: "Requested confirmations require the SDK v2 runtime; no changes were made." }],
                   });

@@ -1,10 +1,10 @@
 import { inputRequired } from "@modelcontextprotocol/server";
 import { expect, it, vi } from "vitest";
-import { mutationOperation } from "../../src/mcp/confirmation-policy";
-import { getRegisteredToolNames, setupRegisteredTools } from "../../src/tools/structure/registerTool";
+import { parseConfirmationPolicy, requiresConfirmation } from "../../src/mcp/confirmation-policy";
+import { getRegisteredTools, setupRegisteredTools } from "../../src/tools/structure/registerTool";
 import "../../src/tools";
 
-it("gates every registered create/update/delete before execution, regardless of annotation drift", async () => {
+it("gates every registered tool that is not read-only before execution", async () => {
   const handlers = new Map<string, (args: unknown, extra: unknown) => Promise<unknown>>();
   const server = {
     registerTool: vi.fn((name, _config, callback) => {
@@ -20,12 +20,18 @@ it("gates every registered create/update/delete before execution, regardless of 
       }),
     },
   });
-  const confirmMutation = vi.fn(async () => pending);
+  const policy = parseConfirmationPolicy("all", getRegisteredTools());
+  const confirmMutation = vi.fn(async (tool) => (requiresConfirmation(policy, tool) ? pending : undefined));
   const callVantageApi = vi.fn(async () => ({ ok: false as const, errors: [] }));
   setupRegisteredTools(server, () => ({ confirmMutation, callVantageApi }));
-  const names = getRegisteredToolNames().filter(mutationOperation);
-  expect(names.length).toBeGreaterThan(60);
-  for (const name of names) expect(await handlers.get(name)!({}, {})).toBe(pending);
-  expect(confirmMutation).toHaveBeenCalledTimes(names.length);
+  const mutations = getRegisteredTools()
+    .filter((tool) => !tool.annotations.readOnly)
+    .map((tool) => tool.name);
+  expect(mutations).toEqual(expect.arrayContaining(["add-team-member", "remove-team-member", "submit-user-feedback"]));
+  for (const name of mutations) expect(await handlers.get(name)!({}, {})).toBe(pending);
   expect(callVantageApi).not.toHaveBeenCalled();
+  const gated = getRegisteredTools()
+    .filter((tool) => requiresConfirmation(policy, tool))
+    .map((tool) => tool.name);
+  expect(gated).toEqual(mutations);
 });
