@@ -283,6 +283,7 @@ Re-run the same `--tool` and `--model`. The JSON for that pair is replaced. Do t
 - `npm run format` / `npm run lint:fix` — Biome format and lint
 - `npm run type-check` — TypeScript check
 - `npm run cf-typegen` — Generate Cloudflare Worker types
+- `npm run oauth:inventory -- <account-id> <namespace-id>` — Count OAuth KV clients, grants, and tokens (key metadata only; needs a read-only `CLOUDFLARE_API_TOKEN`)
 - `npm run generate-tools-index` — Regenerate `src/tools/index.ts` after tool changes
 - `npm run generate-resources-index` — Regenerate `src/resources/index.ts` after resource changes
 - `npm run eval` — Run tool-selection evals (`npm run eval -- --tool <name> --model gpt-5.6-sol-high`)

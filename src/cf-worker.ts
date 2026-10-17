@@ -21,6 +21,7 @@ import {
   isRecognisedClient,
   validateClientRegistration,
 } from "./auth/client-policy";
+import { cleanupOAuthKv } from "./auth/kv-cleanup";
 import type { AppEnv } from "./env";
 import { HeaderAuthProvider } from "./header-auth-provider";
 import homepage from "./homepage";
@@ -294,4 +295,7 @@ const fetchHandler = async (request: Request, env: AppEnv, ctx: ExecutionContext
 
 export default {
   fetch: tracer.wrapFetchHandler<AppEnv>(fetchHandler),
+  scheduled(_controller: ScheduledController, env: AppEnv, ctx: ExecutionContext) {
+    ctx.waitUntil(cleanupOAuthKv(env));
+  },
 };
