@@ -29,7 +29,7 @@ Preconditions:
 - **Registration.** Checks `register-local-client` (`MCP Inspector (verify)` with `http://localhost:6274/oauth/callback`), `register-unverified-client` (`Claude` with `https://verify.example/callback`), and `register-rejects-invalid-redirect`. `worker.log` shows matching `OAuth client registration` lines with `oauth_registration_outcome` `accepted` and `rejected`.
 - **Consent screen.** `consent-mcp-resource.html`, `consent-sse-resource.html`, and `consent-unverified-client.html` are the rendered pages. Checks `consent-renders`, `consent-names-client`, `consent-local-application-note`, `consent-no-sse-notice-for-mcp`, `consent-sse-migration-notice`, `consent-unverified-warning`, `consent-well-known-name-warning`, `consent-form-carries-csrf-fields`, `consent-sets-transaction-cookie`. `worker.log` shows `OAuth consent shown` with `oauth_client_recognised` and `oauth_redirect_hosts`.
 - **Negative path.** Check `authorize-rejects-unknown-client` expects a 4xx with no **Allow Access** button.
-- **Proof.** `evidence/oauth-consent/summary.json` shows `failed: 0`, along with the commit and branch tested.
+- **Proof.** Each invocation creates a fresh `evidence/oauth-consent-*/` directory. Its `summary.json` shows `failed: 0` and the tested commit; `run.env` records the branch. Preserve every attempt.
 
 ## Gotchas
 

@@ -4,8 +4,9 @@
 //
 // Usage: npx tsx oauth-consent.ts <run-dir>
 import { createHash, randomBytes } from "node:crypto";
-import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { readRun } from "./support";
 
 type CheckResult = { id: string; pass: boolean; detail?: string };
 type Exchange = { status: number; headers: Record<string, string | string[]>; text: string };
@@ -19,15 +20,6 @@ type Registration = Exchange & { body?: { client_id?: string; error?: string } }
 
 const SSE_NOTICE = "Update your Vantage MCP connection";
 const INSPECTOR_REDIRECT = "http://localhost:6274/oauth/callback";
-
-function readRun(runDir: string): Record<string, string> {
-  return Object.fromEntries(
-    readFileSync(join(runDir, "run.env"), "utf8")
-      .split("\n")
-      .filter(Boolean)
-      .map((line) => [line.slice(0, line.indexOf("=")), line.slice(line.indexOf("=") + 1)])
-  );
-}
 
 function parseJson<T>(text: string): T | undefined {
   try {
@@ -44,13 +36,13 @@ async function main(): Promise<number> {
     return 2;
   }
   const run = readRun(runDir);
-  if (run.MODE !== "oauth") {
-    console.error(`run is in ${run.MODE} mode; OAuth is bypassed there. Launch with: verify.sh launch oauth`);
+  if (run.mode !== "oauth") {
+    console.error(`run is in ${run.mode} mode; OAuth is bypassed there. Launch with: verify.sh launch oauth`);
     return 2;
   }
-  const base = run.BASE_URL;
-  const out = join(runDir, "evidence", "oauth-consent");
-  mkdirSync(out, { recursive: true });
+  const base = run.base;
+  mkdirSync(join(run.dir, "evidence"), { recursive: true });
+  const out = mkdtempSync(join(run.dir, "evidence", "oauth-consent-"));
   const exchangesPath = join(out, "exchanges.jsonl");
   writeFileSync(exchangesPath, "");
 
@@ -203,7 +195,10 @@ async function main(): Promise<number> {
     );
 
     const sse = await consent("consent-sse-resource", authorizeUrl(localClientId, INSPECTOR_REDIRECT, `${base}/sse`));
-    check("consent-sse-migration-notice", sse.status === 200 && has(sse.text, SSE_NOTICE) && has(sse.text, `${base}/mcp`));
+    check(
+      "consent-sse-migration-notice",
+      sse.status === 200 && has(sse.text, SSE_NOTICE) && has(sse.text, `${base}/mcp`)
+    );
   }
 
   const impostorClientId = impostor.body?.client_id;
@@ -237,8 +232,7 @@ async function main(): Promise<number> {
         feature: "oauth-local-consent",
         entryPoint: "HTTP client walk (discovery, /register, /authorize)",
         baseUrl: base,
-        gitSha: run.GIT_SHA,
-        gitBranch: run.GIT_BRANCH,
+        gitSha: run.sha,
         finishedAt: new Date().toISOString(),
         passed: results.length - failed.length,
         failed: failed.length,

@@ -5,6 +5,7 @@ This directory is the maintained source for verifying the user-facing behavior o
 ## Baseline preconditions
 
 - Dependencies installed (`npm ci`), and the checkout is the commit under test.
+- Choose and export `VERIFY_WORK_DIR` inside `tmp/verify-vantage-mcp/`. All work, one-off scripts, and outputs stay beneath it; see the [folder layout](../SKILL.md#evidence).
 - Local runs are started by `scripts/verify.sh launch <oauth|token>` and pass `scripts/verify.sh doctor "$RUN_DIR"` before driving.
 - Token-mode and stdio runs need a running Vantage Core (default `http://localhost:3000`, override with `VERIFY_API_HOST`) and a token it accepts in `VERIFY_VANTAGE_TOKEN` or `.dev.vars`.
 - Staging runs need explicit user approval for each deploy, a pushed branch, and `gh` authenticated for `vantage-sh/vantage-mcp-server`.
@@ -19,8 +20,10 @@ This directory is the maintained source for verifying the user-facing behavior o
 
 ## Proof and skip reporting
 
+Deliver a readable `SUMMARY.md` in the working verification folder, with any combined JSON report beside it, following the [summary requirements](../SKILL.md#evidence). The Markdown report is the user-facing result.
+
 - HTTP proof is the request, status, relevant headers, and body for each step. The OAuth walk records these in `exchanges.jsonl`.
-- MCP proof is the Inspector CLI command and its JSON output, saved under the run's `evidence/`.
+- MCP proof is the SDK helper's captured calls and results, or the Inspector CLI command and JSON output, saved under the run's `evidence/`.
 - UI proof (staging) is a screenshot or the Inspector **History** panel showing the action and the result, plus the matching staging spans in Datadog (read-only).
 - Record the feature ID, entry point, and commit with every artifact. `summary.json` does this for the OAuth walk.
 - Report an unreachable path with the attempted command and the unmet precondition. Do not report a skipped entry point as verified through a different one.
