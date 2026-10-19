@@ -19,8 +19,8 @@ export function createAuthRouter<Env>(
 ): FetchHandler<Env> {
   return {
     fetch(request, env, ctx) {
-      // A bearer credential always belongs to the OAuth provider, even when
-      // an agent header is also present or the Authorization value is malformed.
+      // Any present Authorization header belongs to OAuth, including an empty
+      // or malformed value. Delegation is considered only when it is absent.
       if (request.headers.has("Authorization")) {
         return oauthProvider.fetch(request, env, ctx);
       }

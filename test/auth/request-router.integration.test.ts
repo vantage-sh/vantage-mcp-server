@@ -75,6 +75,30 @@ describe("OAuth provider behind the authentication router", () => {
     expect(sse).not.toHaveBeenCalled();
   });
 
+  it.each(["/mcp", "/sse"])(
+    "rejects present empty or whitespace Authorization on %s without delegation fallback",
+    async (path) => {
+      for (const authorization of ["", " ", "\t"]) {
+        const { fetch, mcp, sse } = makeProvider();
+        const response = await fetch(path, {
+          Authorization: authorization,
+          "X-Vantage-Agent-Delegation": "delegation",
+        });
+
+        expect(response.status).toBe(401);
+        expect(mcp).not.toHaveBeenCalled();
+        expect(sse).not.toHaveBeenCalled();
+      }
+    }
+  );
+
+  it("routes to delegation only when Authorization is absent", async () => {
+    const { fetch, mcp, sse } = makeProvider();
+    expect((await fetch("/mcp", { "X-Vantage-Agent-Delegation": "delegation" })).status).toBe(200);
+    expect(mcp).toHaveBeenCalledOnce();
+    expect(sse).not.toHaveBeenCalled();
+  });
+
   it("accepts an OAuth-issued bearer token on both API routes without forwarding agent headers", async () => {
     const { env, fetch, mcp, options, sse } = makeProvider();
     const helpers = getOAuthApi(options, env);
