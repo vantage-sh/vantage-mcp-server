@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Launch, check, and tear down isolated local instances of the hosted MCP Worker.
 # Usage:
+#   VERIFY_WORK_DIR=tmp/verify-vantage-mcp/<task> must be set for launch
 #   verify.sh launch <oauth|token> [port]   start a Worker; prints RUN_DIR
 #   verify.sh doctor <run-dir>              read-only health check
 #   verify.sh cleanup <run-dir>             stop the Worker and delete scratch state (keeps evidence/)
@@ -23,7 +24,9 @@ load_run() {
   . "$run_dir/run.env"
 }
 
-group_alive() { kill -0 -- "-$1" 2>/dev/null; }
+group_alive() {
+  [[ "$1" =~ ^[0-9]+$ ]] && [ "$1" -gt 1 ] && kill -0 -- "-$1" 2>/dev/null
+}
 
 port_owned_by_group() {
   local port="$1" pgid="$2" pid
@@ -52,9 +55,16 @@ cmd_launch() {
     die "port $port is already in use; pick another port, never reuse an instance this run did not start"
   fi
 
+  [ -n "${VERIFY_WORK_DIR:-}" ] || die "set VERIFY_WORK_DIR to this task's working verification folder"
+  mkdir -p "$VERIFY_WORK_DIR"
+  local work_dir
+  work_dir="$(cd "$VERIFY_WORK_DIR" && pwd)"
+  case "$work_dir" in "$RUNS_ROOT"/*) ;; *) die "VERIFY_WORK_DIR must be a folder inside $RUNS_ROOT" ;; esac
+
   local run_id run_dir base_url
   run_id="$(date +%Y%m%d-%H%M%S)-$mode-$port"
-  run_dir="$RUNS_ROOT/$run_id"
+  run_dir="$work_dir/runs/$run_id"
+  [ ! -e "$run_dir" ] || die "run directory already exists; do not overwrite an earlier attempt"
   base_url="http://127.0.0.1:$port"
   mkdir -p "$run_dir/state/persist" "$run_dir/evidence"
 
@@ -63,10 +73,14 @@ cmd_launch() {
   umask 077
   if [ "$mode" = token ]; then
     local token="${VERIFY_VANTAGE_TOKEN:-}"
+    if [ -z "$token" ] && [ -n "${VERIFY_VANTAGE_TOKEN_FILE:-}" ]; then
+      [ -f "$VERIFY_VANTAGE_TOKEN_FILE" ] || die "VERIFY_VANTAGE_TOKEN_FILE not found"
+      token="$(cat "$VERIFY_VANTAGE_TOKEN_FILE")"
+    fi
     if [ -z "$token" ] && [ -f "$REPO_ROOT/.dev.vars" ]; then
       token="$(sed -n 's/^VANTAGE_MCP_TOKEN=//p' "$REPO_ROOT/.dev.vars" | tail -1)"
     fi
-    [ -n "$token" ] || die "token mode needs VERIFY_VANTAGE_TOKEN or VANTAGE_MCP_TOKEN in .dev.vars"
+    [ -n "$token" ] || die "token mode needs VERIFY_VANTAGE_TOKEN, VERIFY_VANTAGE_TOKEN_FILE, or VANTAGE_MCP_TOKEN in .dev.vars"
     printf 'VANTAGE_MCP_TOKEN=%s\n' "$token" >"$run_dir/state/worker.env"
   else
     printf 'VANTAGE_MCP_TOKEN=\n' >"$run_dir/state/worker.env"
@@ -183,17 +197,21 @@ cmd_list() {
     echo "no runs"
     return 0
   }
-  local run_dir
-  for run_dir in "$RUNS_ROOT"/*/; do
-    [ -f "$run_dir/run.env" ] || continue
+  local run_dir run_env
+  while IFS= read -r run_env; do
+    run_dir="$(dirname "$run_env")"
     (
+      unset PGID
       # shellcheck disable=SC1091
-      . "$run_dir/run.env"
-      state=stopped
-      group_alive "${PGID:-0}" && state=running
-      echo "$state  ${run_dir%/}  $BASE_URL"
+      . "$run_env"
+      state=external
+      if [[ "${PGID:-}" =~ ^[0-9]+$ ]] && [ "$PGID" -gt 1 ]; then
+        state=stopped
+        group_alive "$PGID" && state=running
+      fi
+      echo "$state  $run_dir  $BASE_URL"
     )
-  done
+  done < <(rg --files --hidden --no-ignore "$RUNS_ROOT" -g run.env)
 }
 
 case "${1:-}" in

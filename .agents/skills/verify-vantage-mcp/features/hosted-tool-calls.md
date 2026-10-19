@@ -10,18 +10,23 @@ An authenticated client lists the server's tools and calls them over Streamable 
 - `tool-mutation`: `create-folder` creates an object that `get-folder` then returns, and `delete-folder` removes it.
 - `resources`: `resources/list` and `resources/read` return the VQL documentation.
 - `sse-transport`: `/sse` serves the same tools, advertises migration instructions on initialize, and sends one `notifications/message` warning from logger `vantage.sse-deprecation`.
+- `hosted-auth-routing`: with the development token override disabled, direct Vantage API bearer tokens are rejected on both transports. A nonempty `X-Vantage-Agent-Delegation` header bypasses OAuth only on `/mcp`, `/sse`, and their subpaths, and only when the Worker sees no `Authorization` header. Only the delegation header is forwarded to Core.
+- `oauth-route-precedence`: discovery, registration, and authorization remain with OAuth even when delegation or other `X-Vantage-*` headers are present. An invalid nonempty `Authorization` header never falls back to delegation.
+- `staging-agent-delegation`: the staging Vantage agent calls `get-myself` and `list-workspaces` through the deployed hosted MCP refactor as the signed-in user's account.
 
 ## How to get to it (user POV)
 
 - Any MCP client pointed at `http://127.0.0.1:<port>/mcp` on a token-mode run (no login needed).
 - Legacy SSE clients pointed at `http://127.0.0.1:<port>/sse`.
 
-## Driving it with Inspector CLI
+## Driving it with the MCP SDK and Inspector
 
 Preconditions:
 
 - Core is running at `VERIFY_API_HOST` (default `http://localhost:3000`), with a token it accepts.
 - A token-mode run: `VERIFY_VANTAGE_TOKEN=<token> scripts/verify.sh launch token`, and doctor all `PASS`.
+
+Start with the reusable SDK helper: `npx tsx "$S/mcp-smoke.ts" "$RUN_DIR" --transports http,sse`. It records actual tool calls, owner gating, resource reads, matching tool lists, and the SSE warning in a fresh feature report. It is read-only. With an owned token-mode Worker and loopback Core, add `--mutate` for create/read/delete plus a not-found read after deletion. A failed cleanup retains the folder token in evidence; finish that cleanup before handing off. Individual Inspector commands below remain useful when diagnosing a specific tool.
 
 - **List tools.** Run `npx mcp-inspector --cli http://127.0.0.1:8789/mcp --transport http --method tools/list > "$RUN_DIR/evidence/tools-list.json"`. Exit 0. The JSON `tools` array includes `get-myself`. It includes `list-access-policies` only if the token's user is an account owner.
 - **Read call.** Run `npx mcp-inspector --cli http://127.0.0.1:8789/mcp --transport http --method tools/call --tool-name get-myself > "$RUN_DIR/evidence/get-myself.json"`. The result has `isError: false`, and the text contains the user's email and workspaces.
@@ -31,9 +36,19 @@ Preconditions:
 - **SSE transport.** Run `npx mcp-inspector --cli http://127.0.0.1:8789/sse --transport sse --method tools/list`. It returns the same tool names as `/mcp`.
 - **Proof.** Keep the saved JSON files, plus `worker.log` lines showing `Vantage API request` for each Core call.
 
+For authentication routing, start a separate **oauth-mode** run and pass doctor before driving it; token mode bypasses this router. Run `npx tsx "$S/auth-routing.ts" "$RUN_DIR"`. It checks both transports with missing, unknown, legacy, blank delegation, bearer, and mixed credentials, plus OAuth endpoints and path boundaries. A present Authorization header, including an empty or whitespace value, must be rejected if invalid; only an absent header permits delegation. Runtime stripping of an empty wire header is an unmet end-to-end requirement, not a passing normalization policy. Preserve the failure and inspect the header at the earliest Worker entry point before proposing a router change.
+
+Use an MCP client configured with only `X-Vantage-Agent-Delegation` to initialize, list tools, and call `get-myself` and `list-workspaces` on both transports. A valid delegation token must resolve the intended Core user. A deliberately invalid delegation token can verify the Core error path, but cannot prove successful delegation authentication or header allowlisting. The allowlist also needs the router tests or receiver-side evidence. Record the client request, result, commit, and credential source without recording the credential. Full OAuth-issued-token calls remain a staging check.
+
+The smoke helper supports `--auth invalid-delegation --expect core-error` without a credential, or `--auth delegation --delegation-token-file <private-file>` for a real delegation token. For OAuth, use `--auth oauth --oauth-token-file <private-json> --transports http` (or `sse`) with a resource-scoped grant. Credential files belong under the working verification folder's `state/`, with permissions 600. Tokens may also come from the documented environment variables; see `--help`.
+
+For real staging delegation without manually minting a token, follow the approved deploy and restore steps in [OAuth full login](oauth-staging-full-flow.md), then open `https://console-staging.vantage.sh/agent` as the user. Start a new conversation asking for a read-only authentication check using `get-myself` and `list-workspaces`. Expand both completed tool cards and save their actual results, not just the agent's summary. Correlate the test window with Datadog `env:staging service:scout-agents` tool spans and HTTP client spans whose `server.address` is `hosted-mcp-staging.vantage.sh`. Confirm the test commit is still deployed. Compare the returned workspace/account context with the signed-in staging user. This verifies the agent's configured `/mcp` path; it does not prove delegation through `/sse` or receiver-side header values. Successful delegation over deprecated `/sse` is optional when the only delegation client is the Vantage agent using `/mcp`; record that scope decision rather than treating it as a required missing check.
+
 ## Gotchas
 
 - Only point mutations at a local Core you can reset. Token mode calls whichever Core `VERIFY_API_HOST` names.
+- Folder deletion requires local Core's Temporal server and worker. If reads and creation work but delete returns 500, check Core's log for `GRPC::Unavailable` at `127.0.0.1:7233`. Bring up the local dependency before retrying; capture the original error, confirm `get-folder` reports not found, and let `ObjectDestroyWorkflow` complete before stopping any temporary worker. Stop only services started for this run.
 - The owner check runs on every Durable Object session start. A failed `/v2/me` hides the Access Policy tools rather than erroring, so their absence alone does not prove Core rejected the token.
-- The Inspector CLI does not print server notifications, so it cannot observe the SSE deprecation warning. Use the Inspector UI over **SSE** and watch the notifications pane, or the unit tests in `test/sse-deprecation.test.ts`.
+- The Inspector CLI does not print server notifications. Use the SDK smoke helper, or Inspector UI over **SSE**, to observe the deprecation warning.
+- An empty Authorization header sent over local HTTP can be removed before the router receives the request. On the local Worker tested at `7c252e3`, curl sent `Authorization:` but a debugger observation at the router showed `headers.has("Authorization") === false`. Report this separately from nonempty invalid-header rejection; the in-memory empty-header unit test does not prove that the wire header survives the runtime.
 - Tool counts change whenever tools are added. Assert on specific names, not on a count.
