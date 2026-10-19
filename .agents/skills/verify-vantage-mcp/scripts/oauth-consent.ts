@@ -99,16 +99,15 @@ async function main(): Promise<number> {
   });
   check("challenge-401", challenge.status === 401, `status ${challenge.status}`);
   const wwwAuthenticate = String(challenge.headers["www-authenticate"] ?? "");
-  check("challenge-www-authenticate", /^Bearer/i.test(wwwAuthenticate), wwwAuthenticate || "missing");
+  const advertised = /resource_metadata="([^"]+)"/.exec(wwwAuthenticate)?.[1];
+  check("challenge-www-authenticate", /^Bearer/i.test(wwwAuthenticate) && advertised, wwwAuthenticate || "missing");
 
   // 2. Discovery.
-  const advertised = /resource_metadata="([^"]+)"/.exec(wwwAuthenticate)?.[1];
-  const prmUrl = advertised ?? `${base}/.well-known/oauth-protected-resource`;
-  const prm = await exchange("protected-resource-metadata", prmUrl);
+  const prm = advertised ? await exchange("protected-resource-metadata", advertised) : undefined;
   check(
     "protected-resource-metadata",
-    prm.status === 200 && parseJson<{ resource?: string }>(prm.text)?.resource,
-    `${prmUrl} -> ${prm.status}`
+    prm?.status === 200 && parseJson<{ resource?: string }>(prm.text)?.resource,
+    advertised ? `${advertised} -> ${prm?.status}` : "missing resource_metadata in challenge; discovery not attempted"
   );
 
   const asm = await exchange("authorization-server-metadata", `${base}/.well-known/oauth-authorization-server`);
@@ -226,7 +225,7 @@ async function main(): Promise<number> {
   );
   check(
     "authorize-rejects-unknown-client",
-    unknown.status >= 400 && !has(unknown.text, "Allow Access"),
+    unknown.status >= 400 && unknown.status < 500 && !has(unknown.text, "Allow Access"),
     `status ${unknown.status}`
   );
 

@@ -11,7 +11,7 @@ Working notes for agents in this repo. The README covers setup and deployment; t
 | Adding or changing a tool | `.agents/skills/writing-mcp-tools/SKILL.md` |
 | Adding or changing an eval | `.agents/skills/writing-evals/SKILL.md` |
 | Adding or changing MCP resources (VQL docs) | `src/resources/README.md` |
-| Proving auth, transport, or tool behavior end to end | `.agents/skills/verify-vantage-mcp/SKILL.md` |
+| Engineer explicitly invokes `$verify-vantage-mcp` for end-to-end verification | `.agents/skills/verify-vantage-mcp/SKILL.md` (opt-in only) |
 | Setup, client config, worker deployment | `README.md` |
 
 **New tools** must ship with a matching unit test under `test/` (`testTool`). Evals are opt-in: ask whether the user wants them included and, if so, whether the provider API key they intend to use is configured in the ignored `.env` file. Use the writing-evals skill only after the user opts in. Existing tools mostly predate evals — do not backfill or update evals unless asked. Opting in to eval authoring does not authorize a model-backed run; execution requires explicit approval and confirmation that the required API key is configured.

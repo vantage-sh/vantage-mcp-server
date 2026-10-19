@@ -1,17 +1,18 @@
 ---
 name: verify-vantage-mcp
-description: Drive the Vantage MCP server the way an MCP client does and capture proof — the hosted Cloudflare Worker over Streamable HTTP (OAuth discovery, client registration, consent screen, tool calls), local stdio, and the full OAuth login on staging through MCP Inspector. Use when proving a change to auth, transport, or tool behavior works end to end, or when a PR needs verification evidence beyond unit tests.
+description: Verify Vantage MCP auth, transport, and tool behavior end to end across the hosted Worker, local stdio, and staging OAuth login, and capture client-visible evidence.
+disable-model-invocation: true
 ---
 
 # Verify the Vantage MCP server
 
 The server has three surfaces a user touches:
 
-| Surface | Entry point | Who uses it |
-| --- | --- | --- |
+| Surface                        | Entry point                                                                                              | Who uses it                                                                   |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
 | Hosted Worker, Streamable HTTP | `/mcp` (legacy `/sse`) on `wrangler dev` locally, `https://hosted-mcp-staging.vantage.sh/mcp` on staging | Claude, Cursor, ChatGPT, Inspector over OAuth; agents over delegation headers |
-| Hosted Worker, OAuth endpoints | `/.well-known/*`, `/register`, `/authorize`, `/token`, `/callback` | Every OAuth MCP client before its first tool call |
-| Local stdio | `npm run local` (`src/local.ts`) | Self-hosted users with a Vantage API token |
+| Hosted Worker, OAuth endpoints | `/.well-known/*`, `/register`, `/authorize`, `/token`, `/callback`                                       | Every OAuth MCP client before its first tool call                             |
+| Local stdio                    | `npm run local` (`src/local.ts`)                                                                         | Self-hosted users with a Vantage API token                                    |
 
 Locally the Worker runs in one of two modes, and a run picks exactly one:
 
@@ -84,10 +85,10 @@ Cleanup stops only the process group this run started (Wrangler plus its `worker
 
 ## Helpers
 
-| Script | Invocation |
-| --- | --- |
-| `scripts/verify.sh` | `launch <oauth\|token> [port]`, `doctor <run-dir>`, `cleanup <run-dir>`, `list` |
-| `scripts/oauth-consent.ts` | `npx tsx scripts/oauth-consent.ts <run-dir>`; exits 1 if any check fails |
+| Script                     | Invocation                                                                      |
+| -------------------------- | ------------------------------------------------------------------------------- |
+| `scripts/verify.sh`        | `launch <oauth\|token> [port]`, `doctor <run-dir>`, `cleanup <run-dir>`, `list` |
+| `scripts/oauth-consent.ts` | `npx tsx scripts/oauth-consent.ts <run-dir>`; exits 1 if any check fails        |
 
 ## Keeping this current
 
