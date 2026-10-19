@@ -13,7 +13,6 @@ import type {
 } from "@vantage-sh/vantage-client";
 import { McpAgent } from "agents/mcp";
 import { Hono } from "hono";
-import { withLogTags } from "workers-tagged-logger";
 import { authorize, callback, confirmConsent, tokenExchangeCallback, type UserProps } from "./auth";
 import {
   claimsUnrecognisedBrand,
@@ -22,31 +21,20 @@ import {
   validateClientRegistration,
 } from "./auth/client-policy";
 import { createAuthRouter } from "./auth/request-router";
+import { callCoreApi, coreApiHeaders } from "./core-api";
 import type { AppEnv } from "./env";
 import homepage from "./homepage";
 import { logger } from "./logger";
+import { withStatelessMcp } from "./mcp/stateless";
 import setupRegisteredResources from "./resources";
-import { callApi, serverMeta } from "./shared";
+import { serverMeta } from "./shared";
 import { createHostedMcpServer } from "./sse-deprecation";
 import { hideAccessPolicyToolsFromNonOwners } from "./tools/access-policies/gating";
 import { setupRegisteredTools } from "./tools/structure/registerTool";
-import { datadogTraceLogTags, formatErrorsForTelemetry, tracer } from "./tracing";
+import { tracer } from "./tracing";
 
 // Side effect import to register all tools
 import "./tools";
-
-function tokenFromProps(props: UserProps, env?: AppEnv): string {
-  // Check if VANTAGE_MCP_TOKEN is provided in environment
-  if (env?.VANTAGE_MCP_TOKEN) {
-    return env.VANTAGE_MCP_TOKEN;
-  }
-
-  const token = props?.tokenSet?.accessToken;
-  if (!token) {
-    throw new Error("Access token is not available in given props.");
-  }
-  return token;
-}
 
 export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> {
   // Created in init(), before McpAgent connects the transport.
@@ -69,67 +57,19 @@ export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> 
     method: M,
     signal?: AbortSignal
   ): Promise<{ data: Response; ok: true } | { errors: unknown[]; ok: false }> {
-    return withLogTags({}, async () => {
-      const clientVersion = this.server.server.getClientVersion();
-      if (clientVersion) {
-        logger.setTags({
-          mcp_client_name: clientVersion.name,
-          mcp_client_version: clientVersion.version,
-        });
-      }
-
-      logger.setTags({
-        endpoint: endpoint as string,
-        method: method as string,
-        ...datadogTraceLogTags(tracer.getActiveTraceContext()),
-      });
-
-      const vantageHeaders =
-        (this.props as UserProps & { vantageHeaders?: Record<string, string> })?.vantageHeaders || {};
-
-      // Try to get token, but don't fail if not available (when using vantage headers only)
-      let token: string | null = null;
-      try {
-        token = tokenFromProps(this.props!, this.env);
-      } catch (_error) {
-        // If no token is available, we'll rely on vantage headers for authentication
-        if (Object.keys(vantageHeaders).length === 0) {
-          throw new Error("No authentication method available - missing both token and vantage headers");
-        }
-      }
-
-      const headers: Record<string, string> = {
-        ...vantageHeaders,
-      };
-
-      if (token) {
-        headers.Authorization = `Bearer ${token}`;
-      }
-
-      const result = await callApi<P, M, Request, Response>(
-        this.env.VANTAGE_API_HOST,
-        headers,
-        params,
-        method,
-        endpoint,
-        this.env,
-        signal
-      );
-
-      logger.setTags({
-        ok: result.ok,
-        ...datadogTraceLogTags(tracer.getActiveTraceContext()),
-      });
-
-      if (!result.ok) {
-        logger.setTags({ api_errors: formatErrorsForTelemetry(result.errors) });
-        logger.error("Vantage API request failed");
-      } else {
-        logger.info("Vantage API request");
-      }
-
-      return result;
-    });
+    const headers = coreApiHeaders(this.props, this.env);
+    if (!headers) {
+      throw new Error("No authentication method available - missing both token and vantage headers");
+    }
+    return callCoreApi<P, M, Request, Response>(
+      this.env,
+      headers,
+      this.server.server.getClientVersion(),
+      endpoint,
+      params,
+      method,
+      signal
+    );
   }
 
   async init() {
@@ -165,7 +105,7 @@ type ApiHandler = {
   fetch(request: Request, env: AppEnv, ctx: ExecutionContext): Response | Promise<Response>;
 };
 
-const mcpHandler = VantageMCP.serve("/mcp") as unknown as ApiHandler;
+const mcpHandler = withStatelessMcp(VantageMCP.serve("/mcp") as unknown as ApiHandler);
 const sseHandler = VantageMCP.mount("/sse") as unknown as ApiHandler;
 
 function createMcpServer(env: AppEnv): OAuthProvider<AppEnv> {
@@ -244,10 +184,7 @@ const fetchHandler = async (request: Request, env: AppEnv, ctx: ExecutionContext
   const sse = new URL(tracedRequest.url).pathname.startsWith("/sse");
   if (env.VANTAGE_MCP_TOKEN) {
     // Preserve the local development override, which bypasses OAuth.
-    if (sse) {
-      return VantageMCP.mount("/sse").fetch(tracedRequest, env, ctx);
-    }
-    return VantageMCP.serve("/mcp").fetch(tracedRequest, env, ctx);
+    return (sse ? sseHandler : mcpHandler).fetch(tracedRequest, env, ctx);
   }
 
   const oauthProvider = createMcpServer(env);
