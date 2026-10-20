@@ -92,6 +92,8 @@ Proof standards:
 - Mocks are acceptable only where a production boundary already isolates the external system. That means the dummy Auth0 locally; Core is real (local Core) in token mode.
 - Report a suite as passing only when its `summary.json` shows `failed: 0`. Preserve failed attempts and explain any corrections or successful retries. A skipped check is reported as skipped with its reason, never as passing through a different path.
 
+When verification exposes a product failure or an API/tool mismatch, follow [AGENTS.md: Surfacing verification findings in chat](../../../AGENTS.md#surfacing-verification-findings-in-chat). Clearly call out the unresolved behavior, its user impact, and the remaining work in the agent chat and final handoff. For example, if the API rejects a free-text widget with grid-only settings that the MCP tool accepts, omitting the grid on retry verifies only the reduced request; it does not establish working grid support. Keep this finding visible even if it is outside the current PR's scope.
+
 Before handing results back, write **`SUMMARY.md` in the working verification folder** as the primary report. Keep an aggregate `verification-summary.json`, when produced, beside it. Per-feature reports remain with their raw evidence and do not replace this combined handoff. Link every local or staging subrun from the working folder's report.
 
 The Markdown summary must be understandable without opening JSON:

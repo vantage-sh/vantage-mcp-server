@@ -46,6 +46,13 @@ These are easy to violate by copying a neighbor. The skills show the full patter
 
 The default TypeScript and Biome checks exclude `.agents/`; validate changed scripts directly and report any runtime verification that was not performed.
 
+### Surfacing verification findings in chat
+
+- When verification reveals a product failure or a mismatch between advertised tool behavior and the real API, clearly surface the unresolved gap in the agent chat when discovered. A note in a local report or PR description is not sufficient, even when the issue predates the current change.
+- Explain the input or action that failed, the observed result, the user-visible impact, and what still needs fixing or verification. Distinguish an incorrect test harness from a product defect.
+- If a workaround changes the request or narrows coverage, state what the successful retry proves and what remains broken or unverified. Passing after removing the failing input does not validate the original behavior.
+- Repeat unresolved product gaps in the final handoff, with a concrete next step. Keep detailed diagnostics in the local report and apply the PR guidance below separately; omitting an unrelated issue from a public PR must not hide it from the user.
+
 ### Writing verification in a PR
 
 - Use short, easy-to-read bullet points. Each behavior bullet should say what was validated, how it was exercised, and what was observed. For example: "Validated moving a Dashboard by moving it between Folders and to root, then reading it back to confirm its location and preserved widgets."
