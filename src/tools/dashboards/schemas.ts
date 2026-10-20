@@ -57,12 +57,14 @@ const widgetContentSchema = z.object({
 });
 
 export const widgetSettingsSchema = z.object({
-  display_type: displayTypeSchema.optional(),
+  display_type: displayTypeSchema.describe(
+    "Required whenever settings is supplied, including free_text widgets. Use chart for free_text widgets, together with grid to set their position and size."
+  ),
   ...widgetSettingsFields,
   grid: widgetGridSchema
     .optional()
     .describe(
-      "Where this widget sits on the dashboard's 12-column grid. This is the only settings field for a free_text widget."
+      "Where this widget sits on the dashboard's 12-column grid. For free_text widgets, also supply display_type: chart."
     ),
 });
 
@@ -96,13 +98,13 @@ export const widgetSchema = z.object({
   settings: widgetSettingsSchema
     .optional()
     .describe(
-      "How the widget is drawn and where it sits. A report widget requires display_type. A free_text widget includes only grid."
+      "How the widget is drawn and where it sits. Requires display_type whenever supplied. For free_text widgets, use display_type: chart and grid for placement. Omit settings to use the default layout."
     ),
 });
 
 type DashboardWidgetInput = z.infer<typeof widgetSchema>;
 
-const reportOnlySettingKeys = ["display_type", "kpi_calculation", "kpi_type", "kpi_usage_unit"] as const;
+const reportOnlySettingKeys = ["kpi_calculation", "kpi_type", "kpi_usage_unit"] as const;
 
 export function validateDashboardWidgets(widgets: DashboardWidgetInput[] | undefined) {
   if (widgets === undefined) {
@@ -122,20 +124,20 @@ export function validateDashboardWidgets(widgets: DashboardWidgetInput[] | undef
           errors: [{ message: `${label} must not include widgetable_token when widgetable_type is free_text.` }],
         });
       }
+      if (widget.settings?.display_type === "kpi") {
+        throw new MCPUserError({
+          errors: [{ message: `${label} cannot use settings.display_type kpi when widgetable_type is free_text.` }],
+        });
+      }
       const reportSettings = reportOnlySettingKeys.filter((key) => widget.settings?.[key] !== undefined);
       if (reportSettings.length > 0) {
         const fields = reportSettings.map((key) => `settings.${key}`).join(", ");
         throw new MCPUserError({
           errors: [
             {
-              message: `${label} must not include ${fields} when widgetable_type is free_text. Set settings.grid to place the widget.`,
+              message: `${label} must not include ${fields} when widgetable_type is free_text. Use settings.display_type chart and settings.grid to place the widget.`,
             },
           ],
-        });
-      }
-      if (widget.settings !== undefined && widget.settings.grid === undefined) {
-        throw new MCPUserError({
-          errors: [{ message: `${label} settings must include grid when widgetable_type is free_text.` }],
         });
       }
       continue;
@@ -149,11 +151,6 @@ export function validateDashboardWidgets(widgets: DashboardWidgetInput[] | undef
     if (widget.content !== undefined) {
       throw new MCPUserError({
         errors: [{ message: `${label} content is only valid when widgetable_type is free_text.` }],
-      });
-    }
-    if (widget.settings !== undefined && widget.settings.display_type === undefined) {
-      throw new MCPUserError({
-        errors: [{ message: `${label} requires settings.display_type.` }],
       });
     }
   }

@@ -25,7 +25,7 @@ export default function generateTests() {
     inferredPrompts: [
       {
         input:
-          "Add an empty Vantage dashboard named Executive Overview to Dashboard Folder fldr_executive in workspace wrkspc_123.",
+          "Add a Vantage dashboard named Executive Overview to Dashboard Folder fldr_executive in workspace wrkspc_123. Add one free-text widget titled Notes saying Weekly context, spanning all 12 columns at x=0, y=0 with height 2.",
         expected: [
           {
             toolName: TARGET,
@@ -33,6 +33,35 @@ export default function generateTests() {
               title: "Executive Overview",
               folder_token: "fldr_executive",
               workspace_token: "wrkspc_123",
+              widgets: [
+                {
+                  widgetable_type: "free_text",
+                  title: "Notes",
+                  content: {
+                    type: "doc",
+                    content: [
+                      {
+                        type: "paragraph",
+                        content: [
+                          {
+                            type: "text",
+                            text: "Weekly context",
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  settings: {
+                    display_type: "chart",
+                    grid: {
+                      x: 0,
+                      y: 0,
+                      w: 12,
+                      h: 2,
+                    },
+                  },
+                },
+              ],
             },
           },
         ],

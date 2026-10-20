@@ -1,4 +1,3 @@
-import type { CreateDashboardRequest } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/dashboards/create-dashboard";
 import {
@@ -136,6 +135,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
             content: [{ type: "paragraph", text: "Context for this dashboard." }],
           },
           settings: {
+            display_type: "chart",
             grid: { x: 6, y: 4, w: 6, h: 2 },
           },
         },
@@ -177,6 +177,16 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   },
 ];
 
+const freeTextGridWidget = {
+  widgetable_type: "free_text" as const,
+  title: "Notes",
+  content: {
+    type: "doc" as const,
+    content: [{ type: "paragraph", content: [{ type: "text", text: "Dashboard notes" }] }],
+  },
+  settings: { display_type: "chart" as const, grid: { x: 0, y: 1, w: 12, h: 2 } },
+};
+
 const successData = {
   token: "dshbrd_123",
   title: "New Dashboard",
@@ -190,13 +200,18 @@ const successData = {
   updated_at: "2023-01-15T10:30:00Z",
 };
 
+const freeTextGridResponse = {
+  ...successData,
+  widgets: [{ token: "dshbrd_wdgt_123", ...freeTextGridWidget }],
+};
+
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   {
     name: "successful call",
     apiCallHandler: requestsInOrder([
       {
         endpoint: "/v2/dashboards",
-        params: validInputArguments as CreateDashboardRequest,
+        params: validInputArguments,
         method: "POST",
         result: {
           ok: true,
@@ -214,7 +229,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     apiCallHandler: requestsInOrder([
       {
         endpoint: "/v2/dashboards",
-        params: minimalValidInputArguments as CreateDashboardRequest,
+        params: minimalValidInputArguments,
         method: "POST",
         result: {
           ok: false,
@@ -256,45 +271,22 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     },
   },
   {
-    name: "free text widget grid omits display type",
+    name: "free text widget grid includes the API-required display type",
     apiCallHandler: requestsInOrder([
       {
         endpoint: "/v2/dashboards",
-        params: {
-          ...minimalValidInputArguments,
-          widgets: [
-            {
-              widgetable_type: "free_text",
-              title: "Notes",
-              content: { type: "doc" },
-              settings: { grid: { x: 0, y: 1, w: 12, h: 2 } },
-            },
-          ],
-        } as CreateDashboardRequest,
+        params: { ...minimalValidInputArguments, widgets: [freeTextGridWidget] },
         method: "POST",
-        result: {
-          ok: true,
-          data: successData,
-        },
+        result: { ok: true, data: freeTextGridResponse },
       },
     ]),
     handler: async ({ callExpectingSuccess }) => {
-      const res = await callExpectingSuccess({
-        ...minimalValidInputArguments,
-        widgets: [
-          {
-            widgetable_type: "free_text",
-            title: "Notes",
-            content: { type: "doc" },
-            settings: { grid: { x: 0, y: 1, w: 12, h: 2 } },
-          },
-        ],
-      });
-      expect(res).toEqual(successData);
+      const res = await callExpectingSuccess({ ...minimalValidInputArguments, widgets: [freeTextGridWidget] });
+      expect(res).toEqual(freeTextGridResponse);
     },
   },
   {
-    name: "free text widget rejects display settings",
+    name: "free text widget rejects KPI display type",
     apiCallHandler: requestsInOrder([]),
     handler: async ({ callExpectingMCPUserError }) => {
       const err = await callExpectingMCPUserError({
@@ -304,7 +296,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
             widgetable_type: "free_text",
             content: { type: "doc" },
             settings: {
-              display_type: "chart",
+              display_type: "kpi",
               grid: { x: 0, y: 0, w: 6, h: 2 },
             },
           },
@@ -313,28 +305,9 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       expect(err.exception).toEqual({
         errors: [
           {
-            message:
-              "widgets[0] must not include settings.display_type when widgetable_type is free_text. Set settings.grid to place the widget.",
+            message: "widgets[0] cannot use settings.display_type kpi when widgetable_type is free_text.",
           },
         ],
-      });
-    },
-  },
-  {
-    name: "report widget settings require display_type",
-    apiCallHandler: requestsInOrder([]),
-    handler: async ({ callExpectingMCPUserError }) => {
-      const err = await callExpectingMCPUserError({
-        ...minimalValidInputArguments,
-        widgets: [
-          {
-            widgetable_token: "rprt_123",
-            settings: { grid: { x: 0, y: 0, w: 4, h: 3 } },
-          },
-        ],
-      });
-      expect(err.exception).toEqual({
-        errors: [{ message: "widgets[0] requires settings.display_type." }],
       });
     },
   },
@@ -381,5 +354,36 @@ executionTests.push({
     expect(error.exception).toEqual({ errors: [{ message: "Dashboard Folder fldr_dashboard not found." }] });
   },
 });
+
+for (const widget of [
+  { widgetable_type: "free_text" as const, content: { type: "doc" as const } },
+  { widgetable_token: "rprt_123" },
+]) {
+  argumentSchemaTests.push({
+    name: `rejects missing display_type for ${"widgetable_type" in widget ? "free text" : "report"} settings`,
+    data: {
+      ...minimalValidInputArguments,
+      widgets: [{ ...widget, settings: { grid: { x: 0, y: 0, w: 6, h: 2 } } as any }],
+    },
+    expectedIssues: ['Invalid option: expected one of "table"|"chart"|"kpi"'],
+  });
+}
+
+argumentSchemaTests.push(
+  {
+    name: "free text widget without settings uses default layout",
+    data: {
+      ...minimalValidInputArguments,
+      widgets: [{ widgetable_type: "free_text", content: { type: "doc" } }],
+    },
+  },
+  {
+    name: "free text settings can omit grid when display_type is supplied",
+    data: {
+      ...minimalValidInputArguments,
+      widgets: [{ widgetable_type: "free_text", content: { type: "doc" }, settings: { display_type: "chart" } }],
+    },
+  }
+);
 
 testTool(tool, argumentSchemaTests, executionTests);

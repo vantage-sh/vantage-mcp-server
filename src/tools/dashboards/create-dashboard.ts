@@ -1,4 +1,3 @@
-import type { CreateDashboardRequest } from "@vantage-sh/vantage-client";
 import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
@@ -45,8 +44,7 @@ export default registerTool({
   },
   async execute(args, ctx) {
     validateDashboardWidgets(args.widgets);
-    // Free-text widgets send settings.grid without display_type. The generated client still requires display_type.
-    const response = await ctx.callVantageApi("/v2/dashboards", args as CreateDashboardRequest, "POST");
+    const response = await ctx.callVantageApi("/v2/dashboards", args, "POST");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }
