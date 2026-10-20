@@ -37,6 +37,16 @@ others do not.
 
 Clients that support remote MCP natively can connect directly to that URL. For clients that only support stdio, use the `mcp-remote` bridge (see [Visual Studio Code](#visual-studio-code) below).
 
+**API token auth:** Clients and scripts can authenticate to the hosted endpoint without OAuth by sending a
+[Vantage API token](https://docs.vantage.sh/vantage_account#create-an-api-token), including a service token:
+
+```http
+Authorization: Bearer <your_vantage_api_token>
+```
+
+The token needs `read` scope to connect. Tool calls retain the token's existing scopes and resource permissions;
+mutations also require the corresponding write permissions.
+
 ### Claude Code
 
 ```bash
