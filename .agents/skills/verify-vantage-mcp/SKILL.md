@@ -16,7 +16,7 @@ The server has three surfaces a user touches:
 
 Locally the Worker runs in one of two modes, and a run picks exactly one:
 
-- **oauth** — `VANTAGE_MCP_TOKEN` is blank, so bearer requests use the OAuth provider, including direct API/service-token validation through `resolveExternalToken`. Delegation-only MCP requests use the pre-router described in [hosted tool calls](features/hosted-tool-calls.md). Development Auth0 settings are `local-dummy`, so browser login works up to the consent screen and stops at **Allow Access**.
+- **oauth** — `VANTAGE_MCP_TOKEN` is blank, so bearer requests use the OAuth provider, including direct API/service-token passthrough through `resolveExternalToken`; Core validates these credentials on tool calls. Delegation-only MCP requests use the pre-router described in [hosted tool calls](features/hosted-tool-calls.md). Development Auth0 settings are `local-dummy`, so browser login works up to the consent screen and stops at **Allow Access**.
 - **token** — `VANTAGE_MCP_TOKEN` is set, so `/mcp` and `/sse` skip OAuth and call Core with that token. OAuth endpoints are not served in this mode.
 
 The full OAuth login (Auth0, `/callback`, `/token`, refresh) only works on staging. See [features/oauth-staging-full-flow.md](features/oauth-staging-full-flow.md).
@@ -121,7 +121,7 @@ Repeat cleanup for every local subrun. Staging has no local process group; resto
 | -------------------------- | ------------------------------------------------------------------------------- |
 | `scripts/verify.sh`        | `launch <oauth\|token> [port]`, `doctor <run-dir>`, `cleanup <run-dir>`, `list` |
 | `scripts/oauth-consent.ts` | `npx tsx scripts/oauth-consent.ts <run-dir>`; exits 1 if any check fails        |
-| `scripts/auth-routing.ts` | `npx tsx scripts/auth-routing.ts <run-dir>`; any present invalid Authorization must be rejected |
+| `scripts/auth-routing.ts` | `npx tsx scripts/auth-routing.ts <run-dir>`; malformed/unknown Authorization is rejected; Vantage-shaped tokens reach Core on tool calls |
 | `scripts/mcp-smoke.ts` | `npx tsx scripts/mcp-smoke.ts <run-dir> [options]`; see `--help` |
 | `scripts/oauth-refresh.ts` | `npx tsx scripts/oauth-refresh.ts <run-dir> --credentials-file <private-json> [--resource-path /mcp\|/sse]` |
 

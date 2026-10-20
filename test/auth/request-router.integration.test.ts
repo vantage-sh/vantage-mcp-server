@@ -68,47 +68,42 @@ describe("OAuth provider behind the authentication router", () => {
     expect(sse).not.toHaveBeenCalled();
   });
 
-  it.each(["/mcp", "/sse", "/sse/message"])("accepts a validated service token on %s", async (path) => {
-    const core = vi.fn(async () => Response.json({ bearer_token: { scope: ["read"] }, workspaces: [] }));
+  it.each(["/mcp", "/sse", "/sse/message"])(
+    "passes service-token credentials to the handler without a validation fetch on %s",
+    async (path) => {
+      const core = vi.fn(async () => Response.json({ bearer_token: { scope: ["read"] }, workspaces: [] }));
+      vi.stubGlobal("fetch", core);
+      const { fetch, mcp, sse } = makeProvider();
+      const response = await fetch(path, {
+        Authorization: "Bearer vntg_tkn_service",
+        "X-Vantage-Agent-Delegation": "must-not-forward",
+        "X-Vantage-Scout-Token": "must-not-forward",
+      });
+
+      expect(response.status).toBe(200);
+      expect(core).not.toHaveBeenCalled();
+      const handler = path === "/mcp" ? mcp : sse;
+      const ctx = (handler.mock.calls[0] as unknown as [Request, object, ExecutionContext])[2];
+      expect(ctx).toHaveProperty("props.tokenSet.accessToken", "vntg_tkn_service");
+      expect(ctx).not.toHaveProperty("props.vantageHeaders");
+      expect(ctx).not.toHaveProperty("props.claims");
+    }
+  );
+
+  it.each(["/mcp", "/sse"])("leaves invalid Vantage tokens for Core to reject on tool calls on %s", async (path) => {
+    const core = vi.fn();
     vi.stubGlobal("fetch", core);
     const { fetch, mcp, sse } = makeProvider();
     const response = await fetch(path, {
-      Authorization: "Bearer vntg_tkn_service",
+      Authorization: "Bearer vntg_tkn_invalid",
       "X-Vantage-Agent-Delegation": "must-not-forward",
-      "X-Vantage-Scout-Token": "must-not-forward",
     });
-
     expect(response.status).toBe(200);
-    expect(core).toHaveBeenCalledOnce();
-    const [url, init] = core.mock.calls[0] as unknown as [URL, RequestInit];
-    expect(url.href).toBe("https://core.example/v2/me");
-    expect(new Headers(init.headers).get("Authorization")).toBe("Bearer vntg_tkn_service");
-    expect(new Headers(init.headers).get("X-Vantage-Agent-Delegation")).toBeNull();
-    expect(new Headers(init.headers).get("X-Vantage-Scout-Token")).toBeNull();
-    expect(new Headers(init.headers).get("User-Agent")).toMatch(/^vantage-mcp-server\//);
-    expect(init.redirect).toBe("manual");
+    expect(core).not.toHaveBeenCalled();
     const handler = path === "/mcp" ? mcp : sse;
     const ctx = (handler.mock.calls[0] as unknown as [Request, object, ExecutionContext])[2];
-    expect(ctx).toHaveProperty("props.tokenSet.accessToken", "vntg_tkn_service");
+    expect(ctx).toHaveProperty("props.tokenSet.accessToken", "vntg_tkn_invalid");
     expect(ctx).not.toHaveProperty("props.vantageHeaders");
-    expect(ctx).not.toHaveProperty("props.claims");
-  });
-
-  it.each(["/mcp", "/sse"])("rejects an invalid Vantage token on %s without delegation fallback", async (path) => {
-    const core = vi.fn(async () => Response.json({ errors: ["private Core detail"] }, { status: 401 }));
-    vi.stubGlobal("fetch", core);
-    const { fetch, mcp, sse } = makeProvider();
-    const response = await fetch(path, {
-      Authorization: "Bearer vntg_tkn_example",
-      "X-Vantage-Agent-Delegation": "delegation",
-    });
-
-    expect(response.status).toBe(401);
-    expect(await response.json()).toMatchObject({ error: "invalid_token" });
-    expect(response.headers.get("WWW-Authenticate")).toContain('error="invalid_token"');
-    expect(core).toHaveBeenCalledOnce();
-    expect(mcp).not.toHaveBeenCalled();
-    expect(sse).not.toHaveBeenCalled();
   });
 
   it.each(["not-a-vantage-token", "user:grant:unknown", "vntg_tkn_two words", "vntg_"])(
@@ -123,58 +118,19 @@ describe("OAuth provider behind the authentication router", () => {
     }
   );
 
-  it("keeps Core validation failures structured and private", async () => {
+  it("keeps credentials isolated across requests without making validation requests", async () => {
     const core = vi.fn();
-    vi.stubGlobal("fetch", core);
-    for (const [status, code, expected] of [
-      [403, "insufficient_scope", 403],
-      [429, "temporarily_unavailable", 503],
-      [500, "temporarily_unavailable", 503],
-      [302, "temporarily_unavailable", 503],
-    ] as const) {
-      core.mockResolvedValueOnce(new Response("private Core detail", { status, headers: { "Retry-After": "30" } }));
-      const { fetch, mcp } = makeProvider();
-      const response = await fetch("/mcp", { Authorization: "Bearer vntg_tkn_example" });
-      expect(response.status).toBe(expected);
-      const body = await response.text();
-      expect(JSON.parse(body)).toMatchObject({ error: code });
-      expect(body).not.toMatch(/private Core detail|vntg_tkn_example/);
-      if (status === 403) expect(response.headers.get("WWW-Authenticate")).toContain('scope="read"');
-      else expect(response.headers.get("Retry-After")).toBe("30");
-      expect(mcp).not.toHaveBeenCalled();
-    }
-  });
-
-  it("returns a retryable error when Core cannot be reached", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("private network detail")));
-    const { fetch, mcp } = makeProvider();
-    const response = await fetch("/mcp", { Authorization: "Bearer vntg_tkn_example" });
-    expect(response.status).toBe(503);
-    expect(await response.json()).toEqual({
-      error: "temporarily_unavailable",
-      error_description: "Vantage token validation is temporarily unavailable",
-    });
-    expect(mcp).not.toHaveBeenCalled();
-  });
-
-  it("revalidates tokens on every request and keeps separate credentials isolated", async () => {
-    const core = vi
-      .fn()
-      .mockResolvedValueOnce(new Response())
-      .mockResolvedValueOnce(new Response())
-      .mockResolvedValueOnce(new Response(null, { status: 401 }));
     vi.stubGlobal("fetch", core);
     const { fetch, mcp } = makeProvider();
     expect((await fetch("/mcp", { Authorization: "Bearer vntg_tkn_first" })).status).toBe(200);
     expect((await fetch("/mcp", { Authorization: "Bearer vntg_tkn_second" })).status).toBe(200);
-    expect((await fetch("/mcp", { Authorization: "Bearer vntg_tkn_first" })).status).toBe(401);
-    expect(core).toHaveBeenCalledTimes(3);
+    expect(core).not.toHaveBeenCalled();
     const contexts = mcp.mock.calls.map((call) => (call as unknown as [Request, object, ExecutionContext])[2]);
     expect(contexts[0]).toHaveProperty("props.tokenSet.accessToken", "vntg_tkn_first");
     expect(contexts[1]).toHaveProperty("props.tokenSet.accessToken", "vntg_tkn_second");
   });
 
-  it("binds validated opaque tokens to the requested MCP resource for canonical metadata", async () => {
+  it("binds opaque token passthrough to the requested MCP resource for canonical metadata", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn(async () => new Response())
@@ -187,7 +143,7 @@ describe("OAuth provider behind the authentication router", () => {
     expect(sse).not.toHaveBeenCalled();
   });
 
-  it("does not validate API tokens on discovery, authorization or registration routes", async () => {
+  it("keeps bearer requests to discovery, authorization and registration with the OAuth endpoints", async () => {
     const core = vi.fn();
     vi.stubGlobal("fetch", core);
     const { fetch } = makeProvider();

@@ -31,7 +31,7 @@ describe("hosted Worker authentication wiring", () => {
   afterEach(() => vi.unstubAllGlobals());
 
   it.each(["/mcp", "/sse"])(
-    "passes a Core-validated API token through the deployed provider configuration on %s",
+    "passes API-token credentials through the deployed provider without a validation fetch on %s",
     async (path) => {
       const core = vi.fn(async () => Response.json({ bearer_token: { scope: ["read"] }, workspaces: [] }));
       vi.stubGlobal("fetch", core);
@@ -52,7 +52,7 @@ describe("hosted Worker authentication wiring", () => {
 
       expect(response.status).toBe(200);
       expect(await response.json()).toEqual({ tokenSet: { accessToken: "vntg_tkn_service" } });
-      expect(core).toHaveBeenCalledOnce();
+      expect(core).not.toHaveBeenCalled();
     }
   );
 });

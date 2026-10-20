@@ -41,7 +41,6 @@ Use one transport per OAuth invocation, with a token scoped to that resource.`);
   if (auth === "oauth" && (transports.length !== 1 || transports.includes("stdio")))
     throw new Error("Select one OAuth resource transport");
   if (auth !== "dev" && transports.includes("stdio")) throw new Error("Stdio uses the Core token; select --auth dev");
-  if (auth === "bearer" && expect !== "success") throw new Error("Invalid bearer tokens fail before MCP connects");
   const run = readRun(positionals[0]);
   if (auth === "dev" && transports.some((name) => name !== "stdio") && run.mode !== "token") {
     throw new Error("--auth dev hosted calls require a token-mode run");

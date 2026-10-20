@@ -44,8 +44,9 @@ Clients that support remote MCP natively can connect directly to that URL. For c
 Authorization: Bearer <your_vantage_api_token>
 ```
 
-The token needs `read` scope to connect. Tool calls retain the token's existing scopes and resource permissions;
-mutations also require the corresponding write permissions.
+Core validates the token and its permissions on each tool call. Reads require `read` scope; mutations require
+the corresponding write permissions. An invalid or revoked token can initialize MCP, but its tool calls return
+Core's authorization error.
 
 ### Claude Code
 
