@@ -14,6 +14,7 @@ type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const validArguments: InferValidators<Validators> = {
+  folder_token: undefined,
   page: 1,
   q: "AWS Cost",
   workspace_token: "wrkspc_123",
@@ -23,6 +24,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "default page",
     data: {
+      folder_token: undefined,
       page: undefined,
       q: undefined,
       workspace_token: undefined,
@@ -45,6 +47,7 @@ const successData = {
       date_interval: "this_month" as const,
       created_at: "2023-01-15T10:30:00Z",
       updated_at: "2023-01-15T10:30:00Z",
+      folder_token: null,
       workspace_token: "wrkspc_123",
     },
     {
@@ -56,6 +59,7 @@ const successData = {
       date_interval: "this_month" as const,
       created_at: "2023-01-15T10:30:00Z",
       updated_at: "2023-01-15T10:30:00Z",
+      folder_token: "fldr_dashboard",
       workspace_token: "wrkspc_123",
     },
   ],
@@ -118,5 +122,36 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     },
   },
 ];
+
+argumentSchemaTests.push(
+  { name: "Dashboard Folder filter", data: { ...validArguments, folder_token: "fldr_dashboard" } },
+  {
+    name: "rejects a non-folder filter token",
+    data: { ...validArguments, folder_token: "dshbrd_123" },
+    expectedIssues: ["Must be a Folder token (fldr_*)"],
+  }
+);
+
+for (const folder_token of ["fldr_dashboard", "fldr_missing", "fldr_cost"]) {
+  const args = { ...validArguments, q: "Azure", folder_token };
+  const dashboards = folder_token === "fldr_dashboard" ? [successData.dashboards[1]] : [];
+  executionTests.push({
+    name: `filters by ${folder_token} with title and Workspace`,
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/dashboards",
+        params: { ...args, limit: 64 },
+        method: "GET",
+        result: { ok: true, data: { dashboards, links: {} } },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      expect(await callExpectingSuccess(args)).toEqual({
+        dashboards,
+        pagination: { hasNextPage: false, nextPage: 0 },
+      });
+    },
+  });
+}
 
 testTool(tool, argumentSchemaTests, executionTests);

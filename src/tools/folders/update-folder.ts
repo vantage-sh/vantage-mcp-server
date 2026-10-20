@@ -5,7 +5,7 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
 const description = `
-Updates a Folder's title, parent, or SavedFilter tokens. Folder type cannot be changed after creation.
+Updates a Cost Report, Dashboard, or Resource Report Folder's title or parent, or a Cost Folder's Saved Filters. Folder type cannot be changed after creation.
 `.trim();
 
 export default registerTool({
@@ -21,12 +21,21 @@ export default registerTool({
     folder_token: vantageToken("folder"),
     title: z.string().optional().describe("Updated title for the Folder"),
     parent_folder_token: vantageToken("folder", {
-      description: "Updated parent Folder for nesting.",
-    }).optional(),
+      description: "Updated parent Folder for nesting. Must have the same type and Workspace as this Folder.",
+    })
+      .or(z.literal(""))
+      .nullable()
+      .optional()
+      .describe(
+        "Updated parent Folder token (fldr_*). Must have the same type and Workspace. Send null or an empty string to move to root; omit to keep the current parent."
+      ),
     saved_filter_tokens: z
       .array(vantageToken("saved_filter"))
+      .nullable()
       .optional()
-      .describe("Updated tokens of SavedFilters to apply to any Cost Report contained within the Folder"),
+      .describe(
+        "Saved Filter tokens for contained Cost Reports; only applies to CostFolder. Send null or an empty array to clear; omit to keep current filters."
+      ),
   },
   async execute(args, ctx) {
     const { folder_token, ...body } = args;

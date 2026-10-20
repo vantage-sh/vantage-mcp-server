@@ -1,3 +1,4 @@
+import type { CreateDashboardRequest } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/dashboards/create-dashboard";
 import {
@@ -16,6 +17,7 @@ type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const undefineds = {
+  folder_token: undefined,
   widgets: undefined,
   saved_filter_tokens: undefined,
   date_bin: undefined,
@@ -178,6 +180,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 const successData = {
   token: "dshbrd_123",
   title: "New Dashboard",
+  folder_token: null,
   workspace_token: "wrkspc_123",
   widgets: [],
   saved_filter_tokens: [],
@@ -193,7 +196,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     apiCallHandler: requestsInOrder([
       {
         endpoint: "/v2/dashboards",
-        params: validInputArguments,
+        params: validInputArguments as CreateDashboardRequest,
         method: "POST",
         result: {
           ok: true,
@@ -211,7 +214,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     apiCallHandler: requestsInOrder([
       {
         endpoint: "/v2/dashboards",
-        params: minimalValidInputArguments,
+        params: minimalValidInputArguments as CreateDashboardRequest,
         method: "POST",
         result: {
           ok: false,
@@ -267,7 +270,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
               settings: { grid: { x: 0, y: 1, w: 12, h: 2 } },
             },
           ],
-        },
+        } as CreateDashboardRequest,
         method: "POST",
         result: {
           ok: true,
@@ -336,5 +339,47 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     },
   },
 ];
+
+for (const folder_token of ["fldr_dashboard", null, "", undefined]) {
+  const args = { ...minimalValidInputArguments, workspace_token: undefined, folder_token };
+  const response = { ...successData, folder_token: folder_token || null };
+  argumentSchemaTests.push({ name: `folder ${String(folder_token)} without Workspace`, data: args });
+  executionTests.push({
+    name: `creates with folder ${String(folder_token)} and an inferred Workspace`,
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/dashboards",
+        params: { title: "My Dashboard", folder_token },
+        method: "POST",
+        result: { ok: true, data: response },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      expect(await callExpectingSuccess(args)).toEqual(response);
+    },
+  });
+}
+
+argumentSchemaTests.push({
+  name: "rejects a non-folder destination token",
+  data: { ...minimalValidInputArguments, folder_token: "rprt_123" },
+  expectedIssues: ["Invalid input"],
+});
+
+executionTests.push({
+  name: "surfaces an inaccessible Dashboard Folder",
+  apiCallHandler: requestsInOrder([
+    {
+      endpoint: "/v2/dashboards",
+      params: { title: "My Dashboard", workspace_token: "wrkspc_123", folder_token: "fldr_dashboard" },
+      method: "POST",
+      result: { ok: false, errors: [{ message: "Dashboard Folder fldr_dashboard not found." }] },
+    },
+  ]),
+  handler: async ({ callExpectingMCPUserError }) => {
+    const error = await callExpectingMCPUserError({ ...minimalValidInputArguments, folder_token: "fldr_dashboard" });
+    expect(error.exception).toEqual({ errors: [{ message: "Dashboard Folder fldr_dashboard not found." }] });
+  },
+});
 
 testTool(tool, argumentSchemaTests, executionTests);

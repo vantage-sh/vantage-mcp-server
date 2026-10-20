@@ -1,4 +1,4 @@
-import { pathEncode, type UpdateDashboardResponse } from "@vantage-sh/vantage-client";
+import { pathEncode, type UpdateDashboardRequest, type UpdateDashboardResponse } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/dashboards/update-dashboard";
 import {
@@ -17,6 +17,7 @@ type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const undefineds = {
+  folder_token: undefined,
   title: undefined,
   widgets: undefined,
   saved_filter_tokens: undefined,
@@ -146,6 +147,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 const successData: UpdateDashboardResponse = {
   token: "dshbrd_123",
   title: "Updated Dashboard",
+  folder_token: null,
   workspace_token: "wrkspc_123",
   widgets: [],
   saved_filter_tokens: ["svd_fltr_123"],
@@ -248,7 +250,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
               settings: { grid: { x: 0, y: 2, w: 6, h: 2 } },
             },
           ],
-        },
+        } as UpdateDashboardRequest,
         method: "PUT",
         result: {
           ok: true,
@@ -271,5 +273,54 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     },
   },
 ];
+
+for (const folder_token of ["fldr_destination", null, "", undefined]) {
+  const args = { ...minimalValidInputArguments, title: "Moved Dashboard", folder_token };
+  const response = {
+    ...successData,
+    title: "Moved Dashboard",
+    folder_token: folder_token === undefined ? "fldr_current" : folder_token || null,
+  };
+  argumentSchemaTests.push({ name: `folder ${String(folder_token)}`, data: args });
+  executionTests.push({
+    name: `updates folder ${String(folder_token)} without replacing widgets`,
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: `/v2/dashboards/${pathEncode("dshbrd_123")}`,
+        params: { title: "Moved Dashboard", folder_token },
+        method: "PUT",
+        result: { ok: true, data: response },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      expect(await callExpectingSuccess(args)).toEqual(response);
+    },
+  });
+}
+
+argumentSchemaTests.push({
+  name: "rejects a non-folder destination token",
+  data: { ...minimalValidInputArguments, folder_token: "wrkspc_123" },
+  expectedIssues: ["Invalid input"],
+});
+
+executionTests.push({
+  name: "surfaces inaccessible or cross-Workspace destination folders",
+  apiCallHandler: requestsInOrder([
+    {
+      endpoint: `/v2/dashboards/${pathEncode("dshbrd_123")}`,
+      params: { folder_token: "fldr_other_workspace" },
+      method: "PUT",
+      result: { ok: false, errors: [{ message: "Dashboard Folder fldr_other_workspace not found." }] },
+    },
+  ]),
+  handler: async ({ callExpectingMCPUserError }) => {
+    const error = await callExpectingMCPUserError({
+      ...minimalValidInputArguments,
+      folder_token: "fldr_other_workspace",
+    });
+    expect(error.exception).toEqual({ errors: [{ message: "Dashboard Folder fldr_other_workspace not found." }] });
+  },
+});
 
 testTool(tool, argumentSchemaTests, executionTests);

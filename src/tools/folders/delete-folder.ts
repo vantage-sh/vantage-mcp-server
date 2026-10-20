@@ -4,7 +4,7 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
 const description = `
-Deletes a Folder. Reports within the Folder will not be deleted.
+Deletes a Folder and its contents, including nested Folders and Dashboards. This cannot be undone.
 `.trim();
 
 export default registerTool({

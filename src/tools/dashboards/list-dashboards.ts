@@ -14,6 +14,10 @@ const args = {
   workspace_token: vantageToken("workspace", {
     description: "Only return Dashboards in this Workspace.",
   }).optional(),
+  folder_token: vantageToken("folder", {
+    description:
+      "Only return Dashboards directly in this Dashboard Folder, excluding subfolders. Use list-folders with type DashboardFolder to find folders. Unknown or inaccessible folders return an empty list. Omit to list all accessible Dashboards, including those at root.",
+  }).optional(),
 };
 
 export default registerTool({

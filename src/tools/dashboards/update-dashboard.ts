@@ -4,6 +4,7 @@ import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import {
+  dashboardFolderForUpdate,
   endDateSchema,
   startDateSchema,
   updateDateBinSchema,
@@ -27,6 +28,7 @@ export default registerTool({
   },
   args: {
     dashboard_token: vantageToken("dashboard"),
+    folder_token: dashboardFolderForUpdate,
     title: z.string().min(1).optional().describe("The updated title of the dashboard."),
     widgets: z
       .array(widgetSchema)

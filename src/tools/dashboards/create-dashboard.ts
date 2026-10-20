@@ -4,6 +4,7 @@ import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import {
+  dashboardFolderForCreate,
   dateBinSchema,
   dateIntervalSchema,
   endDateSchema,
@@ -22,7 +23,11 @@ export default registerTool({
   description,
   args: {
     title: z.string().min(1).describe("The title of the dashboard"),
-    workspace_token: vantageToken("workspace"),
+    workspace_token: vantageToken("workspace", {
+      description:
+        "Workspace for the Dashboard. Inherited from folder_token when omitted; if provided with a folder, must match its Workspace. Required without a folder if the API token is associated with multiple Workspaces.",
+    }).optional(),
+    folder_token: dashboardFolderForCreate,
     widgets: z.array(widgetSchema).describe("Widgets to add. Omit for an empty Dashboard.").optional(),
     saved_filter_tokens: z
       .array(vantageToken("saved_filter"))

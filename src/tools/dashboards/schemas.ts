@@ -1,7 +1,18 @@
 import z from "zod";
 import { dateIntervalOptions } from "../../utils/dateIntervalOptions";
 import dateValidator from "../../utils/dateValidator";
+import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
+
+const dashboardFolderToken = vantageToken("folder").or(z.literal("")).nullable().optional();
+
+export const dashboardFolderForCreate = dashboardFolderToken.describe(
+  "Dashboard Folder token (fldr_*). Use list-folders with type DashboardFolder to discover folders. Send null, an empty string, or omit to create at root."
+);
+
+export const dashboardFolderForUpdate = dashboardFolderToken.describe(
+  "Destination Dashboard Folder token (fldr_*), in the Dashboard's Workspace. Use list-folders with type DashboardFolder to discover folders. Send null or an empty string to move to root; omit to keep the current folder."
+);
 
 const displayTypeSchema = z
   .enum(["table", "chart", "kpi"])

@@ -6,6 +6,7 @@ import { requestsInOrder, testTool } from "../../../src/utils/testing";
 const success = {
   token: "dshbrd_fb27faa25ef5ea72",
   title: "My Dashboard",
+  folder_token: "fldr_dashboard",
   workspace_token: "wrkspc_e5c550d14cfa3101",
   widgets: [],
   saved_filter_tokens: [],
