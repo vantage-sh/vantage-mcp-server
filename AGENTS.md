@@ -55,8 +55,8 @@ The default TypeScript and Biome checks exclude `.agents/`; validate changed scr
 
 ### Writing verification in a PR
 
-- Use short, easy-to-read bullet points. Each behavior bullet should say what was validated, how it was exercised, and what was observed. For example: "Validated moving a Dashboard by moving it between Folders and to root, then reading it back to confirm its location and preserved widgets."
-- Describe the behaviors checked; aggregate check counts alone do not explain coverage. Summarize automated checks with their commands and results in separate bullets.
+- Use short Markdown checklist items for PR verification: `- [x]` for completed, passing checks and `- [ ]` for failed, unresolved, skipped, or unrun checks, with a brief explanation. Use checkboxes instead of plain `*` or `-` bullets, tables, or dense paragraphs. Each behavior item should say what was validated, how it was exercised, and what was observed. For example: "Validated moving a Dashboard by moving it between Folders and to root, then reading it back to confirm its location and preserved widgets."
+- Describe the behaviors checked; aggregate check counts alone do not explain coverage. Summarize automated checks with their commands and results in separate checklist items.
 - Include relevant conditions and gaps, such as using a real API instead of mocks, testing only with account-owner access, or authoring evals without executing them. Mention failures or workarounds when they limit confidence in the submitted change.
 - Keep the full run history and evidence in the local verification report. Public PR descriptions must not reference local files, run directories, local checkouts, private dependency commit hashes, or source-hash bookkeeping. Omit resolved harness mistakes, unrelated existing bugs, and routine process/credential cleanup details; report cleanup only when something remains or affects review.
 - Link evidence only when PR readers can access it, such as a CI run or a repository file. Include a tested commit or deployment identifier only when needed to distinguish the verified revision from the current PR.

@@ -108,13 +108,13 @@ Finalize the summary after cleanup so it reflects the actual final state. Link t
 
 ## Writing verification in a PR
 
-Follow [AGENTS.md: Writing verification in a PR](../../../AGENTS.md#writing-verification-in-a-pr). The detailed local report is the evidence record; write the public PR verification as short behavior-focused bullets, not a copied report, results table, or dense paragraph. Each behavior bullet should identify the action taken and the observed result, for example:
+Follow [AGENTS.md: Writing verification in a PR](../../../AGENTS.md#writing-verification-in-a-pr). The detailed local report is the evidence record; write the public PR verification as a short Markdown checklist describing the behaviors checked. Use `- [x]` for completed, passing checks and `- [ ]` for failed, unresolved, skipped, or unrun checks, explaining their status. Do not use plain `*` or `-` bullets, a copied report, results table, or dense paragraph. Each behavior item should identify the action taken and the observed result, for example:
 
-- Validated creating a Dashboard by creating it inside a Folder without specifying a Workspace, then reading it back to confirm the Folder and inherited Workspace.
-- Validated moving a Dashboard by moving it between Folders and to root, then reading it back to confirm its location and preserved widgets.
-- Validated Folder filtering by checking that the list includes direct children and excludes Dashboards in subfolders.
+- [x] Validated creating a Dashboard by creating it inside a Folder without specifying a Workspace, then reading it back to confirm the Folder and inherited Workspace.
+- [x] Validated moving a Dashboard by moving it between Folders and to root, then reading it back to confirm its location and preserved widgets.
+- [x] Validated Folder filtering by checking that the list includes direct children and excludes Dashboards in subfolders.
 
-Add concise bullets for automated checks and relevant unverified behavior. Counts can supplement the behavior descriptions. Keep local paths, checkout details, source hashes, resolved harness retries, unrelated findings, and routine cleanup bookkeeping in the local report. Carry a failure or workaround into the PR only when it affects verification of the submitted change.
+Add concise checklist items for automated checks and relevant unverified behavior. Keep a passing schema check and an unrun model-backed eval as separate checked and unchecked items. Counts can supplement the behavior descriptions. Keep local paths, checkout details, source hashes, resolved harness retries, unrelated findings, and routine cleanup bookkeeping in the local report. Carry a failure or workaround into the PR only when it affects verification of the submitted change.
 
 ## Cleanup
 
