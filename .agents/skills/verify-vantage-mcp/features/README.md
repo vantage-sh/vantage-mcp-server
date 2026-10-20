@@ -22,6 +22,8 @@ This directory is the maintained source for verifying the user-facing behavior o
 
 Deliver a readable `SUMMARY.md` in the working verification folder, with any combined JSON report beside it, following the [summary requirements](../SKILL.md#evidence). The Markdown report is the user-facing result.
 
+For a public PR, summarize relevant verification as short behavior-focused bullets using [the PR guidance](../SKILL.md#writing-verification-in-a-pr). Keep local evidence references and the full run history in the local report and handoff.
+
 - HTTP proof is the request, status, relevant headers, and body for each step. The OAuth walk records these in `exchanges.jsonl`.
 - MCP proof is the SDK helper's captured calls and results, or the Inspector CLI command and JSON output, saved under the run's `evidence/`.
 - UI proof (staging) is a screenshot or the Inspector **History** panel showing the action and the result, plus the matching staging spans in Datadog (read-only).

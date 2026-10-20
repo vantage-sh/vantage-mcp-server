@@ -104,6 +104,16 @@ The Markdown summary must be understandable without opening JSON:
 
 Finalize the summary after cleanup so it reflects the actual final state. Link to `SUMMARY.md` in the final response and open it in Codex when that file-opening tool is available; JSON is supporting evidence, not the user-facing handoff.
 
+## Writing verification in a PR
+
+Follow [AGENTS.md: Writing verification in a PR](../../../AGENTS.md#writing-verification-in-a-pr). The detailed local report is the evidence record; write the public PR verification as short behavior-focused bullets, not a copied report, results table, or dense paragraph. Each behavior bullet should identify the action taken and the observed result, for example:
+
+- Validated creating a Dashboard by creating it inside a Folder without specifying a Workspace, then reading it back to confirm the Folder and inherited Workspace.
+- Validated moving a Dashboard by moving it between Folders and to root, then reading it back to confirm its location and preserved widgets.
+- Validated Folder filtering by checking that the list includes direct children and excludes Dashboards in subfolders.
+
+Add concise bullets for automated checks and relevant unverified behavior. Counts can supplement the behavior descriptions. Keep local paths, checkout details, source hashes, resolved harness retries, unrelated findings, and routine cleanup bookkeeping in the local report. Carry a failure or workaround into the PR only when it affects verification of the submitted change.
+
 ## Cleanup
 
 ```bash
