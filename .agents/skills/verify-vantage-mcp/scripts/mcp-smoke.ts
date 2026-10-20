@@ -14,9 +14,9 @@ async function main(): Promise<number> {
   if (values.help) {
     console.log(`Usage: npx tsx mcp-smoke.ts <run-dir> [options]
   --transports http,sse,stdio    Default: http,sse
-  --auth dev|delegation|invalid-delegation|oauth    Default: dev
+  --auth dev|bearer|delegation|invalid-delegation|oauth    Default: dev
   --expect success|core-error   Default: success
-  --token-file PATH             Core token for stdio (or VERIFY_VANTAGE_TOKEN)
+  --token-file PATH             Core token for stdio or --auth bearer (or VERIFY_VANTAGE_TOKEN)
   --delegation-token-file PATH  Or VERIFY_AGENT_DELEGATION_TOKEN
   --oauth-token-file PATH       Private JSON containing access_token or tokens.access_token
   --mutate                     Local-only folder create/read/delete; requires http
@@ -34,7 +34,7 @@ Use one transport per OAuth invocation, with a token scoped to that resource.`);
   const expect = values.expect ?? "success";
   if (expect !== "success" && expect !== "core-error") throw new Error("Invalid expectation");
   const auth = values.auth ?? "dev";
-  if (!["dev", "delegation", "invalid-delegation", "oauth"].includes(String(auth)))
+  if (!["dev", "bearer", "delegation", "invalid-delegation", "oauth"].includes(String(auth)))
     throw new Error("Invalid auth mode");
   if (values.mutate && (expect !== "success" || !transports.includes("http")))
     throw new Error("Mutations require successful HTTP calls");
@@ -49,7 +49,9 @@ Use one transport per OAuth invocation, with a token scoped to that resource.`);
   const report = new Report(run, "mcp-smoke");
   try {
     const headers: Record<string, string> = {};
-    if (auth === "delegation" || auth === "invalid-delegation") {
+    if (auth === "bearer") {
+      headers.Authorization = `Bearer ${credential("VERIFY_VANTAGE_TOKEN", values["token-file"] as string | undefined)}`;
+    } else if (auth === "delegation" || auth === "invalid-delegation") {
       headers["X-Vantage-Agent-Delegation"] =
         auth === "delegation"
           ? credential("VERIFY_AGENT_DELEGATION_TOKEN", values["delegation-token-file"] as string | undefined)

@@ -21,6 +21,7 @@ import {
   isRecognisedClient,
   validateClientRegistration,
 } from "./auth/client-policy";
+import { resolveVantageToken } from "./auth/external-token";
 import { createAuthRouter } from "./auth/request-router";
 import type { AppEnv } from "./env";
 import homepage from "./homepage";
@@ -164,8 +165,6 @@ const sseHandler = VantageMCP.mount("/sse") as unknown as ApiHandler;
 
 function createMcpServer(env: AppEnv): OAuthProvider<AppEnv> {
   const oauthOptions: OAuthProviderOptions<AppEnv> = {
-    // Direct Vantage API bearer tokens are retired. Only provider-issued
-    // tokens reach these API handlers; agent headers use the narrow pre-router.
     apiHandlers: { "/mcp": mcpHandler, "/sse": sseHandler },
     authorizeEndpoint: "/authorize",
     clientRegistrationCallback: ({ clientMetadata }) => {
@@ -212,6 +211,7 @@ function createMcpServer(env: AppEnv): OAuthProvider<AppEnv> {
       });
     },
     refreshTokenTTL: undefined,
+    resolveExternalToken: resolveVantageToken,
     tokenEndpoint: "/token",
     tokenExchangeCallback: (options) => tokenExchangeCallback(options, env, () => getOAuthApi(oauthOptions, env)),
   };

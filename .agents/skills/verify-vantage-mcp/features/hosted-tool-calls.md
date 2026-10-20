@@ -1,6 +1,6 @@
 # Hosted tool calls
 
-An authenticated client lists the server's tools and calls them over Streamable HTTP at `/mcp`, or over the legacy SSE transport at `/sse`. Results come from Core as the token's user. Access Policy tools appear only for account owners, and SSE clients receive a one-time deprecation warning.
+An authenticated client lists the server's tools and calls them over Streamable HTTP at `/mcp`, or over the legacy SSE transport at `/sse`. Results come from Core within the credential's permissions, including service tokens without a user identity. Access Policy tools appear only when Core reports account-owner access, and SSE clients receive a one-time deprecation warning.
 
 ## Sub-features
 
@@ -10,7 +10,7 @@ An authenticated client lists the server's tools and calls them over Streamable 
 - `tool-mutation`: `create-folder` creates an object that `get-folder` then returns, and `delete-folder` removes it.
 - `resources`: `resources/list` and `resources/read` return the VQL documentation.
 - `sse-transport`: `/sse` serves the same tools, advertises migration instructions on initialize, and sends one `notifications/message` warning from logger `vantage.sse-deprecation`.
-- `hosted-auth-routing`: with the development token override disabled, direct Vantage API bearer tokens are rejected on both transports. A nonempty `X-Vantage-Agent-Delegation` header bypasses OAuth only on `/mcp`, `/sse`, and their subpaths, and only when the Worker sees no `Authorization` header. Only the delegation header is forwarded to Core.
+- `hosted-auth-routing`: with the development token override disabled, Vantage-shaped API/service bearer tokens pass through the OAuth provider's `resolveExternalToken` hook on both transports without a validation fetch. Core validates the token and permissions on each tool call. Invalid or revoked Vantage tokens can initialize MCP, but calls return Core errors with `isError: true`. Bearer requests forward only their bearer token to Core. A nonempty `X-Vantage-Agent-Delegation` header bypasses OAuth only on `/mcp`, `/sse`, and their subpaths, and only when the Worker sees no `Authorization` header. Only the delegation header is forwarded for that path.
 - `oauth-route-precedence`: discovery, registration, and authorization remain with OAuth even when delegation or other `X-Vantage-*` headers are present. An invalid nonempty `Authorization` header never falls back to delegation.
 - `staging-agent-delegation`: the staging Vantage agent calls `get-myself` and `list-workspaces` through the deployed hosted MCP refactor as the signed-in user's account.
 
@@ -18,6 +18,7 @@ An authenticated client lists the server's tools and calls them over Streamable 
 
 - Any MCP client pointed at `http://127.0.0.1:<port>/mcp` on a token-mode run (no login needed).
 - Legacy SSE clients pointed at `http://127.0.0.1:<port>/sse`.
+- Clients configured with `Authorization: Bearer <Vantage API token>` against either hosted transport, including personal and service tokens.
 
 ## Driving it with the MCP SDK and Inspector
 
@@ -36,7 +37,9 @@ Start with the reusable SDK helper: `npx tsx "$S/mcp-smoke.ts" "$RUN_DIR" --tran
 - **SSE transport.** Run `npx mcp-inspector --cli http://127.0.0.1:8789/sse --transport sse --method tools/list`. It returns the same tool names as `/mcp`.
 - **Proof.** Keep the saved JSON files, plus `worker.log` lines showing `Vantage API request` for each Core call.
 
-For authentication routing, start a separate **oauth-mode** run and pass doctor before driving it; token mode bypasses this router. Run `npx tsx "$S/auth-routing.ts" "$RUN_DIR"`. It checks both transports with missing, unknown, legacy, blank delegation, bearer, and mixed credentials, plus OAuth endpoints and path boundaries. A present Authorization header, including an empty or whitespace value, must be rejected if invalid; only an absent header permits delegation. Runtime stripping of an empty wire header is an unmet end-to-end requirement, not a passing normalization policy. Preserve the failure and inspect the header at the earliest Worker entry point before proposing a router change.
+For authentication routing, start a separate **oauth-mode** run and pass doctor before driving it; token mode bypasses this router. Run `npx tsx "$S/auth-routing.ts" "$RUN_DIR"`. It checks both transports with missing, unknown, legacy, blank delegation, deliberately invalid bearer, and mixed credentials, plus OAuth endpoints and path boundaries. Malformed or unknown Authorization values are rejected; Vantage-shaped bearer tokens can initialize and must be checked with a tool call. Only an absent Authorization header permits delegation. Runtime stripping of an empty wire header is an unmet end-to-end requirement, not a passing normalization policy. Preserve the failure and inspect the header at the earliest Worker entry point before proposing a router change.
+
+For successful direct bearer access, run `npx tsx "$S/mcp-smoke.ts" "$RUN_DIR" --auth bearer --transports http,sse --token-file "$VERIFY_WORK_DIR/state/local-core-token"` against the **oauth-mode** Worker. Test a personal token and a service token separately with `read` scope. Record the token type and intended workspace/account context without recording its value. Assert successful `get-myself` and `list-workspaces`, owner gating, resources, and matching account context across transports. A service token's `default_workspace_token` can be absent; use its returned workspaces and owner flag for context. Invalid/revoked Vantage tokens must fail on authenticated tool calls, including when delegation is also supplied. Use `--auth bearer --expect core-error` with a private file containing a deliberately invalid Vantage-shaped token; assert Core errors and hidden owner tools. A token-mode run or an OAuth-issued token does not prove direct bearer support.
 
 Use an MCP client configured with only `X-Vantage-Agent-Delegation` to initialize, list tools, and call `get-myself` and `list-workspaces` on both transports. A valid delegation token must resolve the intended Core user. A deliberately invalid delegation token can verify the Core error path, but cannot prove successful delegation authentication or header allowlisting. The allowlist also needs the router tests or receiver-side evidence. Record the client request, result, commit, and credential source without recording the credential. Full OAuth-issued-token calls remain a staging check.
 

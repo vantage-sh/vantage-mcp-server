@@ -10,6 +10,18 @@ type ToolResult = Awaited<ReturnType<Client["callTool"]>>;
 export type CallTool = (name: string, args: Record<string, unknown>) => Promise<ToolResult>;
 export type TransportName = "http" | "sse" | "stdio";
 
+export function coreIdentity(result: ToolResult) {
+  const me = toolJson(result);
+  if (result.isError || !Array.isArray(me.workspaces) || typeof me.is_account_owner !== "boolean") return undefined;
+  const workspaces = me.workspaces.map((workspace) => workspace?.token);
+  if (workspaces.some((token) => typeof token !== "string")) return undefined;
+  return {
+    defaultWorkspace: me.default_workspace_token ?? null,
+    workspaces: workspaces.sort(),
+    isAccountOwner: me.is_account_owner,
+  };
+}
+
 export function toolJson(result: ToolResult): Record<string, unknown> {
   const text =
     Array.isArray(result.content) &&
@@ -158,13 +170,14 @@ export async function smoke(
         }
         report.check(`${name}-failed-lookup-hides-owner-tools`, !names.includes("list-access-policies"));
       } else {
-        report.check(`${name}-authenticated-read`, !myself.isError && typeof me.default_workspace_token === "string");
+        const identity = coreIdentity(myself);
+        report.check(`${name}-authenticated-read`, !!identity);
         report.check(`${name}-workspaces`, !workspaces.isError && Array.isArray(toolJson(workspaces).workspaces));
         report.check(
           `${name}-owner-gating`,
           typeof me.is_account_owner === "boolean" && names.includes("list-access-policies") === me.is_account_owner
         );
-        identities.push(me.default_workspace_token);
+        if (identity) identities.push(identity);
         if (options.mutate && name === "http") {
           if (myself.isError || typeof me.default_workspace_token !== "string")
             throw new Error("Cannot select a mutation workspace");
@@ -208,6 +221,6 @@ export async function smoke(
   if (identities.length > 1)
     report.check(
       "transport-user-context",
-      identities.every((identity) => identity === identities[0])
+      identities.every((identity) => JSON.stringify(identity) === JSON.stringify(identities[0]))
     );
 }

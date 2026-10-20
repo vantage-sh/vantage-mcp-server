@@ -75,7 +75,8 @@ async function main(): Promise<number> {
         "whitespace-and-delegation": { Authorization: " \t ", "X-Vantage-Agent-Delegation": "verify-invalid" },
       };
       for (const [label, headers] of Object.entries(cases)) {
-        await check(`${path}-${label}`, path, headers, 401, method, body);
+        const expected = label === "bearer" || label === "bearer-and-delegation" ? 200 : 401;
+        await check(`${path}-${label}`, path, headers, expected, method, body);
       }
     }
     const delegation = { "X-Vantage-Agent-Delegation": "verify-invalid", "X-Vantage-Extra": "must-not-forward" };
@@ -105,7 +106,7 @@ async function main(): Promise<number> {
     await check("authorize-with-delegation", `/authorize?${query}`, delegation, 200);
     await check("delegation-initialize", "/mcp", delegation, 200, "POST", initialize);
     report.evidence.limit =
-      "Initialize is transport proof; an invalid delegation token does not prove successful Core authentication or header allowlisting.";
+      "Initialize is transport proof; neither a Vantage-shaped bearer nor a delegation header proves successful Core authentication. Use tool calls to verify rejection or access; header allowlisting also needs tests or receiver-side evidence.";
     return report.finish();
   } catch (error) {
     return report.finish(error);

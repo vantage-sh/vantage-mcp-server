@@ -2,12 +2,28 @@ import assert from "node:assert/strict";
 import { chmodSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { test } from "node:test";
-import { assertMutationTarget, type CallTool, folderRoundTrip } from "./mcp-client";
+import { assertMutationTarget, type CallTool, coreIdentity, folderRoundTrip } from "./mcp-client";
 import { credential, privateJson, Report, type Run, redact, responsePreview, savePrivate } from "./support";
 
 const json = (value: unknown, isError = false) => ({
   content: [{ type: "text" as const, text: JSON.stringify(value) }],
   isError,
+});
+
+test("authenticated account context supports service tokens without a default user workspace", () => {
+  const service = { is_account_owner: false, workspaces: [{ token: "wrk_second" }, { token: "wrk_first" }] };
+  const identity = coreIdentity(json(service));
+  assert.deepEqual(identity, {
+    defaultWorkspace: null,
+    workspaces: ["wrk_first", "wrk_second"],
+    isAccountOwner: false,
+  });
+  assert.deepEqual(coreIdentity(json({ ...service, workspaces: [...service.workspaces].reverse() })), identity);
+  assert.notDeepEqual(coreIdentity(json({ ...service, is_account_owner: true })), identity);
+  assert.notDeepEqual(coreIdentity(json({ ...service, default_workspace_token: "wrk_first" })), identity);
+  assert.equal(coreIdentity(json(service, true)), undefined);
+  assert.equal(coreIdentity(json({ errors: ["Invalid Token"] }, true)), undefined);
+  assert.equal(coreIdentity(json({ ...service, workspaces: [{}] })), undefined);
 });
 
 function fixture() {
