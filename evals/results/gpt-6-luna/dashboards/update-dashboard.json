@@ -1,0 +1,591 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-10-20T22:21:13.483Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "5d86fec7-d58e-48cf-b5eb-bd84d1ea9d52",
+        "latencyMs": 1806,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use update-dashboard to move dashboard dshbrd_finance into Dashboard Folder fldr_executive. Keep its widgets.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "update-dashboard",
+                "input": {
+                  "dashboard_token": "dshbrd_finance",
+                  "folder_token": "fldr_executive"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "update-dashboard",
+            "toolNames": [
+              "update-dashboard",
+              "update-folder",
+              "update-dashboard-widget",
+              "create-dashboard",
+              "delete-dashboard-widget"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "update-dashboard",
+                "input": {
+                  "dashboard_token": "dshbrd_finance",
+                  "folder_token": "fldr_executive"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "update-dashboard · direct · Use update-dashboard to move dashboard dshbrd_finance into Dashboard Folder fldr_executive. Keep its widgets.",
+          "vars": {
+            "prompt": "Use update-dashboard to move dashboard dshbrd_finance into Dashboard Folder fldr_executive. Keep its widgets.",
+            "target": "update-dashboard",
+            "expected": [
+              {
+                "toolName": "update-dashboard",
+                "input": {
+                  "dashboard_token": "dshbrd_finance",
+                  "folder_token": "fldr_executive"
+                }
+              }
+            ],
+            "distractors": [
+              "update-folder",
+              "update-dashboard-widget",
+              "create-dashboard",
+              "delete-dashboard-widget"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "update-dashboard",
+            "resource": "dashboards",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use update-dashboard to move dashboard dshbrd_finance into Dashboard Folder fldr_executive. Keep its widgets.",
+          "target": "update-dashboard",
+          "expected": [
+            {
+              "toolName": "update-dashboard",
+              "input": {
+                "dashboard_token": "dshbrd_finance",
+                "folder_token": "fldr_executive"
+              }
+            }
+          ],
+          "distractors": [
+            "update-folder",
+            "update-dashboard-widget",
+            "create-dashboard",
+            "delete-dashboard-widget"
+          ]
+        },
+        "metadata": {
+          "tool": "update-dashboard",
+          "resource": "dashboards",
+          "phrasing": "direct",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "update-dashboard",
+          "toolNames": [
+            "update-dashboard",
+            "update-folder",
+            "update-dashboard-widget",
+            "create-dashboard",
+            "delete-dashboard-widget"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "update-dashboard",
+              "input": {
+                "dashboard_token": "dshbrd_finance",
+                "folder_token": "fldr_executive"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "3de096f9-e92a-4291-abc2-5bc2dea82613",
+        "latencyMs": 2445,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Move Vantage dashboard dshbrd_finance to root using a null folder and replace its entire widget list with one free-text widget titled Notes saying Weekly context. Place it at x=0, y=0, width 12, height 2. Its workspace is wrkspc_123.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "update-dashboard",
+                "input": {
+                  "dashboard_token": "dshbrd_finance",
+                  "folder_token": null,
+                  "widgets": [
+                    {
+                      "widgetable_type": "free_text",
+                      "title": "Notes",
+                      "content": {
+                        "type": "doc",
+                        "content": [
+                          {
+                            "type": "paragraph",
+                            "content": [
+                              {
+                                "type": "text",
+                                "text": "Weekly context"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      "settings": {
+                        "display_type": "chart",
+                        "grid": {
+                          "x": 0,
+                          "y": 0,
+                          "w": 12,
+                          "h": 2
+                        }
+                      }
+                    }
+                  ],
+                  "workspace_token": "wrkspc_123"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "update-dashboard",
+            "toolNames": [
+              "update-dashboard",
+              "update-folder",
+              "update-dashboard-widget",
+              "create-dashboard",
+              "delete-dashboard-widget"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "update-dashboard",
+                "input": {
+                  "dashboard_token": "dshbrd_finance",
+                  "folder_token": null,
+                  "widgets": [
+                    {
+                      "widgetable_type": "free_text",
+                      "title": "Notes",
+                      "content": {
+                        "type": "doc",
+                        "content": [
+                          {
+                            "type": "paragraph",
+                            "content": [
+                              {
+                                "type": "text",
+                                "text": "Weekly context"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      "settings": {
+                        "display_type": "chart",
+                        "grid": {
+                          "x": 0,
+                          "y": 0,
+                          "w": 12,
+                          "h": 2
+                        }
+                      }
+                    }
+                  ],
+                  "workspace_token": "wrkspc_123"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "update-dashboard · inferred · Move Vantage dashboard dshbrd_finance to root using a null folder and replace its entire widget list with one free-text widget titled Notes saying Weekly context. Place it at x=0, y=0, width 12, height 2. Its workspace is wrkspc_123.",
+          "vars": {
+            "prompt": "Move Vantage dashboard dshbrd_finance to root using a null folder and replace its entire widget list with one free-text widget titled Notes saying Weekly context. Place it at x=0, y=0, width 12, height 2. Its workspace is wrkspc_123.",
+            "target": "update-dashboard",
+            "expected": [
+              {
+                "toolName": "update-dashboard",
+                "input": {
+                  "dashboard_token": "dshbrd_finance",
+                  "folder_token": null,
+                  "workspace_token": "wrkspc_123",
+                  "widgets": [
+                    {
+                      "widgetable_type": "free_text",
+                      "title": "Notes",
+                      "content": {
+                        "type": "doc",
+                        "content": [
+                          {
+                            "type": "paragraph",
+                            "content": [
+                              {
+                                "type": "text",
+                                "text": "Weekly context"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      "settings": {
+                        "display_type": "chart",
+                        "grid": {
+                          "x": 0,
+                          "y": 0,
+                          "w": 12,
+                          "h": 2
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "distractors": [
+              "update-folder",
+              "update-dashboard-widget",
+              "create-dashboard",
+              "delete-dashboard-widget"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "update-dashboard",
+            "resource": "dashboards",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Move Vantage dashboard dshbrd_finance to root using a null folder and replace its entire widget list with one free-text widget titled Notes saying Weekly context. Place it at x=0, y=0, width 12, height 2. Its workspace is wrkspc_123.",
+          "target": "update-dashboard",
+          "expected": [
+            {
+              "toolName": "update-dashboard",
+              "input": {
+                "dashboard_token": "dshbrd_finance",
+                "folder_token": null,
+                "workspace_token": "wrkspc_123",
+                "widgets": [
+                  {
+                    "widgetable_type": "free_text",
+                    "title": "Notes",
+                    "content": {
+                      "type": "doc",
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Weekly context"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "settings": {
+                      "display_type": "chart",
+                      "grid": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 12,
+                        "h": 2
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "distractors": [
+            "update-folder",
+            "update-dashboard-widget",
+            "create-dashboard",
+            "delete-dashboard-widget"
+          ]
+        },
+        "metadata": {
+          "tool": "update-dashboard",
+          "resource": "dashboards",
+          "phrasing": "inferred",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "update-dashboard",
+          "toolNames": [
+            "update-dashboard",
+            "update-folder",
+            "update-dashboard-widget",
+            "create-dashboard",
+            "delete-dashboard-widget"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "update-dashboard",
+              "input": {
+                "dashboard_token": "dshbrd_finance",
+                "folder_token": null,
+                "widgets": [
+                  {
+                    "widgetable_type": "free_text",
+                    "title": "Notes",
+                    "content": {
+                      "type": "doc",
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Weekly context"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "settings": {
+                      "display_type": "chart",
+                      "grid": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 12,
+                        "h": 2
+                      }
+                    }
+                  }
+                ],
+                "workspace_token": "wrkspc_123"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 2,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-6-luna · mixed",
+        "config": {
+          "modelId": "gpt-6-luna"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/dashboards/update-dashboard.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-10-20T22:21:13.127Z",
+    "evaluationCreatedAt": "2026-10-20T22:21:10.589Z"
+  }
+}

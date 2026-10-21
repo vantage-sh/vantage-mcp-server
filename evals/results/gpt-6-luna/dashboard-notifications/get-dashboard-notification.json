@@ -1,0 +1,431 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-10-20T22:15:37.576Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "be3113c0-922f-4797-8f01-d14685a7d24a",
+        "latencyMs": 1593,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use get-dashboard-notification to retrieve rprtbl_ntfctn_weekly.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "get-dashboard-notification",
+                "input": {
+                  "dashboard_notification_token": "rprtbl_ntfctn_weekly"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "get-dashboard-notification",
+            "toolNames": [
+              "get-dashboard-notification",
+              "get-report-notification",
+              "get-dashboard",
+              "list-dashboard-notifications",
+              "get-budget-alert"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "get-dashboard-notification",
+                "input": {
+                  "dashboard_notification_token": "rprtbl_ntfctn_weekly"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "get-dashboard-notification · direct · Use get-dashboard-notification to retrieve rprtbl_ntfctn_weekly.",
+          "vars": {
+            "prompt": "Use get-dashboard-notification to retrieve rprtbl_ntfctn_weekly.",
+            "target": "get-dashboard-notification",
+            "expected": [
+              {
+                "toolName": "get-dashboard-notification",
+                "input": {
+                  "dashboard_notification_token": "rprtbl_ntfctn_weekly"
+                }
+              }
+            ],
+            "distractors": [
+              "get-report-notification",
+              "get-dashboard",
+              "list-dashboard-notifications",
+              "get-budget-alert"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "get-dashboard-notification",
+            "resource": "dashboard-notifications",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use get-dashboard-notification to retrieve rprtbl_ntfctn_weekly.",
+          "target": "get-dashboard-notification",
+          "expected": [
+            {
+              "toolName": "get-dashboard-notification",
+              "input": {
+                "dashboard_notification_token": "rprtbl_ntfctn_weekly"
+              }
+            }
+          ],
+          "distractors": [
+            "get-report-notification",
+            "get-dashboard",
+            "list-dashboard-notifications",
+            "get-budget-alert"
+          ]
+        },
+        "metadata": {
+          "tool": "get-dashboard-notification",
+          "resource": "dashboard-notifications",
+          "phrasing": "direct",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "get-dashboard-notification",
+          "toolNames": [
+            "get-dashboard-notification",
+            "get-report-notification",
+            "get-dashboard",
+            "list-dashboard-notifications",
+            "get-budget-alert"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "get-dashboard-notification",
+              "input": {
+                "dashboard_notification_token": "rprtbl_ntfctn_weekly"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "394a9dc3-4414-49ac-b20b-9b49f29c0736",
+        "latencyMs": 1827,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Show the recipients, frequency, and linked dashboard for my Vantage dashboard email schedule rprtbl_ntfctn_executive.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "get-dashboard-notification",
+                "input": {
+                  "dashboard_notification_token": "rprtbl_ntfctn_executive"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "get-dashboard-notification",
+            "toolNames": [
+              "get-dashboard-notification",
+              "get-report-notification",
+              "get-dashboard",
+              "list-dashboard-notifications",
+              "get-budget-alert"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "get-dashboard-notification",
+                "input": {
+                  "dashboard_notification_token": "rprtbl_ntfctn_executive"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "get-dashboard-notification · inferred · Show the recipients, frequency, and linked dashboard for my Vantage dashboard email schedule rprtbl_ntfctn_executive.",
+          "vars": {
+            "prompt": "Show the recipients, frequency, and linked dashboard for my Vantage dashboard email schedule rprtbl_ntfctn_executive.",
+            "target": "get-dashboard-notification",
+            "expected": [
+              {
+                "toolName": "get-dashboard-notification",
+                "input": {
+                  "dashboard_notification_token": "rprtbl_ntfctn_executive"
+                }
+              }
+            ],
+            "distractors": [
+              "get-report-notification",
+              "get-dashboard",
+              "list-dashboard-notifications",
+              "get-budget-alert"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "get-dashboard-notification",
+            "resource": "dashboard-notifications",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Show the recipients, frequency, and linked dashboard for my Vantage dashboard email schedule rprtbl_ntfctn_executive.",
+          "target": "get-dashboard-notification",
+          "expected": [
+            {
+              "toolName": "get-dashboard-notification",
+              "input": {
+                "dashboard_notification_token": "rprtbl_ntfctn_executive"
+              }
+            }
+          ],
+          "distractors": [
+            "get-report-notification",
+            "get-dashboard",
+            "list-dashboard-notifications",
+            "get-budget-alert"
+          ]
+        },
+        "metadata": {
+          "tool": "get-dashboard-notification",
+          "resource": "dashboard-notifications",
+          "phrasing": "inferred",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "get-dashboard-notification",
+          "toolNames": [
+            "get-dashboard-notification",
+            "get-report-notification",
+            "get-dashboard",
+            "list-dashboard-notifications",
+            "get-budget-alert"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "get-dashboard-notification",
+              "input": {
+                "dashboard_notification_token": "rprtbl_ntfctn_executive"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 2,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-6-luna · mixed",
+        "config": {
+          "modelId": "gpt-6-luna"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/dashboard-notifications/get-dashboard-notification.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-10-20T22:15:37.224Z",
+    "evaluationCreatedAt": "2026-10-20T22:15:35.324Z"
+  }
+}

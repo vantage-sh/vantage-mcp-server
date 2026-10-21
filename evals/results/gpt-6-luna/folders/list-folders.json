@@ -1,0 +1,456 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-10-21T01:47:20.536Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "431bc64d-3d54-43c4-9b38-672d4fe10a9d",
+        "latencyMs": 1976,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use list-folders to find DashboardFolder folders with Finance in the title in workspace wrkspc_123, page 1.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "list-folders",
+                "input": {
+                  "page": 1,
+                  "q": "Finance",
+                  "workspace_token": "wrkspc_123",
+                  "type": "DashboardFolder"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "list-folders",
+            "toolNames": [
+              "list-folders",
+              "list-dashboards",
+              "list-cost-reports",
+              "get-folder",
+              "list-resource-reports"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "list-folders",
+                "input": {
+                  "page": 1,
+                  "q": "Finance",
+                  "workspace_token": "wrkspc_123",
+                  "type": "DashboardFolder"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "list-folders · direct · Use list-folders to find DashboardFolder folders with Finance in the title in workspace wrkspc_123, page 1.",
+          "vars": {
+            "prompt": "Use list-folders to find DashboardFolder folders with Finance in the title in workspace wrkspc_123, page 1.",
+            "target": "list-folders",
+            "expected": [
+              {
+                "toolName": "list-folders",
+                "input": {
+                  "type": "DashboardFolder",
+                  "q": "Finance",
+                  "workspace_token": "wrkspc_123",
+                  "page": 1
+                }
+              }
+            ],
+            "distractors": [
+              "list-dashboards",
+              "list-cost-reports",
+              "get-folder",
+              "list-resource-reports"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "list-folders",
+            "resource": "folders",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use list-folders to find DashboardFolder folders with Finance in the title in workspace wrkspc_123, page 1.",
+          "target": "list-folders",
+          "expected": [
+            {
+              "toolName": "list-folders",
+              "input": {
+                "type": "DashboardFolder",
+                "q": "Finance",
+                "workspace_token": "wrkspc_123",
+                "page": 1
+              }
+            }
+          ],
+          "distractors": [
+            "list-dashboards",
+            "list-cost-reports",
+            "get-folder",
+            "list-resource-reports"
+          ]
+        },
+        "metadata": {
+          "tool": "list-folders",
+          "resource": "folders",
+          "phrasing": "direct",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "list-folders",
+          "toolNames": [
+            "list-folders",
+            "list-dashboards",
+            "list-cost-reports",
+            "get-folder",
+            "list-resource-reports"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "list-folders",
+              "input": {
+                "page": 1,
+                "q": "Finance",
+                "workspace_token": "wrkspc_123",
+                "type": "DashboardFolder"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "75308114-e949-4793-924f-5e2e605f2e10",
+        "latencyMs": 1909,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Show page 2 of the folders used to organize dashboards in Vantage workspace wrkspc_123.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "list-folders",
+                "input": {
+                  "page": 2,
+                  "workspace_token": "wrkspc_123",
+                  "type": "DashboardFolder"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "list-folders",
+            "toolNames": [
+              "list-folders",
+              "list-dashboards",
+              "list-cost-reports",
+              "get-folder",
+              "list-resource-reports"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "list-folders",
+                "input": {
+                  "page": 2,
+                  "workspace_token": "wrkspc_123",
+                  "type": "DashboardFolder"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "list-folders · inferred · Show page 2 of the folders used to organize dashboards in Vantage workspace wrkspc_123.",
+          "vars": {
+            "prompt": "Show page 2 of the folders used to organize dashboards in Vantage workspace wrkspc_123.",
+            "target": "list-folders",
+            "expected": [
+              {
+                "toolName": "list-folders",
+                "input": {
+                  "type": "DashboardFolder",
+                  "workspace_token": "wrkspc_123",
+                  "page": 2
+                }
+              }
+            ],
+            "distractors": [
+              "list-dashboards",
+              "list-cost-reports",
+              "get-folder",
+              "list-resource-reports"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "list-folders",
+            "resource": "folders",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Show page 2 of the folders used to organize dashboards in Vantage workspace wrkspc_123.",
+          "target": "list-folders",
+          "expected": [
+            {
+              "toolName": "list-folders",
+              "input": {
+                "type": "DashboardFolder",
+                "workspace_token": "wrkspc_123",
+                "page": 2
+              }
+            }
+          ],
+          "distractors": [
+            "list-dashboards",
+            "list-cost-reports",
+            "get-folder",
+            "list-resource-reports"
+          ]
+        },
+        "metadata": {
+          "tool": "list-folders",
+          "resource": "folders",
+          "phrasing": "inferred",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "list-folders",
+          "toolNames": [
+            "list-folders",
+            "list-dashboards",
+            "list-cost-reports",
+            "get-folder",
+            "list-resource-reports"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "list-folders",
+              "input": {
+                "page": 2,
+                "workspace_token": "wrkspc_123",
+                "type": "DashboardFolder"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 2,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-6-luna · mixed",
+        "config": {
+          "modelId": "gpt-6-luna"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/folders/list-folders.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-10-21T01:47:20.162Z",
+    "evaluationCreatedAt": "2026-10-21T01:47:18.127Z"
+  }
+}

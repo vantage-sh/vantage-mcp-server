@@ -1,0 +1,466 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-10-20T22:16:32.502Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "222dac31-3fb4-421e-9941-e3805bee710c",
+        "latencyMs": 5854,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use update-dashboard-notification to rename rprtbl_ntfctn_executive to Daily executive email, set its frequency to daily, and set its Vantage recipients to user usr_finance.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "update-dashboard-notification",
+                "input": {
+                  "dashboard_notification_token": "rprtbl_ntfctn_executive",
+                  "title": "Daily executive email",
+                  "user_tokens": [
+                    "usr_finance"
+                  ],
+                  "frequency": "daily"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "update-dashboard-notification",
+            "toolNames": [
+              "update-dashboard-notification",
+              "update-report-notification",
+              "update-dashboard",
+              "create-dashboard-notification",
+              "update-cost-alert"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "update-dashboard-notification",
+                "input": {
+                  "dashboard_notification_token": "rprtbl_ntfctn_executive",
+                  "title": "Daily executive email",
+                  "user_tokens": [
+                    "usr_finance"
+                  ],
+                  "frequency": "daily"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "update-dashboard-notification · direct · Use update-dashboard-notification to rename rprtbl_ntfctn_executive to Daily executive email, set its frequency to daily, and set its Vantage recipients to user usr_finance.",
+          "vars": {
+            "prompt": "Use update-dashboard-notification to rename rprtbl_ntfctn_executive to Daily executive email, set its frequency to daily, and set its Vantage recipients to user usr_finance.",
+            "target": "update-dashboard-notification",
+            "expected": [
+              {
+                "toolName": "update-dashboard-notification",
+                "input": {
+                  "dashboard_notification_token": "rprtbl_ntfctn_executive",
+                  "title": "Daily executive email",
+                  "frequency": "daily",
+                  "user_tokens": [
+                    "usr_finance"
+                  ]
+                }
+              }
+            ],
+            "distractors": [
+              "update-report-notification",
+              "update-dashboard",
+              "create-dashboard-notification",
+              "update-cost-alert"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "update-dashboard-notification",
+            "resource": "dashboard-notifications",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use update-dashboard-notification to rename rprtbl_ntfctn_executive to Daily executive email, set its frequency to daily, and set its Vantage recipients to user usr_finance.",
+          "target": "update-dashboard-notification",
+          "expected": [
+            {
+              "toolName": "update-dashboard-notification",
+              "input": {
+                "dashboard_notification_token": "rprtbl_ntfctn_executive",
+                "title": "Daily executive email",
+                "frequency": "daily",
+                "user_tokens": [
+                  "usr_finance"
+                ]
+              }
+            }
+          ],
+          "distractors": [
+            "update-report-notification",
+            "update-dashboard",
+            "create-dashboard-notification",
+            "update-cost-alert"
+          ]
+        },
+        "metadata": {
+          "tool": "update-dashboard-notification",
+          "resource": "dashboard-notifications",
+          "phrasing": "direct",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "update-dashboard-notification",
+          "toolNames": [
+            "update-dashboard-notification",
+            "update-report-notification",
+            "update-dashboard",
+            "create-dashboard-notification",
+            "update-cost-alert"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "update-dashboard-notification",
+              "input": {
+                "dashboard_notification_token": "rprtbl_ntfctn_executive",
+                "title": "Daily executive email",
+                "user_tokens": [
+                  "usr_finance"
+                ],
+                "frequency": "daily"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "5dc7d53a-be45-4bcc-9066-39bdb071c3d3",
+        "latencyMs": 10518,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Change my existing Vantage dashboard email schedule rprtbl_ntfctn_finance to send dashboard dshbrd_forecast monthly. Keep its current title and recipients.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "update-dashboard-notification",
+                "input": {
+                  "dashboard_notification_token": "rprtbl_ntfctn_finance",
+                  "dashboard_token": "dshbrd_forecast",
+                  "frequency": "monthly"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "update-dashboard-notification",
+            "toolNames": [
+              "update-dashboard-notification",
+              "update-report-notification",
+              "update-dashboard",
+              "create-dashboard-notification",
+              "update-cost-alert"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "update-dashboard-notification",
+                "input": {
+                  "dashboard_notification_token": "rprtbl_ntfctn_finance",
+                  "dashboard_token": "dshbrd_forecast",
+                  "frequency": "monthly"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "update-dashboard-notification · inferred · Change my existing Vantage dashboard email schedule rprtbl_ntfctn_finance to send dashboard dshbrd_forecast monthly. Keep its current title and recipients.",
+          "vars": {
+            "prompt": "Change my existing Vantage dashboard email schedule rprtbl_ntfctn_finance to send dashboard dshbrd_forecast monthly. Keep its current title and recipients.",
+            "target": "update-dashboard-notification",
+            "expected": [
+              {
+                "toolName": "update-dashboard-notification",
+                "input": {
+                  "dashboard_notification_token": "rprtbl_ntfctn_finance",
+                  "dashboard_token": "dshbrd_forecast",
+                  "frequency": "monthly"
+                }
+              }
+            ],
+            "distractors": [
+              "update-report-notification",
+              "update-dashboard",
+              "create-dashboard-notification",
+              "update-cost-alert"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "update-dashboard-notification",
+            "resource": "dashboard-notifications",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Change my existing Vantage dashboard email schedule rprtbl_ntfctn_finance to send dashboard dshbrd_forecast monthly. Keep its current title and recipients.",
+          "target": "update-dashboard-notification",
+          "expected": [
+            {
+              "toolName": "update-dashboard-notification",
+              "input": {
+                "dashboard_notification_token": "rprtbl_ntfctn_finance",
+                "dashboard_token": "dshbrd_forecast",
+                "frequency": "monthly"
+              }
+            }
+          ],
+          "distractors": [
+            "update-report-notification",
+            "update-dashboard",
+            "create-dashboard-notification",
+            "update-cost-alert"
+          ]
+        },
+        "metadata": {
+          "tool": "update-dashboard-notification",
+          "resource": "dashboard-notifications",
+          "phrasing": "inferred",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "update-dashboard-notification",
+          "toolNames": [
+            "update-dashboard-notification",
+            "update-report-notification",
+            "update-dashboard",
+            "create-dashboard-notification",
+            "update-cost-alert"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "update-dashboard-notification",
+              "input": {
+                "dashboard_notification_token": "rprtbl_ntfctn_finance",
+                "dashboard_token": "dshbrd_forecast",
+                "frequency": "monthly"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 2,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-6-luna · mixed",
+        "config": {
+          "modelId": "gpt-6-luna"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/dashboard-notifications/update-dashboard-notification.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-10-20T22:16:32.181Z",
+    "evaluationCreatedAt": "2026-10-20T22:16:21.573Z"
+  }
+}

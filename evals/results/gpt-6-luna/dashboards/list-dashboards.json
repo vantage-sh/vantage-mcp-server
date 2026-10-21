@@ -1,0 +1,451 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-10-20T22:20:29.127Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "8bee86ad-99c4-4d68-9013-b60a19b5bfd5",
+        "latencyMs": 1824,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use list-dashboards to find dashboards with Spend in the title directly inside Dashboard Folder fldr_finance in workspace wrkspc_123, page 1.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "list-dashboards",
+                "input": {
+                  "page": 1,
+                  "q": "Spend",
+                  "workspace_token": "wrkspc_123",
+                  "folder_token": "fldr_finance"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "list-dashboards",
+            "toolNames": [
+              "list-dashboards",
+              "list-folders",
+              "get-dashboard",
+              "list-cost-reports",
+              "list-dashboard-notifications"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "list-dashboards",
+                "input": {
+                  "page": 1,
+                  "q": "Spend",
+                  "workspace_token": "wrkspc_123",
+                  "folder_token": "fldr_finance"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "list-dashboards · direct · Use list-dashboards to find dashboards with Spend in the title directly inside Dashboard Folder fldr_finance in workspace wrkspc_123, page 1.",
+          "vars": {
+            "prompt": "Use list-dashboards to find dashboards with Spend in the title directly inside Dashboard Folder fldr_finance in workspace wrkspc_123, page 1.",
+            "target": "list-dashboards",
+            "expected": [
+              {
+                "toolName": "list-dashboards",
+                "input": {
+                  "folder_token": "fldr_finance",
+                  "q": "Spend",
+                  "workspace_token": "wrkspc_123",
+                  "page": 1
+                }
+              }
+            ],
+            "distractors": [
+              "list-folders",
+              "get-dashboard",
+              "list-cost-reports",
+              "list-dashboard-notifications"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "list-dashboards",
+            "resource": "dashboards",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use list-dashboards to find dashboards with Spend in the title directly inside Dashboard Folder fldr_finance in workspace wrkspc_123, page 1.",
+          "target": "list-dashboards",
+          "expected": [
+            {
+              "toolName": "list-dashboards",
+              "input": {
+                "folder_token": "fldr_finance",
+                "q": "Spend",
+                "workspace_token": "wrkspc_123",
+                "page": 1
+              }
+            }
+          ],
+          "distractors": [
+            "list-folders",
+            "get-dashboard",
+            "list-cost-reports",
+            "list-dashboard-notifications"
+          ]
+        },
+        "metadata": {
+          "tool": "list-dashboards",
+          "resource": "dashboards",
+          "phrasing": "direct",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "list-dashboards",
+          "toolNames": [
+            "list-dashboards",
+            "list-folders",
+            "get-dashboard",
+            "list-cost-reports",
+            "list-dashboard-notifications"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "list-dashboards",
+              "input": {
+                "page": 1,
+                "q": "Spend",
+                "workspace_token": "wrkspc_123",
+                "folder_token": "fldr_finance"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "9db92f5e-90d6-4392-ac00-0de1ef8f82b9",
+        "latencyMs": 3017,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Show page 1 of the Vantage dashboards directly inside folder fldr_executive, excluding its subfolders.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "list-dashboards",
+                "input": {
+                  "page": 1,
+                  "folder_token": "fldr_executive"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "list-dashboards",
+            "toolNames": [
+              "list-dashboards",
+              "list-folders",
+              "get-dashboard",
+              "list-cost-reports",
+              "list-dashboard-notifications"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "list-dashboards",
+                "input": {
+                  "page": 1,
+                  "folder_token": "fldr_executive"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "list-dashboards · inferred · Show page 1 of the Vantage dashboards directly inside folder fldr_executive, excluding its subfolders.",
+          "vars": {
+            "prompt": "Show page 1 of the Vantage dashboards directly inside folder fldr_executive, excluding its subfolders.",
+            "target": "list-dashboards",
+            "expected": [
+              {
+                "toolName": "list-dashboards",
+                "input": {
+                  "folder_token": "fldr_executive",
+                  "page": 1
+                }
+              }
+            ],
+            "distractors": [
+              "list-folders",
+              "get-dashboard",
+              "list-cost-reports",
+              "list-dashboard-notifications"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "list-dashboards",
+            "resource": "dashboards",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Show page 1 of the Vantage dashboards directly inside folder fldr_executive, excluding its subfolders.",
+          "target": "list-dashboards",
+          "expected": [
+            {
+              "toolName": "list-dashboards",
+              "input": {
+                "folder_token": "fldr_executive",
+                "page": 1
+              }
+            }
+          ],
+          "distractors": [
+            "list-folders",
+            "get-dashboard",
+            "list-cost-reports",
+            "list-dashboard-notifications"
+          ]
+        },
+        "metadata": {
+          "tool": "list-dashboards",
+          "resource": "dashboards",
+          "phrasing": "inferred",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "list-dashboards",
+          "toolNames": [
+            "list-dashboards",
+            "list-folders",
+            "get-dashboard",
+            "list-cost-reports",
+            "list-dashboard-notifications"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "list-dashboards",
+              "input": {
+                "page": 1,
+                "folder_token": "fldr_executive"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 2,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-6-luna · mixed",
+        "config": {
+          "modelId": "gpt-6-luna"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/dashboards/list-dashboards.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-10-20T22:20:28.831Z",
+    "evaluationCreatedAt": "2026-10-20T22:20:25.738Z"
+  }
+}

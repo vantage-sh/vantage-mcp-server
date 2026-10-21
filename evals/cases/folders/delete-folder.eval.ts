@@ -22,12 +22,12 @@ export default function generateTests() {
     ],
     inferredPrompts: [
       {
-        input: "Remove my empty dashboard folder fldr_unused from Vantage.",
+        input: "Remove my folder fldr_old.",
         expected: [
           {
             toolName: TARGET,
             input: {
-              folder_token: "fldr_unused",
+              folder_token: "fldr_old",
             },
           },
         ],

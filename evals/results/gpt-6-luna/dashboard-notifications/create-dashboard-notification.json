@@ -1,0 +1,491 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-10-20T22:14:28.131Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "ba0ada8d-55bd-4628-ba03-5df3e2c816f4",
+        "latencyMs": 2834,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use create-dashboard-notification to create Weekly executive email for dashboard dshbrd_executive in workspace wrkspc_123, sent weekly to user usr_finance.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "create-dashboard-notification",
+                "input": {
+                  "title": "Weekly executive email",
+                  "dashboard_token": "dshbrd_executive",
+                  "workspace_token": "wrkspc_123",
+                  "user_tokens": [
+                    "usr_finance"
+                  ],
+                  "frequency": "weekly"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "create-dashboard-notification",
+            "toolNames": [
+              "create-dashboard-notification",
+              "create-report-notification",
+              "create-cost-alert",
+              "create-budget-alert",
+              "create-dashboard"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "create-dashboard-notification",
+                "input": {
+                  "title": "Weekly executive email",
+                  "dashboard_token": "dshbrd_executive",
+                  "workspace_token": "wrkspc_123",
+                  "user_tokens": [
+                    "usr_finance"
+                  ],
+                  "frequency": "weekly"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "create-dashboard-notification · direct · Use create-dashboard-notification to create Weekly executive email for dashboard dshbrd_executive in workspace wrkspc_123, sent weekly to user usr_finance.",
+          "vars": {
+            "prompt": "Use create-dashboard-notification to create Weekly executive email for dashboard dshbrd_executive in workspace wrkspc_123, sent weekly to user usr_finance.",
+            "target": "create-dashboard-notification",
+            "expected": [
+              {
+                "toolName": "create-dashboard-notification",
+                "input": {
+                  "title": "Weekly executive email",
+                  "dashboard_token": "dshbrd_executive",
+                  "workspace_token": "wrkspc_123",
+                  "frequency": "weekly",
+                  "user_tokens": [
+                    "usr_finance"
+                  ]
+                }
+              }
+            ],
+            "distractors": [
+              "create-report-notification",
+              "create-cost-alert",
+              "create-budget-alert",
+              "create-dashboard"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "create-dashboard-notification",
+            "resource": "dashboard-notifications",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use create-dashboard-notification to create Weekly executive email for dashboard dshbrd_executive in workspace wrkspc_123, sent weekly to user usr_finance.",
+          "target": "create-dashboard-notification",
+          "expected": [
+            {
+              "toolName": "create-dashboard-notification",
+              "input": {
+                "title": "Weekly executive email",
+                "dashboard_token": "dshbrd_executive",
+                "workspace_token": "wrkspc_123",
+                "frequency": "weekly",
+                "user_tokens": [
+                  "usr_finance"
+                ]
+              }
+            }
+          ],
+          "distractors": [
+            "create-report-notification",
+            "create-cost-alert",
+            "create-budget-alert",
+            "create-dashboard"
+          ]
+        },
+        "metadata": {
+          "tool": "create-dashboard-notification",
+          "resource": "dashboard-notifications",
+          "phrasing": "direct",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "create-dashboard-notification",
+          "toolNames": [
+            "create-dashboard-notification",
+            "create-report-notification",
+            "create-cost-alert",
+            "create-budget-alert",
+            "create-dashboard"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "create-dashboard-notification",
+              "input": {
+                "title": "Weekly executive email",
+                "dashboard_token": "dshbrd_executive",
+                "workspace_token": "wrkspc_123",
+                "user_tokens": [
+                  "usr_finance"
+                ],
+                "frequency": "weekly"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "7b2a6c90-7d6b-4b71-b1ec-2b37830e8a59",
+        "latencyMs": 3186,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Schedule a monthly email of my Vantage dashboard dshbrd_finance in workspace wrkspc_123 to approved recipient finance@example.com. Name the schedule Monthly dashboard summary.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "create-dashboard-notification",
+                "input": {
+                  "title": "Monthly dashboard summary",
+                  "dashboard_token": "dshbrd_finance",
+                  "workspace_token": "wrkspc_123",
+                  "recipient_emails": [
+                    "finance@example.com"
+                  ],
+                  "frequency": "monthly"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "create-dashboard-notification",
+            "toolNames": [
+              "create-dashboard-notification",
+              "create-report-notification",
+              "create-cost-alert",
+              "create-budget-alert",
+              "create-dashboard"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "create-dashboard-notification",
+                "input": {
+                  "title": "Monthly dashboard summary",
+                  "dashboard_token": "dshbrd_finance",
+                  "workspace_token": "wrkspc_123",
+                  "recipient_emails": [
+                    "finance@example.com"
+                  ],
+                  "frequency": "monthly"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "create-dashboard-notification · inferred · Schedule a monthly email of my Vantage dashboard dshbrd_finance in workspace wrkspc_123 to approved recipient finance@example.com. Name the schedule Monthly dashboard summary.",
+          "vars": {
+            "prompt": "Schedule a monthly email of my Vantage dashboard dshbrd_finance in workspace wrkspc_123 to approved recipient finance@example.com. Name the schedule Monthly dashboard summary.",
+            "target": "create-dashboard-notification",
+            "expected": [
+              {
+                "toolName": "create-dashboard-notification",
+                "input": {
+                  "title": "Monthly dashboard summary",
+                  "dashboard_token": "dshbrd_finance",
+                  "workspace_token": "wrkspc_123",
+                  "frequency": "monthly",
+                  "recipient_emails": [
+                    "finance@example.com"
+                  ]
+                }
+              }
+            ],
+            "distractors": [
+              "create-report-notification",
+              "create-cost-alert",
+              "create-budget-alert",
+              "create-dashboard"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "create-dashboard-notification",
+            "resource": "dashboard-notifications",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Schedule a monthly email of my Vantage dashboard dshbrd_finance in workspace wrkspc_123 to approved recipient finance@example.com. Name the schedule Monthly dashboard summary.",
+          "target": "create-dashboard-notification",
+          "expected": [
+            {
+              "toolName": "create-dashboard-notification",
+              "input": {
+                "title": "Monthly dashboard summary",
+                "dashboard_token": "dshbrd_finance",
+                "workspace_token": "wrkspc_123",
+                "frequency": "monthly",
+                "recipient_emails": [
+                  "finance@example.com"
+                ]
+              }
+            }
+          ],
+          "distractors": [
+            "create-report-notification",
+            "create-cost-alert",
+            "create-budget-alert",
+            "create-dashboard"
+          ]
+        },
+        "metadata": {
+          "tool": "create-dashboard-notification",
+          "resource": "dashboard-notifications",
+          "phrasing": "inferred",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "create-dashboard-notification",
+          "toolNames": [
+            "create-dashboard-notification",
+            "create-report-notification",
+            "create-cost-alert",
+            "create-budget-alert",
+            "create-dashboard"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "create-dashboard-notification",
+              "input": {
+                "title": "Monthly dashboard summary",
+                "dashboard_token": "dshbrd_finance",
+                "workspace_token": "wrkspc_123",
+                "recipient_emails": [
+                  "finance@example.com"
+                ],
+                "frequency": "monthly"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 2,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-6-luna · mixed",
+        "config": {
+          "modelId": "gpt-6-luna"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/dashboard-notifications/create-dashboard-notification.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-10-20T22:14:27.797Z",
+    "evaluationCreatedAt": "2026-10-20T22:14:24.520Z"
+  }
+}
