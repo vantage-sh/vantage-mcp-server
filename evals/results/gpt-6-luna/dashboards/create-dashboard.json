@@ -1,0 +1,591 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-10-20T22:17:10.030Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "375392c8-e64d-478f-aea2-b92a6eeb891a",
+        "latencyMs": 1773,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use create-dashboard to create a dashboard titled Weekly Spend inside Dashboard Folder fldr_finance, inheriting its workspace. Leave it empty.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "create-dashboard",
+                "input": {
+                  "title": "Weekly Spend",
+                  "folder_token": "fldr_finance"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "create-dashboard",
+            "toolNames": [
+              "create-dashboard",
+              "create-folder",
+              "update-dashboard",
+              "create-dashboard-notification",
+              "create-cost-report"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "create-dashboard",
+                "input": {
+                  "title": "Weekly Spend",
+                  "folder_token": "fldr_finance"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "create-dashboard · direct · Use create-dashboard to create a dashboard titled Weekly Spend inside Dashboard Folder fldr_finance, inheriting its workspace. Leave it empty.",
+          "vars": {
+            "prompt": "Use create-dashboard to create a dashboard titled Weekly Spend inside Dashboard Folder fldr_finance, inheriting its workspace. Leave it empty.",
+            "target": "create-dashboard",
+            "expected": [
+              {
+                "toolName": "create-dashboard",
+                "input": {
+                  "title": "Weekly Spend",
+                  "folder_token": "fldr_finance"
+                }
+              }
+            ],
+            "distractors": [
+              "create-folder",
+              "update-dashboard",
+              "create-dashboard-notification",
+              "create-cost-report"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "create-dashboard",
+            "resource": "dashboards",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use create-dashboard to create a dashboard titled Weekly Spend inside Dashboard Folder fldr_finance, inheriting its workspace. Leave it empty.",
+          "target": "create-dashboard",
+          "expected": [
+            {
+              "toolName": "create-dashboard",
+              "input": {
+                "title": "Weekly Spend",
+                "folder_token": "fldr_finance"
+              }
+            }
+          ],
+          "distractors": [
+            "create-folder",
+            "update-dashboard",
+            "create-dashboard-notification",
+            "create-cost-report"
+          ]
+        },
+        "metadata": {
+          "tool": "create-dashboard",
+          "resource": "dashboards",
+          "phrasing": "direct",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "create-dashboard",
+          "toolNames": [
+            "create-dashboard",
+            "create-folder",
+            "update-dashboard",
+            "create-dashboard-notification",
+            "create-cost-report"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "create-dashboard",
+              "input": {
+                "title": "Weekly Spend",
+                "folder_token": "fldr_finance"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "9493ea23-a36f-42b6-87b3-0c1e1a05d31b",
+        "latencyMs": 2645,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Add a Vantage dashboard named Executive Overview to Dashboard Folder fldr_executive in workspace wrkspc_123. Add one free-text widget titled Notes saying Weekly context, spanning all 12 columns at x=0, y=0 with height 2.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "create-dashboard",
+                "input": {
+                  "title": "Executive Overview",
+                  "workspace_token": "wrkspc_123",
+                  "folder_token": "fldr_executive",
+                  "widgets": [
+                    {
+                      "widgetable_type": "free_text",
+                      "title": "Notes",
+                      "content": {
+                        "type": "doc",
+                        "content": [
+                          {
+                            "type": "paragraph",
+                            "content": [
+                              {
+                                "type": "text",
+                                "text": "Weekly context"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      "settings": {
+                        "display_type": "chart",
+                        "grid": {
+                          "x": 0,
+                          "y": 0,
+                          "w": 12,
+                          "h": 2
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "create-dashboard",
+            "toolNames": [
+              "create-dashboard",
+              "create-folder",
+              "update-dashboard",
+              "create-dashboard-notification",
+              "create-cost-report"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "create-dashboard",
+                "input": {
+                  "title": "Executive Overview",
+                  "workspace_token": "wrkspc_123",
+                  "folder_token": "fldr_executive",
+                  "widgets": [
+                    {
+                      "widgetable_type": "free_text",
+                      "title": "Notes",
+                      "content": {
+                        "type": "doc",
+                        "content": [
+                          {
+                            "type": "paragraph",
+                            "content": [
+                              {
+                                "type": "text",
+                                "text": "Weekly context"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      "settings": {
+                        "display_type": "chart",
+                        "grid": {
+                          "x": 0,
+                          "y": 0,
+                          "w": 12,
+                          "h": 2
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "create-dashboard · inferred · Add a Vantage dashboard named Executive Overview to Dashboard Folder fldr_executive in workspace wrkspc_123. Add one free-text widget titled Notes saying Weekly context, spanning all 12 columns at x=0, y=0 with height 2.",
+          "vars": {
+            "prompt": "Add a Vantage dashboard named Executive Overview to Dashboard Folder fldr_executive in workspace wrkspc_123. Add one free-text widget titled Notes saying Weekly context, spanning all 12 columns at x=0, y=0 with height 2.",
+            "target": "create-dashboard",
+            "expected": [
+              {
+                "toolName": "create-dashboard",
+                "input": {
+                  "title": "Executive Overview",
+                  "folder_token": "fldr_executive",
+                  "workspace_token": "wrkspc_123",
+                  "widgets": [
+                    {
+                      "widgetable_type": "free_text",
+                      "title": "Notes",
+                      "content": {
+                        "type": "doc",
+                        "content": [
+                          {
+                            "type": "paragraph",
+                            "content": [
+                              {
+                                "type": "text",
+                                "text": "Weekly context"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      "settings": {
+                        "display_type": "chart",
+                        "grid": {
+                          "x": 0,
+                          "y": 0,
+                          "w": 12,
+                          "h": 2
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "distractors": [
+              "create-folder",
+              "update-dashboard",
+              "create-dashboard-notification",
+              "create-cost-report"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "create-dashboard",
+            "resource": "dashboards",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Add a Vantage dashboard named Executive Overview to Dashboard Folder fldr_executive in workspace wrkspc_123. Add one free-text widget titled Notes saying Weekly context, spanning all 12 columns at x=0, y=0 with height 2.",
+          "target": "create-dashboard",
+          "expected": [
+            {
+              "toolName": "create-dashboard",
+              "input": {
+                "title": "Executive Overview",
+                "folder_token": "fldr_executive",
+                "workspace_token": "wrkspc_123",
+                "widgets": [
+                  {
+                    "widgetable_type": "free_text",
+                    "title": "Notes",
+                    "content": {
+                      "type": "doc",
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Weekly context"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "settings": {
+                      "display_type": "chart",
+                      "grid": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 12,
+                        "h": 2
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "distractors": [
+            "create-folder",
+            "update-dashboard",
+            "create-dashboard-notification",
+            "create-cost-report"
+          ]
+        },
+        "metadata": {
+          "tool": "create-dashboard",
+          "resource": "dashboards",
+          "phrasing": "inferred",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "create-dashboard",
+          "toolNames": [
+            "create-dashboard",
+            "create-folder",
+            "update-dashboard",
+            "create-dashboard-notification",
+            "create-cost-report"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "create-dashboard",
+              "input": {
+                "title": "Executive Overview",
+                "workspace_token": "wrkspc_123",
+                "folder_token": "fldr_executive",
+                "widgets": [
+                  {
+                    "widgetable_type": "free_text",
+                    "title": "Notes",
+                    "content": {
+                      "type": "doc",
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Weekly context"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "settings": {
+                      "display_type": "chart",
+                      "grid": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 12,
+                        "h": 2
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 2,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-6-luna · mixed",
+        "config": {
+          "modelId": "gpt-6-luna"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/dashboards/create-dashboard.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-10-20T22:17:09.696Z",
+    "evaluationCreatedAt": "2026-10-20T22:17:06.959Z"
+  }
+}

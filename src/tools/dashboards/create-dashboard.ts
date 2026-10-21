@@ -1,9 +1,9 @@
-import type { CreateDashboardRequest } from "@vantage-sh/vantage-client";
 import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import {
+  dashboardFolderForCreate,
   dateBinSchema,
   dateIntervalSchema,
   endDateSchema,
@@ -22,7 +22,11 @@ export default registerTool({
   description,
   args: {
     title: z.string().min(1).describe("The title of the dashboard"),
-    workspace_token: vantageToken("workspace"),
+    workspace_token: vantageToken("workspace", {
+      description:
+        "Workspace for the Dashboard. Inherited from folder_token when omitted; if provided with a folder, must match its Workspace. Required without a folder if the API token is associated with multiple Workspaces.",
+    }).optional(),
+    folder_token: dashboardFolderForCreate,
     widgets: z.array(widgetSchema).describe("Widgets to add. Omit for an empty Dashboard.").optional(),
     saved_filter_tokens: z
       .array(vantageToken("saved_filter"))
@@ -40,8 +44,7 @@ export default registerTool({
   },
   async execute(args, ctx) {
     validateDashboardWidgets(args.widgets);
-    // Free-text widgets send settings.grid without display_type. The generated client still requires display_type.
-    const response = await ctx.callVantageApi("/v2/dashboards", args as CreateDashboardRequest, "POST");
+    const response = await ctx.callVantageApi("/v2/dashboards", args, "POST");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }

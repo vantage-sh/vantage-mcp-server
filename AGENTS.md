@@ -46,6 +46,21 @@ These are easy to violate by copying a neighbor. The skills show the full patter
 
 The default TypeScript and Biome checks exclude `.agents/`; validate changed scripts directly and report any runtime verification that was not performed.
 
+### Surfacing verification findings in chat
+
+- When verification reveals a product failure or a mismatch between advertised tool behavior and the real API, clearly surface the unresolved gap in the agent chat when discovered. A note in a local report or PR description is not sufficient, even when the issue predates the current change.
+- Explain the input or action that failed, the observed result, the user-visible impact, and what still needs fixing or verification. Distinguish an incorrect test harness from a product defect.
+- If a workaround changes the request or narrows coverage, state what the successful retry proves and what remains broken or unverified. Passing after removing the failing input does not validate the original behavior.
+- Repeat unresolved product gaps in the final handoff, with a concrete next step. Keep detailed diagnostics in the local report and apply the PR guidance below separately; omitting an unrelated issue from a public PR must not hide it from the user.
+
+### Writing verification in a PR
+
+- Use short Markdown checklist items for PR verification: `- [x]` for completed, passing checks and `- [ ]` for failed, unresolved, skipped, or unrun checks, with a brief explanation. Use checkboxes instead of plain `*` or `-` bullets, tables, or dense paragraphs. Each behavior item should say what was validated, how it was exercised, and what was observed. For example: "Validated moving a Dashboard by moving it between Folders and to root, then reading it back to confirm its location and preserved widgets."
+- Describe the behaviors checked; aggregate check counts alone do not explain coverage. Summarize automated checks with their commands and results in separate checklist items.
+- Include relevant conditions and gaps, such as using a real API instead of mocks, testing only with account-owner access, or authoring evals without executing them. Mention failures or workarounds when they limit confidence in the submitted change.
+- Keep the full run history and evidence in the local verification report. Public PR descriptions must not reference local files, run directories, local checkouts, private dependency commit hashes, or source-hash bookkeeping. Omit resolved harness mistakes, unrelated existing bugs, and routine process/credential cleanup details; report cleanup only when something remains or affects review.
+- Link evidence only when PR readers can access it, such as a CI run or a repository file. Include a tested commit or deployment identifier only when needed to distinguish the verified revision from the current PR.
+
 ### Evals (opt-in)
 
 When adding or changing a tool, ask whether the user wants evals included. If so, confirm that the selected provider's API key is configured in the ignored `.env` file and follow [.agents/skills/writing-evals/SKILL.md](.agents/skills/writing-evals/SKILL.md). Do not backfill or update evals unless requested.
@@ -58,5 +73,5 @@ When work is complete, ask whether the user wants to run end-to-end verification
 
 - The [feature map](.agents/skills/verify-vantage-mcp/features/README.md) covers local OAuth discovery and consent, hosted tool calls, local stdio, and staging login. Update the matching feature file when changing a user-visible path.
 - Local OAuth verification stops at the consent screen. Successful tool calls need Core and a token it accepts; full Auth0 login needs staging. Each staging deploy requires explicit approval, and staging must be restored to `main` afterwards.
-- Keep evidence under the ignored `tmp/verify-vantage-mcp/` directory. Record the tested commit, entry points, results, and artifact paths in the PR or handoff. Identify skipped paths and unmet prerequisites; passing unit tests or tool listing alone does not prove a successful authenticated tool call.
+- Keep evidence under the ignored `tmp/verify-vantage-mcp/` directory. Record tested commits, entry points, results, artifact paths, skipped paths, and unmet prerequisites in the local verification report and handoff. Summarize relevant outcomes in the PR using the guidance above; passing unit tests or tool listing alone does not prove a successful authenticated tool call.
 - Clean up every local run, including failed attempts, using the skill's cleanup command. Stop only processes started by that run and preserve its evidence.

@@ -5,8 +5,8 @@ import { requestsInOrder, testTool } from "../../../src/utils/testing";
 
 const success: GetFolderResponse = {
   token: "fldr_123",
-  title: "Infrastructure Resources",
-  type: "ProviderResourceFolder",
+  title: "Executive Dashboards",
+  type: "DashboardFolder",
   saved_filter_tokens: [],
   created_at: "2023-01-01T00:00:00Z",
   updated_at: "2023-01-01T00:00:00Z",

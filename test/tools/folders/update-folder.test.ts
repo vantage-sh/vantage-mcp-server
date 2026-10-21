@@ -99,4 +99,56 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   },
 ];
 
+for (const parent_folder_token of ["fldr_destination", null, "", undefined]) {
+  const args = { ...minimalValidInputArguments, title: "Executive Dashboards", parent_folder_token };
+  const response = {
+    ...successData,
+    title: "Executive Dashboards",
+    type: "DashboardFolder",
+    parent_folder_token: parent_folder_token === undefined ? "fldr_parent" : parent_folder_token || null,
+    saved_filter_tokens: [],
+  };
+  argumentSchemaTests.push({ name: `parent ${String(parent_folder_token)}`, data: args });
+  executionTests.push({
+    name: `updates Dashboard Folder parent ${String(parent_folder_token)} without changing filters`,
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: `/v2/folders/${pathEncode("fldr_123")}`,
+        params: { title: "Executive Dashboards", parent_folder_token },
+        method: "PUT",
+        result: { ok: true, data: response },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      expect(await callExpectingSuccess(args)).toEqual(response);
+    },
+  });
+}
+
+for (const saved_filter_tokens of [null, []]) {
+  const args = { ...minimalValidInputArguments, saved_filter_tokens };
+  const response = { ...successData, saved_filter_tokens: [] };
+  argumentSchemaTests.push({ name: `clears filters with ${JSON.stringify(saved_filter_tokens)}`, data: args });
+  executionTests.push({
+    name: `clears Cost Folder filters with ${JSON.stringify(saved_filter_tokens)}`,
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: `/v2/folders/${pathEncode("fldr_123")}`,
+        params: { saved_filter_tokens },
+        method: "PUT",
+        result: { ok: true, data: response },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      expect(await callExpectingSuccess(args)).toEqual(response);
+    },
+  });
+}
+
+argumentSchemaTests.push({
+  name: "rejects a non-folder parent token",
+  data: { ...minimalValidInputArguments, parent_folder_token: "dshbrd_123" },
+  expectedIssues: ["Invalid input"],
+});
+
 testTool(tool, argumentSchemaTests, executionTests);

@@ -1,0 +1,431 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-10-20T22:19:31.526Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "731bba8e-242e-4b6d-ad2f-1ae00808c3b4",
+        "latencyMs": 1512,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use delete-dashboard to delete dashboard dshbrd_unused and its widgets.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "delete-dashboard",
+                "input": {
+                  "dashboard_token": "dshbrd_unused"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "delete-dashboard",
+            "toolNames": [
+              "delete-dashboard",
+              "delete-dashboard-widget",
+              "delete-folder",
+              "delete-dashboard-notification",
+              "update-dashboard"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "delete-dashboard",
+                "input": {
+                  "dashboard_token": "dshbrd_unused"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "delete-dashboard · direct · Use delete-dashboard to delete dashboard dshbrd_unused and its widgets.",
+          "vars": {
+            "prompt": "Use delete-dashboard to delete dashboard dshbrd_unused and its widgets.",
+            "target": "delete-dashboard",
+            "expected": [
+              {
+                "toolName": "delete-dashboard",
+                "input": {
+                  "dashboard_token": "dshbrd_unused"
+                }
+              }
+            ],
+            "distractors": [
+              "delete-dashboard-widget",
+              "delete-folder",
+              "delete-dashboard-notification",
+              "update-dashboard"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "delete-dashboard",
+            "resource": "dashboards",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use delete-dashboard to delete dashboard dshbrd_unused and its widgets.",
+          "target": "delete-dashboard",
+          "expected": [
+            {
+              "toolName": "delete-dashboard",
+              "input": {
+                "dashboard_token": "dshbrd_unused"
+              }
+            }
+          ],
+          "distractors": [
+            "delete-dashboard-widget",
+            "delete-folder",
+            "delete-dashboard-notification",
+            "update-dashboard"
+          ]
+        },
+        "metadata": {
+          "tool": "delete-dashboard",
+          "resource": "dashboards",
+          "phrasing": "direct",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "delete-dashboard",
+          "toolNames": [
+            "delete-dashboard",
+            "delete-dashboard-widget",
+            "delete-folder",
+            "delete-dashboard-notification",
+            "update-dashboard"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "delete-dashboard",
+              "input": {
+                "dashboard_token": "dshbrd_unused"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "7f576177-b00e-4b34-8526-9ae630c15606",
+        "latencyMs": 1950,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Remove the entire Vantage dashboard dshbrd_retired, including every widget it contains.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "delete-dashboard",
+                "input": {
+                  "dashboard_token": "dshbrd_retired"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "delete-dashboard",
+            "toolNames": [
+              "delete-dashboard",
+              "delete-dashboard-widget",
+              "delete-folder",
+              "delete-dashboard-notification",
+              "update-dashboard"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "delete-dashboard",
+                "input": {
+                  "dashboard_token": "dshbrd_retired"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "delete-dashboard · inferred · Remove the entire Vantage dashboard dshbrd_retired, including every widget it contains.",
+          "vars": {
+            "prompt": "Remove the entire Vantage dashboard dshbrd_retired, including every widget it contains.",
+            "target": "delete-dashboard",
+            "expected": [
+              {
+                "toolName": "delete-dashboard",
+                "input": {
+                  "dashboard_token": "dshbrd_retired"
+                }
+              }
+            ],
+            "distractors": [
+              "delete-dashboard-widget",
+              "delete-folder",
+              "delete-dashboard-notification",
+              "update-dashboard"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "delete-dashboard",
+            "resource": "dashboards",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Remove the entire Vantage dashboard dshbrd_retired, including every widget it contains.",
+          "target": "delete-dashboard",
+          "expected": [
+            {
+              "toolName": "delete-dashboard",
+              "input": {
+                "dashboard_token": "dshbrd_retired"
+              }
+            }
+          ],
+          "distractors": [
+            "delete-dashboard-widget",
+            "delete-folder",
+            "delete-dashboard-notification",
+            "update-dashboard"
+          ]
+        },
+        "metadata": {
+          "tool": "delete-dashboard",
+          "resource": "dashboards",
+          "phrasing": "inferred",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "delete-dashboard",
+          "toolNames": [
+            "delete-dashboard",
+            "delete-dashboard-widget",
+            "delete-folder",
+            "delete-dashboard-notification",
+            "update-dashboard"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "delete-dashboard",
+              "input": {
+                "dashboard_token": "dshbrd_retired"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 2,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-6-luna · mixed",
+        "config": {
+          "modelId": "gpt-6-luna"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/dashboards/delete-dashboard.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-10-20T22:19:31.226Z",
+    "evaluationCreatedAt": "2026-10-20T22:19:29.212Z"
+  }
+}

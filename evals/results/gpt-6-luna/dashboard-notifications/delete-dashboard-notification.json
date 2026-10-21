@@ -1,0 +1,431 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-10-20T22:15:12.756Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "4bd56311-3803-4cd4-9d10-c796044bc24f",
+        "latencyMs": 2107,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use delete-dashboard-notification to remove schedule rprtbl_ntfctn_unused.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "delete-dashboard-notification",
+                "input": {
+                  "dashboard_notification_token": "rprtbl_ntfctn_unused"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "delete-dashboard-notification",
+            "toolNames": [
+              "delete-dashboard-notification",
+              "delete-report-notification",
+              "delete-dashboard",
+              "update-dashboard-notification",
+              "delete-cost-alert"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "delete-dashboard-notification",
+                "input": {
+                  "dashboard_notification_token": "rprtbl_ntfctn_unused"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "delete-dashboard-notification · direct · Use delete-dashboard-notification to remove schedule rprtbl_ntfctn_unused.",
+          "vars": {
+            "prompt": "Use delete-dashboard-notification to remove schedule rprtbl_ntfctn_unused.",
+            "target": "delete-dashboard-notification",
+            "expected": [
+              {
+                "toolName": "delete-dashboard-notification",
+                "input": {
+                  "dashboard_notification_token": "rprtbl_ntfctn_unused"
+                }
+              }
+            ],
+            "distractors": [
+              "delete-report-notification",
+              "delete-dashboard",
+              "update-dashboard-notification",
+              "delete-cost-alert"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "delete-dashboard-notification",
+            "resource": "dashboard-notifications",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use delete-dashboard-notification to remove schedule rprtbl_ntfctn_unused.",
+          "target": "delete-dashboard-notification",
+          "expected": [
+            {
+              "toolName": "delete-dashboard-notification",
+              "input": {
+                "dashboard_notification_token": "rprtbl_ntfctn_unused"
+              }
+            }
+          ],
+          "distractors": [
+            "delete-report-notification",
+            "delete-dashboard",
+            "update-dashboard-notification",
+            "delete-cost-alert"
+          ]
+        },
+        "metadata": {
+          "tool": "delete-dashboard-notification",
+          "resource": "dashboard-notifications",
+          "phrasing": "direct",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "delete-dashboard-notification",
+          "toolNames": [
+            "delete-dashboard-notification",
+            "delete-report-notification",
+            "delete-dashboard",
+            "update-dashboard-notification",
+            "delete-cost-alert"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "delete-dashboard-notification",
+              "input": {
+                "dashboard_notification_token": "rprtbl_ntfctn_unused"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "f91857ea-3167-4acf-9fb6-1ab6c70afa7d",
+        "latencyMs": 1562,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Stop the scheduled Vantage dashboard emails from rprtbl_ntfctn_finance by removing that notification. Keep the dashboard itself.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "delete-dashboard-notification",
+                "input": {
+                  "dashboard_notification_token": "rprtbl_ntfctn_finance"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "delete-dashboard-notification",
+            "toolNames": [
+              "delete-dashboard-notification",
+              "delete-report-notification",
+              "delete-dashboard",
+              "update-dashboard-notification",
+              "delete-cost-alert"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "delete-dashboard-notification",
+                "input": {
+                  "dashboard_notification_token": "rprtbl_ntfctn_finance"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "delete-dashboard-notification · inferred · Stop the scheduled Vantage dashboard emails from rprtbl_ntfctn_finance by removing that notification. Keep the dashboard itself.",
+          "vars": {
+            "prompt": "Stop the scheduled Vantage dashboard emails from rprtbl_ntfctn_finance by removing that notification. Keep the dashboard itself.",
+            "target": "delete-dashboard-notification",
+            "expected": [
+              {
+                "toolName": "delete-dashboard-notification",
+                "input": {
+                  "dashboard_notification_token": "rprtbl_ntfctn_finance"
+                }
+              }
+            ],
+            "distractors": [
+              "delete-report-notification",
+              "delete-dashboard",
+              "update-dashboard-notification",
+              "delete-cost-alert"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "delete-dashboard-notification",
+            "resource": "dashboard-notifications",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Stop the scheduled Vantage dashboard emails from rprtbl_ntfctn_finance by removing that notification. Keep the dashboard itself.",
+          "target": "delete-dashboard-notification",
+          "expected": [
+            {
+              "toolName": "delete-dashboard-notification",
+              "input": {
+                "dashboard_notification_token": "rprtbl_ntfctn_finance"
+              }
+            }
+          ],
+          "distractors": [
+            "delete-report-notification",
+            "delete-dashboard",
+            "update-dashboard-notification",
+            "delete-cost-alert"
+          ]
+        },
+        "metadata": {
+          "tool": "delete-dashboard-notification",
+          "resource": "dashboard-notifications",
+          "phrasing": "inferred",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "delete-dashboard-notification",
+          "toolNames": [
+            "delete-dashboard-notification",
+            "delete-report-notification",
+            "delete-dashboard",
+            "update-dashboard-notification",
+            "delete-cost-alert"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "delete-dashboard-notification",
+              "input": {
+                "dashboard_notification_token": "rprtbl_ntfctn_finance"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 2,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-6-luna · mixed",
+        "config": {
+          "modelId": "gpt-6-luna"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/dashboard-notifications/delete-dashboard-notification.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-10-20T22:15:12.443Z",
+    "evaluationCreatedAt": "2026-10-20T22:15:10.265Z"
+  }
+}

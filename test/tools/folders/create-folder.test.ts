@@ -48,15 +48,15 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       ...undefineds,
       title: "My Folder",
     } as any,
-    expectedIssues: ['Invalid option: expected one of "CostFolder"|"ProviderResourceFolder"'],
+    expectedIssues: ['Invalid option: expected one of "CostFolder"|"DashboardFolder"|"ProviderResourceFolder"'],
   },
   {
     name: "invalid folder type",
     data: {
       ...minimalValidInputArguments,
-      type: "DashboardFolder" as any,
+      type: "UnknownFolder" as any,
     },
-    expectedIssues: ['Invalid option: expected one of "CostFolder"|"ProviderResourceFolder"'],
+    expectedIssues: ['Invalid option: expected one of "CostFolder"|"DashboardFolder"|"ProviderResourceFolder"'],
   },
   {
     name: "empty title",
@@ -120,5 +120,52 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     },
   },
 ];
+
+const dashboardFolderArgs: InferValidators<Validators> = {
+  ...minimalValidInputArguments,
+  title: "Executive Dashboards",
+  type: "DashboardFolder",
+  parent_folder_token: "fldr_parent",
+};
+const dashboardFolderResponse = {
+  ...successData,
+  title: "Executive Dashboards",
+  type: "DashboardFolder",
+  parent_folder_token: "fldr_parent",
+  saved_filter_tokens: [],
+};
+
+argumentSchemaTests.push({ name: "nested Dashboard Folder", data: dashboardFolderArgs });
+executionTests.push(
+  {
+    name: "creates a nested Dashboard Folder with an inherited Workspace",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/folders",
+        params: dashboardFolderArgs,
+        method: "POST",
+        result: { ok: true, data: dashboardFolderResponse },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      expect(await callExpectingSuccess(dashboardFolderArgs)).toEqual(dashboardFolderResponse);
+    },
+  },
+  {
+    name: "surfaces an inaccessible parent Folder",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/folders",
+        params: dashboardFolderArgs,
+        method: "POST",
+        result: { ok: false, errors: [{ message: "Folder fldr_parent not found." }] },
+      },
+    ]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const error = await callExpectingMCPUserError(dashboardFolderArgs);
+      expect(error.exception).toEqual({ errors: [{ message: "Folder fldr_parent not found." }] });
+    },
+  }
+);
 
 testTool(tool, argumentSchemaTests, executionTests);

@@ -1,9 +1,10 @@
-import { pathEncode, type UpdateDashboardRequest } from "@vantage-sh/vantage-client";
+import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import {
+  dashboardFolderForUpdate,
   endDateSchema,
   startDateSchema,
   updateDateBinSchema,
@@ -27,6 +28,7 @@ export default registerTool({
   },
   args: {
     dashboard_token: vantageToken("dashboard"),
+    folder_token: dashboardFolderForUpdate,
     title: z.string().min(1).optional().describe("The updated title of the dashboard."),
     widgets: z
       .array(widgetSchema)
@@ -49,12 +51,7 @@ export default registerTool({
   async execute(args, ctx) {
     validateDashboardWidgets(args.widgets);
     const { dashboard_token, ...body } = args;
-    // Free-text widgets send settings.grid without display_type. The generated client still requires display_type.
-    const response = await ctx.callVantageApi(
-      `/v2/dashboards/${pathEncode(dashboard_token)}`,
-      body as UpdateDashboardRequest,
-      "PUT"
-    );
+    const response = await ctx.callVantageApi(`/v2/dashboards/${pathEncode(dashboard_token)}`, body, "PUT");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }

@@ -40,6 +40,7 @@ const successData: GetDashboardNotificationsResponse = {
       token: "rprtbl_ntfctn_123",
       title: "Weekly Executive Dashboard",
       dashboard_token: "dshbrd_123",
+      workspace_token: "wrkspc_123",
       user_tokens: ["usr_123"],
       recipient_emails: ["finance@example.com"],
       frequency: "weekly",

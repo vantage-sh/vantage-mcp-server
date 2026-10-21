@@ -17,6 +17,7 @@ type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const undefineds = {
+  folder_token: undefined,
   title: undefined,
   widgets: undefined,
   saved_filter_tokens: undefined,
@@ -128,6 +129,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
           title: "Notes",
           content: { type: "doc" },
           settings: {
+            display_type: "chart",
             grid: { x: 0, y: 4, w: 12, h: 2 },
           },
         },
@@ -143,9 +145,20 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   },
 ];
 
+const freeTextGridWidget = {
+  widgetable_type: "free_text" as const,
+  title: "Notes",
+  content: {
+    type: "doc" as const,
+    content: [{ type: "paragraph", content: [{ type: "text", text: "Dashboard notes" }] }],
+  },
+  settings: { display_type: "chart" as const, grid: { x: 0, y: 1, w: 12, h: 2 } },
+};
+
 const successData: UpdateDashboardResponse = {
   token: "dshbrd_123",
   title: "Updated Dashboard",
+  folder_token: null,
   workspace_token: "wrkspc_123",
   widgets: [],
   saved_filter_tokens: ["svd_fltr_123"],
@@ -153,6 +166,11 @@ const successData: UpdateDashboardResponse = {
   date_interval: "this_month",
   created_at: "2023-01-15T10:30:00Z",
   updated_at: "2023-01-16T10:30:00Z",
+};
+
+const freeTextGridResponse = {
+  ...successData,
+  widgets: [{ token: "dshbrd_wdgt_123", ...freeTextGridWidget }],
 };
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
@@ -236,40 +254,100 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     },
   },
   {
-    name: "free text widget grid omits display type",
+    name: "free text widget grid includes the API-required display type",
     apiCallHandler: requestsInOrder([
       {
         endpoint: `/v2/dashboards/${pathEncode("dshbrd_123")}`,
-        params: {
-          widgets: [
-            {
-              widgetable_type: "free_text",
-              content: { type: "doc" },
-              settings: { grid: { x: 0, y: 2, w: 6, h: 2 } },
-            },
-          ],
-        },
+        params: { widgets: [freeTextGridWidget] },
         method: "PUT",
-        result: {
-          ok: true,
-          data: successData,
-        },
+        result: { ok: true, data: freeTextGridResponse },
       },
     ]),
     handler: async ({ callExpectingSuccess }) => {
-      const res = await callExpectingSuccess({
-        ...minimalValidInputArguments,
-        widgets: [
-          {
-            widgetable_type: "free_text",
-            content: { type: "doc" },
-            settings: { grid: { x: 0, y: 2, w: 6, h: 2 } },
-          },
-        ],
-      });
-      expect(res).toEqual(successData);
+      const res = await callExpectingSuccess({ ...minimalValidInputArguments, widgets: [freeTextGridWidget] });
+      expect(res).toEqual(freeTextGridResponse);
     },
   },
 ];
+
+for (const folder_token of ["fldr_destination", null, "", undefined]) {
+  const args = { ...minimalValidInputArguments, title: "Moved Dashboard", folder_token };
+  const response = {
+    ...successData,
+    title: "Moved Dashboard",
+    folder_token: folder_token === undefined ? "fldr_current" : folder_token || null,
+  };
+  argumentSchemaTests.push({ name: `folder ${String(folder_token)}`, data: args });
+  executionTests.push({
+    name: `updates folder ${String(folder_token)} without replacing widgets`,
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: `/v2/dashboards/${pathEncode("dshbrd_123")}`,
+        params: { title: "Moved Dashboard", folder_token },
+        method: "PUT",
+        result: { ok: true, data: response },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      expect(await callExpectingSuccess(args)).toEqual(response);
+    },
+  });
+}
+
+argumentSchemaTests.push({
+  name: "rejects a non-folder destination token",
+  data: { ...minimalValidInputArguments, folder_token: "wrkspc_123" },
+  expectedIssues: ["Invalid input"],
+});
+
+executionTests.push({
+  name: "surfaces inaccessible or cross-Workspace destination folders",
+  apiCallHandler: requestsInOrder([
+    {
+      endpoint: `/v2/dashboards/${pathEncode("dshbrd_123")}`,
+      params: { folder_token: "fldr_other_workspace" },
+      method: "PUT",
+      result: { ok: false, errors: [{ message: "Dashboard Folder fldr_other_workspace not found." }] },
+    },
+  ]),
+  handler: async ({ callExpectingMCPUserError }) => {
+    const error = await callExpectingMCPUserError({
+      ...minimalValidInputArguments,
+      folder_token: "fldr_other_workspace",
+    });
+    expect(error.exception).toEqual({ errors: [{ message: "Dashboard Folder fldr_other_workspace not found." }] });
+  },
+});
+
+for (const widget of [
+  { widgetable_type: "free_text" as const, content: { type: "doc" as const } },
+  { widgetable_token: "rprt_123" },
+]) {
+  argumentSchemaTests.push({
+    name: `rejects missing display_type for ${"widgetable_type" in widget ? "free text" : "report"} settings`,
+    data: {
+      ...minimalValidInputArguments,
+      widgets: [{ ...widget, settings: { grid: { x: 0, y: 0, w: 6, h: 2 } } as any }],
+    },
+    expectedIssues: ['Invalid option: expected one of "table"|"chart"|"kpi"'],
+  });
+}
+
+argumentSchemaTests.push(
+  {
+    name: "free text widget without settings uses default layout",
+    data: {
+      ...minimalValidInputArguments,
+      widgets: [{ widgetable_type: "free_text", content: { type: "doc" } }],
+    },
+  },
+  {
+    name: "free text settings can omit grid when display_type is supplied",
+    data: {
+      ...minimalValidInputArguments,
+      widgets: [{ widgetable_type: "free_text", content: { type: "doc" }, settings: { display_type: "chart" } }],
+    },
+  }
+);
 
 testTool(tool, argumentSchemaTests, executionTests);

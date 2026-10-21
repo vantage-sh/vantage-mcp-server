@@ -1,0 +1,486 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-10-20T22:20:46.665Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "dd9aa6ff-a7d4-4fa7-9179-9c553746eff1",
+        "latencyMs": 1549,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use update-dashboard-widget to point widget dshbrd_wdgt_spend at report rprt_monthly, rename it Monthly spend, and set its display type to table.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "update-dashboard-widget",
+                "input": {
+                  "widget_token": "dshbrd_wdgt_spend",
+                  "widgetable_token": "rprt_monthly",
+                  "title": "Monthly spend",
+                  "settings": {
+                    "display_type": "table"
+                  }
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "update-dashboard-widget",
+            "toolNames": [
+              "update-dashboard-widget",
+              "update-dashboard",
+              "update-cost-report",
+              "get-dashboard-widget",
+              "create-dashboard"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "update-dashboard-widget",
+                "input": {
+                  "widget_token": "dshbrd_wdgt_spend",
+                  "widgetable_token": "rprt_monthly",
+                  "title": "Monthly spend",
+                  "settings": {
+                    "display_type": "table"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "update-dashboard-widget · direct · Use update-dashboard-widget to point widget dshbrd_wdgt_spend at report rprt_monthly, rename it Monthly spend, and set its display type to table.",
+          "vars": {
+            "prompt": "Use update-dashboard-widget to point widget dshbrd_wdgt_spend at report rprt_monthly, rename it Monthly spend, and set its display type to table.",
+            "target": "update-dashboard-widget",
+            "expected": [
+              {
+                "toolName": "update-dashboard-widget",
+                "input": {
+                  "widget_token": "dshbrd_wdgt_spend",
+                  "widgetable_token": "rprt_monthly",
+                  "title": "Monthly spend",
+                  "settings": {
+                    "display_type": "table"
+                  }
+                }
+              }
+            ],
+            "distractors": [
+              "update-dashboard",
+              "update-cost-report",
+              "get-dashboard-widget",
+              "create-dashboard"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "update-dashboard-widget",
+            "resource": "dashboards",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use update-dashboard-widget to point widget dshbrd_wdgt_spend at report rprt_monthly, rename it Monthly spend, and set its display type to table.",
+          "target": "update-dashboard-widget",
+          "expected": [
+            {
+              "toolName": "update-dashboard-widget",
+              "input": {
+                "widget_token": "dshbrd_wdgt_spend",
+                "widgetable_token": "rprt_monthly",
+                "title": "Monthly spend",
+                "settings": {
+                  "display_type": "table"
+                }
+              }
+            }
+          ],
+          "distractors": [
+            "update-dashboard",
+            "update-cost-report",
+            "get-dashboard-widget",
+            "create-dashboard"
+          ]
+        },
+        "metadata": {
+          "tool": "update-dashboard-widget",
+          "resource": "dashboards",
+          "phrasing": "direct",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "update-dashboard-widget",
+          "toolNames": [
+            "update-dashboard-widget",
+            "update-dashboard",
+            "update-cost-report",
+            "get-dashboard-widget",
+            "create-dashboard"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "update-dashboard-widget",
+              "input": {
+                "widget_token": "dshbrd_wdgt_spend",
+                "widgetable_token": "rprt_monthly",
+                "title": "Monthly spend",
+                "settings": {
+                  "display_type": "table"
+                }
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "4ef8e726-c9e7-4358-9e50-34ed0ea95bf3",
+        "latencyMs": 2313,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Change only Cost Report widget dshbrd_wdgt_usage on my Vantage dashboard into a usage KPI showing the average GB value. Keep its linked report, title, and all other widgets unchanged.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "update-dashboard-widget",
+                "input": {
+                  "widget_token": "dshbrd_wdgt_usage",
+                  "settings": {
+                    "display_type": "kpi",
+                    "kpi_calculation": "average",
+                    "kpi_type": "usage",
+                    "kpi_usage_unit": "GB"
+                  }
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "update-dashboard-widget",
+            "toolNames": [
+              "update-dashboard-widget",
+              "update-dashboard",
+              "update-cost-report",
+              "get-dashboard-widget",
+              "create-dashboard"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "update-dashboard-widget",
+                "input": {
+                  "widget_token": "dshbrd_wdgt_usage",
+                  "settings": {
+                    "display_type": "kpi",
+                    "kpi_calculation": "average",
+                    "kpi_type": "usage",
+                    "kpi_usage_unit": "GB"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "update-dashboard-widget · inferred · Change only Cost Report widget dshbrd_wdgt_usage on my Vantage dashboard into a usage KPI showing the average GB value. Keep its linked report, title, and all other widgets unchanged.",
+          "vars": {
+            "prompt": "Change only Cost Report widget dshbrd_wdgt_usage on my Vantage dashboard into a usage KPI showing the average GB value. Keep its linked report, title, and all other widgets unchanged.",
+            "target": "update-dashboard-widget",
+            "expected": [
+              {
+                "toolName": "update-dashboard-widget",
+                "input": {
+                  "widget_token": "dshbrd_wdgt_usage",
+                  "settings": {
+                    "display_type": "kpi",
+                    "kpi_calculation": "average",
+                    "kpi_type": "usage",
+                    "kpi_usage_unit": "GB"
+                  }
+                }
+              }
+            ],
+            "distractors": [
+              "update-dashboard",
+              "update-cost-report",
+              "get-dashboard-widget",
+              "create-dashboard"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "update-dashboard-widget",
+            "resource": "dashboards",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Change only Cost Report widget dshbrd_wdgt_usage on my Vantage dashboard into a usage KPI showing the average GB value. Keep its linked report, title, and all other widgets unchanged.",
+          "target": "update-dashboard-widget",
+          "expected": [
+            {
+              "toolName": "update-dashboard-widget",
+              "input": {
+                "widget_token": "dshbrd_wdgt_usage",
+                "settings": {
+                  "display_type": "kpi",
+                  "kpi_calculation": "average",
+                  "kpi_type": "usage",
+                  "kpi_usage_unit": "GB"
+                }
+              }
+            }
+          ],
+          "distractors": [
+            "update-dashboard",
+            "update-cost-report",
+            "get-dashboard-widget",
+            "create-dashboard"
+          ]
+        },
+        "metadata": {
+          "tool": "update-dashboard-widget",
+          "resource": "dashboards",
+          "phrasing": "inferred",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "update-dashboard-widget",
+          "toolNames": [
+            "update-dashboard-widget",
+            "update-dashboard",
+            "update-cost-report",
+            "get-dashboard-widget",
+            "create-dashboard"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "update-dashboard-widget",
+              "input": {
+                "widget_token": "dshbrd_wdgt_usage",
+                "settings": {
+                  "display_type": "kpi",
+                  "kpi_calculation": "average",
+                  "kpi_type": "usage",
+                  "kpi_usage_unit": "GB"
+                }
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 2,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-6-luna · mixed",
+        "config": {
+          "modelId": "gpt-6-luna"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/dashboards/update-dashboard-widget.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-10-20T22:20:46.344Z",
+    "evaluationCreatedAt": "2026-10-20T22:20:43.934Z"
+  }
+}

@@ -92,6 +92,8 @@ Proof standards:
 - Mocks are acceptable only where a production boundary already isolates the external system. That means the dummy Auth0 locally; Core is real (local Core) in token mode.
 - Report a suite as passing only when its `summary.json` shows `failed: 0`. Preserve failed attempts and explain any corrections or successful retries. A skipped check is reported as skipped with its reason, never as passing through a different path.
 
+When verification exposes a product failure or an API/tool mismatch, follow [AGENTS.md: Surfacing verification findings in chat](../../../AGENTS.md#surfacing-verification-findings-in-chat). Clearly call out the unresolved behavior, its user impact, and the remaining work in the agent chat and final handoff. For example, if the API rejects a free-text widget with grid-only settings that the MCP tool accepts, omitting the grid on retry verifies only the reduced request; it does not establish working grid support. Keep this finding visible even if it is outside the current PR's scope.
+
 Before handing results back, write **`SUMMARY.md` in the working verification folder** as the primary report. Keep an aggregate `verification-summary.json`, when produced, beside it. Per-feature reports remain with their raw evidence and do not replace this combined handoff. Link every local or staging subrun from the working folder's report.
 
 The Markdown summary must be understandable without opening JSON:
@@ -103,6 +105,16 @@ The Markdown summary must be understandable without opening JSON:
 - Link to supporting logs, screenshots, JSON, and other run folders using paths relative to the report. Never include credential values.
 
 Finalize the summary after cleanup so it reflects the actual final state. Link to `SUMMARY.md` in the final response and open it in Codex when that file-opening tool is available; JSON is supporting evidence, not the user-facing handoff.
+
+## Writing verification in a PR
+
+Follow [AGENTS.md: Writing verification in a PR](../../../AGENTS.md#writing-verification-in-a-pr). The detailed local report is the evidence record; write the public PR verification as a short Markdown checklist describing the behaviors checked. Use `- [x]` for completed, passing checks and `- [ ]` for failed, unresolved, skipped, or unrun checks, explaining their status. Do not use plain `*` or `-` bullets, a copied report, results table, or dense paragraph. Each behavior item should identify the action taken and the observed result, for example:
+
+- [x] Validated creating a Dashboard by creating it inside a Folder without specifying a Workspace, then reading it back to confirm the Folder and inherited Workspace.
+- [x] Validated moving a Dashboard by moving it between Folders and to root, then reading it back to confirm its location and preserved widgets.
+- [x] Validated Folder filtering by checking that the list includes direct children and excludes Dashboards in subfolders.
+
+Add concise checklist items for automated checks and relevant unverified behavior. Keep a passing schema check and an unrun model-backed eval as separate checked and unchecked items. Counts can supplement the behavior descriptions. Keep local paths, checkout details, source hashes, resolved harness retries, unrelated findings, and routine cleanup bookkeeping in the local report. Carry a failure or workaround into the PR only when it affects verification of the submitted change.
 
 ## Cleanup
 

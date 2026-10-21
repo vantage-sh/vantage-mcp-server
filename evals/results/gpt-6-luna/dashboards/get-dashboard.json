@@ -1,0 +1,431 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-10-20T22:20:11.924Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "90a75414-2e0a-4341-b73d-dc0d0875119a",
+        "latencyMs": 1797,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use get-dashboard to retrieve dashboard dshbrd_finance.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "get-dashboard",
+                "input": {
+                  "dashboard_token": "dshbrd_finance"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "get-dashboard",
+            "toolNames": [
+              "get-dashboard",
+              "get-dashboard-widget",
+              "list-dashboards",
+              "get-folder",
+              "get-dashboard-notification"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "get-dashboard",
+                "input": {
+                  "dashboard_token": "dshbrd_finance"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "get-dashboard · direct · Use get-dashboard to retrieve dashboard dshbrd_finance.",
+          "vars": {
+            "prompt": "Use get-dashboard to retrieve dashboard dshbrd_finance.",
+            "target": "get-dashboard",
+            "expected": [
+              {
+                "toolName": "get-dashboard",
+                "input": {
+                  "dashboard_token": "dshbrd_finance"
+                }
+              }
+            ],
+            "distractors": [
+              "get-dashboard-widget",
+              "list-dashboards",
+              "get-folder",
+              "get-dashboard-notification"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "get-dashboard",
+            "resource": "dashboards",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use get-dashboard to retrieve dashboard dshbrd_finance.",
+          "target": "get-dashboard",
+          "expected": [
+            {
+              "toolName": "get-dashboard",
+              "input": {
+                "dashboard_token": "dshbrd_finance"
+              }
+            }
+          ],
+          "distractors": [
+            "get-dashboard-widget",
+            "list-dashboards",
+            "get-folder",
+            "get-dashboard-notification"
+          ]
+        },
+        "metadata": {
+          "tool": "get-dashboard",
+          "resource": "dashboards",
+          "phrasing": "direct",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "get-dashboard",
+          "toolNames": [
+            "get-dashboard",
+            "get-dashboard-widget",
+            "list-dashboards",
+            "get-folder",
+            "get-dashboard-notification"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "get-dashboard",
+              "input": {
+                "dashboard_token": "dshbrd_finance"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "77eb0fb2-b8f9-4bd8-99a2-b14d56cb8b9f",
+        "latencyMs": 2135,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Show the configuration and widgets of my Vantage dashboard dshbrd_executive.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "get-dashboard",
+                "input": {
+                  "dashboard_token": "dshbrd_executive"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "get-dashboard",
+            "toolNames": [
+              "get-dashboard",
+              "get-dashboard-widget",
+              "list-dashboards",
+              "get-folder",
+              "get-dashboard-notification"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "get-dashboard",
+                "input": {
+                  "dashboard_token": "dshbrd_executive"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "get-dashboard · inferred · Show the configuration and widgets of my Vantage dashboard dshbrd_executive.",
+          "vars": {
+            "prompt": "Show the configuration and widgets of my Vantage dashboard dshbrd_executive.",
+            "target": "get-dashboard",
+            "expected": [
+              {
+                "toolName": "get-dashboard",
+                "input": {
+                  "dashboard_token": "dshbrd_executive"
+                }
+              }
+            ],
+            "distractors": [
+              "get-dashboard-widget",
+              "list-dashboards",
+              "get-folder",
+              "get-dashboard-notification"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "get-dashboard",
+            "resource": "dashboards",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Show the configuration and widgets of my Vantage dashboard dshbrd_executive.",
+          "target": "get-dashboard",
+          "expected": [
+            {
+              "toolName": "get-dashboard",
+              "input": {
+                "dashboard_token": "dshbrd_executive"
+              }
+            }
+          ],
+          "distractors": [
+            "get-dashboard-widget",
+            "list-dashboards",
+            "get-folder",
+            "get-dashboard-notification"
+          ]
+        },
+        "metadata": {
+          "tool": "get-dashboard",
+          "resource": "dashboards",
+          "phrasing": "inferred",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "get-dashboard",
+          "toolNames": [
+            "get-dashboard",
+            "get-dashboard-widget",
+            "list-dashboards",
+            "get-folder",
+            "get-dashboard-notification"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "get-dashboard",
+              "input": {
+                "dashboard_token": "dshbrd_executive"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 2,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-6-luna · mixed",
+        "config": {
+          "modelId": "gpt-6-luna"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/dashboards/get-dashboard.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-10-20T22:20:11.617Z",
+    "evaluationCreatedAt": "2026-10-20T22:20:09.418Z"
+  }
+}

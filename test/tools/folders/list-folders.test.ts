@@ -41,9 +41,9 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
       page: 1,
       q: undefined,
       workspace_token: undefined,
-      type: "DashboardFolder" as any,
+      type: "UnknownFolder" as any,
     },
-    expectedIssues: ['Invalid option: expected one of "CostFolder"|"ProviderResourceFolder"'],
+    expectedIssues: ['Invalid option: expected one of "CostFolder"|"DashboardFolder"|"ProviderResourceFolder"'],
   },
 ];
 
@@ -121,5 +121,29 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     },
   },
 ];
+
+const dashboardFolderArgs: InferValidators<Validators> = { ...validArguments, type: "DashboardFolder" };
+const dashboardFolders = successData.folders.map((folder) => ({ ...folder, type: "DashboardFolder" }));
+argumentSchemaTests.push({ name: "Dashboard Folder filter", data: dashboardFolderArgs });
+executionTests.push({
+  name: "lists Dashboard Folders with title, Workspace, and pagination",
+  apiCallHandler: requestsInOrder([
+    {
+      endpoint: "/v2/folders",
+      params: { ...dashboardFolderArgs, limit: DEFAULT_LIMIT },
+      method: "GET",
+      result: {
+        ok: true,
+        data: { folders: dashboardFolders, links: { next: "https://api.vantage.sh/v2/folders?page=2" } },
+      },
+    },
+  ]),
+  handler: async ({ callExpectingSuccess }) => {
+    expect(await callExpectingSuccess(dashboardFolderArgs)).toEqual({
+      folders: dashboardFolders,
+      pagination: { hasNextPage: true, nextPage: 2 },
+    });
+  },
+});
 
 testTool(tool, argumentSchemaTests, executionTests);

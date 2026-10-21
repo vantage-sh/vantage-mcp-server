@@ -1,0 +1,431 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-10-21T01:47:05.961Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "1006e680-cacb-4989-bf7b-bdc99651a571",
+        "latencyMs": 1472,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use get-folder to retrieve Dashboard Folder fldr_executive.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "get-folder",
+                "input": {
+                  "folder_token": "fldr_executive"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "get-folder",
+            "toolNames": [
+              "get-folder",
+              "get-dashboard",
+              "list-folders",
+              "update-folder",
+              "get-resource-report"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "get-folder",
+                "input": {
+                  "folder_token": "fldr_executive"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "get-folder · direct · Use get-folder to retrieve Dashboard Folder fldr_executive.",
+          "vars": {
+            "prompt": "Use get-folder to retrieve Dashboard Folder fldr_executive.",
+            "target": "get-folder",
+            "expected": [
+              {
+                "toolName": "get-folder",
+                "input": {
+                  "folder_token": "fldr_executive"
+                }
+              }
+            ],
+            "distractors": [
+              "get-dashboard",
+              "list-folders",
+              "update-folder",
+              "get-resource-report"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "get-folder",
+            "resource": "folders",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use get-folder to retrieve Dashboard Folder fldr_executive.",
+          "target": "get-folder",
+          "expected": [
+            {
+              "toolName": "get-folder",
+              "input": {
+                "folder_token": "fldr_executive"
+              }
+            }
+          ],
+          "distractors": [
+            "get-dashboard",
+            "list-folders",
+            "update-folder",
+            "get-resource-report"
+          ]
+        },
+        "metadata": {
+          "tool": "get-folder",
+          "resource": "folders",
+          "phrasing": "direct",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "get-folder",
+          "toolNames": [
+            "get-folder",
+            "get-dashboard",
+            "list-folders",
+            "update-folder",
+            "get-resource-report"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "get-folder",
+              "input": {
+                "folder_token": "fldr_executive"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "c9b25f9f-17cc-4d45-9f64-52cc8779e722",
+        "latencyMs": 1491,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Show the details and parent of my Vantage dashboard folder fldr_executive.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "get-folder",
+                "input": {
+                  "folder_token": "fldr_executive"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "get-folder",
+            "toolNames": [
+              "get-folder",
+              "get-dashboard",
+              "list-folders",
+              "update-folder",
+              "get-resource-report"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "get-folder",
+                "input": {
+                  "folder_token": "fldr_executive"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "get-folder · inferred · Show the details and parent of my Vantage dashboard folder fldr_executive.",
+          "vars": {
+            "prompt": "Show the details and parent of my Vantage dashboard folder fldr_executive.",
+            "target": "get-folder",
+            "expected": [
+              {
+                "toolName": "get-folder",
+                "input": {
+                  "folder_token": "fldr_executive"
+                }
+              }
+            ],
+            "distractors": [
+              "get-dashboard",
+              "list-folders",
+              "update-folder",
+              "get-resource-report"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "get-folder",
+            "resource": "folders",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Show the details and parent of my Vantage dashboard folder fldr_executive.",
+          "target": "get-folder",
+          "expected": [
+            {
+              "toolName": "get-folder",
+              "input": {
+                "folder_token": "fldr_executive"
+              }
+            }
+          ],
+          "distractors": [
+            "get-dashboard",
+            "list-folders",
+            "update-folder",
+            "get-resource-report"
+          ]
+        },
+        "metadata": {
+          "tool": "get-folder",
+          "resource": "folders",
+          "phrasing": "inferred",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "get-folder",
+          "toolNames": [
+            "get-folder",
+            "get-dashboard",
+            "list-folders",
+            "update-folder",
+            "get-resource-report"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "get-folder",
+              "input": {
+                "folder_token": "fldr_executive"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 2,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-6-luna · mixed",
+        "config": {
+          "modelId": "gpt-6-luna"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/folders/get-folder.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-10-21T01:47:05.598Z",
+    "evaluationCreatedAt": "2026-10-21T01:47:04.061Z"
+  }
+}

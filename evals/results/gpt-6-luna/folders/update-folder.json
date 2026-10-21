@@ -1,0 +1,441 @@
+{
+  "evalId": null,
+  "results": {
+    "version": 3,
+    "timestamp": "2026-10-21T01:47:43.755Z",
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "805865e4-030a-43e9-b75a-43b2d551e916",
+        "latencyMs": 1570,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Use update-folder to nest Dashboard Folder fldr_executive under fldr_parent.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "update-folder",
+                "input": {
+                  "folder_token": "fldr_executive",
+                  "parent_folder_token": "fldr_parent"
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "update-folder",
+            "toolNames": [
+              "update-folder",
+              "update-dashboard",
+              "create-folder",
+              "update-cost-report",
+              "get-folder"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "update-folder",
+                "input": {
+                  "folder_token": "fldr_executive",
+                  "parent_folder_token": "fldr_parent"
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "update-folder · direct · Use update-folder to nest Dashboard Folder fldr_executive under fldr_parent.",
+          "vars": {
+            "prompt": "Use update-folder to nest Dashboard Folder fldr_executive under fldr_parent.",
+            "target": "update-folder",
+            "expected": [
+              {
+                "toolName": "update-folder",
+                "input": {
+                  "folder_token": "fldr_executive",
+                  "parent_folder_token": "fldr_parent"
+                }
+              }
+            ],
+            "distractors": [
+              "update-dashboard",
+              "create-folder",
+              "update-cost-report",
+              "get-folder"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "update-folder",
+            "resource": "folders",
+            "phrasing": "direct"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Use update-folder to nest Dashboard Folder fldr_executive under fldr_parent.",
+          "target": "update-folder",
+          "expected": [
+            {
+              "toolName": "update-folder",
+              "input": {
+                "folder_token": "fldr_executive",
+                "parent_folder_token": "fldr_parent"
+              }
+            }
+          ],
+          "distractors": [
+            "update-dashboard",
+            "create-folder",
+            "update-cost-report",
+            "get-folder"
+          ]
+        },
+        "metadata": {
+          "tool": "update-folder",
+          "resource": "folders",
+          "phrasing": "direct",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "update-folder",
+          "toolNames": [
+            "update-folder",
+            "update-dashboard",
+            "create-folder",
+            "update-cost-report",
+            "get-folder"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "update-folder",
+              "input": {
+                "folder_token": "fldr_executive",
+                "parent_folder_token": "fldr_parent"
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Expected tool call matched.",
+              "assertion": {
+                "type": "javascript",
+                "value": "file://_lib/assertToolCalls.ts"
+              }
+            }
+          ]
+        },
+        "id": "b268afc0-4170-4155-b076-ac3baa1750c7",
+        "latencyMs": 3147,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Move dashboard folder fldr_executive to the root in Vantage. Send a null parent and keep its title.",
+          "label": "{{prompt}}",
+          "config": {
+            "disableVarExpansion": true
+          }
+        },
+        "promptId": "effa18501e44aafd9bc42a2f64ffc9b6350f94025520ca2ed382f9bdc4b6e982",
+        "promptIdx": 0,
+        "provider": {
+          "id": "tool-selection:gpt-6-luna:mixed",
+          "label": "gpt-6-luna · mixed"
+        },
+        "response": {
+          "output": {
+            "toolCalls": [
+              {
+                "toolName": "update-folder",
+                "input": {
+                  "folder_token": "fldr_executive",
+                  "parent_folder_token": null
+                }
+              }
+            ],
+            "text": ""
+          },
+          "metadata": {
+            "modelId": "gpt-6-luna",
+            "mode": "mixed",
+            "target": "update-folder",
+            "toolNames": [
+              "update-folder",
+              "update-dashboard",
+              "create-folder",
+              "update-cost-report",
+              "get-folder"
+            ],
+            "toolCalls": [
+              {
+                "toolName": "update-folder",
+                "input": {
+                  "folder_token": "fldr_executive",
+                  "parent_folder_token": null
+                }
+              }
+            ]
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "update-folder · inferred · Move dashboard folder fldr_executive to the root in Vantage. Send a null parent and keep its title.",
+          "vars": {
+            "prompt": "Move dashboard folder fldr_executive to the root in Vantage. Send a null parent and keep its title.",
+            "target": "update-folder",
+            "expected": [
+              {
+                "toolName": "update-folder",
+                "input": {
+                  "folder_token": "fldr_executive",
+                  "parent_folder_token": null
+                }
+              }
+            ],
+            "distractors": [
+              "update-dashboard",
+              "create-folder",
+              "update-cost-report",
+              "get-folder"
+            ]
+          },
+          "options": {
+            "disableVarExpansion": true
+          },
+          "metadata": {
+            "tool": "update-folder",
+            "resource": "folders",
+            "phrasing": "inferred"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://_lib/assertToolCalls.ts"
+            }
+          ]
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "prompt": "Move dashboard folder fldr_executive to the root in Vantage. Send a null parent and keep its title.",
+          "target": "update-folder",
+          "expected": [
+            {
+              "toolName": "update-folder",
+              "input": {
+                "folder_token": "fldr_executive",
+                "parent_folder_token": null
+              }
+            }
+          ],
+          "distractors": [
+            "update-dashboard",
+            "create-folder",
+            "update-cost-report",
+            "get-folder"
+          ]
+        },
+        "metadata": {
+          "tool": "update-folder",
+          "resource": "folders",
+          "phrasing": "inferred",
+          "modelId": "gpt-6-luna",
+          "mode": "mixed",
+          "target": "update-folder",
+          "toolNames": [
+            "update-folder",
+            "update-dashboard",
+            "create-folder",
+            "update-cost-report",
+            "get-folder"
+          ],
+          "toolCalls": [
+            {
+              "toolName": "update-folder",
+              "input": {
+                "folder_token": "fldr_executive",
+                "parent_folder_token": null
+              }
+            }
+          ],
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "prompts": [],
+    "stats": {
+      "successes": 2,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Vantage MCP tool-selection evals",
+    "prompts": [
+      "{{prompt}}"
+    ],
+    "providers": [
+      {
+        "id": "file://_lib/provider.ts",
+        "label": "gpt-6-luna · mixed",
+        "config": {
+          "modelId": "gpt-6-luna"
+        }
+      }
+    ],
+    "tests": [
+      "file://cases/folders/update-folder.eval.ts"
+    ],
+    "env": {},
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 4
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.122.0",
+    "nodeVersion": "v23.11.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-10-21T01:47:43.218Z",
+    "evaluationCreatedAt": "2026-10-21T01:47:39.995Z"
+  }
+}

@@ -67,6 +67,7 @@ const successData: UpdateDashboardNotificationResponse = {
   token: "rprtbl_ntfctn_123",
   title: "Renamed Dashboard Notification",
   dashboard_token: "dshbrd_456",
+  workspace_token: "wrkspc_123",
   user_tokens: ["usr_123"],
   recipient_emails: ["finance@example.com"],
   frequency: "monthly",
