@@ -19,7 +19,7 @@ const validArguments: InferValidators<Validators> = {
   q: "team",
 };
 
-const expectedParams = { page: 2, q: "team", limit: 25 };
+const expectedParams = { page: 2, q: "team", limit: 10 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   { name: "default page, no search", data: { page: undefined, q: undefined } },
@@ -28,7 +28,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
 
 // `links` is not yet typed in @vantage-sh/vantage-client 2.39.0; core#24317 adds it to the response.
 const successData: GetVirtualTagConfigsResponse & { links: { next: string | null } } = {
-  links: { next: "https://api.vantage.sh/v2/virtual_tag_configs?limit=25&page=3&q=team" },
+  links: { next: "https://api.vantage.sh/v2/virtual_tag_configs?limit=10&page=3&q=team" },
   virtual_tag_configs: [
     {
       token: "vtag_123",
@@ -86,8 +86,10 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
             preferred: true,
             overridable: true,
             backfill_until: "2026-01-01",
-            value_count: 2,
-            value_names: ["Platform", "By Usage"],
+            values: [
+              { token: "vtag_val_456", name: "Platform" },
+              { token: "vtag_val_789", name: "By Usage" },
+            ],
           },
         ],
         pagination: { hasNextPage: true, nextPage: 3 },
