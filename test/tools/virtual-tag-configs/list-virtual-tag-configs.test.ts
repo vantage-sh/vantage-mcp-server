@@ -26,8 +26,7 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   { name: "page and search", data: validArguments },
 ];
 
-// `links` is not yet typed in @vantage-sh/vantage-client 2.39.0; core#24317 adds it to the response.
-const successData: GetVirtualTagConfigsResponse & { links: { next: string | null } } = {
+const successData: GetVirtualTagConfigsResponse = {
   links: { next: "https://api.vantage.sh/v2/virtual_tag_configs?limit=10&page=3&q=team" },
   virtual_tag_configs: [
     {

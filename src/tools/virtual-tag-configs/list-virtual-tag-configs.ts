@@ -52,8 +52,7 @@ export default registerTool({
     }
     return {
       virtual_tag_configs: response.data.virtual_tag_configs.map(summarize),
-      // TODO: drop the cast once @vantage-sh/vantage-client types `links` for this endpoint (core#24317).
-      pagination: paginationData(response.data as Parameters<typeof paginationData>[0]),
+      pagination: paginationData(response.data),
     };
   },
 });
