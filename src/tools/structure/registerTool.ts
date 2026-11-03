@@ -16,6 +16,7 @@ import {
   truncateAttribute,
   type WaitUntil,
 } from "../../tracing";
+import { mcpTraceContext } from "../../tracing/mcp-context";
 import MCPUserError from "./MCPUserError";
 
 export type ToolCallContext = {
@@ -29,7 +30,8 @@ export type ToolCallContext = {
   >(
     endpoint: P,
     params: Request,
-    method: M
+    method: M,
+    signal?: AbortSignal
   ) => Promise<{ data: Response; ok: true } | { errors: unknown[]; ok: false }>;
 };
 
@@ -104,10 +106,20 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
       },
 
       async (args: any, extra: RequestHandlerExtra<ServerRequest, ServerNotification>): Promise<any> => {
-        const ctx = generateContext();
+        const baseContext = generateContext();
+        const signal = extra?.signal;
+        const ctx: ToolCallContext = signal
+          ? {
+              ...baseContext,
+              callVantageApi: (endpoint, params, method) => {
+                signal.throwIfAborted();
+                return baseContext.callVantageApi(endpoint, params, method, signal);
+              },
+            }
+          : baseContext;
         const rawHeaders = extra?.requestInfo?.headers as HeadersInit | undefined;
         const headers = rawHeaders ? new Headers(rawHeaders) : undefined;
-        const parent = tracer.extractTraceContext(headers);
+        const { parent, links } = mcpTraceContext(extra?._meta, headers);
         const source = headers?.get("x-trace-source") ?? undefined;
 
         return tracer.runWithSpan(
@@ -117,13 +129,16 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
             waitUntil: ctx.waitUntil,
             kind: "server",
             parent,
+            links,
             attributes: {
               "mcp.tool.name": toolProps.name,
+              "mcp.method.name": "tools/call",
               ...(source ? { "mcp.source": source } : {}),
             },
           },
           async (span) => {
             try {
+              signal?.throwIfAborted();
               const res = await toolProps.execute(args, ctx);
 
               if (toolProps.outputSchema) {
@@ -160,6 +175,11 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
                   ],
                   isError: true,
                 };
+              }
+              if (signal?.aborted) {
+                // A client cancellation is not a server error.
+                span.status = { code: 0 };
+                span.attributes["mcp.request.cancelled"] = true;
               }
               throw e;
             }
