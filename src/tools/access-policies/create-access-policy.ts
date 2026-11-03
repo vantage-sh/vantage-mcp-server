@@ -19,7 +19,7 @@ export default registerTool({
   title: "Create Access Policy",
   description,
   annotations: {
-    destructive: false,
+    destructive: true,
     openWorld: false,
     readOnly: false,
   },

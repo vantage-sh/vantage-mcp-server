@@ -16,7 +16,7 @@ export default registerTool({
   title: "Submit User Feedback",
   description,
   annotations: {
-    destructive: true,
+    destructive: false,
     openWorld: true,
     readOnly: false,
   },
