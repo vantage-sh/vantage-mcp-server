@@ -22,7 +22,7 @@ export default registerTool({
   description,
   annotations: {
     destructive: true,
-    openWorld: false,
+    openWorld: true,
     readOnly: false,
   },
   args: {

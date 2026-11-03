@@ -17,7 +17,7 @@ export default registerTool({
   description,
   annotations: {
     destructive: false,
-    openWorld: false,
+    openWorld: true,
     readOnly: false,
   },
   args: {
