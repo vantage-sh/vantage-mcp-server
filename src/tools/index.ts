@@ -15,6 +15,7 @@ import "./cost-reports";
 import "./cost-services";
 import "./costs";
 import "./current-user";
+import "./custom-calculations";
 import "./dashboard-notifications";
 import "./dashboards";
 import "./financial-commitment-reports";
