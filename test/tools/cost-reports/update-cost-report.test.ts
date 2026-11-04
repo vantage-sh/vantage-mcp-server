@@ -17,6 +17,7 @@ type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const undefineds = {
+  custom_calculation_tokens: undefined,
   title: undefined,
   groupings: undefined,
   filter: undefined,
@@ -94,6 +95,11 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
     name: "all valid arguments",
     data: validInputArguments,
+  },
+  {
+    name: "rejects wrong calculation token kind",
+    data: { ...minimalValidInputArguments, custom_calculation_tokens: ["rprt_123"] },
+    expectedIssues: ["Must be a Custom Calculation token (cstm_clcltn_*)"],
   },
   {
     name: "empty title",
@@ -189,6 +195,47 @@ const successData: UpdateCostReportResponse = {
 };
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
+  ...[undefined, null, [], ["cstm_clcltn_123", "cstm_clcltn_456"]].map(
+    (tokens) =>
+      ({
+        name: `preserves calculation attachment input ${JSON.stringify(tokens)}`,
+        apiCallHandler: requestsInOrder([
+          {
+            endpoint: `/v2/cost_reports/${pathEncode("rprt_123")}`,
+            params: {
+              custom_calculation_tokens: tokens,
+              title: "Renamed",
+            },
+            method: "PUT",
+            result: { ok: true, data: successData },
+          },
+        ]),
+        handler: async ({ callExpectingSuccess }) => {
+          expect(
+            await callExpectingSuccess({
+              ...minimalValidInputArguments,
+              title: "Renamed",
+              custom_calculation_tokens: tokens,
+            })
+          ).toEqual(successData);
+        },
+      }) satisfies ExecutionTestTableItem<Validators, OutputSchema>
+  ),
+  {
+    name: "passes flag-off attachment error through",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: `/v2/cost_reports/${pathEncode("rprt_123")}`,
+        params: { custom_calculation_tokens: [] },
+        method: "PUT",
+        result: { ok: false, errors: ["Custom Calculations are not enabled for this account."] },
+      },
+    ]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const err = await callExpectingMCPUserError({ ...minimalValidInputArguments, custom_calculation_tokens: [] });
+      expect(err.exception).toEqual({ errors: ["Custom Calculations are not enabled for this account."] });
+    },
+  },
   {
     name: "successful call",
     apiCallHandler: requestsInOrder([

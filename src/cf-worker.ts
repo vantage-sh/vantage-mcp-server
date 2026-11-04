@@ -5,12 +5,6 @@ import OAuthProvider, {
 } from "@cloudflare/workers-oauth-provider";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import * as Sentry from "@sentry/cloudflare";
-import type {
-  Path,
-  RequestBodyForPathAndMethod,
-  ResponseBodyForPathAndMethod,
-  SupportedMethods,
-} from "@vantage-sh/vantage-client";
 import { McpAgent } from "agents/mcp";
 import { Hono } from "hono";
 import { withLogTags } from "workers-tagged-logger";
@@ -32,6 +26,12 @@ import { createHostedMcpServer } from "./sse-deprecation";
 import { hideAccessPolicyToolsFromNonOwners } from "./tools/access-policies/gating";
 import { setupRegisteredTools } from "./tools/structure/registerTool";
 import { datadogTraceLogTags, formatErrorsForTelemetry, tracer } from "./tracing";
+import type {
+  Path,
+  RequestBodyForPathAndMethod,
+  ResponseBodyForPathAndMethod,
+  SupportedMethods,
+} from "./utils/vantage-api-types";
 
 // Side effect import to register all tools
 import "./tools";
