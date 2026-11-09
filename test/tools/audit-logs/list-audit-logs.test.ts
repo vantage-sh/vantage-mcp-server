@@ -465,7 +465,12 @@ const successData = {
 };
 
 const expectedAuditLogs = successData.audit_logs.map(
-  ({ changed_values: _changed, unchanged_values: _unchanged, object_changes: _object, ...rest }) => rest
+  ({
+    changed_values: _changed_values,
+    unchanged_values: _unchanged_values,
+    object_changes: _object_changes,
+    ...auditLog
+  }) => auditLog
 );
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
@@ -517,9 +522,6 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           nextPage: 0,
         },
       });
-      expect(res.audit_logs[0]).not.toHaveProperty("changed_values");
-      expect(res.audit_logs[0]).not.toHaveProperty("unchanged_values");
-      expect(res.audit_logs[0]).not.toHaveProperty("object_changes");
     },
   },
   {

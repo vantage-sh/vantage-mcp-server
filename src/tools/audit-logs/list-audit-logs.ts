@@ -92,13 +92,16 @@ const args = {
   end_date: dateValidator("Filter by end date (YYYY-MM-DD, inclusive).").optional(),
 };
 
-function withoutChangePayloads<T extends object>(log: T) {
-  const entry = { ...log } as Omit<T, "changed_values" | "unchanged_values" | "object_changes"> &
-    Partial<Record<"changed_values" | "unchanged_values" | "object_changes", unknown>>;
-  delete entry.changed_values;
-  delete entry.unchanged_values;
-  delete entry.object_changes;
-  return entry as Omit<T, "changed_values" | "unchanged_values" | "object_changes">;
+type ChangePayloadKey = "changed_values" | "unchanged_values" | "object_changes";
+
+function omitChangePayloads<T extends object>(log: T): Omit<T, ChangePayloadKey> {
+  const {
+    changed_values: _changed_values,
+    unchanged_values: _unchanged_values,
+    object_changes: _object_changes,
+    ...auditLog
+  } = log as T & Partial<Record<ChangePayloadKey, unknown>>;
+  return auditLog;
 }
 
 export default registerTool({
@@ -121,7 +124,7 @@ export default registerTool({
       throw new MCPUserError({ errors: response.errors });
     }
     return {
-      audit_logs: response.data.audit_logs.map(withoutChangePayloads),
+      audit_logs: response.data.audit_logs.map(omitChangePayloads),
       pagination: paginationData(response.data),
     };
   },
