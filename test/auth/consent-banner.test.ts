@@ -8,10 +8,10 @@ import type { AppEnv } from "../../src/env";
 vi.mock("cloudflare:workers", () => ({ env: {} }));
 vi.mock("@cloudflare/workers-oauth-provider", () => ({ AuthorizationError: class extends Error {} }));
 
-async function consentPage(clientName: string, redirectUri: string) {
+async function consentPage(clientName: string, redirectUri: string, redirectUris = [redirectUri]) {
   const provider = {
     parseAuthRequest: vi.fn().mockResolvedValue({ clientId: "client-id", redirectUri, scope: ["openid"] }),
-    lookupClient: vi.fn().mockResolvedValue({ clientId: "client-id", clientName, redirectUris: [redirectUri] }),
+    lookupClient: vi.fn().mockResolvedValue({ clientId: "client-id", clientName, redirectUris }),
   };
   const app = new Hono<{ Bindings: AppEnv & { OAUTH_PROVIDER: OAuthHelpers } }>();
   app.get("/authorize", authorize);
@@ -50,6 +50,38 @@ describe("consent screen client warnings", () => {
     const html = await consentPage("Claude", "https://claude.ai/api/mcp/auth_callback");
     expect(html).not.toContain("Unverified application");
     expect(html).not.toContain("Local application");
+  });
+
+  it.each([
+    "https://chatgpt.com/connector_platform_oauth_redirect",
+    "https://chatgpt.com/connector/oauth/test-callback",
+  ])("shows no warning for ChatGPT redirecting to %s", async (redirectUri) => {
+    const html = await consentPage("ChatGPT", redirectUri);
+    expect(html).toContain("ChatGPT");
+    expect(html).not.toContain("Unverified application");
+    expect(html).not.toContain("uses the name of a well-known client");
+    expect(html).not.toContain("Local application");
+  });
+
+  it("recognises the selected ChatGPT redirect even when another registered redirect is unknown", async () => {
+    const redirectUri = "https://chatgpt.com/connector/oauth/test-callback";
+    const html = await consentPage("ChatGPT", redirectUri, [redirectUri, "https://other.example/callback"]);
+    expect(html).not.toContain("Unverified application");
+    expect(html).not.toContain("uses the name of a well-known client");
+  });
+
+  it.each([
+    "https://attacker.example/callback",
+    "https://chatgpt.com.attacker.example/callback",
+    "http://chatgpt.com/connector/oauth/test-callback",
+  ])("warns when ChatGPT selects an unrecognised redirect %s", async (redirectUri) => {
+    const html = await consentPage("ChatGPT", redirectUri, [
+      "https://chatgpt.com/connector/oauth/test-callback",
+      redirectUri,
+    ]);
+    expect(html).toContain("Unverified application");
+    expect(html).toContain("uses the name of a well-known client");
+    expect(html).toContain(new URL(redirectUri).host);
   });
 
   it("escapes the client name", async () => {

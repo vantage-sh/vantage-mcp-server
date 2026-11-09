@@ -9,6 +9,7 @@ Before an MCP client can call a tool, it gets a 401 challenge, discovers the pro
 - `oauth-dcr`: `POST /register` returns 201 with a `client_id` for valid metadata, and 400 `invalid_client_metadata` for invalid redirect URIs (fragments, credentials, plain http off loopback).
 - `consent-local-app`: a loopback redirect (Inspector, Claude Code) shows the **Local application** note naming the host.
 - `consent-unverified`: a non-loopback redirect from an unrecognised client shows **Unverified application** and the redirect host. A well-known name (for example `Claude`) on a foreign host adds "uses the name of a well-known client".
+- `consent-recognised-chatgpt`: `ChatGPT` with either `https://chatgpt.com/connector_platform_oauth_redirect` or `https://chatgpt.com/connector/oauth/<callback_id>` shows no application warning. Recognition uses the selected, provider-validated redirect, even if the client registered additional unknown redirects. Selecting a foreign host, a lookalike host, or plain HTTP on `chatgpt.com` still shows the unverified and well-known-name warnings.
 - `consent-sse-notice`: `resource=<origin>/sse` shows **Update your Vantage MCP connection** with the `/mcp` URL, and `resource=<origin>/mcp` does not.
 - `consent-csrf`: the consent form carries `transaction_state` and `consent_token`, and the response sets an `auth0_req_<state>` cookie.
 - `authorize-unknown-client`: an unregistered `client_id` gets a 4xx and no consent form.
@@ -37,4 +38,5 @@ Preconditions:
 - Launching in token mode turns this feature off. OAuth endpoints are not served, and `oauth-consent.ts` refuses to run.
 - The `/sse` notice depends on `resource` sharing the authorize request's origin. A `localhost` resource against a `127.0.0.1` Worker will not show it.
 - The `client_name` must be one the client policy recognises to suppress the warnings. `MCP Inspector (verify)` is deliberately unrecognised, so it shows the **Local application** note.
+- For `consent-recognised-chatgpt`, register `ChatGPT` with both a ChatGPT callback above and `https://verify.example/callback`. Open authorization once for each redirect. The ChatGPT destination should have no application warning; `verify.example` should show both warnings. The OAuth provider must still reject a redirect absent from the registration. This case is manual; `oauth-consent.ts` does not exercise it.
 - Feature flags change this page. With `MCP_OAUTH_METADATA_ENABLED=true` (from PR #306) the resource metadata and consent text differ. Pass the flag with `--var` in a dedicated run and update the checks in the same PR.
