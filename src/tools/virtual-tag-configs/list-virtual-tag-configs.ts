@@ -5,17 +5,17 @@ import { nonempty } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
-// Smaller than the shared DEFAULT_LIMIT (128): accounts default to 50 Virtual Tag Configs.
+// Accounts default to 50 Virtual Tag Configs, so a small page keeps browsing short.
 const LIMIT = 10;
 
 const description = `
-Lists or searches the Virtual Tags (Virtual Tag Configs) the current API token can access. This is a browse list of configs with a value count, and full values come from get-virtual-tag-config.
+Lists or searches Virtual Tag Configs as a browse list with a value count. Full values come from get-virtual-tag-config.
 Results are paginated; start with page 1 and request the next page while pagination.hasNextPage is true.
 `.trim();
 
 type VirtualTagConfig = GetVirtualTagConfigsResponse["virtual_tag_configs"][number];
 
-function summarize(config: VirtualTagConfig) {
+function toBrowseEntry(config: VirtualTagConfig) {
   return {
     token: config.token,
     key: config.key,
@@ -46,7 +46,7 @@ export default registerTool({
       throw new MCPUserError({ errors: response.errors });
     }
     return {
-      virtual_tag_configs: response.data.virtual_tag_configs.map(summarize),
+      virtual_tag_configs: response.data.virtual_tag_configs.map(toBrowseEntry),
       pagination: paginationData(response.data),
     };
   },
