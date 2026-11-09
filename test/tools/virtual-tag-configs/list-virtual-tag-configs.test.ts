@@ -85,14 +85,15 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
             preferred: true,
             overridable: true,
             backfill_until: "2026-01-01",
-            values: [
-              { token: "vtag_val_456", name: "Platform" },
-              { token: "vtag_val_789", name: "By Usage" },
-            ],
+            value_count: 2,
           },
         ],
         pagination: { hasNextPage: true, nextPage: 3 },
       });
+      const config = result.virtual_tag_configs[0];
+      expect(config).not.toHaveProperty("values");
+      expect(config).not.toHaveProperty("collapsed_tag_keys");
+      expect(config).not.toHaveProperty("created_by_token");
     },
   },
   {

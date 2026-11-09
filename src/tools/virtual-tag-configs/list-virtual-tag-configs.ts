@@ -5,13 +5,11 @@ import { nonempty } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
-// Much smaller than the shared DEFAULT_LIMIT (128): accounts default to 50 Virtual Tag Configs of up to 100 values each,
-// so a page of 10 summaries stays around 20K tokens in the worst case.
+// Smaller than the shared DEFAULT_LIMIT (128): accounts default to 50 Virtual Tag Configs.
 const LIMIT = 10;
 
 const description = `
-Lists or searches the Virtual Tags (Virtual Tag Configs) the current API token can access. Use this to find config and value tokens by key or value name.
-Each value is summarized to its token and name, without filters or allocations; call get-virtual-tag-config-value or get-virtual-tag-config for full details.
+Lists or searches the Virtual Tags (Virtual Tag Configs) the current API token can access. This is a browse list of configs with a value count, and full values come from get-virtual-tag-config.
 Results are paginated; start with page 1 and request the next page while pagination.hasNextPage is true.
 `.trim();
 
@@ -25,10 +23,7 @@ function summarize(config: VirtualTagConfig) {
     preferred: config.preferred,
     overridable: config.overridable,
     backfill_until: config.backfill_until,
-    values: config.values.map((value) => ({
-      token: value.token,
-      name: value.name ?? value.display_name ?? null,
-    })),
+    value_count: config.values?.length ?? 0,
   };
 }
 
