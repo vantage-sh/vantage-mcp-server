@@ -23,7 +23,8 @@ Each audit log entry can include:
 - The user display name, when available
 - The workspace title and workspace token, when available
 - The timestamp when the audit log was created
-- Field-level change data in \`changed_values\` and \`unchanged_values\`
+
+This list omits field-level change payloads.
 
 Audit logs commonly include actions such as:
 - Creating, updating, or deleting cost reports
@@ -91,6 +92,15 @@ const args = {
   end_date: dateValidator("Filter by end date (YYYY-MM-DD, inclusive).").optional(),
 };
 
+function withoutChangePayloads<T extends object>(log: T) {
+  const entry = { ...log } as Omit<T, "changed_values" | "unchanged_values" | "object_changes"> &
+    Partial<Record<"changed_values" | "unchanged_values" | "object_changes", unknown>>;
+  delete entry.changed_values;
+  delete entry.unchanged_values;
+  delete entry.object_changes;
+  return entry as Omit<T, "changed_values" | "unchanged_values" | "object_changes">;
+}
+
 export default registerTool({
   name: "list-audit-logs",
   title: "List Audit Logs",
@@ -111,7 +121,7 @@ export default registerTool({
       throw new MCPUserError({ errors: response.errors });
     }
     return {
-      audit_logs: response.data.audit_logs,
+      audit_logs: response.data.audit_logs.map(withoutChangePayloads),
       pagination: paginationData(response.data),
     };
   },
