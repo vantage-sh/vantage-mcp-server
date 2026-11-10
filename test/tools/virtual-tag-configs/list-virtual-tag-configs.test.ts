@@ -65,7 +65,7 @@ const successData: GetVirtualTagConfigsResponse = {
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   {
-    name: "successful call returns summarized configs and pagination",
+    name: "successful call returns browse entries and pagination",
     apiCallHandler: requestsInOrder([
       {
         endpoint: "/v2/virtual_tag_configs",
@@ -75,8 +75,8 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       },
     ]),
     handler: async ({ callExpectingSuccess }) => {
-      const result = await callExpectingSuccess(validArguments);
-      expect(result).toEqual({
+      const listing = await callExpectingSuccess(validArguments);
+      expect(listing).toEqual({
         virtual_tag_configs: [
           {
             token: "vtag_123",
@@ -85,14 +85,15 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
             preferred: true,
             overridable: true,
             backfill_until: "2026-01-01",
-            values: [
-              { token: "vtag_val_456", name: "Platform" },
-              { token: "vtag_val_789", name: "By Usage" },
-            ],
+            value_count: 2,
           },
         ],
         pagination: { hasNextPage: true, nextPage: 3 },
       });
+      const browseEntry = listing.virtual_tag_configs[0];
+      expect(browseEntry).not.toHaveProperty("values");
+      expect(browseEntry).not.toHaveProperty("collapsed_tag_keys");
+      expect(browseEntry).not.toHaveProperty("created_by_token");
     },
   },
   {
