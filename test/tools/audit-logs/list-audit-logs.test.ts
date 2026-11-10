@@ -441,8 +441,9 @@ const successData = {
       workspace_title: "My Workspace",
       workspace_token: "wrkspc_123",
       created_at: "2025-01-15T10:30:00Z",
-      changed_values: {},
-      unchanged_values: {},
+      changed_values: { title: ["Old Workspace", "My Workspace"] },
+      unchanged_values: { token: "wrkspc_123" },
+      object_changes: { name: ["before", "after"] },
     },
     {
       token: "adt_lg_456",
@@ -455,12 +456,22 @@ const successData = {
       workspace_title: "My Workspace",
       workspace_token: "wrkspc_123",
       created_at: "2025-01-16T14:20:00Z",
-      changed_values: {},
-      unchanged_values: {},
+      changed_values: { description: [null, "Updated description"] },
+      unchanged_values: { object_type: "Workspace" },
+      object_changes: { status: ["active", "archived"] },
     },
   ],
   links: {},
 };
+
+const expectedAuditLogs = successData.audit_logs.map(
+  ({
+    changed_values: _changed_values,
+    unchanged_values: _unchanged_values,
+    object_changes: _object_changes,
+    ...auditLog
+  }) => auditLog
+);
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   {
@@ -505,7 +516,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         end_date: undefined,
       });
       expect(res).toEqual({
-        audit_logs: successData.audit_logs,
+        audit_logs: expectedAuditLogs,
         pagination: {
           hasNextPage: false,
           nextPage: 0,
@@ -540,7 +551,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
     handler: async ({ callExpectingSuccess }) => {
       const res = await callExpectingSuccess(validArguments);
       expect(res).toEqual({
-        audit_logs: successData.audit_logs,
+        audit_logs: expectedAuditLogs,
         pagination: {
           hasNextPage: true,
           nextPage: 2,
@@ -581,7 +592,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         end_date: undefined,
       });
       expect(res).toEqual({
-        audit_logs: successData.audit_logs,
+        audit_logs: expectedAuditLogs,
         pagination: {
           hasNextPage: false,
           nextPage: 0,
@@ -622,7 +633,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         end_date: undefined,
       });
       expect(res).toEqual({
-        audit_logs: successData.audit_logs,
+        audit_logs: expectedAuditLogs,
         pagination: {
           hasNextPage: false,
           nextPage: 0,
@@ -664,7 +675,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         end_date: "2025-01-31",
       });
       expect(res).toEqual({
-        audit_logs: successData.audit_logs,
+        audit_logs: expectedAuditLogs,
         pagination: {
           hasNextPage: false,
           nextPage: 0,
@@ -705,7 +716,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         end_date: undefined,
       });
       expect(res).toEqual({
-        audit_logs: successData.audit_logs,
+        audit_logs: expectedAuditLogs,
         pagination: {
           hasNextPage: false,
           nextPage: 0,
@@ -746,7 +757,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         end_date: "2025-01-31",
       });
       expect(res).toEqual({
-        audit_logs: successData.audit_logs,
+        audit_logs: expectedAuditLogs,
         pagination: {
           hasNextPage: false,
           nextPage: 0,
@@ -787,7 +798,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         end_date: undefined,
       });
       expect(res).toEqual({
-        audit_logs: successData.audit_logs,
+        audit_logs: expectedAuditLogs,
         pagination: {
           hasNextPage: false,
           nextPage: 0,
@@ -828,7 +839,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         end_date: undefined,
       });
       expect(res).toEqual({
-        audit_logs: successData.audit_logs,
+        audit_logs: expectedAuditLogs,
         pagination: {
           hasNextPage: false,
           nextPage: 0,
@@ -870,7 +881,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         end_date: undefined,
       });
       expect(res).toEqual({
-        audit_logs: successData.audit_logs,
+        audit_logs: expectedAuditLogs,
         pagination: {
           hasNextPage: false,
           nextPage: 0,
@@ -913,7 +924,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         end_date: "2025-01-31",
       });
       expect(res).toEqual({
-        audit_logs: successData.audit_logs,
+        audit_logs: expectedAuditLogs,
         pagination: {
           hasNextPage: false,
           nextPage: 0,
@@ -956,7 +967,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         end_date: "2025-01-31",
       });
       expect(res).toEqual({
-        audit_logs: successData.audit_logs,
+        audit_logs: expectedAuditLogs,
         pagination: {
           hasNextPage: false,
           nextPage: 0,
@@ -997,7 +1008,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         end_date: undefined,
       });
       expect(res).toEqual({
-        audit_logs: successData.audit_logs,
+        audit_logs: expectedAuditLogs,
         pagination: {
           hasNextPage: false,
           nextPage: 0,
@@ -1038,7 +1049,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         end_date: undefined,
       });
       expect(res).toEqual({
-        audit_logs: successData.audit_logs,
+        audit_logs: expectedAuditLogs,
         pagination: {
           hasNextPage: false,
           nextPage: 0,
@@ -1079,7 +1090,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         end_date: undefined,
       });
       expect(res).toEqual({
-        audit_logs: successData.audit_logs,
+        audit_logs: expectedAuditLogs,
         pagination: {
           hasNextPage: false,
           nextPage: 0,
@@ -1120,7 +1131,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         end_date: undefined,
       });
       expect(res).toEqual({
-        audit_logs: successData.audit_logs,
+        audit_logs: expectedAuditLogs,
         pagination: {
           hasNextPage: false,
           nextPage: 0,
@@ -1161,7 +1172,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         end_date: undefined,
       });
       expect(res).toEqual({
-        audit_logs: successData.audit_logs,
+        audit_logs: expectedAuditLogs,
         pagination: {
           hasNextPage: false,
           nextPage: 0,
@@ -1202,7 +1213,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         end_date: undefined,
       });
       expect(res).toEqual({
-        audit_logs: successData.audit_logs,
+        audit_logs: expectedAuditLogs,
         pagination: {
           hasNextPage: false,
           nextPage: 0,
@@ -1242,7 +1253,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         end_date: undefined,
       });
       expect(res).toEqual({
-        audit_logs: successData.audit_logs,
+        audit_logs: expectedAuditLogs,
         pagination: {
           hasNextPage: false,
           nextPage: 0,
@@ -1282,7 +1293,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         end_date: undefined,
       });
       expect(res).toEqual({
-        audit_logs: successData.audit_logs,
+        audit_logs: expectedAuditLogs,
         pagination: {
           hasNextPage: false,
           nextPage: 0,
