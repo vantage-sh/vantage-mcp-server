@@ -203,6 +203,34 @@ describe("flush", () => {
     expect(attrs.map((a) => a.key)).toContain("a");
   });
 
+  it("exports span links", async () => {
+    const fetchSpy = vi.fn<typeof fetch>(async () => new Response(null, { status: 200 }));
+    const tracer = makeTracer({ exporterFetch: fetchSpy });
+    const link = { traceId: "3".repeat(32), spanId: "4".repeat(16), tracestate: "vendor=value" };
+
+    await tracer.runWithSpan("root", { env: appEnv, links: [link] }, async () => undefined);
+
+    const body = JSON.parse((fetchSpy.mock.calls[0][1] as RequestInit).body as string);
+    expect(body.resourceSpans[0].scopeSpans[0].spans[0].links).toEqual([
+      { traceId: link.traceId, spanId: link.spanId, traceState: "vendor=value" },
+    ]);
+  });
+
+  it("keeps a status set before a thrown error", async () => {
+    const fetchSpy = vi.fn<typeof fetch>(async () => new Response(null, { status: 200 }));
+    const tracer = makeTracer({ exporterFetch: fetchSpy });
+
+    await expect(
+      tracer.runWithSpan("root", { env: appEnv }, async (span) => {
+        span.status = { code: 0 };
+        throw new Error("cancelled");
+      })
+    ).rejects.toThrow("cancelled");
+
+    const body = JSON.parse((fetchSpy.mock.calls[0][1] as RequestInit).body as string);
+    expect(body.resourceSpans[0].scopeSpans[0].spans[0].status).toEqual({ code: 0 });
+  });
+
   it("sends dd-api-key header without mangling the value", async () => {
     const fetchSpy = vi.fn<typeof fetch>(async () => new Response(null, { status: 200 }));
     const tracer = makeTracer({ exporterFetch: fetchSpy });
