@@ -50,7 +50,7 @@ Only provide these parameters if you need to override those defaults.
 
 Use settings_aggregate_by to choose the metric: cost (default), usage, or count.
 When aggregate_by is count, the response includes total_count and counts (date-binned distinct Group By permutation counts for the full requested period).
-Cursor users are resource_id (the user email) and the cursor:user tag. Token counts are not cost. Set settings_aggregate_by=usage for input, output, and cache tokens. settings_aggregate_by=cost returns dollars.
+For per-user Cursor results, group by resource_id or tag:cursor:user. Token counts are not monetary cost. Set settings_aggregate_by=usage for input, output, and cache tokens.
 `.trim();
 
 const args = {
@@ -92,7 +92,7 @@ const args = {
     .enum(["cost", "usage", "count"])
     .optional()
     .describe(
-      "Aggregate by cost (dollars, the default), usage, or count. Cursor token totals require usage. If not provided, the workspace's default report setting is used."
+      "Aggregate by monetary cost (the default), usage, or count. Use the currency returned on the response. Cursor token totals require usage. If not provided, the workspace's default report setting is used."
     ),
   settings_show_previous_period: z
     .boolean()
