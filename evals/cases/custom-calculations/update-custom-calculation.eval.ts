@@ -10,11 +10,17 @@ export default function generateTests() {
     directPrompts: [
       {
         input:
-          "Use update-custom-calculation to rename cstm_clcltn_123 to AWS spend. Send cost_report_tokens as JSON null to leave its report attachments unchanged.",
+          "Use update-custom-calculation to rename cstm_clcltn_123 to AWS spend. Reset its unit scale to 1 by sending unit_scale as JSON null, and clear its description with JSON null. Send cost_report_tokens as JSON null to leave its report attachments unchanged.",
         expected: [
           {
             toolName: TARGET,
-            input: { custom_calculation_token: "cstm_clcltn_123", title: "AWS spend", cost_report_tokens: null },
+            input: {
+              custom_calculation_token: "cstm_clcltn_123",
+              title: "AWS spend",
+              unit_scale: null,
+              description: null,
+              cost_report_tokens: null,
+            },
           },
         ],
       },

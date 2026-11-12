@@ -10,6 +10,7 @@ import type {
 // aligned with Core's v2 CustomCalculations endpoint until the client includes it.
 export type CustomCalculationDefinition = {
   title: string;
+  description?: string | null;
   operation?: "sum" | "average" | "division" | "min" | "max";
   display_as?: "ratio" | "percent" | "per-n";
   unit_scale?: number | null;
@@ -17,6 +18,7 @@ export type CustomCalculationDefinition = {
 };
 
 export type CustomCalculation = Required<CustomCalculationDefinition> & {
+  unit_scale: number;
   token: string;
   cost_report_tokens: string[];
   is_read_only: boolean;

@@ -11,6 +11,7 @@ export const divisionFilter = {
 export const calculation: CustomCalculation = {
   token: "cstm_clcltn_123",
   title: "AWS Cost",
+  description: null,
   operation: "sum",
   filter,
   display_as: "ratio",

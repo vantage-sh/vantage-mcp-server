@@ -3,7 +3,7 @@ import z from "zod";
 import { nonempty, vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
-import { calculationFilter, displayAs, operation, unitScale } from "./schemas";
+import { calculationDescription, calculationFilter, displayAs, operation, unitScale } from "./schemas";
 
 const description = `Update a Custom Calculation (KPI) definition or its Cost Report attachments. Read-only calculations allow attachment changes only.`;
 
@@ -15,6 +15,7 @@ export default registerTool({
   args: {
     custom_calculation_token: vantageToken("custom_calculation"),
     title: nonempty().optional().describe("Updated title of the Custom Calculation."),
+    description: calculationDescription,
     filter: calculationFilter.optional(),
     operation: operation.optional(),
     display_as: displayAs.optional(),

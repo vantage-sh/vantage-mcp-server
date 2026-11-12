@@ -19,9 +19,30 @@ const validArguments: InferValidators<Validators> = {
   operation: undefined,
   display_as: undefined,
   unit_scale: undefined,
+  description: undefined,
   cost_report_tokens: undefined,
 };
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
+  { name: "accepts null scale reset", data: { ...validArguments, unit_scale: null } },
+  {
+    name: "accepts equivalent usage units",
+    data: { ...validArguments, filter: { filter: "", usage_unit: ["Tokens", "tokens"] } },
+  },
+  {
+    name: "rejects empty usage-unit array",
+    data: { ...validArguments, filter: { filter: "", usage_unit: [] } },
+    expectedIssues: ["Too small: expected array to have >=1 items"],
+  },
+  {
+    name: "rejects blank usage-unit array entry",
+    data: { ...validArguments, filter: { filter: "", usage_unit: [" "] } },
+    expectedIssues: ["Usage unit names must not be blank"],
+  },
+  {
+    name: "rejects oversized description",
+    data: { ...validArguments, description: "x".repeat(10001) },
+    expectedIssues: ["Too big: expected string to have <=10000 characters"],
+  },
   {
     name: "accepts operand without type metadata",
     data: { ...validArguments, filter: { filter: "", usage_unit: null } },

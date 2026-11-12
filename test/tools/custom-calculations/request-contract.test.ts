@@ -97,3 +97,52 @@ it("encodes tokens in API paths and preserves read-only response fields", async 
     expect.objectContaining({ method: "GET" })
   );
 });
+
+for (const tool of [createCalculation, updateCalculation]) {
+  const updating = tool === updateCalculation;
+  const required = updating
+    ? { custom_calculation_token: calculation.token }
+    : { title: calculation.title, filter: divisionFilter };
+  it.each([undefined, null, 1000])(`${tool.name} preserves unit_scale %j in JSON`, async (unit_scale) => {
+    const fetchMock = vi.fn(async () => Response.json(calculation));
+    vi.stubGlobal("fetch", fetchMock);
+    const args = z.object(tool.args).parse({ ...required, unit_scale });
+    await tool.execute(args as never, {
+      callVantageApi: (endpoint, params, method) => callApi("https://api.example", {}, params, method, endpoint),
+    });
+    const [url, options] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toBe(`https://api.example/v2/custom_calculations${updating ? `/${calculation.token}` : ""}`);
+    expect(options.method).toBe(updating ? "PUT" : "POST");
+    const { custom_calculation_token: _token, ...body } = required as { custom_calculation_token?: string };
+    expect(JSON.parse(options.body as string)).toEqual({
+      ...body,
+      ...(unit_scale === undefined ? {} : { unit_scale }),
+    });
+  });
+
+  it.each([undefined, null, "", "Tracks equivalent token units"])(
+    `${tool.name} preserves description %j and usage-unit arrays`,
+    async (description) => {
+      const fetchMock = vi.fn(async () => Response.json({ ...calculation, description: description || null }));
+      vi.stubGlobal("fetch", fetchMock);
+      const filter = {
+        ...divisionFilter,
+        usage_unit_numerator: ["Tokens", "tokens"],
+        usage_unit_denominator: ["Requests", "requests"],
+      };
+      const definition = { filter, operation: "division", unit_scale: 1 };
+      const args = z.object(tool.args).parse({ ...required, ...definition, description });
+      const result = await tool.execute(args as never, {
+        callVantageApi: (endpoint, params, method) => callApi("https://api.example", {}, params, method, endpoint),
+      });
+      const [, options] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+      const { custom_calculation_token: _token, ...body } = required as { custom_calculation_token?: string };
+      expect(JSON.parse(options.body as string)).toEqual({
+        ...body,
+        ...definition,
+        ...(description === undefined ? {} : { description }),
+      });
+      expect(result.description).toBe(description || null);
+    }
+  );
+}
