@@ -66,6 +66,10 @@ export const TOKEN_KINDS = {
     prefix: "rprt",
     label: "Cost Report",
   },
+  custom_calculation: {
+    prefix: "cstm_clcltn",
+    label: "Custom Calculation",
+  },
   dashboard: {
     prefix: "dshbrd",
     label: "Dashboard",
