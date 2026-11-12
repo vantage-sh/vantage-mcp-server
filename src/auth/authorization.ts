@@ -86,7 +86,11 @@ export async function authorize(c: Context<{ Bindings: AppEnv & { OAUTH_PROVIDER
   const clientUri = client.clientUri || "#";
   const requestedScopes = (c.env.AUTH0_SCOPE || "").split(" ");
 
-  const recognised = isRecognisedClient(client.clientName, client.redirectUris ?? []);
+  // parseAuthRequest already verified this redirect against the registered client.
+  // The consent warning describes where this request sends the authorization code,
+  // so other registered redirects must not make a known destination look unverified.
+  const redirectUris = [mcpClientAuthRequest.redirectUri];
+  const recognised = isRecognisedClient(client.clientName, redirectUris);
   const redirectHost = describeRedirectTarget(mcpClientAuthRequest.redirectUri);
   logger
     .withTags({
@@ -103,7 +107,7 @@ export async function authorize(c: Context<{ Bindings: AppEnv & { OAUTH_PROVIDER
       clientName,
       clientUri,
       consentToken,
-      claimsKnownClient: claimsUnrecognisedBrand(client.clientName, client.redirectUris ?? []),
+      claimsKnownClient: claimsUnrecognisedBrand(client.clientName, redirectUris),
       isLoopbackRedirect: isLoopbackRedirect(mcpClientAuthRequest.redirectUri),
       isRecognisedClient: recognised,
       redirectHost,
