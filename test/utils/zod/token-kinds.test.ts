@@ -2,6 +2,8 @@ import { expect, test } from "vitest";
 import { TOKEN_KINDS } from "../../../src/utils/zod";
 
 test("prefixes match public API token examples", () => {
+  expect(TOKEN_KINDS.enrichment_source.prefix).toBe("srvc_data_intgrtn");
+  expect(TOKEN_KINDS.ingest_token.prefix).toBe("tlm_tok");
   expect(TOKEN_KINDS.access_grant.prefix).toBe("rsrc_accss_grnt");
   expect(TOKEN_KINDS.access_policy.prefix).toBe("accss_plcy");
   expect(TOKEN_KINDS.anomaly_notification.prefix).toBe("rprt_alrt");
