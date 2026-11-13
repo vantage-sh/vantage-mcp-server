@@ -73,6 +73,7 @@ const validInputArguments: InferValidators<Validators> = {
     aggregate_by: "cost" as const,
     show_previous_period: true,
     complete_period: true,
+    table_column_order: ["service", "provider", "costAmount"],
   },
   previous_period_start_date: "2023-01-01",
   previous_period_end_date: "2023-01-31",
@@ -87,6 +88,11 @@ const validInputArguments: InferValidators<Validators> = {
 };
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
+  {
+    name: "rejects non-string column keys",
+    data: { ...minimalValidInputArguments, settings: { table_column_order: [42 as never] } },
+    expectedIssues: ["Invalid input: expected string, received number"],
+  },
   {
     name: "minimal valid arguments",
     data: minimalValidInputArguments,
@@ -189,6 +195,27 @@ const successData: UpdateCostReportResponse = {
 };
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
+  ...[[], undefined].map(
+    (order): ExecutionTestTableItem<Validators, OutputSchema> => ({
+      name: order
+        ? "resets column order with an empty array"
+        : "preserves omitted column order in a partial settings update",
+      apiCallHandler: requestsInOrder([
+        {
+          endpoint: `/v2/cost_reports/${pathEncode("rprt_123")}`,
+          params: { settings: order ? { table_column_order: order } : { include_tax: false } },
+          method: "PUT",
+          result: { ok: true, data: successData },
+        },
+      ]),
+      handler: async ({ callExpectingSuccess }) => {
+        await callExpectingSuccess({
+          ...minimalValidInputArguments,
+          settings: order ? { table_column_order: order } : { include_tax: false },
+        });
+      },
+    })
+  ),
   {
     name: "successful call",
     apiCallHandler: requestsInOrder([
@@ -225,6 +252,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
             aggregate_by: "cost",
             show_previous_period: true,
             complete_period: true,
+            table_column_order: ["service", "provider", "costAmount"],
           },
           previous_period_start_date: "2023-01-01",
           previous_period_end_date: "2023-01-31",

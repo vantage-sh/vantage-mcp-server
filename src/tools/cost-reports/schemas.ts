@@ -51,7 +51,15 @@ export const businessMetricTokenForUpdate = z.object({
     .describe("Calculation to apply to business metric value. Default: unit_cost"),
 });
 
+const tableColumnOrder = z
+  .array(z.string())
+  .optional()
+  .describe(
+    "Ordered Cost Report table column keys. Send [] to reset to the default order; omit to preserve the saved order."
+  );
+
 export const costReportSettingsForCreate = z.object({
+  table_column_order: tableColumnOrder,
   include_credits: z.boolean().default(false).describe("Report will include credits."),
   include_refunds: z.boolean().default(false).describe("Report will include refunds."),
   include_discounts: z.boolean().default(true).describe("Report will include discounts."),
@@ -70,6 +78,7 @@ export const costReportSettingsForCreate = z.object({
 });
 
 export const costReportSettingsForUpdate = z.object({
+  table_column_order: tableColumnOrder,
   include_credits: z.boolean().optional().describe("Report will include credits."),
   include_refunds: z.boolean().optional().describe("Report will include refunds."),
   include_discounts: z.boolean().optional().describe("Report will include discounts."),

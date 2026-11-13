@@ -20,6 +20,7 @@ const success: GetCostReportResponse = {
     unallocated: false,
     aggregate_by: "cost",
     show_previous_period: true,
+    table_column_order: ["service", "provider", "costAmount"],
   },
   created_at: "2024-07-03T00:00:00Z",
   workspace_token: "wrkspc_e5c550d14cfa3101",
