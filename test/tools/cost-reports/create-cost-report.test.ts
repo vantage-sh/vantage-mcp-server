@@ -57,6 +57,7 @@ const validInputArguments = {
     aggregate_by: "cost" as const,
     show_previous_period: true,
     complete_period: false,
+    table_column_order: ["service", "provider", "costAmount"],
   },
   previous_period_start_date: "2023-01-01",
   previous_period_end_date: "2023-01-31",
@@ -326,6 +327,20 @@ const minSuccess = {
 };
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
+  {
+    name: "creates a report with ordered columns",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/cost_reports",
+        params: { ...validInputArguments, groupings: validInputArguments.groupings.join(",") },
+        method: "POST",
+        result: { ok: true, data: minSuccess },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      expect(await callExpectingSuccess(validInputArguments)).toEqual(minSuccess);
+    },
+  },
   {
     name: "successful call",
     apiCallHandler: requestsInOrder([
