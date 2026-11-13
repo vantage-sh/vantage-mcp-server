@@ -5,7 +5,7 @@ description: Write and iterate on opt-in tool-selection evals for the Vantage MC
 
 # Writing evals
 
-Unit tests prove a tool wires up and the API call shape is right. **Evals prove the description + zod schema are good enough that a model can find and call the tool from a natural-language prompt.** Tool authoring conventions (description style, zod `.describe()` strings) live in `.agents/skills/writing-mcp-tools/SKILL.md`; this skill covers the eval harness and how to iterate when rows fail.
+Unit tests prove a tool wires up and the API call shape is right. **Evals prove the description + zod schema are good enough that a model can find and call the tool from a natural-language prompt.** Selection cases stop there. [Scenario cases](#scenario-cases) also run the tool's real handler against canned API responses, to check that the model writes correct arguments (VQL filters, groupings) and that the handler turns them into a correct request. Tool authoring conventions (description style, zod `.describe()` strings) live in `.agents/skills/writing-mcp-tools/SKILL.md`; this skill covers the eval harness and how to iterate when rows fail.
 
 ## Opt-in and execution approval
 
@@ -73,13 +73,16 @@ evals/
     models.ts             # approved models × effort levels; --model slug parser
     distractors.ts        # registered-tool sampler + optional named distractors
     buildAiSdkTools.ts    # reads from the live registerTool registry → AI SDK tool() defs
-    runToolSelection.ts   # { prompt, model, toolNames } → { toolCalls, text }
+    apiFixtures.ts        # ApiFixture type + fixture-backed callVantageApi for scenario cases
+    runToolSelection.ts   # { prompt, model, toolNames, fixtures? } → { toolCalls, text }
     provider.ts           # promptfoo custom provider for the selected model
-    assertToolCalls.ts    # flexible tool-call match
-    buildCases.ts         # cartesian product of prompts × phrasing
+    assertToolCalls.ts    # exact single-call match for selection cases
+    assertScenario.ts     # check-based scorer for scenario cases
+    buildCases.ts         # buildToolCases (selection) and buildScenarioCases
     run-eval.ts           # CLI: promptfoo eval + split into results/<model>/<resource>/<tool>.json
     generate-site.ts      # merge JSON → evals/site/index.html
   cases/<resource>/<tool>.eval.ts
+  mocks/<resource>/       # shared API fixtures for scenario cases
   promptfooconfig.ts
 ```
 
@@ -88,7 +91,7 @@ Case files live under `evals/cases/<resource>/` so they stay out of Vitest's pat
 
 ## The cases
 
-Every tool's case file contains exactly **two prompts** — one direct and one inferred/indirect — and each prompt runs against the **one** `--model` you pass with the target plus four distractors loaded. That's two cells total:
+Every tool's case file contains exactly **two selection prompts** — one direct and one inferred/indirect — and each prompt runs against the **one** `--model` you pass with the target plus four distractors loaded. That's two cells total:
 
 | **Direct**   | Can the model call the tool when the user explicitly names its registered identifier while four other tools compete? |
 | ------------ | ----------------------------------------------------------------------------------------------------------------------- |
@@ -123,15 +126,55 @@ export default function generateTests() {
 
 `buildToolCases` tags every case with `metadata.tool` and `metadata.resource` so results land under `evals/results/<model>/<resource>/` and optional Promptfoo metadata filters can narrow an already-resolved scope. The wrapper resolves `--tool` and `--resource` exactly before Promptfoo loads the selected case files.
 
-The scorer requires **exactly one** tool call with the expected name and args. Missing calls, extra calls, and multiple expected calls fail the cell. The v1 eval matrix does not cover abstention, negative, or multi-tool prompts.
+The selection scorer requires **exactly one** tool call with the expected name and args. Missing calls, extra calls, and multiple expected calls fail the cell. Selection cases do not cover abstention, negative, or multi-tool prompts; [scenario cases](#scenario-cases) allow lookup calls before the target.
 
 ## Writing prompts
 
 - **Direct prompts** explicitly include the target's exact registered tool identifier — for example, "Use `get-myself` to inspect the current Vantage credentials." Naming only the concept, title, or resource is not direct enough. These prompts test explicit invocation and argument extraction.
 - **Inferred prompts** describe the user's _goal_ without naming the tool — "I want to make sure we don't blow past $50k this quarter" → `create-budget`. They test description coverage and any disambiguating context.
-- Every prompt expects exactly one tool call. Negative, abstention, and multi-tool cases are outside the v1 eval scope.
+- Every selection prompt expects exactly one tool call. Negative and abstention cases are out of scope.
 - Write prompts a Vantage MCP user would _actually_ send. Generic phrasings with no product context (e.g. `"Who am I?"`) put unfair pressure on the description — models may read them as general knowledge questions, not Vantage account queries. Drop or rephrase prompts like that rather than padding the tool description to catch them.
-- Use exactly one direct prompt and one inferred prompt per tool. Each additional prompt creates another model call and increases API spend.
+- Use exactly one direct prompt and one inferred prompt per tool. Each additional prompt creates another model call and increases API spend; add scenario prompts only for argument mistakes you have evidence of.
+
+## Scenario cases
+
+Use scenario cases when a tool's arguments are where models fail, not its selection: VQL filters, groupings, provider slugs. They are added alongside the direct and inferred selection prompts, never instead of them. Write one or two prompts per mistake you want to catch, and expect to iterate on the tool until they pass.
+
+Each scenario runs every loaded tool's real handler. `callVantageApi` is replaced by a fixture server: the first `ApiFixture` whose endpoint, method, and `params` subset match the request wins. Requests without a match return an API error to the model and fail the cell, so give every lookup tool the case allows a fixture. The model gets up to `maxSteps` steps (default 4) and the run stops at the first call to the target.
+
+```ts
+import { buildScenarioCases, buildToolCases } from "../../_lib/buildCases";
+import { awsCosts, me } from "../../mocks/costs/fixtures";
+
+const TARGET = "query-costs";
+
+export default function generateTests() {
+  return [
+    ...buildToolCases({ target: TARGET, resource: "costs", directPrompts: [/* ... */], inferredPrompts: [/* ... */] }),
+    ...buildScenarioCases({
+      target: TARGET,
+      resource: "costs",
+      fixtures: [me, awsCosts],
+      scenarios: [
+        {
+          scenario: "category-grouping",
+          input: "Break down last month's AWS costs in workspace wrkspc_abc123 by cost category and subcategory.",
+          checks: [
+            { param: "groupings", includes: "cost_category" },
+            { param: "groupings", includes: "cost_subcategory" },
+          ],
+        },
+      ],
+    }),
+  ];
+}
+```
+
+- **Checks** apply to the model's first call to the target. `arg` reads the model's input; `param` reads the first API request the handler sent, after its transforms. Each check takes one of `equals`, `matches` / `notMatches` (regex source), or `includes` / `excludes` (array members, or comma-separated values in a string).
+- **Prefer `param` checks** when the handler normalizes the value, so a handler fix shows up in the score. Use `arg` checks for values the handler passes through unchanged, such as `filter`.
+- **Give every scenario at least one positive check.** Checks that only say what must not appear pass when the model omits the argument entirely.
+- **Fixtures** shared by several cases live in `evals/mocks/<resource>/` and are typed against the Vantage client's response bodies; cases import them instead of writing payloads inline. A scenario's own `fixtures` are checked before the shared ones, so it can return an API error for one specific request.
+- **Fixture data is synthetic.** Fixtures and requests are stored in result JSON, which is published to GitHub Pages. Never copy responses from a real account.
 
 ## Distractors
 
@@ -178,7 +221,8 @@ The rule is: **don't write to the eval.** The eval validates the description and
 - [ ] The user was asked whether the provider API key they intend to use is configured in `.env`.
 - [ ] `evals/cases/<resource>/<tool>.eval.ts` contains exactly one direct prompt and one inferred prompt.
 - [ ] The direct prompt contains the exact registered tool identifier; the inferred prompt does not name the tool.
-- [ ] Every prompt expects exactly one tool call with exact args.
+- [ ] Every selection prompt expects exactly one tool call with exact args.
+- [ ] Scenario prompts, if any, each have a positive check, and every lookup the model may make has a synthetic fixture.
 - [ ] Both prompts are things a Vantage MCP user would actually send.
 - [ ] Named distractors documented if the default pool is too weak for sibling tools.
 - [ ] If execution was not explicitly requested, no model-backed eval was run and the handoff includes the targeted command plus model-selection instructions.

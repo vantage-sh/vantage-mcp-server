@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { buildToolCases } from "../../evals/_lib/buildCases";
+import type { ApiFixture } from "../../evals/_lib/apiFixtures";
+import { buildScenarioCases, buildToolCases } from "../../evals/_lib/buildCases";
 
 describe("buildToolCases", () => {
   it("passes named distractors through to the provider vars", () => {
@@ -16,6 +17,50 @@ describe("buildToolCases", () => {
       target: "get-myself",
       distractors: ["list-workspaces"],
     });
+    expect(cases[0].options).toEqual({ disableVarExpansion: true });
+  });
+});
+
+describe("buildScenarioCases", () => {
+  it("puts scenario fixtures ahead of shared fixtures and asserts with the scenario scorer", () => {
+    const shared: ApiFixture = {
+      endpoint: "/v2/costs",
+      method: "GET",
+      result: { ok: true, data: { costs: [], total_cost: { amount: "0.00", currency: "USD" } } },
+    };
+    const rejection: ApiFixture = {
+      endpoint: "/v2/costs",
+      method: "GET",
+      params: { groupings: "category" },
+      result: { ok: false, errors: ["Invalid grouping"] },
+    };
+
+    const cases = buildScenarioCases({
+      target: "query-costs",
+      resource: "costs",
+      distractors: ["list-costs"],
+      fixtures: [shared],
+      maxSteps: 3,
+      scenarios: [
+        {
+          scenario: "category-grouping",
+          input: "Break down AWS costs by cost category.",
+          checks: [{ param: "groupings", includes: "cost_category" }],
+          fixtures: [rejection],
+        },
+      ],
+    });
+
+    expect(cases).toHaveLength(1);
+    expect(cases[0].vars).toMatchObject({
+      target: "query-costs",
+      distractors: ["list-costs"],
+      fixtures: [rejection, shared],
+      maxSteps: 3,
+      expect: { toolName: "query-costs", checks: [{ param: "groupings", includes: "cost_category" }] },
+    });
+    expect(cases[0].metadata).toMatchObject({ resource: "costs", phrasing: "scenario", scenario: "category-grouping" });
+    expect(cases[0].assert).toEqual([{ type: "javascript", value: "file://_lib/assertScenario.ts" }]);
     expect(cases[0].options).toEqual({ disableVarExpansion: true });
   });
 });

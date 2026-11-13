@@ -65,6 +65,8 @@ The default TypeScript and Biome checks exclude `.agents/`; validate changed scr
 
 When adding or changing a tool, ask whether the user wants evals included. If so, confirm that the selected provider's API key is configured in the ignored `.env` file and follow [.agents/skills/writing-evals/SKILL.md](.agents/skills/writing-evals/SKILL.md). Do not backfill or update evals unless requested.
 
+Evals never call the Vantage API. Scenario cases run tool handlers against synthetic API fixtures in-process; they still make model calls and fall under the same approval rules.
+
 Authoring an eval does not authorize model-backed execution. Run it only with explicit approval for the selected tools and model and confirmation of credential setup. Without that approval or setup, author the case only and report the pending run. After an authorized run, commit the resulting JSON under `evals/results/<model>/<resource>/`; use `npm run eval:site` to inspect the report locally.
 
 ### End-to-end verification (opt-in)

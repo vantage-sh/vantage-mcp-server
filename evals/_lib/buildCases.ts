@@ -1,4 +1,6 @@
 import type { TestCase } from "promptfoo";
+import type { ApiFixture } from "./apiFixtures";
+import type { CallCheck, ScenarioExpectation } from "./assertScenario";
 import type { ToolCallRecord } from "./assertToolCalls";
 
 export type PromptCase = {
@@ -49,4 +51,60 @@ export function buildToolCases(definition: ToolEvalDefinition): TestCase[] {
       ],
     }))
   );
+}
+
+export type ScenarioPrompt = {
+  /** Short label for what the prompt exercises, stored as `metadata.scenario`. */
+  scenario: string;
+  input: string;
+  /** Checks on the model's first call to the target. */
+  checks: CallCheck[];
+  /** Checked before the definition's fixtures, so a scenario can override a shared response. */
+  fixtures?: readonly ApiFixture[];
+};
+
+export type ScenarioEvalDefinition = {
+  target: string;
+  resource: string;
+  distractors?: readonly string[];
+  /** API responses for the target and any lookup tools the model may call first. */
+  fixtures: readonly ApiFixture[];
+  maxSteps?: number;
+  scenarios: ScenarioPrompt[];
+};
+
+/**
+ * Cases that run real handlers against API fixtures and score the arguments of the
+ * target call, rather than requiring one exact call.
+ */
+export function buildScenarioCases(definition: ScenarioEvalDefinition): TestCase[] {
+  return definition.scenarios.map((scenario) => {
+    const expect: ScenarioExpectation = { toolName: definition.target, checks: scenario.checks };
+    return {
+      description: `${definition.target} · scenario · ${scenario.scenario} · ${scenario.input}`,
+      vars: {
+        prompt: scenario.input,
+        target: definition.target,
+        fixtures: [...(scenario.fixtures ?? []), ...definition.fixtures],
+        expect,
+        ...(definition.distractors ? { distractors: definition.distractors } : {}),
+        ...(definition.maxSteps ? { maxSteps: definition.maxSteps } : {}),
+      },
+      options: {
+        disableVarExpansion: true,
+      },
+      metadata: {
+        tool: definition.target,
+        resource: definition.resource,
+        phrasing: "scenario",
+        scenario: scenario.scenario,
+      },
+      assert: [
+        {
+          type: "javascript",
+          value: "file://_lib/assertScenario.ts",
+        },
+      ],
+    };
+  });
 }

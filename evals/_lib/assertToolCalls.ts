@@ -1,6 +1,12 @@
+import type { ApiRequestRecord } from "./apiFixtures";
+
 export type ToolCallRecord = {
   toolName: string;
   input?: unknown;
+  /** API requests the handler sent. Only present when the case runs handlers against fixtures. */
+  requests?: ApiRequestRecord[];
+  /** Why the call failed: invalid input, an API error, or a handler exception. */
+  error?: string;
 };
 
 export type ToolSelectionOutput = {
