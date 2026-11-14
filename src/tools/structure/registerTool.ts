@@ -63,13 +63,22 @@ export type ToolMetadata = Pick<
 >;
 const toolDefinitions = new Map<string, ToolMetadata>();
 
+/** Runs a tool's handler with already-parsed args, bypassing the MCP server wrapper. */
+export type RegisteredToolExecutor = (args: Record<string, unknown>, context: ToolCallContext) => Promise<unknown>;
+const toolExecutors = new Map<string, RegisteredToolExecutor>();
+
 export function clearRegisteredToolsForTesting() {
   toolSetups.clear();
   toolDefinitions.clear();
+  toolExecutors.clear();
 }
 
 export function getRegisteredTool(name: string): ToolMetadata | undefined {
   return toolDefinitions.get(name);
+}
+
+export function getRegisteredToolExecutor(name: string): RegisteredToolExecutor | undefined {
+  return toolExecutors.get(name);
 }
 
 export function getRegisteredToolNames(): string[] {
@@ -175,6 +184,9 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
 
   toolSetups.set(toolProps.name, serverSetup);
   toolDefinitions.set(toolProps.name, toolProps);
+  toolExecutors.set(toolProps.name, (args, context) =>
+    toolProps.execute(args as Parameters<typeof toolProps.execute>[0], context)
+  );
 
   return toolProps;
 }

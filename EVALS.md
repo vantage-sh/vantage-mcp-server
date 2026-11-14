@@ -10,7 +10,21 @@ live in [`.agents/skills/writing-evals/SKILL.md`](.agents/skills/writing-evals/S
 
 Every tool is scored the same way: give the model a prompt, see which tool it calls, and check that
 it picked the right one with the right arguments. We do **not** execute the Vantage API.
-The tool's `execute` function is a no-op — selection is the only thing under test.
+In selection cases the tool's `execute` function is a no-op — selection is the only thing under test.
+
+Scenario cases go further, for tools whose arguments are easy to get wrong (VQL filters, groupings).
+Each tool runs its real handler, and `callVantageApi` is replaced with canned API responses
+(fixtures). Nothing leaves the process. A scenario run looks like this:
+
+1. The model gets a prompt a user might send, with the target and its lookup tools loaded.
+2. It may call lookup tools first; they return synthetic data.
+3. When it calls the target, the scenario's checks decide whether the call was right. A correct call
+   gets data that answers the prompt; a wrong one gets a useless response, such as an empty result
+   or the API error production would return.
+4. The run stops after the first target call. A scenario can raise `maxTargetCalls` to let the
+   model retry or page through results.
+5. The cell passes only if the **first** target call was right. When retries are allowed, the reason
+   records whether one fixed it.
 
 Every prompt loads the target plus four distractors. Testing the target in isolation does not tell us
 whether its description is distinct enough for a real MCP session, where the model has a large tool list.
@@ -18,12 +32,13 @@ whether its description is distinct enough for a real MCP session, where the mod
 Distractors are sampled reproducibly from every other registered tool. A case can name
 high-signal sibling tools explicitly; those are kept and any remaining slots are sampled automatically.
 
-Each tool has exactly two prompts:
+Each tool has exactly two selection prompts:
 
 - **Direct** — the user names the exact registered tool identifier.
 - **Inferred** — the user names a goal ("I need my default workspace token before I query costs").
 
-That produces two cells per tool and model. To compare models, we replay the same cases with a different
+That produces two cells per tool and model. A tool may add scenario prompts on top, one or two per
+argument mistake the evals are meant to catch. To compare models, we replay the same cases with a different
 `--model` — we do not expand the suite into an always-on grid of every model.
 
 ## Why we keep the outcomes
@@ -54,6 +69,7 @@ No API keys in CI. If the JSON is in the repo, the report can be rebuilt.
 ```
 evals/
   cases/<resource>/<tool>.eval.ts          # prompts + expected tool calls
+  mocks/<resource>/                        # shared API fixtures for scenario cases
   results/<model>/<resource>/<tool>.json   # committed outcomes
   site/                                    # generated HTML (not committed)
 ```
