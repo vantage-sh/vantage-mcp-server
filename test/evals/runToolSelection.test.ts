@@ -95,6 +95,27 @@ describe("runToolSelection", () => {
     expect(JSON.stringify(model.doGenerateCalls[3].prompt)).toContain("42.00");
   });
 
+  it("stops after maxTargetCalls calls to the target, not counting lookups", async () => {
+    const model = mockModel([
+      toolCallStep("call-1", "get-myself", {}),
+      toolCallStep("call-2", "query-costs", { ...queryCostsInput, groupings: ["category"] }),
+      toolCallStep("call-3", "query-costs", { ...queryCostsInput, groupings: ["cost_category"] }),
+      toolCallStep("call-4", "query-costs", { ...queryCostsInput, page: 2 }),
+    ]);
+
+    const result = await runToolSelection({
+      prompt: "AWS costs by category",
+      model,
+      toolNames: ["query-costs", "get-myself"],
+      fixtures: [correctCosts, emptyCosts],
+      target: "query-costs",
+      maxTargetCalls: 2,
+    });
+
+    expect(model.doGenerateCalls).toHaveLength(3);
+    expect(result.toolCalls.map((call) => call.toolName)).toEqual(["get-myself", "query-costs", "query-costs"]);
+  });
+
   it("stops at maxSteps", async () => {
     const model = mockModel([
       toolCallStep("call-1", "query-costs", queryCostsInput),

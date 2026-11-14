@@ -72,8 +72,36 @@ describe("buildScenarioCases", () => {
       maxSteps: 3,
       expect: { toolName: "query-costs", checks: [{ param: "groupings", includes: "cost_category" }] },
     });
+    expect(cases[0].vars).not.toHaveProperty("maxTargetCalls");
     expect(cases[0].metadata).toMatchObject({ resource: "costs", phrasing: "scenario", scenario: "category-grouping" });
     expect(cases[0].assert).toEqual([{ type: "javascript", value: "file://_lib/assertScenario.ts" }]);
     expect(cases[0].options).toEqual({ disableVarExpansion: true });
+  });
+
+  it("passes maxTargetCalls through, with a scenario override taking precedence", () => {
+    const empty: ApiFixture = {
+      endpoint: "/v2/costs",
+      method: "GET",
+      result: { ok: true, data: { costs: [], total_cost: { amount: "0.00", currency: "USD" } } },
+    };
+    const scenario = {
+      input: "AWS costs by service.",
+      checks: [{ param: "groupings", includes: "service" }],
+      correct: empty,
+    };
+
+    const cases = buildScenarioCases({
+      target: "query-costs",
+      resource: "costs",
+      incorrect: empty,
+      fixtures: [],
+      maxTargetCalls: 1,
+      scenarios: [
+        { ...scenario, scenario: "first-try" },
+        { ...scenario, scenario: "pagination", maxTargetCalls: 3 },
+      ],
+    });
+
+    expect(cases.map((testCase) => testCase.vars?.maxTargetCalls)).toEqual([1, 3]);
   });
 });

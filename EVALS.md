@@ -21,7 +21,8 @@ Each tool runs its real handler, and `callVantageApi` is replaced with canned AP
 3. When it calls the target, the scenario's checks decide whether the call was right. A correct call
    gets data that answers the prompt; a wrong one gets a useless response, such as an empty result
    or the API error production would return.
-4. The model keeps going, so a wrong first call usually leads to a retry.
+4. The model keeps going, so a wrong first call usually leads to a retry. `maxTargetCalls` stops the
+   run after that many target calls (1 to skip retries; more for flows such as pagination).
 5. The cell passes only if the **first** target call was right. Whether a retry fixed it is recorded
    in the reason.
 

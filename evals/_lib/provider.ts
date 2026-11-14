@@ -49,6 +49,10 @@ export default class ToolSelectionProvider implements ApiProvider {
     if (maxSteps !== undefined && (typeof maxSteps !== "number" || maxSteps < 1)) {
       return { error: "Test vars.maxSteps must be a positive number." };
     }
+    const maxTargetCalls = context?.vars?.maxTargetCalls;
+    if (maxTargetCalls !== undefined && (typeof maxTargetCalls !== "number" || maxTargetCalls < 1)) {
+      return { error: "Test vars.maxTargetCalls must be a positive number." };
+    }
 
     const handle = parseModelSpec(modelId);
     const toolNames = pickTools(target, distractors as string[] | undefined);
@@ -59,6 +63,8 @@ export default class ToolSelectionProvider implements ApiProvider {
       providerOptions: providerOptionsFor(handle),
       fixtures: fixtures as ApiFixture[] | undefined,
       maxSteps,
+      target,
+      maxTargetCalls,
     });
 
     return {

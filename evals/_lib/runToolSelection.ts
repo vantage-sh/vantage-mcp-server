@@ -1,4 +1,4 @@
-import { generateText, type LanguageModel, stepCountIs } from "ai";
+import { generateText, type LanguageModel, type StopCondition, stepCountIs, type ToolSet } from "ai";
 import type { ApiFixture } from "./apiFixtures";
 import type { ToolCallRecord } from "./assertToolCalls";
 import { buildAiSdkTools, type FixtureExecution } from "./buildAiSdkTools";
@@ -15,10 +15,16 @@ function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : JSON.stringify(error);
 }
 
+/** Stops after the step in which the model reaches `count` calls to `target`. */
+function targetCallCountIs(target: string, count: number): StopCondition<ToolSet> {
+  return ({ steps }) =>
+    steps.flatMap((step) => step.toolCalls).filter((call) => call.toolName === target).length >= count;
+}
+
 /**
  * Without fixtures, the model gets one step. With fixtures, handlers run against canned
  * API responses and the model keeps going, including retries after a bad response,
- * until it stops calling tools or reaches `maxSteps`.
+ * until it stops calling tools, reaches `maxSteps`, or makes `maxTargetCalls` calls to `target`.
  */
 export async function runToolSelection(opts: {
   prompt: string;
@@ -27,12 +33,19 @@ export async function runToolSelection(opts: {
   providerOptions?: ProviderCallOptions;
   fixtures?: readonly ApiFixture[];
   maxSteps?: number;
+  target?: string;
+  maxTargetCalls?: number;
 }): Promise<RunToolSelectionResult> {
   const fixtureExecution: FixtureExecution | undefined = opts.fixtures
     ? { fixtures: opts.fixtures, executions: new Map() }
     : undefined;
   const tools = buildAiSdkTools(opts.toolNames, fixtureExecution);
-  const stopWhen = stepCountIs(fixtureExecution ? (opts.maxSteps ?? DEFAULT_FIXTURE_MAX_STEPS) : 1);
+  const stopWhen = fixtureExecution
+    ? [
+        stepCountIs(opts.maxSteps ?? DEFAULT_FIXTURE_MAX_STEPS),
+        ...(opts.target && opts.maxTargetCalls ? [targetCallCountIs(opts.target, opts.maxTargetCalls)] : []),
+      ]
+    : stepCountIs(1);
 
   const result = await generateText({
     model: opts.model,

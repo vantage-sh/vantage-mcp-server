@@ -69,6 +69,8 @@ export type ScenarioPrompt = {
    * for a known mistake or override a shared lookup.
    */
   fixtures?: readonly ApiFixture[];
+  /** Overrides the definition's `maxTargetCalls` for this scenario. */
+  maxTargetCalls?: number;
 };
 
 export type ScenarioEvalDefinition = {
@@ -80,6 +82,8 @@ export type ScenarioEvalDefinition = {
   /** API responses for any lookup tools the model may call. */
   fixtures: readonly ApiFixture[];
   maxSteps?: number;
+  /** Stop the run once the model has called the target this many times. Unset, it runs until `maxSteps`. */
+  maxTargetCalls?: number;
   scenarios: ScenarioPrompt[];
 };
 
@@ -92,6 +96,7 @@ export function buildScenarioCases(definition: ScenarioEvalDefinition): TestCase
   return definition.scenarios.map((scenario) => {
     const expect: ScenarioExpectation = { toolName: definition.target, checks: scenario.checks };
     const correct: ApiFixture = { ...scenario.correct, when: scenario.checks };
+    const maxTargetCalls = scenario.maxTargetCalls ?? definition.maxTargetCalls;
     return {
       description: `${definition.target} · scenario · ${scenario.scenario} · ${scenario.input}`,
       vars: {
@@ -106,6 +111,7 @@ export function buildScenarioCases(definition: ScenarioEvalDefinition): TestCase
         expect,
         ...(definition.distractors ? { distractors: definition.distractors } : {}),
         ...(definition.maxSteps ? { maxSteps: definition.maxSteps } : {}),
+        ...(maxTargetCalls ? { maxTargetCalls } : {}),
       },
       options: {
         disableVarExpansion: true,
