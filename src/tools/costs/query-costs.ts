@@ -24,7 +24,7 @@ To query on a cost service, use this syntax: (costs.provider = '<provider name>'
 For AWS, costs.service must be a CUR identifier (e.g. 'AmazonEC2', 'AmazonVPC', 'AWSDirectConnect'). Resolve aliases from service values returned by a broad query-costs probe — not display names from list-cost-services.
 If a query returns no rows, run one broad probe query first (provider only, date_bin=month, wide date range) to learn available months and service identifiers before retrying with a narrower filter.
 For month-over-month comparisons, span both months in start_date/end_date with date_bin=month and settings_show_previous_period=true instead of separate queries per month.
-Prefer one query-costs call with all needed groupings (e.g. service, account_id, tag:<key>) over multiple calls that only change groupings.
+When you already know every dimension the user asked for, put them in one query-costs call (e.g. service, account_id, tag:<key>). If a later message asks for a dimension or metric that earlier call did not return, call query-costs again. Do not answer from the previous rows.
 You can only filter against one cost provider at a time. If you want to query for costs from two providers, you need to use the OR operator. Example: ((costs.provider = 'aws') OR (costs.provider = 'azure'))
 You can otherwise use the IN system to compare against a list of items, like this: (costs.provider = 'aws' AND costs.service IN ('AWSQueueService', 'AWSLambda'))
 To filter within a cost provider, keep the cost provider part and add a AND section, example: (costs.provider = 'aws' AND costs.service = 'AmazonRDS')
@@ -91,7 +91,7 @@ const args = {
     .enum(["cost", "usage", "count"])
     .optional()
     .describe(
-      "Results will aggregate by cost, usage, or count. If not provided, the workspace's default report setting is used."
+      "Aggregate by monetary cost (the default), usage, or count. Use the currency returned on the response. If not provided, the workspace's default report setting is used."
     ),
   settings_show_previous_period: z
     .boolean()
@@ -103,7 +103,7 @@ const args = {
     .array(z.string())
     .default(["provider", "service", "region"])
     .describe(
-      "Group the results by specific field(s). Defaults to provider, service, region. Valid groupings: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, usage_unit, tag:<tag_value>. Include every grouping you need in one call rather than issuing separate calls per grouping."
+      "Group the results by specific field(s). Defaults to provider, service, region. Valid groupings: account_id, billing_account_id, charge_type, cost_category, cost_subcategory, provider, region, resource_id, service, tagged, usage_unit, tag:<tag_value>. On the first call, include every grouping the user already asked for. A follow-up that asks for a new grouping is a new call."
     ),
 };
 
