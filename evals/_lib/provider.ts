@@ -58,7 +58,6 @@ export default class ToolSelectionProvider implements ApiProvider {
       toolNames,
       providerOptions: providerOptionsFor(handle),
       fixtures: fixtures as ApiFixture[] | undefined,
-      target,
       maxSteps,
     });
 

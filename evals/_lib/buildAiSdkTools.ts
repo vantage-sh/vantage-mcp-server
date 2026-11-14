@@ -29,7 +29,7 @@ function fixtureExecute(name: string, fixtureExecution: FixtureExecution) {
   return async (input: Record<string, unknown>, options: { toolCallId: string }): Promise<unknown> => {
     const log: ToolExecutionLog = { requests: [] };
     fixtureExecution.executions.set(options.toolCallId, log);
-    const callVantageApi = createFixtureApi(fixtureExecution.fixtures, log.requests);
+    const callVantageApi = createFixtureApi(fixtureExecution.fixtures, log.requests, input);
     try {
       return await executor(input, { callVantageApi });
     } catch (error) {

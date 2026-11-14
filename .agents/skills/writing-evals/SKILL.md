@@ -77,7 +77,8 @@ evals/
     runToolSelection.ts   # { prompt, model, toolNames, fixtures? } → { toolCalls, text }
     provider.ts           # promptfoo custom provider for the selected model
     assertToolCalls.ts    # exact single-call match for selection cases
-    assertScenario.ts     # check-based scorer for scenario cases
+    checks.ts             # CallCheck predicates shared by fixtures (`when`) and the scenario scorer
+    assertScenario.ts     # first-attempt scorer for scenario cases
     buildCases.ts         # buildToolCases (selection) and buildScenarioCases
     run-eval.ts           # CLI: promptfoo eval + split into results/<model>/<resource>/<tool>.json
     generate-site.ts      # merge JSON → evals/site/index.html
@@ -140,11 +141,15 @@ The selection scorer requires **exactly one** tool call with the expected name a
 
 Use scenario cases when a tool's arguments are where models fail, not its selection: VQL filters, groupings, provider slugs. They are added alongside the direct and inferred selection prompts, never instead of them. Write one or two prompts per mistake you want to catch, and expect to iterate on the tool until they pass.
 
-Each scenario runs every loaded tool's real handler. `callVantageApi` is replaced by a fixture server: the first `ApiFixture` whose endpoint, method, and `params` subset match the request wins. Requests without a match return an API error to the model and fail the cell, so give every lookup tool the case allows a fixture. The model gets up to `maxSteps` steps (default 4) and the run stops at the first call to the target.
+Each scenario runs every loaded tool's real handler. `callVantageApi` is replaced by a fixture server: the first `ApiFixture` whose endpoint, method, `params` subset, and `when` checks match the request wins. A scenario's `checks` define a correct target call:
+
+- **Correct** — the target's request gets the scenario's `correct` response: synthetic data that answers the prompt.
+- **Wrong** — it gets the `incorrect` response (the definition's default, or the scenario's own), such as an empty result. Give the model a reason to retry, the way production would.
+- The model keeps going until it stops calling tools or reaches `maxSteps` (default 6), so retries are recorded. The cell passes only if the **first** target call passes every check; the reason says whether a retry fixed it.
 
 ```ts
 import { buildScenarioCases, buildToolCases } from "../../_lib/buildCases";
-import { awsCosts, me } from "../../mocks/costs/fixtures";
+import { awsCostsByCategory, emptyCosts, me } from "../../mocks/costs/fixtures";
 
 const TARGET = "query-costs";
 
@@ -154,7 +159,8 @@ export default function generateTests() {
     ...buildScenarioCases({
       target: TARGET,
       resource: "costs",
-      fixtures: [me, awsCosts],
+      incorrect: emptyCosts,
+      fixtures: [me],
       scenarios: [
         {
           scenario: "category-grouping",
@@ -163,6 +169,7 @@ export default function generateTests() {
             { param: "groupings", includes: "cost_category" },
             { param: "groupings", includes: "cost_subcategory" },
           ],
+          correct: awsCostsByCategory,
         },
       ],
     }),
@@ -170,10 +177,12 @@ export default function generateTests() {
 }
 ```
 
-- **Checks** apply to the model's first call to the target. `arg` reads the model's input; `param` reads the first API request the handler sent, after its transforms. Each check takes one of `equals`, `matches` / `notMatches` (regex source), or `includes` / `excludes` (array members, or comma-separated values in a string).
+- **Checks** apply to the target call. `arg` reads the tool input after zod parsing, so defaults and transforms are applied; `param` reads the first API request the handler sent. Each check takes one of `equals`, `matches` / `notMatches` (regex source), or `includes` / `excludes` (array members, or comma-separated values in a string).
 - **Prefer `param` checks** when the handler normalizes the value, so a handler fix shows up in the score. Use `arg` checks for values the handler passes through unchanged, such as `filter`.
 - **Give every scenario at least one positive check.** Checks that only say what must not appear pass when the model omits the argument entirely.
-- **Fixtures** shared by several cases live in `evals/mocks/<resource>/` and are typed against the Vantage client's response bodies; cases import them instead of writing payloads inline. A scenario's own `fixtures` are checked before the shared ones, so it can return an API error for one specific request.
+- **Make the `correct` response fit the prompt** (an OpenAI prompt gets `open_ai` rows), so the model can finish once it gets the query right.
+- **Fixture order** is `correct`, then the scenario's `fixtures`, then `incorrect`, then the definition's `fixtures`. Put a production-style API error for one known mistake in the scenario's `fixtures`; give every lookup tool the case allows a fixture in the definition's. Requests without a match return an API error and fail the cell.
+- **Shared fixtures** live in `evals/mocks/<resource>/` and are typed against the Vantage client's response bodies; cases import them instead of writing payloads inline.
 - **Fixture data is synthetic.** Fixtures and requests are stored in result JSON, which is published to GitHub Pages. Never copy responses from a real account.
 
 ## Distractors
@@ -222,7 +231,7 @@ The rule is: **don't write to the eval.** The eval validates the description and
 - [ ] `evals/cases/<resource>/<tool>.eval.ts` contains exactly one direct prompt and one inferred prompt.
 - [ ] The direct prompt contains the exact registered tool identifier; the inferred prompt does not name the tool.
 - [ ] Every selection prompt expects exactly one tool call with exact args.
-- [ ] Scenario prompts, if any, each have a positive check, and every lookup the model may make has a synthetic fixture.
+- [ ] Scenario prompts, if any, each have a positive check and a `correct` response that fits the prompt, and every lookup the model may make has a synthetic fixture.
 - [ ] Both prompts are things a Vantage MCP user would actually send.
 - [ ] Named distractors documented if the default pool is too weak for sibling tools.
 - [ ] If execution was not explicitly requested, no model-backed eval was run and the handoff includes the targeted command plus model-selection instructions.

@@ -24,7 +24,7 @@ describe("createFixtureApi", () => {
       { endpoint: "/v2/costs", method: "GET", result: { ok: true, data: emptyCosts } },
     ];
     const requests: ApiRequestRecord[] = [];
-    const callVantageApi = createFixtureApi(fixtures, requests);
+    const callVantageApi = createFixtureApi(fixtures, requests, {});
 
     const rejected = await callVantageApi(
       "/v2/costs",
@@ -43,9 +43,47 @@ describe("createFixtureApi", () => {
     expect(requests[1].params).toMatchObject({ groupings: "cost_category" });
   });
 
+  it("serves a `when` fixture only if its checks pass on the tool input and request", async () => {
+    const answer = { costs: [], total_cost: { amount: "42.00", currency: "USD" } };
+    const fixtures: ApiFixture[] = [
+      {
+        endpoint: "/v2/costs",
+        method: "GET",
+        when: [
+          { arg: "filter", matches: "costs\\.category\\s*=" },
+          { param: "groupings", includes: "cost_subcategory" },
+        ],
+        result: { ok: true, data: answer },
+      },
+      { endpoint: "/v2/costs", method: "GET", result: { ok: true, data: emptyCosts } },
+    ];
+    const correctInput = { filter: "(costs.provider = 'aws' AND costs.category = 'Data Transfer')" };
+    const wrongInput = { filter: "(costs.provider = 'aws' AND costs.cost_category = 'Data Transfer')" };
+
+    const correct = await createFixtureApi(fixtures, [], correctInput)(
+      "/v2/costs",
+      { ...correctInput, workspace_token: "wrkspc_abc123", groupings: "cost_subcategory" },
+      "GET"
+    );
+    const wrongFilter = await createFixtureApi(fixtures, [], wrongInput)(
+      "/v2/costs",
+      { ...wrongInput, workspace_token: "wrkspc_abc123", groupings: "cost_subcategory" },
+      "GET"
+    );
+    const wrongGrouping = await createFixtureApi(fixtures, [], correctInput)(
+      "/v2/costs",
+      { ...correctInput, workspace_token: "wrkspc_abc123", groupings: "subcategory" },
+      "GET"
+    );
+
+    expect(correct).toEqual({ ok: true, data: answer });
+    expect(wrongFilter).toEqual({ ok: true, data: emptyCosts });
+    expect(wrongGrouping).toEqual({ ok: true, data: emptyCosts });
+  });
+
   it("returns an API error and records unmatched requests", async () => {
     const requests: ApiRequestRecord[] = [];
-    const callVantageApi = createFixtureApi([], requests);
+    const callVantageApi = createFixtureApi([], requests, {});
 
     const response = await callVantageApi("/v2/me", {}, "GET");
 

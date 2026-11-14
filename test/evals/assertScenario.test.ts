@@ -73,6 +73,21 @@ describe("scoreScenario", () => {
     expect(result.score).toBeCloseTo(2 / 5);
     expect(result.reason).toContain('arg filter {"matches"');
     expect(result.reason).toContain('param groupings {"includes":"cost_subcategory"}');
+    expect(result.reason).toContain("Fixed on attempt 2");
+  });
+
+  it("reports when no retry fixed the first attempt", () => {
+    const wrong = queryCostsCall(
+      {
+        filter: "(costs.provider = 'aws' AND costs.cost_category = 'Data Transfer')",
+        workspace_token: "wrkspc_abc123",
+      },
+      { groupings: "cost_subcategory" }
+    );
+    const result = scoreScenario([wrong, wrong], categoryExpectation);
+
+    expect(result.pass).toBe(false);
+    expect(result.reason).toContain("Not fixed in 1 retry.");
   });
 
   it("fails when a request had no fixture, even if the checks pass", () => {

@@ -14,9 +14,16 @@ In selection cases the tool's `execute` function is a no-op — selection is the
 
 Scenario cases go further, for tools whose arguments are easy to get wrong (VQL filters, groupings).
 Each tool runs its real handler, and `callVantageApi` is replaced with canned API responses
-(fixtures). The model can make lookup calls before it calls the target, and the scorer checks the
-first target call: the model's arguments, and the API request the handler built from them. Nothing
-leaves the process.
+(fixtures). Nothing leaves the process. A scenario run looks like this:
+
+1. The model gets a prompt a user might send, with the target and its lookup tools loaded.
+2. It may call lookup tools first; they return synthetic data.
+3. When it calls the target, the scenario's checks decide whether the call was right. A correct call
+   gets data that answers the prompt; a wrong one gets a useless response, such as an empty result
+   or the API error production would return.
+4. The model keeps going, so a wrong first call usually leads to a retry.
+5. The cell passes only if the **first** target call was right. Whether a retry fixed it is recorded
+   in the reason.
 
 Every prompt loads the target plus four distractors. Testing the target in isolation does not tell us
 whether its description is distinct enough for a real MCP session, where the model has a large tool list.

@@ -22,8 +22,14 @@ describe("buildToolCases", () => {
 });
 
 describe("buildScenarioCases", () => {
-  it("puts scenario fixtures ahead of shared fixtures and asserts with the scenario scorer", () => {
-    const shared: ApiFixture = {
+  it("orders correct, scenario, incorrect, then shared fixtures and asserts with the scenario scorer", () => {
+    const checks = [{ param: "groupings", includes: "cost_category" }];
+    const answer: ApiFixture = {
+      endpoint: "/v2/costs",
+      method: "GET",
+      result: { ok: true, data: { costs: [], total_cost: { amount: "42.00", currency: "USD" } } },
+    };
+    const empty: ApiFixture = {
       endpoint: "/v2/costs",
       method: "GET",
       result: { ok: true, data: { costs: [], total_cost: { amount: "0.00", currency: "USD" } } },
@@ -34,18 +40,25 @@ describe("buildScenarioCases", () => {
       params: { groupings: "category" },
       result: { ok: false, errors: ["Invalid grouping"] },
     };
+    const lookup: ApiFixture = {
+      endpoint: "/v2/cost_providers",
+      method: "GET",
+      result: { ok: true, data: { cost_providers: [] } },
+    };
 
     const cases = buildScenarioCases({
       target: "query-costs",
       resource: "costs",
       distractors: ["list-costs"],
-      fixtures: [shared],
+      incorrect: empty,
+      fixtures: [lookup],
       maxSteps: 3,
       scenarios: [
         {
           scenario: "category-grouping",
           input: "Break down AWS costs by cost category.",
           checks: [{ param: "groupings", includes: "cost_category" }],
+          correct: answer,
           fixtures: [rejection],
         },
       ],
@@ -55,7 +68,7 @@ describe("buildScenarioCases", () => {
     expect(cases[0].vars).toMatchObject({
       target: "query-costs",
       distractors: ["list-costs"],
-      fixtures: [rejection, shared],
+      fixtures: [{ ...answer, when: checks }, rejection, empty, lookup],
       maxSteps: 3,
       expect: { toolName: "query-costs", checks: [{ param: "groupings", includes: "cost_category" }] },
     });

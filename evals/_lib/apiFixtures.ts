@@ -5,6 +5,7 @@ import type {
   SupportedMethods,
 } from "@vantage-sh/vantage-client";
 import type { ToolCallContext } from "../../src/tools/structure/registerTool";
+import { type CallCheck, failedChecks } from "./checks";
 
 export type JsonPrimitive = string | number | boolean | null;
 export type JsonValue = JsonPrimitive | JsonValue[] | { [key: string]: JsonValue };
@@ -24,6 +25,8 @@ export type ApiFixture = {
       method: M;
       /** Subset of the request params. Omit to match every request to this endpoint and method. */
       params?: { [key: string]: JsonValue };
+      /** Matches only when every check passes against the calling tool's input and this request. */
+      when?: readonly CallCheck[];
       result: FixtureResult<P, M>;
     };
   }[SupportedMethods<P>];
@@ -59,12 +62,14 @@ function toJson(value: unknown): JsonValue {
 }
 
 /**
- * Serves the first fixture matching endpoint, method, and params, and records every request.
- * An unmatched request returns an API error, so the handler fails the way a rejected request would.
+ * Serves the first fixture matching endpoint, method, params, and `when` checks, and records
+ * every request. An unmatched request returns an API error, so the handler fails the way a
+ * rejected request would.
  */
 export function createFixtureApi(
   fixtures: readonly ApiFixture[],
-  requests: ApiRequestRecord[]
+  requests: ApiRequestRecord[],
+  toolInput: unknown
 ): ToolCallContext["callVantageApi"] {
   return async <
     P extends Path,
@@ -81,7 +86,8 @@ export function createFixtureApi(
       (candidate) =>
         candidate.endpoint === endpoint &&
         candidate.method === method &&
-        (candidate.params === undefined || isSubset(candidate.params, sent))
+        (candidate.params === undefined || isSubset(candidate.params, sent)) &&
+        (candidate.when === undefined || failedChecks(candidate.when, { input: toolInput, params: sent }).length === 0)
     );
     requests.push({ endpoint, method, params: sent, matched: fixture !== undefined });
 

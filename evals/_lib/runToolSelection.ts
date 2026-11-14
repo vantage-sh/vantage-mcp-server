@@ -1,10 +1,10 @@
-import { generateText, hasToolCall, type LanguageModel, stepCountIs } from "ai";
+import { generateText, type LanguageModel, stepCountIs } from "ai";
 import type { ApiFixture } from "./apiFixtures";
 import type { ToolCallRecord } from "./assertToolCalls";
 import { buildAiSdkTools, type FixtureExecution } from "./buildAiSdkTools";
 import type { ProviderCallOptions } from "./models";
 
-export const DEFAULT_FIXTURE_MAX_STEPS = 4;
+export const DEFAULT_FIXTURE_MAX_STEPS = 6;
 
 export type RunToolSelectionResult = {
   toolCalls: ToolCallRecord[];
@@ -17,7 +17,8 @@ function errorMessage(error: unknown): string {
 
 /**
  * Without fixtures, the model gets one step. With fixtures, handlers run against canned
- * API responses and the model may make lookup calls until it calls the target.
+ * API responses and the model keeps going, including retries after a bad response,
+ * until it stops calling tools or reaches `maxSteps`.
  */
 export async function runToolSelection(opts: {
   prompt: string;
@@ -25,16 +26,13 @@ export async function runToolSelection(opts: {
   toolNames: readonly string[];
   providerOptions?: ProviderCallOptions;
   fixtures?: readonly ApiFixture[];
-  target?: string;
   maxSteps?: number;
 }): Promise<RunToolSelectionResult> {
   const fixtureExecution: FixtureExecution | undefined = opts.fixtures
     ? { fixtures: opts.fixtures, executions: new Map() }
     : undefined;
   const tools = buildAiSdkTools(opts.toolNames, fixtureExecution);
-  const stopWhen = fixtureExecution
-    ? [stepCountIs(opts.maxSteps ?? DEFAULT_FIXTURE_MAX_STEPS), ...(opts.target ? [hasToolCall(opts.target)] : [])]
-    : stepCountIs(1);
+  const stopWhen = stepCountIs(fixtureExecution ? (opts.maxSteps ?? DEFAULT_FIXTURE_MAX_STEPS) : 1);
 
   const result = await generateText({
     model: opts.model,

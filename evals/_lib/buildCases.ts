@@ -1,7 +1,8 @@
 import type { TestCase } from "promptfoo";
 import type { ApiFixture } from "./apiFixtures";
-import type { CallCheck, ScenarioExpectation } from "./assertScenario";
+import type { ScenarioExpectation } from "./assertScenario";
 import type { ToolCallRecord } from "./assertToolCalls";
+import type { CallCheck } from "./checks";
 
 export type PromptCase = {
   input: string;
@@ -57,9 +58,16 @@ export type ScenarioPrompt = {
   /** Short label for what the prompt exercises, stored as `metadata.scenario`. */
   scenario: string;
   input: string;
-  /** Checks on the model's first call to the target. */
+  /** What a correct target call looks like. The first target call is scored against these. */
   checks: CallCheck[];
-  /** Checked before the definition's fixtures, so a scenario can override a shared response. */
+  /** Served for the target's request when every check passes: data that answers the prompt. */
+  correct: ApiFixture;
+  /** Served when any check fails. Defaults to the definition's `incorrect` response. */
+  incorrect?: ApiFixture;
+  /**
+   * Checked after `correct` and before `incorrect`, so a scenario can return a specific API error
+   * for a known mistake or override a shared lookup.
+   */
   fixtures?: readonly ApiFixture[];
 };
 
@@ -67,25 +75,34 @@ export type ScenarioEvalDefinition = {
   target: string;
   resource: string;
   distractors?: readonly string[];
-  /** API responses for the target and any lookup tools the model may call first. */
+  /** Default response for a wrong target call, such as an empty result, so the model retries. */
+  incorrect: ApiFixture;
+  /** API responses for any lookup tools the model may call. */
   fixtures: readonly ApiFixture[];
   maxSteps?: number;
   scenarios: ScenarioPrompt[];
 };
 
 /**
- * Cases that run real handlers against API fixtures and score the arguments of the
- * target call, rather than requiring one exact call.
+ * Cases that run real handlers against API fixtures. A correct target call gets data that
+ * answers the prompt and a wrong one gets the `incorrect` response, so the model can retry.
+ * Only the first target call is scored.
  */
 export function buildScenarioCases(definition: ScenarioEvalDefinition): TestCase[] {
   return definition.scenarios.map((scenario) => {
     const expect: ScenarioExpectation = { toolName: definition.target, checks: scenario.checks };
+    const correct: ApiFixture = { ...scenario.correct, when: scenario.checks };
     return {
       description: `${definition.target} · scenario · ${scenario.scenario} · ${scenario.input}`,
       vars: {
         prompt: scenario.input,
         target: definition.target,
-        fixtures: [...(scenario.fixtures ?? []), ...definition.fixtures],
+        fixtures: [
+          correct,
+          ...(scenario.fixtures ?? []),
+          scenario.incorrect ?? definition.incorrect,
+          ...definition.fixtures,
+        ],
         expect,
         ...(definition.distractors ? { distractors: definition.distractors } : {}),
         ...(definition.maxSteps ? { maxSteps: definition.maxSteps } : {}),
