@@ -21,10 +21,10 @@ Each tool runs its real handler, and `callVantageApi` is replaced with canned AP
 3. When it calls the target, the scenario's checks decide whether the call was right. A correct call
    gets data that answers the prompt; a wrong one gets a useless response, such as an empty result
    or the API error production would return.
-4. The model keeps going, so a wrong first call usually leads to a retry. `maxTargetCalls` stops the
-   run after that many target calls (1 to skip retries; more for flows such as pagination).
-5. The cell passes only if the **first** target call was right. Whether a retry fixed it is recorded
-   in the reason.
+4. The run stops after the first target call. A scenario can raise `maxTargetCalls` to let the
+   model retry or page through results.
+5. The cell passes only if the **first** target call was right. When retries are allowed, the reason
+   records whether one fixed it.
 
 Every prompt loads the target plus four distractors. Testing the target in isolation does not tell us
 whether its description is distinct enough for a real MCP session, where the model has a large tool list.

@@ -145,8 +145,8 @@ Each scenario runs every loaded tool's real handler. `callVantageApi` is replace
 
 - **Correct** — the target's request gets the scenario's `correct` response: synthetic data that answers the prompt.
 - **Wrong** — it gets the `incorrect` response (the definition's default, or the scenario's own), such as an empty result. Give the model a reason to retry, the way production would.
-- The model keeps going until it stops calling tools or reaches `maxSteps` (default 6), so retries are recorded. The cell passes only if the **first** target call passes every check; the reason says whether a retry fixed it.
-- Set `maxTargetCalls` on the definition (or override it on a scenario) to stop after that many target calls. Use 1 to skip retries, or a larger number for multi-call flows such as pagination. Lookup calls don't count, but keep `maxSteps` high enough to cover them plus the target calls. A step with parallel target calls can go past the limit; the run stops after that step.
+- The run stops after `maxTargetCalls` target calls (default 1) or `maxSteps` steps (default 6), whichever comes first. The cell passes only if the **first** target call passes every check.
+- Raise `maxTargetCalls` on the definition, or on one scenario, for multi-call flows such as pagination, or to see whether a retry fixes a wrong call (the reason then says). Lookup calls don't count, but keep `maxSteps` high enough to cover them plus the target calls. A step with parallel target calls can go past the limit; the run stops after that step.
 
 ```ts
 import { buildScenarioCases, buildToolCases } from "../../_lib/buildCases";

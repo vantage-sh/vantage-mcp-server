@@ -90,6 +90,20 @@ describe("scoreScenario", () => {
     expect(result.reason).toContain("Not fixed in 1 retry.");
   });
 
+  it("omits the retry summary when the run stopped after the first attempt", () => {
+    const wrong = queryCostsCall(
+      {
+        filter: "(costs.provider = 'aws' AND costs.cost_category = 'Data Transfer')",
+        workspace_token: "wrkspc_abc123",
+      },
+      { groupings: "cost_subcategory" }
+    );
+    const result = scoreScenario([wrong], categoryExpectation);
+
+    expect(result.pass).toBe(false);
+    expect(result.reason).not.toMatch(/retr|Fixed on/);
+  });
+
   it("fails when a request had no fixture, even if the checks pass", () => {
     const result = scoreScenario(
       [

@@ -48,7 +48,7 @@ export function scoreScenario(
   const errorSummary = first.error ? ` Error: ${first.error}.` : "";
   const failedSummary = failed.length > 0 ? ` Failed: ${failed.map(describeCheck).join("; ")}.` : "";
   let retrySummary = "";
-  if (failed.length > 0) {
+  if (failed.length > 0 && retries.length > 0) {
     const fixedAt = retries.findIndex((call) => failuresFor(call, expectation.checks).length === 0);
     retrySummary =
       fixedAt === -1

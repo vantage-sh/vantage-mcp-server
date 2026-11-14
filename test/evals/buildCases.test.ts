@@ -72,7 +72,7 @@ describe("buildScenarioCases", () => {
       maxSteps: 3,
       expect: { toolName: "query-costs", checks: [{ param: "groupings", includes: "cost_category" }] },
     });
-    expect(cases[0].vars).not.toHaveProperty("maxTargetCalls");
+    expect(cases[0].vars).toHaveProperty("maxTargetCalls", 1);
     expect(cases[0].metadata).toMatchObject({ resource: "costs", phrasing: "scenario", scenario: "category-grouping" });
     expect(cases[0].assert).toEqual([{ type: "javascript", value: "file://_lib/assertScenario.ts" }]);
     expect(cases[0].options).toEqual({ disableVarExpansion: true });
@@ -95,13 +95,13 @@ describe("buildScenarioCases", () => {
       resource: "costs",
       incorrect: empty,
       fixtures: [],
-      maxTargetCalls: 1,
+      maxTargetCalls: 2,
       scenarios: [
-        { ...scenario, scenario: "first-try" },
+        { ...scenario, scenario: "retry" },
         { ...scenario, scenario: "pagination", maxTargetCalls: 3 },
       ],
     });
 
-    expect(cases.map((testCase) => testCase.vars?.maxTargetCalls)).toEqual([1, 3]);
+    expect(cases.map((testCase) => testCase.vars?.maxTargetCalls)).toEqual([2, 3]);
   });
 });

@@ -4,6 +4,8 @@ import type { ScenarioExpectation } from "./assertScenario";
 import type { ToolCallRecord } from "./assertToolCalls";
 import type { CallCheck } from "./checks";
 
+const DEFAULT_MAX_TARGET_CALLS = 1;
+
 export type PromptCase = {
   input: string;
   expected: [ToolCallRecord];
@@ -82,7 +84,7 @@ export type ScenarioEvalDefinition = {
   /** API responses for any lookup tools the model may call. */
   fixtures: readonly ApiFixture[];
   maxSteps?: number;
-  /** Stop the run once the model has called the target this many times. Unset, it runs until `maxSteps`. */
+  /** Stop the run once the model has called the target this many times. Defaults to 1. */
   maxTargetCalls?: number;
   scenarios: ScenarioPrompt[];
 };
@@ -96,7 +98,7 @@ export function buildScenarioCases(definition: ScenarioEvalDefinition): TestCase
   return definition.scenarios.map((scenario) => {
     const expect: ScenarioExpectation = { toolName: definition.target, checks: scenario.checks };
     const correct: ApiFixture = { ...scenario.correct, when: scenario.checks };
-    const maxTargetCalls = scenario.maxTargetCalls ?? definition.maxTargetCalls;
+    const maxTargetCalls = scenario.maxTargetCalls ?? definition.maxTargetCalls ?? DEFAULT_MAX_TARGET_CALLS;
     return {
       description: `${definition.target} · scenario · ${scenario.scenario} · ${scenario.input}`,
       vars: {
@@ -111,7 +113,7 @@ export function buildScenarioCases(definition: ScenarioEvalDefinition): TestCase
         expect,
         ...(definition.distractors ? { distractors: definition.distractors } : {}),
         ...(definition.maxSteps ? { maxSteps: definition.maxSteps } : {}),
-        ...(maxTargetCalls ? { maxTargetCalls } : {}),
+        maxTargetCalls,
       },
       options: {
         disableVarExpansion: true,
