@@ -3,6 +3,7 @@ import {
   claimsUnrecognisedBrand,
   describeRedirectTarget,
   isRecognisedClient,
+  isRecognisedRedirect,
   validateClientRegistration,
 } from "../../src/auth/client-policy";
 
@@ -27,6 +28,9 @@ describe("validateClientRegistration", () => {
     [{ client_name: "Local", redirect_uris: ["http://127.0.0.1:3000/callback"] }],
     [{ client_name: "ChatGPT", redirect_uris: ["https://chatgpt.com/connector/oauth/cb_123"] }],
     [{ client_name: "VS Code", redirect_uris: ["https://insiders.vscode.dev/redirect"] }],
+    // Unlisted paths on vendor hosts still register, so new vendor callbacks keep working.
+    [{ client_name: "Claude", redirect_uris: ["https://claude.ai/some/new/callback?x=1"] }],
+    [{ client_name: "ChatGPT", redirect_uris: ["https://chatgpt.com/connector/oauth"] }],
   ])("allows %j", (metadata) => {
     expect(validateClientRegistration(metadata)).toBeUndefined();
   });
@@ -38,12 +42,6 @@ describe("validateClientRegistration", () => {
     [{ client_name: "x", redirect_uris: ["not a url"] }],
     [{ client_name: "Claude‮", redirect_uris: ["https://example.com/cb"] }],
     [{ client_name: "a".repeat(101), redirect_uris: ["https://example.com/cb"] }],
-    [{ client_name: "Claude", redirect_uris: ["https://claude.ai/login"] }],
-    [{ client_name: "Acme", redirect_uris: ["https://www.cursor.com/agents/evil"] }],
-    [{ client_name: "Claude", redirect_uris: ["https://claude.ai/api/mcp/auth_callback?next=https://evil.example"] }],
-    [{ client_name: "Claude", redirect_uris: ["https://claude.ai:8443/api/mcp/auth_callback"] }],
-    [{ client_name: "VS Code", redirect_uris: ["https://vscode.dev/redirect/extra"] }],
-    [{ client_name: "ChatGPT", redirect_uris: ["https://chatgpt.com/connector/oauth"] }],
   ])("rejects %j", (metadata) => {
     expect(validateClientRegistration(metadata)).toEqual(expect.any(String));
   });
@@ -58,8 +56,7 @@ describe("isRecognisedClient", () => {
     expect(isRecognisedClient("My Tool", ["https://example.com/cb"])).toBe(false);
     expect(isRecognisedClient("Claude", ["https://evil.example/cb"])).toBe(false);
     expect(isRecognisedClient("Claude", ["http://localhost:9999/callback"])).toBe(false);
-    expect(isRecognisedClient("Claude", ["https://claude.ai/api/mcp/auth_callback?next=1"])).toBe(false);
-    expect(isRecognisedClient("Cursor", ["cursor://evil/oauth/callback"])).toBe(false);
+    expect(isRecognisedClient("VS Code", ["http://127.0.0.1:33418/"])).toBe(false);
     expect(isRecognisedClient(undefined, [])).toBe(false);
   });
 
@@ -69,11 +66,19 @@ describe("isRecognisedClient", () => {
   });
 });
 
+describe("isRecognisedRedirect", () => {
+  it("judges only the redirect used by this request", () => {
+    expect(isRecognisedRedirect("Cursor", "https://www.cursor.com/agents/mcp/oauth/callback")).toBe(true);
+    expect(isRecognisedRedirect("Cursor", "http://localhost:8787/callback")).toBe(false);
+    expect(isRecognisedRedirect("My Tool", "https://claude.ai/api/mcp/auth_callback")).toBe(false);
+  });
+});
+
 describe("claimsUnrecognisedBrand", () => {
   it.each([
     ["Claude", ["https://evil.example/cb"]],
     ["Ｃｌａｕｄｅ Desktop", ["https://evil.example/cb"]],
-    ["Claude", ["http://localhost:9999/callback"]],
+    ["Claude", ["http://localhost:9999/callback", "https://evil.example/cb"]],
     ["Cursor", ["https://www.cursor.com.evil.example/cb"]],
     ["Cursor", ["https://cursor.com/cb", "https://evil.example/cb"]],
   ])("flags %s with %j", (name, uris) => {
@@ -84,6 +89,15 @@ describe("claimsUnrecognisedBrand", () => {
     ["Claude", ["https://claude.ai/api/mcp/auth_callback"]],
     ["Cursor", ["cursor://anysphere.cursor-mcp/oauth/callback", "https://www.cursor.com/agents/mcp/oauth/callback"]],
     ["pi", ["http://localhost:3118/callback"]],
+    ["Claude Code", ["http://localhost:9999/callback"]],
+    [
+      "Cursor",
+      [
+        "cursor://anysphere.cursor-mcp/oauth/callback",
+        "https://www.cursor.com/agents/mcp/oauth/callback",
+        "http://localhost:8787/callback",
+      ],
+    ],
     ["Acme Cost Reports", ["https://evil.example/cb"]],
   ])("does not flag %s with %j", (name, uris) => {
     expect(claimsUnrecognisedBrand(name, uris)).toBe(false);

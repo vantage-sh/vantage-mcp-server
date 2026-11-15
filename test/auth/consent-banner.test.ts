@@ -44,22 +44,21 @@ describe("consent screen client warnings", () => {
     expect(html).toContain("Local application");
     expect(html).toContain("localhost:3118");
     expect(html).not.toContain("Unverified application");
-    expect(html).not.toContain("does not prove this is that application");
   });
 
-  it("keeps the local-application warning when a loopback client copies a known name", async () => {
-    const html = await consentPage("Claude", "http://localhost:9999/callback");
+  it("shows the local-application note for a known name on loopback", async () => {
+    const html = await consentPage("Claude Code", "http://localhost:9999/callback");
     expect(html).toContain("Local application");
     expect(html).toContain("localhost:9999");
-    expect(html).toContain("A well-known name does not prove this is that application.");
     expect(html).not.toContain("Unverified application");
+    expect(html).not.toContain("well-known client");
   });
 
   it("describes the Vantage access being granted", async () => {
     const html = await consentPage("Acme Cost Reports", "https://attacker.example/cb");
     expect(html).toContain("Read cloud cost, usage, and organization data you can access");
-    expect(html).toContain("Create, change, and delete Vantage resources you are allowed to change");
-    expect(html).toContain("not limited to a narrower permission");
+    expect(html).toContain("Create, change, and delete Vantage resources, where your account allows it");
+    expect(html).toContain("disconnects every MCP client you have");
     expect(html).not.toContain("openid");
     expect(html).not.toContain("offline_access");
   });

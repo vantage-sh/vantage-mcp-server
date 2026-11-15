@@ -270,7 +270,6 @@ export function renderConsentScreen({
                     This will send your authorization back to an app running on this
                     computer (<code>${redirectHost}</code>). Only continue if you just
                     started connecting <strong>${clientName}</strong> yourself.
-                    ${claimsKnownClient ? "A well-known name does not prove this is that application." : ""}
                   </p>
                 </div>`
                   : html`<div class="deprecation-notice" role="alert">
@@ -312,12 +311,13 @@ export function renderConsentScreen({
 
             <ul class="scope-list">
               <li>Read cloud cost, usage, and organization data you can access</li>
-              <li>Create, change, and delete Vantage resources you are allowed to change</li>
+              <li>Create, change, and delete Vantage resources, where your account allows it</li>
             </ul>
 
             <p class="description">
-              This connection is not limited to a narrower permission. You can revoke
-              it later in Vantage under Settings, API Access Tokens, MCP Server Token.
+              You can remove MCP access later in Vantage under Settings, API Access
+              Tokens, MCP Server Token. That disconnects every MCP client you have
+              connected.
             </p>
 
             <p class="description">

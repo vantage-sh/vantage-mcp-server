@@ -6,10 +6,10 @@ Before an MCP client can call a tool, it gets a 401 challenge, discovers the pro
 
 - `oauth-challenge`: an unauthenticated `POST /mcp` returns 401 with a `Bearer` `WWW-Authenticate` header that points to `resource_metadata`.
 - `oauth-discovery`: `/.well-known/oauth-protected-resource/mcp` and `/.well-known/oauth-authorization-server` advertise the authorize, token, and registration endpoints, with PKCE `S256`.
-- `oauth-dcr`: `POST /register` returns 201 with a `client_id` for valid metadata, and 400 `invalid_client_metadata` for invalid redirect URIs (fragments, credentials, plain http off loopback, or a known application host with a path other than that application's callback).
-- `consent-local-app`: a loopback redirect (Inspector, Claude Code) shows the **Local application** note naming the host. A well-known name on loopback still shows that note, plus a line that the name is not proof of the application.
+- `oauth-dcr`: `POST /register` returns 201 with a `client_id` for valid metadata, and 400 `invalid_client_metadata` for invalid redirect URIs (fragments, credentials, plain http off loopback).
+- `consent-local-app`: a loopback redirect (Inspector, Claude Code) shows the **Local application** note naming the host. A well-known name on loopback (Claude Code, Cursor, VS Code) also shows that note, because loopback does not identify the application.
 - `consent-permissions`: the screen lists read and change access to the user's Vantage data. It does not list Auth0 identity scopes.
-- `consent-unverified`: a non-loopback redirect from an unrecognised client shows **Unverified application** and the redirect host. A well-known name (for example `Claude`) on a foreign host adds "uses the name of a well-known client". The warning is omitted only when the name and the redirect are that client's own callback.
+- `consent-unverified`: a non-loopback redirect from an unrecognised client shows **Unverified application** and the redirect host. A well-known name (for example `Claude`) on a foreign host adds "uses the name of a well-known client". The warning is omitted only when the name matches a known client and the redirect used for this request is on that client's host.
 - `consent-sse-notice`: `resource=<origin>/sse` shows **Update your Vantage MCP connection** with the `/mcp` URL, and `resource=<origin>/mcp` does not.
 - `consent-csrf`: the consent form carries `transaction_state` and `consent_token`, and the response sets an `auth0_req_<state>` cookie.
 - `authorize-unknown-client`: an unregistered `client_id` gets a 4xx and no consent form.
@@ -37,5 +37,5 @@ Preconditions:
 - Do not click or submit **Allow Access** locally. `POST /authorize/consent` returns 500, because the Worker runs OIDC discovery against `AUTH0_DOMAIN=local-dummy`. That is the expected boundary, not a regression. Continue on staging.
 - Launching in token mode turns this feature off. OAuth endpoints are not served, and `oauth-consent.ts` refuses to run.
 - The `/sse` notice depends on `resource` sharing the authorize request's origin. A `localhost` resource against a `127.0.0.1` Worker will not show it.
-- A recognised name suppresses the warnings only together with that client's own callback. Loopback always shows the **Local application** note, including for Claude Code. `MCP Inspector (verify)` is deliberately unrecognised, so it shows the same note. `https://verify.example/callback` stays a valid unverified registration.
+- A recognised name suppresses the warnings only together with that client's own host. Loopback always shows the **Local application** note, including for Claude Code. `MCP Inspector (verify)` is deliberately unrecognised, so it shows the same note. `https://verify.example/callback` stays a valid unverified registration.
 - Feature flags change this page. With `MCP_OAUTH_METADATA_ENABLED=true` (from PR #306) the resource metadata and consent text differ. Pass the flag with `--var` in a dedicated run and update the checks in the same PR.
