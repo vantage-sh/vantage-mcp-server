@@ -96,6 +96,10 @@ export async function authorize(c: Context<{ Bindings: AppEnv & { OAUTH_PROVIDER
     })
     .info("OAuth consent shown");
 
+  // The consent cookie is SameSite=None when hosted, so a framing site would get a working Allow button.
+  c.header("X-Frame-Options", "DENY");
+  c.header("Content-Security-Policy", "frame-ancestors 'none'");
+
   // Render the consent screen with CSRF protection
   return c.html(
     renderConsentScreen({

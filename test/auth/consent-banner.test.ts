@@ -8,19 +8,22 @@ import type { AppEnv } from "../../src/env";
 vi.mock("cloudflare:workers", () => ({ env: {} }));
 vi.mock("@cloudflare/workers-oauth-provider", () => ({ AuthorizationError: class extends Error {} }));
 
-async function consentPage(clientName: string, redirectUri: string) {
+async function consentResponse(clientName: string, redirectUri: string) {
   const provider = {
     parseAuthRequest: vi.fn().mockResolvedValue({ clientId: "client-id", redirectUri, scope: ["openid"] }),
     lookupClient: vi.fn().mockResolvedValue({ clientId: "client-id", clientName, redirectUris: [redirectUri] }),
   };
   const app = new Hono<{ Bindings: AppEnv & { OAUTH_PROVIDER: OAuthHelpers } }>();
   app.get("/authorize", authorize);
-  const response = await app.request("https://hosted-mcp-staging.vantage.sh/authorize", {}, {
+  return app.request("https://hosted-mcp-staging.vantage.sh/authorize", {}, {
     AUTH0_SCOPE: "openid offline_access email",
     ENVIRONMENT: "staging",
     OAUTH_PROVIDER: provider,
   } as unknown as AppEnv & { OAUTH_PROVIDER: OAuthHelpers });
-  return response.text();
+}
+
+async function consentPage(clientName: string, redirectUri: string) {
+  return (await consentResponse(clientName, redirectUri)).text();
 }
 
 describe("consent screen client warnings", () => {
@@ -67,6 +70,12 @@ describe("consent screen client warnings", () => {
     const html = await consentPage("Claude", "https://claude.ai/api/mcp/auth_callback");
     expect(html).not.toContain("Unverified application");
     expect(html).not.toContain("Local application");
+  });
+
+  it("forbids embedding the consent page in a frame", async () => {
+    const response = await consentResponse("Acme Cost Reports", "https://attacker.example/cb");
+    expect(response.headers.get("X-Frame-Options")).toBe("DENY");
+    expect(response.headers.get("Content-Security-Policy")).toBe("frame-ancestors 'none'");
   });
 
   it("escapes the client name", async () => {
