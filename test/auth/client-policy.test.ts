@@ -60,6 +60,17 @@ describe("isRecognisedClient", () => {
     expect(isRecognisedClient(undefined, [])).toBe(false);
   });
 
+  it("ignores loopback URIs registered alongside a known client's own redirects", () => {
+    expect(
+      isRecognisedClient("Cursor", [
+        "cursor://anysphere.cursor-mcp/oauth/callback",
+        "https://www.cursor.com/agents/mcp/oauth/callback",
+        "http://localhost:8787/callback",
+      ])
+    ).toBe(true);
+    expect(isRecognisedClient("Claude", ["http://localhost:9999/callback", "https://evil.example/cb"])).toBe(false);
+  });
+
   it("recognises a cursor custom-scheme callback and a dynamic ChatGPT callback", () => {
     expect(isRecognisedClient("Cursor", ["cursor://anysphere.cursor-retrieval/oauth/callback"])).toBe(true);
     expect(isRecognisedClient("ChatGPT", ["https://chatgpt.com/connector/oauth/cb_123"])).toBe(true);

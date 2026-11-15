@@ -81,12 +81,14 @@ export function isRecognisedRedirect(clientName: string | undefined, redirectUri
 }
 
 /**
- * True when the client's name claims a well-known client AND every redirect URI
- * belongs to that client.
+ * True when the client's name claims a well-known client AND every non-loopback redirect URI
+ * belongs to that client. Loopback URIs are ignored because they do not identify the client,
+ * so a client with only loopback redirects is not recognised.
  */
 export function isRecognisedClient(clientName: string | undefined, redirectUris: string[]): boolean {
-  if (!claimedClient(clientName) || redirectUris.length === 0) return false;
-  return redirectUris.every((r) => isRecognisedRedirect(clientName, r));
+  if (!claimedClient(clientName)) return false;
+  const remote = redirectUris.filter((r) => !isLoopbackRedirect(r));
+  return remote.length > 0 && remote.every((r) => isRecognisedRedirect(clientName, r));
 }
 
 /**
@@ -126,8 +128,7 @@ export function validateClientRegistration(metadata: Record<string, unknown>): s
  */
 export function claimsUnrecognisedBrand(clientName: string | undefined, redirectUris: string[]): boolean {
   if (!claimedClient(clientName)) return false;
-  const remote = redirectUris.filter((r) => !isLoopbackRedirect(r));
-  return remote.length > 0 && !isRecognisedClient(clientName, remote);
+  return redirectUris.some((r) => !isLoopbackRedirect(r)) && !isRecognisedClient(clientName, redirectUris);
 }
 
 /**
