@@ -1,51 +1,103 @@
 /**
  * Policy for dynamically registered (RFC 7591) MCP OAuth clients.
  *
- * Registration is open by design, so any client can claim any name. We
- * therefore (1) reject registrations with unsafe metadata, and (2) let the
- * consent screen tell users whether a client's redirect target is one we
- * recognise, warning harder when a name claims a well-known client but its
- * redirects are not that client's.
+ * Registration stays open, and public clients use token_endpoint_auth_method
+ * "none" with S256 PKCE. That is how Claude, Cursor, and other installed MCP
+ * clients connect. An authorization code is delivered only to a redirect URI
+ * registered for that client:
+ *
+ * - An http loopback redirect is opened on the approving user's own computer.
+ *   A remote party who registered the client does not receive it, so loopback
+ *   never counts as proof that the client is a known product.
+ * - https redirects on hosts we know (claude.ai, cursor.com, chatgpt.com,
+ *   vscode.dev, and the aliases below) must use that product's callback path.
+ *   Any other path, query, or port on those hosts is rejected so a code cannot
+ *   be sent to an arbitrary page there.
+ * - Other https origins and custom schemes are still accepted. The consent
+ *   screen names the destination and warns that the client is unverified.
+ *   Rejecting them would block MCP clients this list does not cover.
+ *
+ * A client_name is not evidence. The consent screen treats a redirect as a
+ * known product only when the name and that exact callback both match.
  */
+
+type CallbackRule = {
+  protocol: "https:" | "cursor:";
+  hosts: readonly string[];
+  /** Exact pathname, or a prefix ending in "/" for a dynamic final segment. */
+  path: string;
+};
 
 type TrustedClient = {
   /** Matched case-insensitively against a normalized client_name. */
   namePattern: RegExp;
-  /** Returns true when the redirect URI belongs to this client. */
-  matchesRedirect: (uri: URL) => boolean;
+  callbacks: readonly CallbackRule[];
 };
 
 const isLoopback = (uri: URL) => uri.protocol === "http:" && ["localhost", "127.0.0.1", "[::1]"].includes(uri.hostname);
 
-// Redirect URIs checked against vendor docs/reports on 2026-10-06:
+// Callback paths checked against vendor docs/reports on 2026-10-06:
 // - Claude: https://claude.ai/api/mcp/auth_callback (claude.com may follow); Claude Code uses loopback.
-// - Cursor: cursor://anysphere.cursor-mcp/oauth/callback, newer builds use http://localhost,
+// - Cursor: cursor://anysphere.cursor-mcp/oauth/callback (cursor-retrieval too), newer builds use http://localhost,
 //   cloud agents use https://www.cursor.com/agents/mcp/oauth/callback (often sent alongside the others).
 // - ChatGPT: https://chatgpt.com/connector_platform_oauth_redirect and /connector/oauth/{callback_id}.
 // - VS Code: https://vscode.dev/redirect, https://insiders.vscode.dev/redirect, http://127.0.0.1[:port].
 const TRUSTED_CLIENTS: TrustedClient[] = [
   {
     namePattern: /claude/,
-    matchesRedirect: (u) =>
-      (u.protocol === "https:" && ["claude.ai", "claude.com"].includes(u.hostname)) || isLoopback(u),
+    callbacks: [
+      {
+        protocol: "https:",
+        hosts: ["claude.ai", "claude.com"],
+        path: "/api/mcp/auth_callback",
+      },
+    ],
   },
   {
     namePattern: /cursor/,
-    matchesRedirect: (u) =>
-      u.protocol === "cursor:" ||
-      (u.protocol === "https:" && ["www.cursor.com", "cursor.com"].includes(u.hostname)) ||
-      isLoopback(u),
+    callbacks: [
+      {
+        protocol: "cursor:",
+        hosts: ["anysphere.cursor-mcp", "anysphere.cursor-retrieval"],
+        path: "/oauth/callback",
+      },
+      {
+        protocol: "https:",
+        hosts: ["www.cursor.com", "cursor.com"],
+        path: "/agents/mcp/oauth/callback",
+      },
+    ],
   },
   {
     namePattern: /chatgpt|openai/,
-    matchesRedirect: (u) => u.protocol === "https:" && u.hostname === "chatgpt.com",
+    callbacks: [
+      {
+        protocol: "https:",
+        hosts: ["chatgpt.com"],
+        path: "/connector_platform_oauth_redirect",
+      },
+      {
+        protocol: "https:",
+        hosts: ["chatgpt.com"],
+        path: "/connector/oauth/",
+      },
+    ],
   },
   {
     namePattern: /vs ?code|visual studio code/,
-    matchesRedirect: (u) =>
-      (u.protocol === "https:" && ["vscode.dev", "insiders.vscode.dev"].includes(u.hostname)) || isLoopback(u),
+    callbacks: [
+      {
+        protocol: "https:",
+        hosts: ["vscode.dev", "insiders.vscode.dev"],
+        path: "/redirect",
+      },
+    ],
   },
 ];
+
+const TRUSTED_HTTPS_CALLBACKS = TRUSTED_CLIENTS.flatMap((client) =>
+  client.callbacks.filter((rule) => rule.protocol === "https:")
+);
 
 const MAX_NAME_LENGTH = 100;
 
@@ -70,17 +122,48 @@ function claimedClient(name: string | undefined): TrustedClient | undefined {
   return TRUSTED_CLIENTS.find((c) => c.namePattern.test(normalized));
 }
 
+function pathMatches(pathname: string, rulePath: string): boolean {
+  if (pathname.split("/").includes("..")) return false;
+  if (rulePath.endsWith("/")) return pathname.startsWith(rulePath) && pathname.length > rulePath.length;
+  return pathname === rulePath;
+}
+
+function matchesCallback(url: URL, rule: CallbackRule): boolean {
+  if (url.protocol !== rule.protocol || url.username || url.password || url.hash || url.search || url.port)
+    return false;
+  if (!rule.hosts.includes(url.hostname.toLowerCase())) return false;
+  return pathMatches(url.pathname, rule.path);
+}
+
+/**
+ * True when this redirect is one of the named product's own callbacks.
+ * Loopback and other origins never qualify: the consent screen warns for those
+ * even when the client_name copies a known product.
+ */
+export function isRecognisedRedirect(clientName: string | undefined, redirectUri: string): boolean {
+  const trusted = claimedClient(clientName);
+  const url = parseRedirect(redirectUri);
+  if (!trusted || !url) return false;
+  return trusted.callbacks.some((rule) => matchesCallback(url, rule));
+}
+
 /**
  * True when the client's name claims a well-known client AND every redirect URI
- * belongs to that client. Only these clients may be shown as recognised.
+ * is that client's own callback. Only these clients may be shown as recognised.
  */
 export function isRecognisedClient(clientName: string | undefined, redirectUris: string[]): boolean {
-  const trusted = claimedClient(clientName);
-  if (!trusted || redirectUris.length === 0) return false;
-  return redirectUris.every((r) => {
-    const url = parseRedirect(r);
-    return !!url && trusted.matchesRedirect(url);
-  });
+  if (!claimedClient(clientName) || redirectUris.length === 0) return false;
+  return redirectUris.every((uri) => isRecognisedRedirect(clientName, uri));
+}
+
+function trustedHostRejection(url: URL): string | undefined {
+  if (url.protocol !== "https:") return undefined;
+  const rules = TRUSTED_HTTPS_CALLBACKS.filter((rule) => rule.hosts.includes(url.hostname.toLowerCase()));
+  if (rules.length === 0) return undefined;
+  if (url.port || url.search || !rules.some((rule) => pathMatches(url.pathname, rule.path))) {
+    return "redirect_uris on a known application host must use that application's callback path";
+  }
+  return undefined;
 }
 
 /**
@@ -107,6 +190,8 @@ export function validateClientRegistration(metadata: Record<string, unknown>): s
     if (url.protocol === "http:" && !isLoopback(url)) {
       return "redirect_uris must use https, a custom scheme, or an http loopback address";
     }
+    const trustedHostError = trustedHostRejection(url);
+    if (trustedHostError) return trustedHostError;
   }
 
   return undefined;

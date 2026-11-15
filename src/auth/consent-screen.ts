@@ -1,4 +1,4 @@
-import { html, raw } from "hono/html";
+import { html } from "hono/html";
 
 /**
  * Renders the consent screen HTML
@@ -12,7 +12,6 @@ export function renderConsentScreen({
   isRecognisedClient,
   isLoopbackRedirect,
   claimsKnownClient,
-  requestedScopes,
   transactionState,
   consentToken,
   sseMigrationUrl,
@@ -25,7 +24,6 @@ export function renderConsentScreen({
   isRecognisedClient: boolean;
   isLoopbackRedirect: boolean;
   claimsKnownClient: boolean;
-  requestedScopes: string[];
   transactionState: string;
   consentToken: string;
   sseMigrationUrl?: string;
@@ -272,6 +270,7 @@ export function renderConsentScreen({
                     This will send your authorization back to an app running on this
                     computer (<code>${redirectHost}</code>). Only continue if you just
                     started connecting <strong>${clientName}</strong> yourself.
+                    ${claimsKnownClient ? "A well-known name does not prove this is that application." : ""}
                   </p>
                 </div>`
                   : html`<div class="deprecation-notice" role="alert">
@@ -307,21 +306,19 @@ export function renderConsentScreen({
             }
 
             <p class="description mb-8">
-              By clicking "Allow Access", you authorize
-              <strong>${clientName}</strong> to access the following resources:
+              Allowing access lets <strong>${clientName}</strong> use your Vantage
+              account through this MCP server:
             </p>
 
             <ul class="scope-list">
-              ${raw(
-                requestedScopes
-                  .map(
-                    (scope) => `
-              <li>${scope}</li>
-              `
-                  )
-                  .join("\n")
-              )}
+              <li>Read cloud cost, usage, and organization data you can access</li>
+              <li>Create, change, and delete Vantage resources you are allowed to change</li>
             </ul>
+
+            <p class="description">
+              This connection is not limited to a narrower permission. You can revoke
+              it later in Vantage under Settings, API Access Tokens, MCP Server Token.
+            </p>
 
             <p class="description">
               If you did not initiate the request coming from

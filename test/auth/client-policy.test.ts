@@ -25,6 +25,8 @@ describe("validateClientRegistration", () => {
     [{ client_name: "Cursor", redirect_uris: ["https://www.cursor.com.evil.example/cb"] }],
     [{ client_name: "My Tool", redirect_uris: ["https://example.com/cb"] }],
     [{ client_name: "Local", redirect_uris: ["http://127.0.0.1:3000/callback"] }],
+    [{ client_name: "ChatGPT", redirect_uris: ["https://chatgpt.com/connector/oauth/cb_123"] }],
+    [{ client_name: "VS Code", redirect_uris: ["https://insiders.vscode.dev/redirect"] }],
   ])("allows %j", (metadata) => {
     expect(validateClientRegistration(metadata)).toBeUndefined();
   });
@@ -36,6 +38,12 @@ describe("validateClientRegistration", () => {
     [{ client_name: "x", redirect_uris: ["not a url"] }],
     [{ client_name: "Claude‮", redirect_uris: ["https://example.com/cb"] }],
     [{ client_name: "a".repeat(101), redirect_uris: ["https://example.com/cb"] }],
+    [{ client_name: "Claude", redirect_uris: ["https://claude.ai/login"] }],
+    [{ client_name: "Acme", redirect_uris: ["https://www.cursor.com/agents/evil"] }],
+    [{ client_name: "Claude", redirect_uris: ["https://claude.ai/api/mcp/auth_callback?next=https://evil.example"] }],
+    [{ client_name: "Claude", redirect_uris: ["https://claude.ai:8443/api/mcp/auth_callback"] }],
+    [{ client_name: "VS Code", redirect_uris: ["https://vscode.dev/redirect/extra"] }],
+    [{ client_name: "ChatGPT", redirect_uris: ["https://chatgpt.com/connector/oauth"] }],
   ])("rejects %j", (metadata) => {
     expect(validateClientRegistration(metadata)).toEqual(expect.any(String));
   });
@@ -46,10 +54,18 @@ describe("isRecognisedClient", () => {
     expect(isRecognisedClient("Claude", ["https://claude.ai/api/mcp/auth_callback"])).toBe(true);
   });
 
-  it("does not recognise unknown names or mismatched redirects", () => {
+  it("does not recognise unknown names, loopback, or mismatched redirects", () => {
     expect(isRecognisedClient("My Tool", ["https://example.com/cb"])).toBe(false);
     expect(isRecognisedClient("Claude", ["https://evil.example/cb"])).toBe(false);
+    expect(isRecognisedClient("Claude", ["http://localhost:9999/callback"])).toBe(false);
+    expect(isRecognisedClient("Claude", ["https://claude.ai/api/mcp/auth_callback?next=1"])).toBe(false);
+    expect(isRecognisedClient("Cursor", ["cursor://evil/oauth/callback"])).toBe(false);
     expect(isRecognisedClient(undefined, [])).toBe(false);
+  });
+
+  it("recognises a cursor custom-scheme callback and a dynamic ChatGPT callback", () => {
+    expect(isRecognisedClient("Cursor", ["cursor://anysphere.cursor-retrieval/oauth/callback"])).toBe(true);
+    expect(isRecognisedClient("ChatGPT", ["https://chatgpt.com/connector/oauth/cb_123"])).toBe(true);
   });
 });
 
@@ -57,6 +73,7 @@ describe("claimsUnrecognisedBrand", () => {
   it.each([
     ["Claude", ["https://evil.example/cb"]],
     ["Ｃｌａｕｄｅ Desktop", ["https://evil.example/cb"]],
+    ["Claude", ["http://localhost:9999/callback"]],
     ["Cursor", ["https://www.cursor.com.evil.example/cb"]],
     ["Cursor", ["https://cursor.com/cb", "https://evil.example/cb"]],
   ])("flags %s with %j", (name, uris) => {
