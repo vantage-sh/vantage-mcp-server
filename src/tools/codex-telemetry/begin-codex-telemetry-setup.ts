@@ -15,9 +15,9 @@ export default registerTool({
   annotations: { readOnly: false, destructive: false, openWorld: false },
   args: {},
   async execute(_args, ctx) {
-    // Remove these casts after the generated client includes the new Core endpoint.
+    // This onboarding endpoint is intentionally absent from the generated public client.
     const response = await ctx.callVantageApi(
-      "/v2/codex_telemetry_setup" as "/v2/ingest_tokens",
+      "/internal/codex_telemetry_setup" as "/v2/ingest_tokens",
       {} as RequestBodyForPathAndMethod<"/v2/ingest_tokens", "POST">,
       "POST"
     );

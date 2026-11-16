@@ -10,7 +10,7 @@ const response = {
 
 const apiCallHandler = (result: { ok: true; data: typeof response } | { ok: false; errors: unknown[] }) =>
   (async (endpoint, params, method) => {
-    expect(endpoint).toBe("/v2/codex_telemetry_setup");
+    expect(endpoint).toBe("/internal/codex_telemetry_setup");
     expect(params).toEqual({});
     expect(method).toBe("POST");
     return result as never;
