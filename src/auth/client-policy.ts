@@ -6,12 +6,17 @@
  * consent screen tell users whether a client's redirect target is one we
  * recognise, warning harder when a name claims a well-known client but its
  * redirects are not that client's.
+ *
+ * An http loopback redirect is opened on the approving user's own computer, so
+ * a remote party who registered the client cannot receive the code. Loopback is
+ * still not evidence of which product is listening, so it never makes a client
+ * recognised; the consent screen shows a local-application note instead.
  */
 
 type TrustedClient = {
   /** Matched case-insensitively against a normalized client_name. */
   namePattern: RegExp;
-  /** Returns true when the redirect URI belongs to this client. */
+  /** Returns true when the redirect URI belongs to this client. Never true for loopback. */
   matchesRedirect: (uri: URL) => boolean;
 };
 
@@ -26,15 +31,12 @@ const isLoopback = (uri: URL) => uri.protocol === "http:" && ["localhost", "127.
 const TRUSTED_CLIENTS: TrustedClient[] = [
   {
     namePattern: /claude/,
-    matchesRedirect: (u) =>
-      (u.protocol === "https:" && ["claude.ai", "claude.com"].includes(u.hostname)) || isLoopback(u),
+    matchesRedirect: (u) => u.protocol === "https:" && ["claude.ai", "claude.com"].includes(u.hostname),
   },
   {
     namePattern: /cursor/,
     matchesRedirect: (u) =>
-      u.protocol === "cursor:" ||
-      (u.protocol === "https:" && ["www.cursor.com", "cursor.com"].includes(u.hostname)) ||
-      isLoopback(u),
+      u.protocol === "cursor:" || (u.protocol === "https:" && ["www.cursor.com", "cursor.com"].includes(u.hostname)),
   },
   {
     namePattern: /chatgpt|openai/,
@@ -42,8 +44,7 @@ const TRUSTED_CLIENTS: TrustedClient[] = [
   },
   {
     namePattern: /vs ?code|visual studio code/,
-    matchesRedirect: (u) =>
-      (u.protocol === "https:" && ["vscode.dev", "insiders.vscode.dev"].includes(u.hostname)) || isLoopback(u),
+    matchesRedirect: (u) => u.protocol === "https:" && ["vscode.dev", "insiders.vscode.dev"].includes(u.hostname),
   },
 ];
 
@@ -71,16 +72,23 @@ function claimedClient(name: string | undefined): TrustedClient | undefined {
 }
 
 /**
- * True when the client's name claims a well-known client AND every redirect URI
- * belongs to that client. Only these clients may be shown as recognised.
+ * True when the client's name claims a well-known client AND this redirect belongs to it.
+ */
+export function isRecognisedRedirect(clientName: string | undefined, redirectUri: string): boolean {
+  const trusted = claimedClient(clientName);
+  const url = parseRedirect(redirectUri);
+  return !!trusted && !!url && trusted.matchesRedirect(url);
+}
+
+/**
+ * True when the client's name claims a well-known client AND every non-loopback redirect URI
+ * belongs to that client. Loopback URIs are ignored because they do not identify the client,
+ * so a client with only loopback redirects is not recognised.
  */
 export function isRecognisedClient(clientName: string | undefined, redirectUris: string[]): boolean {
-  const trusted = claimedClient(clientName);
-  if (!trusted || redirectUris.length === 0) return false;
-  return redirectUris.every((r) => {
-    const url = parseRedirect(r);
-    return !!url && trusted.matchesRedirect(url);
-  });
+  if (!claimedClient(clientName)) return false;
+  const remote = redirectUris.filter((r) => !isLoopbackRedirect(r));
+  return remote.length > 0 && remote.every((r) => isRecognisedRedirect(clientName, r));
 }
 
 /**
@@ -113,12 +121,14 @@ export function validateClientRegistration(metadata: Record<string, unknown>): s
 }
 
 /**
- * True when a name claims a well-known client but at least one redirect URI is not one we
- * know for it. Registration is allowed (we can't list every legitimate redirect, and
- * rejecting would break real clients), but the consent screen warns harder and we log it.
+ * True when a name claims a well-known client but at least one non-loopback redirect URI is
+ * not one we know for it. Registration is allowed (we can't list every legitimate redirect,
+ * and rejecting would break real clients), but the consent screen warns harder and we log it.
+ * Loopback redirects are ignored: Claude Code, Cursor, and VS Code all register them.
  */
 export function claimsUnrecognisedBrand(clientName: string | undefined, redirectUris: string[]): boolean {
-  return !!claimedClient(clientName) && !isRecognisedClient(clientName, redirectUris);
+  if (!claimedClient(clientName)) return false;
+  return redirectUris.some((r) => !isLoopbackRedirect(r)) && !isRecognisedClient(clientName, redirectUris);
 }
 
 /**

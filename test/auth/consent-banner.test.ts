@@ -8,19 +8,22 @@ import type { AppEnv } from "../../src/env";
 vi.mock("cloudflare:workers", () => ({ env: {} }));
 vi.mock("@cloudflare/workers-oauth-provider", () => ({ AuthorizationError: class extends Error {} }));
 
-async function consentPage(clientName: string, redirectUri: string) {
+async function consentResponse(clientName: string, redirectUri: string) {
   const provider = {
     parseAuthRequest: vi.fn().mockResolvedValue({ clientId: "client-id", redirectUri, scope: ["openid"] }),
     lookupClient: vi.fn().mockResolvedValue({ clientId: "client-id", clientName, redirectUris: [redirectUri] }),
   };
   const app = new Hono<{ Bindings: AppEnv & { OAUTH_PROVIDER: OAuthHelpers } }>();
   app.get("/authorize", authorize);
-  const response = await app.request("https://hosted-mcp-staging.vantage.sh/authorize", {}, {
+  return app.request("https://hosted-mcp-staging.vantage.sh/authorize", {}, {
     AUTH0_SCOPE: "openid offline_access email",
     ENVIRONMENT: "staging",
     OAUTH_PROVIDER: provider,
   } as unknown as AppEnv & { OAUTH_PROVIDER: OAuthHelpers });
-  return response.text();
+}
+
+async function consentPage(clientName: string, redirectUri: string) {
+  return (await consentResponse(clientName, redirectUri)).text();
 }
 
 describe("consent screen client warnings", () => {
@@ -46,10 +49,33 @@ describe("consent screen client warnings", () => {
     expect(html).not.toContain("Unverified application");
   });
 
+  it("shows the local-application note for a known name on loopback", async () => {
+    const html = await consentPage("Claude Code", "http://localhost:9999/callback");
+    expect(html).toContain("Local application");
+    expect(html).toContain("localhost:9999");
+    expect(html).not.toContain("Unverified application");
+    expect(html).not.toContain("well-known client");
+  });
+
+  it("describes the Vantage access being granted", async () => {
+    const html = await consentPage("Acme Cost Reports", "https://attacker.example/cb");
+    expect(html).toContain("Read cloud cost, usage, and organization data you can access");
+    expect(html).toContain("Create, change, and delete Vantage resources, where your account allows it");
+    expect(html).toContain("disconnects every MCP client you have");
+    expect(html).not.toContain("openid");
+    expect(html).not.toContain("offline_access");
+  });
+
   it("shows no notice for a recognised client on its own redirect", async () => {
     const html = await consentPage("Claude", "https://claude.ai/api/mcp/auth_callback");
     expect(html).not.toContain("Unverified application");
     expect(html).not.toContain("Local application");
+  });
+
+  it("forbids embedding the consent page in a frame", async () => {
+    const response = await consentResponse("Acme Cost Reports", "https://attacker.example/cb");
+    expect(response.headers.get("X-Frame-Options")).toBe("DENY");
+    expect(response.headers.get("Content-Security-Policy")).toBe("frame-ancestors 'none'");
   });
 
   it("escapes the client name", async () => {

@@ -10,7 +10,7 @@ import {
   claimsUnrecognisedBrand,
   describeRedirectTarget,
   isLoopbackRedirect,
-  isRecognisedClient,
+  isRecognisedRedirect,
 } from "./client-policy";
 import { renderConsentScreen } from "./consent-screen";
 import { getOidcConfig } from "./oidc";
@@ -84,10 +84,10 @@ export async function authorize(c: Context<{ Bindings: AppEnv & { OAUTH_PROVIDER
   const clientName = client.clientName || client.clientId;
   const clientLogo = client.logoUri || ""; // No default logo
   const clientUri = client.clientUri || "#";
-  const requestedScopes = (c.env.AUTH0_SCOPE || "").split(" ");
 
-  const recognised = isRecognisedClient(client.clientName, client.redirectUris ?? []);
-  const redirectHost = describeRedirectTarget(mcpClientAuthRequest.redirectUri);
+  const activeRedirect = mcpClientAuthRequest.redirectUri;
+  const recognised = isRecognisedRedirect(client.clientName, activeRedirect);
+  const redirectHost = describeRedirectTarget(activeRedirect);
   logger
     .withTags({
       oauth_client_name: clientName.slice(0, 100),
@@ -96,6 +96,10 @@ export async function authorize(c: Context<{ Bindings: AppEnv & { OAUTH_PROVIDER
     })
     .info("OAuth consent shown");
 
+  // The consent cookie is SameSite=None when hosted, so a framing site would get a working Allow button.
+  c.header("X-Frame-Options", "DENY");
+  c.header("Content-Security-Policy", "frame-ancestors 'none'");
+
   // Render the consent screen with CSRF protection
   return c.html(
     renderConsentScreen({
@@ -103,12 +107,11 @@ export async function authorize(c: Context<{ Bindings: AppEnv & { OAUTH_PROVIDER
       clientName,
       clientUri,
       consentToken,
-      claimsKnownClient: claimsUnrecognisedBrand(client.clientName, client.redirectUris ?? []),
-      isLoopbackRedirect: isLoopbackRedirect(mcpClientAuthRequest.redirectUri),
+      claimsKnownClient: claimsUnrecognisedBrand(client.clientName, [activeRedirect]),
+      isLoopbackRedirect: isLoopbackRedirect(activeRedirect),
       isRecognisedClient: recognised,
       redirectHost,
-      redirectUri: mcpClientAuthRequest.redirectUri,
-      requestedScopes,
+      redirectUri: activeRedirect,
       sseMigrationUrl: isLegacySseResource(mcpClientAuthRequest.resource, c.req.url)
         ? new URL("/mcp", c.req.url).href
         : undefined,
