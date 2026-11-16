@@ -19,6 +19,8 @@ export type LogTagHints = {
   ok?: boolean;
   /** JSON-serialized API error payload for failed Vantage calls. */
   api_errors?: string;
+  trace_id?: string;
+  span_id?: string;
   "dd.trace_id"?: string;
   "dd.span_id"?: string;
   "otel.trace_id"?: string;
