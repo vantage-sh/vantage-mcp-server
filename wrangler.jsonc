@@ -103,6 +103,14 @@
         "binding": "CF_VERSION_METADATA",
       },
       "logpush": true,
+      // Structured logs to Datadog (vantage-sh/cloudflare-tail-worker-datadog).
+      // The consumer must be deployed before this Worker. Keep Logpush until
+      // tail-worker logs are confirmed in Datadog.
+      "tail_consumers": [
+        {
+          "service": "cloudflare-tail-worker-datadog-vantage-mcp-server",
+        },
+      ],
       "routes": [
         {
           "pattern": "mcp.vantage.sh",
