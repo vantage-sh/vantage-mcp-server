@@ -18,7 +18,7 @@ function spyOnInitializationLogs() {
   return { info, withTags };
 }
 
-async function connect(transportType: string) {
+async function connect(transportType: string, requestHeaders?: Record<string, string>) {
   const background: Promise<unknown>[] = [];
   const server = createHostedMcpServer(
     { name: "Vantage test", version: "1.0.0" },
@@ -39,6 +39,12 @@ async function connect(transportType: string) {
   });
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
   await server.connect(serverTransport);
+  if (requestHeaders) {
+    // Mimic the Worker forwarding request headers into the Durable Object.
+    const onmessage = serverTransport.onmessage;
+    serverTransport.onmessage = (message, extra) =>
+      onmessage?.(message, { ...extra, requestInfo: { headers: requestHeaders } });
+  }
   await client.connect(clientTransport);
   await Promise.all(background);
   return { client, warnings };
@@ -62,7 +68,22 @@ describe("MCP client initialization attribution", () => {
     }
   );
 
-  it("keeps the SSE deprecation warning when chained after it", async () => {
+  it("tags the log with the trace forwarded on the initialize request", async () => {
+    const { withTags } = spyOnInitializationLogs();
+    const traceId = "012045e13ff5466d621637c8ee2b3266";
+    const spanId = "4f9c1a2b3c4d5e6f";
+    await connect("sse", { traceparent: `00-${traceId}-${spanId}-01` });
+
+    expect(withTags).toHaveBeenCalledTimes(1);
+    expect(withTags.mock.calls[0][0]).toMatchObject({
+      trace_id: traceId,
+      span_id: spanId,
+      "dd.trace_id": BigInt(`0x${traceId.slice(-16)}`).toString(),
+      "dd.span_id": BigInt(`0x${spanId}`).toString(),
+    });
+  });
+
+  it("keeps the SSE deprecation warning", async () => {
     spyOnInitializationLogs();
     const { warnings } = await connect("sse");
     expect(warnings).toEqual([expect.objectContaining({ logger: "vantage.sse-deprecation" })]);
