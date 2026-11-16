@@ -9,6 +9,7 @@ import "./budget-alerts";
 import "./budgets";
 import "./business-metrics";
 import "./canvases";
+import "./codex-telemetry";
 import "./cost-alerts";
 import "./cost-providers";
 import "./cost-reports";
