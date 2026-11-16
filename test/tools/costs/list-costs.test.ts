@@ -145,6 +145,46 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       });
     },
   },
+  {
+    name: "rejects amount sort when aggregate_by is count",
+    apiCallHandler: requestsInOrder([]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const error = await callExpectingMCPUserError({
+        ...validArguments,
+        sort_column: "amount",
+        sort_direction: "desc",
+        settings_aggregate_by: "count",
+      });
+      expect(error.exception).toEqual({
+        errors: [
+          {
+            message: "sort_column amount and usage_amount are not supported when settings_aggregate_by is count.",
+          },
+        ],
+      });
+    },
+  },
+  {
+    name: "ranks report groupings by period cost",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/costs",
+        params: { ...baseApiParams, sort_column: "amount", sort_direction: "desc" },
+        method: "GET",
+        result: { ok: true, data: successData },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const result = await callExpectingSuccess({
+        ...validArguments,
+        sort_column: "amount",
+        sort_direction: "desc",
+      });
+      expect(result.costs).toEqual(successData.costs);
+      expect(result.notes).toContain("each grouping's total cost");
+      expect(result.notes).toContain("highest total first");
+    },
+  },
   ...(["asc", "desc", undefined] as const).map((sort_direction): ExecutionTestTableItem<Validators, OutputSchema> => {
     const sortParams = { sort_column: "service", ...(sort_direction ? { sort_direction } : {}) };
     return {

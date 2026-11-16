@@ -5,7 +5,7 @@ import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
-import { groupingSortArgs } from "./schemas";
+import { assertCostsSort, costsMetricSortNote, groupingSortArgs } from "./schemas";
 
 const description = `
 Query for costs in a Vantage Account. These are independent of a cost reports.
@@ -50,6 +50,8 @@ Only provide these parameters if you need to override those defaults.
 
 Use settings_aggregate_by to choose the metric: cost (default), usage, or count.
 When aggregate_by is count, the response includes total_count and counts (date-binned distinct Group By permutation counts for the full requested period).
+
+When the user wants the most expensive, highest-cost, or top groupings, set sort_column to amount and sort_direction to desc. Page 1 is that ranking, not a date-ordered sample. Prefer date_bin=month unless they asked for a daily or weekly series, so more groupings fit on the page. For highest usage, set settings_aggregate_by to usage and sort_column to usage_amount.
 `.trim();
 
 const args = {
@@ -118,9 +120,7 @@ export default registerTool({
   },
   args,
   async execute(args, ctx) {
-    if (args.sort_direction !== undefined && args.sort_column === undefined) {
-      throw new MCPUserError({ errors: [{ message: "sort_direction requires sort_column" }] });
-    }
+    assertCostsSort(args);
 
     // Build request params. Settings that are not explicitly provided are left out
     // so the API uses the workspace's default report settings.
@@ -168,6 +168,9 @@ export default registerTool({
         notes = "Costs records represent one day.";
         break;
     }
+
+    const ranking = costsMetricSortNote(args.sort_column, args.sort_direction);
+    if (ranking) notes = `${notes} ${ranking}`;
 
     const costs = response.data.costs;
     const hint =
