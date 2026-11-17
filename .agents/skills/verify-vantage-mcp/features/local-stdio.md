@@ -6,6 +6,7 @@ Self-hosted users run the server on their own machine with a Vantage API token, 
 
 - `stdio-start`: the server starts with `VANTAGE_TOKEN` set and exits with `VANTAGE_TOKEN environment variable is required.` without it.
 - `stdio-tools-list`: `tools/list` returns the registered tools, with Access Policy tools only for account owners.
+- `dashboard-filters`: create and update with universal VQL, read back normalized filters, preserve on omission, clear with null or an empty string, and retain stored filters alongside legacy Saved Filters.
 - `stdio-tool-call`: `get-myself` returns Core data as the token's user.
 - `stdio-resources`: resources list and read as on the hosted Worker.
 

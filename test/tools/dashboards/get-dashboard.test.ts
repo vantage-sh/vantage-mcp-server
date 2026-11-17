@@ -8,6 +8,7 @@ const success = {
   title: "My Dashboard",
   folder_token: "fldr_dashboard",
   workspace_token: "wrkspc_e5c550d14cfa3101",
+  filter: 'vantage.provider = "aws"',
   widgets: [],
   saved_filter_tokens: [],
   date_bin: "day" as const,

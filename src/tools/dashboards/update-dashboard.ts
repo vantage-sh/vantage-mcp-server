@@ -4,6 +4,7 @@ import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import {
+  dashboardFilter,
   dashboardFolderForUpdate,
   endDateSchema,
   startDateSchema,
@@ -36,6 +37,7 @@ export default registerTool({
         "Full replacement widget list. Omit to keep the current widgets. Include every widget to keep. An empty array removes all widgets."
       )
       .optional(),
+    filter: dashboardFilter,
     saved_filter_tokens: z
       .array(vantageToken("saved_filter"))
       .describe("The updated tokens of the Saved Filters used in the Dashboard.")

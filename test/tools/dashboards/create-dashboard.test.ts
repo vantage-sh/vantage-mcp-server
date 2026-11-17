@@ -16,6 +16,7 @@ type Validators = ExtractValidators<typeof tool>;
 type OutputSchema = ExtractOutputSchema<typeof tool>;
 
 const undefineds = {
+  filter: undefined,
   folder_token: undefined,
   widgets: undefined,
   saved_filter_tokens: undefined,
@@ -59,6 +60,7 @@ const validInputArguments: InferValidators<Validators> = {
       },
     },
   ],
+  filter: "vantage.provider = 'aws'",
   saved_filter_tokens: ["svd_fltr_123"],
   date_bin: "week",
   date_interval: "this_month",
@@ -206,6 +208,24 @@ const freeTextGridResponse = {
 };
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
+  ...[null, ""].map(
+    (filter) =>
+      ({
+        name: `clear filter with ${JSON.stringify(filter)}`,
+        apiCallHandler: requestsInOrder([
+          {
+            endpoint: "/v2/dashboards",
+            params: { ...minimalValidInputArguments, filter },
+            method: "POST" as const,
+            result: { ok: true as const, data: { ...successData, filter: null } },
+          },
+        ]),
+        handler: async ({ callExpectingSuccess }) => {
+          const result = await callExpectingSuccess({ ...minimalValidInputArguments, filter });
+          expect(result.filter).toBeNull();
+        },
+      }) satisfies ExecutionTestTableItem<Validators, OutputSchema>
+  ),
   {
     name: "successful call",
     apiCallHandler: requestsInOrder([
