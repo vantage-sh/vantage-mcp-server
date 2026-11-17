@@ -10,7 +10,7 @@ export const groupingSortArgs = {
     .min(1)
     .optional()
     .describe(
-      `Column to sort by. A selected grouping (${GROUPING_SORT_VALUES}) sorts by that grouping. amount ranks each grouping by its total cost over the full requested period. usage_amount does the same for usage and requires settings_aggregate_by=usage. amount and usage_amount are rejected when settings_aggregate_by is count. Rows for one grouping stay in date order, so a row is one date bin, not the grouping total. Omit to sort by date.`
+      `Column to sort by. A selected grouping (${GROUPING_SORT_VALUES}) sorts by that grouping. amount ranks each grouping by its total cost over the full requested period. usage_amount does the same for usage and requires settings_aggregate_by=usage; it is not supported for segment reports. amount and usage_amount are rejected when settings_aggregate_by is count. Metric ties use ascending grouping values. Rows for one grouping stay in date order, so a row is one date bin, not the grouping total. Pagination counts date-by-grouping rows, so a grouping can continue onto the next page. Omit to sort by date.`
     ),
   sort_direction: z
     .enum(["asc", "desc"])
@@ -61,5 +61,5 @@ export function costsMetricSortNote(sort_column?: string, sort_direction?: "asc"
       ? ` This page starts with the lowest totals. For the ${sort_column === "usage_amount" ? "highest usage" : "most expensive groupings"}, call again with sort_direction=desc.`
       : "";
 
-  return `Results are ordered by each grouping's total ${metric} over the full requested period, ${order}. Rows for the same grouping stay together in date order, so one row is a single date bin, not that total. Rank groupings, not individual rows. Later pages continue this ranking.${ascHint}`;
+  return `Results are ordered by each grouping's total ${metric} over the full requested period, ${order}. Rows for the same grouping stay together in date order, so one row is a single date bin, not that total. Rank groupings, not individual rows. Later pages continue this ranking. Pagination counts date-by-grouping rows, so a grouping can continue onto the next page.${ascHint}`;
 }

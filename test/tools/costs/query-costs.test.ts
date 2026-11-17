@@ -164,6 +164,32 @@ const countSuccessData: GetCostsResponse = {
 };
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
+  ...(["amount", "usage_amount"] as const).flatMap((sort_column) =>
+    (["asc", "desc", undefined] as const).map((sort_direction): ExecutionTestTableItem<Validators, OutputSchema> => {
+      const sortParams = { sort_column, ...(sort_direction ? { sort_direction } : {}) };
+      const usageSettings = sort_column === "usage_amount" ? { settings_aggregate_by: "usage" as const } : {};
+      return {
+        name: `forwards ${sort_column} sorting with direction ${sort_direction ?? "omitted"}`,
+        apiCallHandler: requestsInOrder([
+          {
+            endpoint: "/v2/costs",
+            params: {
+              ...baseApiParams,
+              ...sortParams,
+              ...(sort_column === "usage_amount" ? { "settings[aggregate_by]": "usage" } : {}),
+            },
+            method: "GET",
+            result: { ok: true, data: successData },
+          },
+        ]),
+        handler: async ({ callExpectingSuccess }) => {
+          const result = await callExpectingSuccess({ ...validInputArguments, ...sortParams, ...usageSettings });
+          expect(result.costs).toEqual(successData.costs);
+          expect(result.total_cost).toEqual(successData.total_cost);
+        },
+      };
+    })
+  ),
   {
     name: "rejects sort_direction without sort_column before calling the API",
     apiCallHandler: requestsInOrder([]),
