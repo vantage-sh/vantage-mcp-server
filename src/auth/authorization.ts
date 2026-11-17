@@ -11,6 +11,7 @@ import {
   describeRedirectTarget,
   isLoopbackRedirect,
   isRecognisedRedirect,
+  resolveRegisteredRedirect,
 } from "./client-policy";
 import { renderConsentScreen } from "./consent-screen";
 import { getOidcConfig } from "./oidc";
@@ -156,10 +157,21 @@ export async function confirmConsent(c: Context<{ Bindings: AppEnv & { OAUTH_PRO
 
   // Handle user denial
   if (!formGivesConsent) {
-    // Parse the MCP client auth request to get the original redirect URI
-    const redirectUri = new URL(auth0AuthRequest.mcpAuthRequest.redirectUri);
+    // The transaction cookie is not signed, so do not redirect to the URI stored in it unless that
+    // URI is one this client registered. completeAuthorization applies the same check on success.
+    const client = await c.env.OAUTH_PROVIDER.lookupClient(auth0AuthRequest.mcpAuthRequest.clientId);
+    const redirectUri = resolveRegisteredRedirect(
+      auth0AuthRequest.mcpAuthRequest.redirectUri,
+      client?.redirectUris ?? []
+    );
+    if (!redirectUri) {
+      setCookie(c, cookieName, "", {
+        maxAge: 0,
+        path: "/",
+      });
+      return c.text("Invalid redirect URI", 400);
+    }
 
-    // Add error parameters to the redirect URI
     redirectUri.searchParams.set("error", "access_denied");
     redirectUri.searchParams.set("error_description", "User denied the request");
     if (auth0AuthRequest.mcpAuthRequest.state) {
