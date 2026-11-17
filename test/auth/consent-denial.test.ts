@@ -1,5 +1,6 @@
 import type { OAuthHelpers } from "@cloudflare/workers-oauth-provider";
 import { Hono } from "hono";
+import { setSignedCookie } from "hono/cookie";
 import { describe, expect, it, vi } from "vitest";
 import { confirmConsent } from "../../src/auth";
 import type { Auth0AuthRequest } from "../../src/auth/types";
@@ -10,14 +11,15 @@ vi.mock("@cloudflare/workers-oauth-provider", () => ({ AuthorizationError: class
 
 const TRANSACTION_STATE = "txn-state";
 const CONSENT_TOKEN = "consent-token";
+const AUTH_SECRET = "test-secret";
 
-function authCookie(redirectUri: string): string {
-  const payload: Auth0AuthRequest = {
+function authRequest(redirectUri: string, clientId = "client-id"): Auth0AuthRequest {
+  return {
     codeChallenge: "challenge",
     codeVerifier: "verifier",
     consentToken: CONSENT_TOKEN,
     mcpAuthRequest: {
-      clientId: "client-id",
+      clientId,
       redirectUri,
       responseType: "code",
       scope: ["openid"],
@@ -27,10 +29,29 @@ function authCookie(redirectUri: string): string {
     nonce: "nonce",
     transactionState: TRANSACTION_STATE,
   };
-  return `auth0_req_${TRANSACTION_STATE}=${btoa(JSON.stringify(payload))}`;
 }
 
-async function deny(redirectUri: string, registeredUris: string[]) {
+async function signedCookie(payload: Auth0AuthRequest): Promise<string> {
+  const app = new Hono();
+  app.get("/", async (c) => {
+    await setSignedCookie(c, `auth0_req_${TRANSACTION_STATE}`, btoa(JSON.stringify(payload)), AUTH_SECRET, {
+      path: "/",
+    });
+    return c.text("ok");
+  });
+  const response = await app.request("http://localhost/");
+  return (response.headers.get("set-cookie") ?? "").split(";")[0];
+}
+
+function consentEnv(provider: { lookupClient: ReturnType<typeof vi.fn> }) {
+  return {
+    AUTH0_CLIENT_SECRET: AUTH_SECRET,
+    ENVIRONMENT: "staging",
+    OAUTH_PROVIDER: provider,
+  } as unknown as AppEnv & { OAUTH_PROVIDER: OAuthHelpers };
+}
+
+async function deny(redirectUri: string, registeredUris: string[], cookie = signedCookie(authRequest(redirectUri))) {
   const provider = {
     lookupClient: vi.fn().mockResolvedValue({
       clientId: "client-id",
@@ -51,11 +72,11 @@ async function deny(redirectUri: string, registeredUris: string[]) {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
-        Cookie: authCookie(redirectUri),
+        Cookie: await cookie,
       },
       body,
     },
-    { ENVIRONMENT: "staging", OAUTH_PROVIDER: provider } as unknown as AppEnv & { OAUTH_PROVIDER: OAuthHelpers }
+    consentEnv(provider)
   );
   return { provider, response };
 }
@@ -75,37 +96,35 @@ describe("consent denial redirect", () => {
   });
 
   it("encodes a hostile state value without changing the registered host", async () => {
-    const payload = authCookie("https://app.example/callback").slice(`auth0_req_${TRANSACTION_STATE}=`.length);
-    const parsed = JSON.parse(atob(payload)) as Auth0AuthRequest;
-    parsed.mcpAuthRequest.state = "abc\r\nhttps://evil.example";
-    const provider = {
-      lookupClient: vi.fn().mockResolvedValue({
-        clientId: "client-id",
-        redirectUris: ["https://app.example/callback"],
-      }),
-    };
-    const app = new Hono<{ Bindings: AppEnv & { OAUTH_PROVIDER: OAuthHelpers } }>();
-    app.post("/authorize/consent", confirmConsent);
-    const response = await app.request(
-      "https://hosted-mcp-staging.vantage.sh/authorize/consent",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          Cookie: `auth0_req_${TRANSACTION_STATE}=${btoa(JSON.stringify(parsed))}`,
-        },
-        body: new URLSearchParams({
-          consent_action: "deny",
-          consent_token: CONSENT_TOKEN,
-          transaction_state: TRANSACTION_STATE,
-        }),
-      },
-      { ENVIRONMENT: "staging", OAUTH_PROVIDER: provider } as unknown as AppEnv & { OAUTH_PROVIDER: OAuthHelpers }
+    const payload = authRequest("https://app.example/callback");
+    payload.mcpAuthRequest.state = "abc\r\nhttps://evil.example";
+    const { response } = await deny(
+      "https://app.example/callback",
+      ["https://app.example/callback"],
+      signedCookie(payload)
     );
     const location = response.headers.get("location") ?? "";
     expect(new URL(location).hostname).toBe("app.example");
     expect(location).not.toMatch(/[\r\n]/);
     expect(new URL(location).searchParams.get("state")).toBe("abc\r\nhttps://evil.example");
+  });
+
+  it("does not follow a cookie rewritten to a different registered client", async () => {
+    const honest = await signedCookie(authRequest("https://app.example/callback"));
+    const eq = honest.indexOf("=");
+    const value = decodeURIComponent(honest.slice(eq + 1));
+    const dot = value.lastIndexOf(".");
+    const forgedPayload = authRequest("https://evil.example/phish", "attacker-client");
+    const forged = `${honest.slice(0, eq)}=${encodeURIComponent(`${btoa(JSON.stringify(forgedPayload))}.${value.slice(dot + 1)}`)}`;
+    const { provider, response } = await deny(
+      "https://evil.example/phish",
+      ["https://evil.example/phish"],
+      Promise.resolve(forged)
+    );
+    expect(response.status).toBe(400);
+    expect(response.headers.get("location")).toBeNull();
+    expect(await response.text()).toBe("Invalid or expired transaction");
+    expect(provider.lookupClient).not.toHaveBeenCalled();
   });
 
   it("follows a loopback client to the port it is listening on", async () => {
@@ -140,7 +159,7 @@ describe("consent denial redirect", () => {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
-          Cookie: authCookie("https://app.example/callback"),
+          Cookie: await signedCookie(authRequest("https://app.example/callback")),
         },
         body: new URLSearchParams({
           consent_action: "deny",
@@ -148,7 +167,7 @@ describe("consent denial redirect", () => {
           transaction_state: TRANSACTION_STATE,
         }),
       },
-      { ENVIRONMENT: "staging", OAUTH_PROVIDER: provider } as unknown as AppEnv & { OAUTH_PROVIDER: OAuthHelpers }
+      consentEnv(provider)
     );
     expect(response.status).toBe(400);
     expect(response.headers.get("location")).toBeNull();
