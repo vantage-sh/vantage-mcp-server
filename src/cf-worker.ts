@@ -193,7 +193,9 @@ function createMcpServer(env: AppEnv): OAuthProvider<AppEnv> {
         return { code: "invalid_client_metadata", description };
       }
     },
-    clientRegistrationTTL: undefined,
+    // Provider defaults: clients expire after 90 days and refresh tokens after 30.
+    // KV expires these records itself, so no cleanup job is needed.
+    clientRegistrationTTL: 90 * 24 * 60 * 60,
     clientRegistrationEndpoint: "/register",
     defaultHandler: app,
     onError: ({ code, description, headers, internal, status }) => {
@@ -214,7 +216,7 @@ function createMcpServer(env: AppEnv): OAuthProvider<AppEnv> {
         },
       });
     },
-    refreshTokenTTL: undefined,
+    refreshTokenTTL: 30 * 24 * 60 * 60,
     resolveExternalToken: resolveVantageToken,
     tokenEndpoint: "/token",
     tokenExchangeCallback: (options) => tokenExchangeCallback(options, env, () => getOAuthApi(oauthOptions, env)),
