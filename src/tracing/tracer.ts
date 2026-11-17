@@ -594,7 +594,12 @@ export function datadogTraceLogTags(context?: TraceContext): Record<string, stri
   }
 
   return {
-    // Classic APM correlation uses the lower 64 bits of a 128-bit trace id as decimal.
+    // Hex ids, the same tags Scout logs. The Datadog tail worker derives the
+    // top-level dd.trace_id / dd.span_id fields from these.
+    trace_id: context.traceId,
+    span_id: context.spanId,
+    // Classic APM correlation uses the lower 64 bits of a 128-bit trace id as
+    // decimal. Kept for Logpush, which forwards logs without the tail worker.
     "dd.trace_id": hexToUnsignedDecimal(context.traceId.slice(-16)),
     "dd.span_id": hexToUnsignedDecimal(context.spanId),
     // OTel / 128-bit friendly identifiers (matches span tags like otel.trace_id).
