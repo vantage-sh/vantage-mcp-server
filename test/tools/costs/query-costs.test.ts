@@ -164,6 +164,32 @@ const countSuccessData: GetCostsResponse = {
 };
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
+  ...(["amount", "usage_amount"] as const).flatMap((sort_column) =>
+    (["asc", "desc", undefined] as const).map((sort_direction): ExecutionTestTableItem<Validators, OutputSchema> => {
+      const sortParams = { sort_column, ...(sort_direction ? { sort_direction } : {}) };
+      const usageSettings = sort_column === "usage_amount" ? { settings_aggregate_by: "usage" as const } : {};
+      return {
+        name: `forwards ${sort_column} sorting with direction ${sort_direction ?? "omitted"}`,
+        apiCallHandler: requestsInOrder([
+          {
+            endpoint: "/v2/costs",
+            params: {
+              ...baseApiParams,
+              ...sortParams,
+              ...(sort_column === "usage_amount" ? { "settings[aggregate_by]": "usage" } : {}),
+            },
+            method: "GET",
+            result: { ok: true, data: successData },
+          },
+        ]),
+        handler: async ({ callExpectingSuccess }) => {
+          const result = await callExpectingSuccess({ ...validInputArguments, ...sortParams, ...usageSettings });
+          expect(result.costs).toEqual(successData.costs);
+          expect(result.total_cost).toEqual(successData.total_cost);
+        },
+      };
+    })
+  ),
   {
     name: "rejects sort_direction without sort_column before calling the API",
     apiCallHandler: requestsInOrder([]),
@@ -172,6 +198,112 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       expect(error.exception).toEqual({
         errors: [{ message: "sort_direction requires sort_column" }],
       });
+    },
+  },
+  {
+    name: "rejects amount sort when aggregate_by is count",
+    apiCallHandler: requestsInOrder([]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const error = await callExpectingMCPUserError({
+        ...validInputArguments,
+        sort_column: "amount",
+        sort_direction: "desc",
+        settings_aggregate_by: "count",
+      });
+      expect(error.exception).toEqual({
+        errors: [
+          {
+            message: "sort_column amount and usage_amount are not supported when settings_aggregate_by is count.",
+          },
+        ],
+      });
+    },
+  },
+  {
+    name: "rejects usage_amount unless aggregate_by is usage",
+    apiCallHandler: requestsInOrder([]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const error = await callExpectingMCPUserError({
+        ...validInputArguments,
+        sort_column: "usage_amount",
+        sort_direction: "desc",
+      });
+      expect(error.exception).toEqual({
+        errors: [{ message: "sort_column usage_amount requires settings_aggregate_by=usage." }],
+      });
+    },
+  },
+  {
+    name: "ranks groupings by period cost and explains the order",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/costs",
+        params: {
+          ...baseApiParams,
+          sort_column: "amount",
+          sort_direction: "desc",
+          "settings[show_previous_period]": true,
+        },
+        method: "GET",
+        result: { ok: true, data: successData },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const result = await callExpectingSuccess({
+        ...validInputArguments,
+        sort_column: "amount",
+        sort_direction: "desc",
+        settings_show_previous_period: true,
+      });
+      expect(result.costs).toEqual(successData.costs);
+      expect(result.notes).toContain("each grouping's total cost");
+      expect(result.notes).toContain("highest total first");
+      expect(result.notes).toContain("Later pages continue this ranking");
+    },
+  },
+  {
+    name: "ranks groupings by period usage when aggregate_by is usage",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/costs",
+        params: {
+          ...baseApiParams,
+          sort_column: "usage_amount",
+          sort_direction: "desc",
+          "settings[aggregate_by]": "usage",
+        },
+        method: "GET",
+        result: { ok: true, data: successData },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const result = await callExpectingSuccess({
+        ...validInputArguments,
+        sort_column: "usage_amount",
+        sort_direction: "desc",
+        settings_aggregate_by: "usage",
+      });
+      expect(result.notes).toContain("each grouping's total usage");
+      expect(result.notes).toContain("highest total first");
+    },
+  },
+  {
+    name: "warns when an amount sort is ascending",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/costs",
+        params: { ...baseApiParams, sort_column: "amount" },
+        method: "GET",
+        result: { ok: true, data: successData },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const result = await callExpectingSuccess({
+        ...validInputArguments,
+        sort_column: "amount",
+      });
+      expect(result.notes).toContain("lowest total first");
+      expect(result.notes).toContain("sort_direction=desc");
     },
   },
   ...(["asc", "desc", undefined] as const).map((sort_direction): ExecutionTestTableItem<Validators, OutputSchema> => {

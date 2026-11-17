@@ -6,6 +6,7 @@ An authenticated client lists the server's tools and calls them over Streamable 
 
 - `tools-list`: `tools/list` returns every registered tool. `list-access-policies` and the other Access Policy tools appear only when Core reports `is_account_owner: true`.
 - `tool-read`: a read-only call such as `get-myself` or `list-workspaces` returns Core data as JSON text with `isError: false`.
+- `cost-metric-sorting`: `list-costs` and `query-costs` accept `sort_column=amount` or `usage_amount` to rank groupings by their totals over the requested dates. Usage sorting requires `settings_aggregate_by=usage` and is unavailable for segment reports; neither metric sort supports count aggregation. Pagination counts date-by-grouping rows, so a grouping can span pages.
 - `tool-error`: a Core rejection comes back as `isError: true` with Core's `errors`, not as a protocol error.
 - `tool-mutation`: `create-folder` creates an object that `get-folder` then returns, and `delete-folder` removes it.
 - `dashboard-folders`: Folder tools support `DashboardFolder`, including nesting and moving to root. Dashboard create/update accept `folder_token`; null or an empty string means root, and omission on update keeps the current folder. Creating in a folder can inherit its Workspace. Dashboard read/list results expose `folder_token`.
@@ -57,8 +58,11 @@ For real staging delegation without manually minting a token, follow the approve
 
 For free-text Widget grids, create a Dashboard through `create-dashboard` with a rich-text `content` document and `settings: {display_type: "chart", grid: {x: 0, y: 0, w: 6, h: 2}}`. Read it back through `get-dashboard` and `get-dashboard-widget`; assert the exact content and grid. Use `update-dashboard` with the complete Widget list to change the content and move/resize the grid, then assert the returned and persisted values. Move the Dashboard between a Dashboard Folder and root and confirm the Widget content and grid are preserved. Also create a free-text Widget with settings omitted and verify the default layout still works. A grid without `display_type` must fail MCP schema validation; do not omit the grid to turn a failing grid check into a pass. Delete every created Dashboard and Folder and confirm not-found reads.
 
+For cost metric sorting, call both cost tools with identical dates and groupings using `sort_column=amount` and `sort_direction=desc`, then repeat with `usage_amount` and `settings_aggregate_by=usage`. Follow pagination across a grouping boundary and compare the rows and totals with the same direct API requests. Use a restricted team token as well as an owner token to check that excluded costs do not affect ranking.
+
 ## Gotchas
 
+- Cost metric sorting requires [Core PR #25418](https://github.com/vantage-sh/core/pull/25418) to be deployed first. A forwarding unit test alone does not verify the deployed API's ranking.
 - Only point mutations at a local Core you can reset. Token mode calls whichever Core `VERIFY_API_HOST` names.
 - Folder deletion requires local Core's Temporal server and worker. If reads and creation work but delete returns 500, check Core's log for `GRPC::Unavailable` at `127.0.0.1:7233`. Bring up the local dependency before retrying; capture the original error, confirm `get-folder` reports not found, and let `ObjectDestroyWorkflow` complete before stopping any temporary worker. Stop only services started for this run.
 - The owner check runs on every Durable Object session start. A failed `/v2/me` hides the Access Policy tools rather than erroring, so their absence alone does not prove Core rejected the token.
