@@ -600,7 +600,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         "costs.page": 2,
         "costs.has_next_page": true,
         "costs.date_bin": "month",
-        "costs.groupings": "provider,service,region",
+        "costs.groupings": "provider,region,service",
       });
     },
   },
@@ -613,7 +613,7 @@ test("query-costs handler records serialized result size without changing the pa
   const api = requestsInOrder([
     {
       endpoint: "/v2/costs",
-      params: baseApiParams,
+      params: { ...baseApiParams, groupings: "tag:private,service,tag:another,unknown" },
       method: "GET",
       result: { ok: true, data: successData },
     },
@@ -626,7 +626,10 @@ test("query-costs handler records serialized result size without changing the pa
   setupRegisteredTools(mockServer, () => ({ callVantageApi }));
   const handler = (mockServer.registerTool as any).mock.calls.find((call: any) => call[0] === "query-costs")[2];
 
-  const result = await handler(validInputArguments);
+  const result = await handler({
+    ...validInputArguments,
+    groupings: ["tag:private", "service", "tag:another", "unknown"],
+  });
   const text = result.content[0].text as string;
   const parsed = JSON.parse(text);
 
@@ -637,6 +640,6 @@ test("query-costs handler records serialized result size without changing the pa
   expect(span?.attributes["mcp.tool.result_items"]).toBe(successData.costs.length);
   expect(span?.attributes["costs.rows"]).toBe(successData.costs.length);
   expect(span?.attributes["costs.limit"]).toBe(1000);
-  expect(span?.attributes["costs.groupings"]).toBe("provider,service,region");
+  expect(span?.attributes["costs.groupings"]).toBe("service,tag");
   expect(span?.attributes["costs.date_bin"]).toBe("month");
 });

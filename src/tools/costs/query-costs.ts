@@ -7,6 +7,7 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
 import { assertCostsSort, costsMetricSortNote, groupingSortArgs } from "./schemas";
+import { telemetryGroupings } from "./telemetry";
 
 const description = `
 Query for costs in a Vantage Account. These are independent of a cost reports.
@@ -112,6 +113,7 @@ const args = {
 
 export default registerTool({
   name: "query-costs",
+  resultItemsKey: "costs",
   title: "Query Costs",
   description,
   annotations: {
@@ -166,8 +168,8 @@ export default registerTool({
       if (args.date_bin) {
         activeSpan.attributes["costs.date_bin"] = args.date_bin;
       }
-      if (typeof requestParams.groupings === "string") {
-        activeSpan.attributes["costs.groupings"] = requestParams.groupings;
+      if (Array.isArray(args.groupings)) {
+        activeSpan.attributes["costs.groupings"] = telemetryGroupings(args.groupings);
       }
     }
 

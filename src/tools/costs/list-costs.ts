@@ -8,6 +8,7 @@ import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
 import { assertCostsSort, costsMetricSortNote, groupingSortArgs } from "./schemas";
+import { telemetryGroupings } from "./telemetry";
 
 const description = `
 List the cost items inside a report. The Token of a Report must be provided. Use the page value of 1 to start.
@@ -84,6 +85,7 @@ const args = {
 
 export default registerTool({
   name: "list-costs",
+  resultItemsKey: "costs",
   title: "List Costs",
   description,
   annotations: {
@@ -138,8 +140,8 @@ export default registerTool({
       if (args.date_bin) {
         activeSpan.attributes["costs.date_bin"] = args.date_bin;
       }
-      if (typeof requestParams.groupings === "string") {
-        activeSpan.attributes["costs.groupings"] = requestParams.groupings;
+      if (Array.isArray(args.groupings)) {
+        activeSpan.attributes["costs.groupings"] = telemetryGroupings(args.groupings);
       }
     }
 

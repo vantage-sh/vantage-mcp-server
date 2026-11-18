@@ -45,6 +45,7 @@ export type ToolProperties<Input extends z.ZodRawShape, Output extends z.ZodRawS
   };
   args: Input;
   outputSchema?: Output;
+  resultItemsKey?: string;
 
   execute: (
     args: z.core.$InferObjectOutput<{ -readonly [P in keyof Input]: Input[P] }, Record<string, unknown>>,
@@ -133,7 +134,7 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
                 try {
                   const serialized = JSON.stringify(res);
                   if (typeof serialized === "string") {
-                    recordToolResultSize(span, res, serialized);
+                    recordToolResultSize(span, res, serialized, toolProps.resultItemsKey);
                   }
                 } catch {
                   // Telemetry must not change the tool result.
@@ -145,7 +146,7 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
 
               // There's no output schema, so we should return text content.
               const text = JSON.stringify(res, null, 2);
-              recordToolResultSize(span, res, text);
+              recordToolResultSize(span, res, text, toolProps.resultItemsKey);
               return {
                 content: [
                   {
@@ -164,7 +165,7 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
                 };
                 span.attributes["error.message"] = message;
                 const text = JSON.stringify(e.exception, null, 2);
-                recordToolResultSize(span, e.exception, text);
+                recordToolResultSize(span, e.exception, text, "errors");
                 return {
                   content: [
                     {
@@ -193,28 +194,17 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
   return toolProps;
 }
 
-function recordToolResultSize(span: TraceSpan, result: unknown, serializedText: string) {
+function recordToolResultSize(
+  span: TraceSpan,
+  result: Record<string, unknown>,
+  serializedText: string,
+  itemsKey?: string
+) {
   span.attributes["mcp.tool.result_chars"] = serializedText.length;
-  const items = topLevelArrayLength(result);
-  if (items !== undefined) {
-    span.attributes["mcp.tool.result_items"] = items;
+  const items = itemsKey === undefined ? result : result[itemsKey];
+  if (Array.isArray(items)) {
+    span.attributes["mcp.tool.result_items"] = items.length;
   }
-}
-
-/** Length of the result when it is an array, otherwise the first top-level array property. */
-function topLevelArrayLength(result: unknown): number | undefined {
-  if (Array.isArray(result)) {
-    return result.length;
-  }
-  if (typeof result !== "object" || result === null) {
-    return undefined;
-  }
-  for (const value of Object.values(result)) {
-    if (Array.isArray(value)) {
-      return value.length;
-    }
-  }
-  return undefined;
 }
 
 export function setupRegisteredTools(

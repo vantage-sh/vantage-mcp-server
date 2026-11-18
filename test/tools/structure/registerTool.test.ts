@@ -175,11 +175,12 @@ describe("result size telemetry", () => {
     ) => Promise<any>;
   }
 
-  it("records pretty-printed text length and the first top-level array", async () => {
+  it("records pretty-printed text length and the declared collection", async () => {
     let span: TraceSpan | undefined;
-    const payload = { costs: ["a", "b", "c"], counts: [1], note: "ok" };
+    const payload = { counts: [1], costs: ["a", "b", "c"], note: "ok" };
     registerTool({
       name: "sized-text-tool",
+      resultItemsKey: "costs",
       title: "Sized Text Tool",
       description: "Returns text",
       args: {},
@@ -200,7 +201,7 @@ describe("result size telemetry", () => {
     expect(span?.attributes["mcp.tool.result_items"]).toBe(payload.costs.length);
   });
 
-  it("omits result_items when the text result has no top-level array", async () => {
+  it("omits result_items for a single object with array metadata", async () => {
     let span: TraceSpan | undefined;
     registerTool({
       name: "sized-object-tool",
@@ -210,12 +211,12 @@ describe("result size telemetry", () => {
       annotations,
       async execute() {
         span = tracer.getActiveSpan();
-        return { message: "ok" };
+        return { message: "ok", labels: ["label"] };
       },
     });
 
     const result = await handlerFor("sized-object-tool")({});
-    const text = JSON.stringify({ message: "ok" }, null, 2);
+    const text = JSON.stringify({ message: "ok", labels: ["label"] }, null, 2);
     expect(result.content[0].text).toBe(text);
     expect(span?.attributes["mcp.tool.result_chars"]).toBe(text.length);
     expect(span?.attributes["mcp.tool.result_items"]).toBeUndefined();
@@ -226,6 +227,7 @@ describe("result size telemetry", () => {
     const payload = { widgets: ["a", "b"] };
     registerTool({
       name: "sized-structured-tool",
+      resultItemsKey: "widgets",
       title: "Sized Structured Tool",
       description: "Returns structured content",
       args: {},

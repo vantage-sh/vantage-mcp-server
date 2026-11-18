@@ -430,7 +430,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         "costs.page": 2,
         "costs.has_next_page": true,
         "costs.date_bin": "month",
-        "costs.groupings": "provider,service,account_id",
+        "costs.groupings": "account_id,provider,service",
       });
     },
   },
@@ -470,6 +470,6 @@ test("list-costs handler records serialized result size without changing the pay
   expect(span?.attributes["mcp.tool.result_items"]).toBe(successData.costs.length);
   expect(span?.attributes["costs.rows"]).toBe(successData.costs.length);
   expect(span?.attributes["costs.limit"]).toBe(DEFAULT_LIMIT);
-  expect(span?.attributes["costs.groupings"]).toBe("provider,service,account_id");
+  expect(span?.attributes["costs.groupings"]).toBe("account_id,provider,service");
   expect(span?.attributes["costs.date_bin"]).toBe("month");
 });
