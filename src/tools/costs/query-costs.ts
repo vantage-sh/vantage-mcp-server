@@ -1,4 +1,5 @@
 import z from "zod";
+import { tracer } from "../../tracing";
 import dateValidator from "../../utils/dateValidator";
 import paginationData from "../../utils/paginationData";
 import { vantageToken } from "../../utils/zod";
@@ -149,6 +150,25 @@ export default registerTool({
     const response = await ctx.callVantageApi("/v2/costs", requestParams, "GET");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
+    }
+
+    const activeSpan = tracer.getActiveSpan();
+    if (activeSpan) {
+      // Optional chaining keeps a missing costs array from failing the tool call.
+      activeSpan.attributes["costs.rows"] = response.data.costs?.length ?? 0;
+      if (typeof requestParams.limit === "number") {
+        activeSpan.attributes["costs.limit"] = requestParams.limit;
+      }
+      if (typeof args.page === "number") {
+        activeSpan.attributes["costs.page"] = args.page;
+      }
+      activeSpan.attributes["costs.has_next_page"] = paginationData(response.data).hasNextPage;
+      if (args.date_bin) {
+        activeSpan.attributes["costs.date_bin"] = args.date_bin;
+      }
+      if (typeof requestParams.groupings === "string") {
+        activeSpan.attributes["costs.groupings"] = requestParams.groupings;
+      }
     }
 
     let notes: string;

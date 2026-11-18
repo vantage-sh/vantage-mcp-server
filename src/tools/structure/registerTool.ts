@@ -12,6 +12,7 @@ import type { AppEnv } from "../../env";
 import {
   formatErrorsForTelemetry,
   TRACE_STATUS_MESSAGE_MAX_LENGTH,
+  type TraceSpan,
   tracer,
   truncateAttribute,
   type WaitUntil,
@@ -128,17 +129,28 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
 
               if (toolProps.outputSchema) {
                 // Since there's an output schema, we should return structured content.
+                // Stringify only for the size metric; a failure here must not change the result.
+                try {
+                  const serialized = JSON.stringify(res);
+                  if (typeof serialized === "string") {
+                    recordToolResultSize(span, res, serialized);
+                  }
+                } catch {
+                  // Telemetry must not change the tool result.
+                }
                 return {
                   structuredContent: res,
                 };
               }
 
               // There's no output schema, so we should return text content.
+              const text = JSON.stringify(res, null, 2);
+              recordToolResultSize(span, res, text);
               return {
                 content: [
                   {
                     type: "text",
-                    text: JSON.stringify(res, null, 2),
+                    text,
                   },
                 ],
                 isError: false,
@@ -151,11 +163,13 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
                   message: truncateAttribute(message, TRACE_STATUS_MESSAGE_MAX_LENGTH),
                 };
                 span.attributes["error.message"] = message;
+                const text = JSON.stringify(e.exception, null, 2);
+                recordToolResultSize(span, e.exception, text);
                 return {
                   content: [
                     {
                       type: "text",
-                      text: JSON.stringify(e.exception, null, 2),
+                      text,
                     },
                   ],
                   isError: true,
@@ -177,6 +191,30 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
   toolDefinitions.set(toolProps.name, toolProps);
 
   return toolProps;
+}
+
+function recordToolResultSize(span: TraceSpan, result: unknown, serializedText: string) {
+  span.attributes["mcp.tool.result_chars"] = serializedText.length;
+  const items = topLevelArrayLength(result);
+  if (items !== undefined) {
+    span.attributes["mcp.tool.result_items"] = items;
+  }
+}
+
+/** Length of the result when it is an array, otherwise the first top-level array property. */
+function topLevelArrayLength(result: unknown): number | undefined {
+  if (Array.isArray(result)) {
+    return result.length;
+  }
+  if (typeof result !== "object" || result === null) {
+    return undefined;
+  }
+  for (const value of Object.values(result)) {
+    if (Array.isArray(value)) {
+      return value.length;
+    }
+  }
+  return undefined;
 }
 
 export function setupRegisteredTools(

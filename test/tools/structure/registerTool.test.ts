@@ -5,6 +5,7 @@ import registerTool, {
   clearRegisteredToolsForTesting,
   setupRegisteredTools,
 } from "../../../src/tools/structure/registerTool";
+import { type TraceSpan, tracer } from "../../../src/tracing";
 
 afterEach(() => clearRegisteredToolsForTesting());
 
@@ -160,6 +161,137 @@ describe("mcp server handler", () => {
       isError: false,
     });
     expect(generateContext).toHaveBeenCalledOnce();
+  });
+});
+
+describe("result size telemetry", () => {
+  const annotations = { readOnly: true, openWorld: false, destructive: false };
+
+  function handlerFor(name: string) {
+    const mockServer = { registerTool: vi.fn() } as any;
+    setupRegisteredTools(mockServer, () => mockContext);
+    return (mockServer.registerTool as any).mock.calls.find((call: any) => call[0] === name)[2] as (
+      args: Record<string, unknown>
+    ) => Promise<any>;
+  }
+
+  it("records pretty-printed text length and the first top-level array", async () => {
+    let span: TraceSpan | undefined;
+    const payload = { costs: ["a", "b", "c"], counts: [1], note: "ok" };
+    registerTool({
+      name: "sized-text-tool",
+      title: "Sized Text Tool",
+      description: "Returns text",
+      args: {},
+      annotations,
+      async execute() {
+        span = tracer.getActiveSpan();
+        return payload;
+      },
+    });
+
+    const result = await handlerFor("sized-text-tool")({});
+    const text = JSON.stringify(payload, null, 2);
+    expect(result).toEqual({
+      content: [{ type: "text", text }],
+      isError: false,
+    });
+    expect(span?.attributes["mcp.tool.result_chars"]).toBe(text.length);
+    expect(span?.attributes["mcp.tool.result_items"]).toBe(payload.costs.length);
+  });
+
+  it("omits result_items when the text result has no top-level array", async () => {
+    let span: TraceSpan | undefined;
+    registerTool({
+      name: "sized-object-tool",
+      title: "Sized Object Tool",
+      description: "Returns an object",
+      args: {},
+      annotations,
+      async execute() {
+        span = tracer.getActiveSpan();
+        return { message: "ok" };
+      },
+    });
+
+    const result = await handlerFor("sized-object-tool")({});
+    const text = JSON.stringify({ message: "ok" }, null, 2);
+    expect(result.content[0].text).toBe(text);
+    expect(span?.attributes["mcp.tool.result_chars"]).toBe(text.length);
+    expect(span?.attributes["mcp.tool.result_items"]).toBeUndefined();
+  });
+
+  it("records compact structuredContent size and a top-level array", async () => {
+    let span: TraceSpan | undefined;
+    const payload = { widgets: ["a", "b"] };
+    registerTool({
+      name: "sized-structured-tool",
+      title: "Sized Structured Tool",
+      description: "Returns structured content",
+      args: {},
+      outputSchema: {
+        widgets: z.array(z.string()).describe("Widgets"),
+      },
+      annotations,
+      async execute() {
+        span = tracer.getActiveSpan();
+        return payload;
+      },
+    });
+
+    const result = await handlerFor("sized-structured-tool")({});
+    const serialized = JSON.stringify(payload);
+    expect(result).toEqual({ structuredContent: payload });
+    expect(span?.attributes["mcp.tool.result_chars"]).toBe(serialized.length);
+    expect(span?.attributes["mcp.tool.result_items"]).toBe(payload.widgets.length);
+  });
+
+  it("counts a top-level array result", async () => {
+    let span: TraceSpan | undefined;
+    const payload = ["one", "two", "three"];
+    registerTool({
+      name: "sized-array-tool",
+      title: "Sized Array Tool",
+      description: "Returns an array",
+      args: {},
+      annotations,
+      async execute() {
+        span = tracer.getActiveSpan();
+        return payload as unknown as Record<string, unknown>;
+      },
+    });
+
+    const result = await handlerFor("sized-array-tool")({});
+    const text = JSON.stringify(payload, null, 2);
+    expect(result.content[0].text).toBe(text);
+    expect(span?.attributes["mcp.tool.result_chars"]).toBe(text.length);
+    expect(span?.attributes["mcp.tool.result_items"]).toBe(payload.length);
+  });
+
+  it("records the error payload size returned to the client", async () => {
+    let span: TraceSpan | undefined;
+    const exception = { errors: [{ message: "nope" }] };
+    registerTool({
+      name: "sized-error-tool",
+      title: "Sized Error Tool",
+      description: "Returns an error",
+      args: {},
+      annotations,
+      async execute() {
+        span = tracer.getActiveSpan();
+        throw new MCPUserError(exception);
+      },
+    });
+
+    const result = await handlerFor("sized-error-tool")({});
+    const text = JSON.stringify(exception, null, 2);
+    expect(result).toEqual({
+      content: [{ type: "text", text }],
+      isError: true,
+    });
+    expect(span?.attributes["mcp.tool.result_chars"]).toBe(text.length);
+    expect(span?.attributes["mcp.tool.result_items"]).toBe(exception.errors.length);
+    expect(span?.attributes["error.message"]).toBeDefined();
   });
 });
 

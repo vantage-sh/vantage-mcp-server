@@ -1,7 +1,9 @@
 import type { GetCostsResponse } from "@vantage-sh/vantage-client";
-import { expect } from "vitest";
+import { expect, test, vi } from "vitest";
 import tool from "../../../src/tools/costs/list-costs";
 import { DEFAULT_LIMIT } from "../../../src/tools/structure/constants";
+import { setupRegisteredTools, type ToolCallContext } from "../../../src/tools/structure/registerTool";
+import { type TraceSpan, tracer } from "../../../src/tracing";
 import {
   dateValidatorPoisoner,
   type ExecutionTestTableItem,
@@ -399,6 +401,75 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       });
     },
   },
+  {
+    name: "records costs response attributes on the active span",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/costs",
+        params: {
+          ...baseApiParams,
+          page: 2,
+        },
+        method: "GET",
+        result: {
+          ok: true,
+          data: {
+            ...successData,
+            links: { next: "https://api.vantage.sh/v2/costs?page=3" },
+          },
+        },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess, getSpan }) => {
+      const result = await callExpectingSuccess({ ...validArguments, page: 2 });
+      expect(result.costs).toEqual(successData.costs);
+      expect(result.pagination).toEqual({ hasNextPage: true, nextPage: 3 });
+      expect(getSpan()?.attributes).toMatchObject({
+        "costs.rows": successData.costs.length,
+        "costs.limit": DEFAULT_LIMIT,
+        "costs.page": 2,
+        "costs.has_next_page": true,
+        "costs.date_bin": "month",
+        "costs.groupings": "provider,service,account_id",
+      });
+    },
+  },
 ];
 
 testTool(tool, argumentSchemaTests, executionTests);
+
+test("list-costs handler records serialized result size without changing the payload", async () => {
+  let span: TraceSpan | undefined;
+  const api = requestsInOrder([
+    {
+      endpoint: "/v2/costs",
+      params: baseApiParams,
+      method: "GET",
+      result: { ok: true, data: successData },
+    },
+  ]);
+  const callVantageApi: ToolCallContext["callVantageApi"] = async (endpoint, params, method) => {
+    span = tracer.getActiveSpan();
+    return api(endpoint, params, method);
+  };
+  const mockServer = { registerTool: vi.fn() } as any;
+  setupRegisteredTools(mockServer, () => ({ callVantageApi }));
+  const handler = (mockServer.registerTool as any).mock.calls.find((call: any) => call[0] === "list-costs")[2];
+
+  const result = await handler({
+    ...validArguments,
+    groupings: ["provider", "service", "account_id"],
+  });
+  const text = result.content[0].text as string;
+  const parsed = JSON.parse(text);
+
+  expect(result.isError).toBe(false);
+  expect(parsed.costs).toEqual(successData.costs);
+  expect(parsed.total_cost).toEqual(successData.total_cost);
+  expect(span?.attributes["mcp.tool.result_chars"]).toBe(text.length);
+  expect(span?.attributes["mcp.tool.result_items"]).toBe(successData.costs.length);
+  expect(span?.attributes["costs.rows"]).toBe(successData.costs.length);
+  expect(span?.attributes["costs.limit"]).toBe(DEFAULT_LIMIT);
+  expect(span?.attributes["costs.groupings"]).toBe("provider,service,account_id");
+  expect(span?.attributes["costs.date_bin"]).toBe("month");
+});

@@ -8,6 +8,7 @@ import { describe, expect, it, test, vi } from "vitest";
 import z from "zod";
 import MCPUserError from "../tools/structure/MCPUserError";
 import { setupRegisteredTools, type ToolCallContext, type ToolProperties } from "../tools/structure/registerTool";
+import { type TraceSpan, tracer } from "../tracing";
 
 export type ExtractValidators<T> = T extends ToolProperties<infer V, infer _> ? V : never;
 
@@ -33,6 +34,8 @@ export type TestHandlerContext<Input extends z.ZodRawShape, Output extends z.Zod
   >;
   callExpectingError: (args: InferValidators<Input>) => Promise<Error>;
   callExpectingMCPUserError: (args: InferValidators<Input>) => Promise<MCPUserError>;
+  /** Span that was active during the most recent callExpecting* invocation. */
+  getSpan: () => TraceSpan | undefined;
 };
 
 export type ExecutionTestTableItem<Input extends z.ZodRawShape, Output extends z.ZodRawShape | undefined> = {
@@ -65,10 +68,21 @@ export function makeTestHandlerContext<Input extends z.ZodRawShape, Output exten
   // We need the schema because some actions transform the input.
   const zodSchema = z.object(inputSchema);
 
+  let activeSpan: TraceSpan | undefined;
+  const runExecute = async (
+    parsed: z.core.$InferObjectOutput<{ -readonly [P in keyof Input]: Input[P] }, Record<string, unknown>>
+  ) => {
+    return tracer.runWithSpan("tool/test", {}, async (span) => {
+      activeSpan = span;
+      return execute(parsed, mcpFunctionContext);
+    });
+  };
+
   const toolHandlerContext: TestHandlerContext<Input, Output> = {
+    getSpan: () => activeSpan,
     callExpectingSuccess: async (args) => {
       const parsed = zodSchema.parse(args);
-      const result = await execute(parsed, mcpFunctionContext);
+      const result = await runExecute(parsed);
       if (outputSchema) {
         // TS gets a bit confused by the multiple return types, so we use any here.
         return z.object(outputSchema).parse(result) as any;
@@ -78,7 +92,7 @@ export function makeTestHandlerContext<Input extends z.ZodRawShape, Output exten
     callExpectingError: async (args) => {
       try {
         const parsed = zodSchema.parse(args);
-        await execute(parsed, mcpFunctionContext);
+        await runExecute(parsed);
         throw new Error("Expected error, but got success");
       } catch (e) {
         if (e instanceof MCPUserError) {
@@ -93,7 +107,7 @@ export function makeTestHandlerContext<Input extends z.ZodRawShape, Output exten
     callExpectingMCPUserError: async (args) => {
       try {
         const parsed = zodSchema.parse(args);
-        await execute(parsed, mcpFunctionContext);
+        await runExecute(parsed);
         throw new Error("Expected MCPUserError, but got success");
       } catch (e) {
         if (e instanceof MCPUserError) {
