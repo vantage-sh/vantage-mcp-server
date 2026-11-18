@@ -1,18 +1,14 @@
 import z from "zod";
 import dateValidator from "../../utils/dateValidator";
-import paginationData from "../../utils/paginationData";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
+import paginateCostRows from "./paginateCostRows";
 
 import { assertCostsSort, costsMetricSortNote, groupingSortArgs } from "./schemas";
 
 const FINE_PAGE_LIMIT = 50;
 const COARSE_PAGE_LIMIT = 100;
-const RESPONSE_CHAR_BUDGET = 40_000;
-const TRUNCATION_NOTE =
-  "Results were truncated to stay within the response budget. Narrow the filter, drop resource_id, or raise date_bin.";
-
 const description = `
 Query for costs in a Vantage Account. These are independent of a cost reports.
 Use Vantage VQL to structure a query.
@@ -50,7 +46,7 @@ When DateBin=day you get a record for each service spend on that day. For DateBi
 with the accrued_at field set to the first day of the week, but the spend item represents spend for a full week.
 Same with DateBin=month, each record returned covers a month of data. This lets you get answers with processing fewer
 records. If omitted, DateBin defaults to day.
-resource_id or tag groupings with a day bin are one row per resource per day and will be truncated. Do not issue several resource-level query-costs calls in parallel.
+For a partial page, repeat the query with page=pagination.nextPage and row_offset=pagination.nextRowOffset. Omit row_offset when nextRowOffset is absent.
 
 Cost settings (credits, refunds, discounts, tax, amortization, etc.) default to the workspace's default report settings.
 Only provide these parameters if you need to override those defaults.
@@ -63,6 +59,12 @@ When the user wants the most expensive, highest-cost, or top groupings, set sort
 
 const args = {
   ...groupingSortArgs,
+  row_offset: z
+    .number()
+    .int()
+    .nonnegative()
+    .optional()
+    .describe("Resume at pagination.nextRowOffset within the specified page."),
   page: z.number().optional().default(1).describe("The page number to return, defaults to 1"),
   filter: z.string().describe("A VQL query to run against your vantage account"),
   start_date: dateValidator("Start date to filter costs by, format=YYYY-MM-DD").optional(),
@@ -116,34 +118,7 @@ const args = {
     ),
 };
 
-type DateBin = "day" | "week" | "month";
-
-type CostUsage = {
-  amount?: unknown;
-  unit?: unknown;
-};
-
-type CostRow = {
-  accrued_at?: string;
-  amount?: string;
-  currency?: string;
-  usage?: CostUsage | null;
-  usage_unit?: string | null;
-  [key: string]: unknown;
-};
-
-type QueryCostsResult = {
-  costs: CostRow[];
-  total_cost: unknown;
-  total_count?: unknown;
-  counts?: unknown;
-  notes: string;
-  hint?: string;
-  pagination: { nextPage: number; hasNextPage: boolean };
-  truncated?: true;
-  rows_returned?: number;
-  rows_omitted?: number;
-};
+type DateBin = z.infer<typeof args.date_bin>;
 
 export default registerTool({
   name: "query-costs",
@@ -156,84 +131,56 @@ export default registerTool({
     readOnly: true,
   },
   args,
-  async execute(args, ctx) {
+  async execute({ row_offset = 0, ...args }, ctx) {
     assertCostsSort(args);
 
-    // Build request params. Settings that are not explicitly provided are left out
-    // so the API uses the workspace's default report settings.
-    const requestParams: Record<string, unknown> = {};
-    for (const key of Object.keys(args)) {
-      const typedKey = key as keyof typeof args;
-      if ((key === "sort_column" || key === "sort_direction") && args[typedKey] === undefined) continue;
-      if (key.startsWith("settings_")) {
-        const value = args[typedKey];
-        if (value !== undefined) {
-          const keyWithoutPrefix = key.slice("settings_".length);
-          requestParams[`settings[${keyWithoutPrefix}]`] = value;
-        }
-      } else {
-        requestParams[key] = args[typedKey];
-      }
+    const { groupings, ...filters } = args;
+    const requestParams: Record<string, unknown> = {
+      // Core parses groupings as CSV on this endpoint.
+      groupings: groupings.join(","),
+      limit: queryCostsPageLimit(groupings, args.date_bin),
+    };
+    for (const [key, value] of Object.entries(filters)) {
+      if (value === undefined) continue;
+      const param = key.startsWith("settings_") ? `settings[${key.slice("settings_".length)}]` : key;
+      requestParams[param] = value;
     }
-    // /v2/costs expects groupings as a comma-joined string (coerce_with: CSV::parse_line),
-    // not the bracket-suffix array format used by other endpoints.
-    if (Array.isArray(requestParams.groupings)) {
-      requestParams.groupings = (requestParams.groupings as string[]).join(",");
-    }
-    requestParams.limit = queryCostsPageLimit(args.groupings, args.date_bin);
 
     const response = await ctx.callVantageApi("/v2/costs", requestParams, "GET");
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
     }
 
-    const totalCost = response.data.total_cost;
-    const totalCurrency = totalCostCurrency(totalCost);
-    const collapsed = shouldCollapseRows(args.sort_column, args.filter);
-    const prepared = collapsed
-      ? collapseCostRows(response.data.costs as CostRow[])
-      : (response.data.costs as CostRow[]);
-    const costs = prepared.map((row) => slimCostRow(row, totalCurrency, args.settings_aggregate_by));
-
     const hint =
       response.data.costs.length === 0
         ? "No cost rows matched this filter and date range. Widen the date range, verify costs.service identifiers from a broad probe query, and avoid retrying with only a different groupings parameter."
         : undefined;
 
-    const notes = collapsed
-      ? collapsedRankingNote(args.sort_column as "amount" | "usage_amount", args.sort_direction)
-      : dateBinNotes(args.date_bin, args.sort_column, args.sort_direction);
-
-    const result: QueryCostsResult = {
-      costs,
-      total_cost: totalCost,
+    const summary = {
+      total_cost: response.data.total_cost,
       ...(response.data.total_count != null ? { total_count: response.data.total_count } : {}),
       ...(response.data.counts != null ? { counts: response.data.counts } : {}),
-      notes,
+      notes: dateBinNotes(args.date_bin, args.sort_column, args.sort_direction),
       ...(hint ? { hint } : {}),
-      pagination: paginationData(response.data),
     };
 
-    return fitToCharBudget(result);
+    return paginateCostRows(response.data, summary, args.page, row_offset);
   },
 });
 
-function queryCostsPageLimit(groupings: readonly string[], dateBin: DateBin | undefined): number {
+function queryCostsPageLimit(groupings: readonly string[], dateBin: DateBin): number {
   const fineGrouping = groupings.some((grouping) => grouping === "resource_id" || grouping.startsWith("tag:"));
   if (fineGrouping || dateBin === undefined || dateBin === "day") return FINE_PAGE_LIMIT;
   return COARSE_PAGE_LIMIT;
 }
 
 function dateBinNotes(
-  dateBin: DateBin | undefined,
+  dateBin: DateBin,
   sortColumn: string | undefined,
   sortDirection: "asc" | "desc" | undefined
 ): string {
   let notes: string;
   switch (dateBin) {
-    case "day":
-      notes = "Costs records represent one day.";
-      break;
     case "week":
       notes =
         "Costs records represent one week, the accrued_at field is the first day of the week. If your date range is less than one week, this record includes only data for that date range, not the full week.";
@@ -250,173 +197,4 @@ function dateBinNotes(
   const ranking = costsMetricSortNote(sortColumn, sortDirection);
   if (ranking) notes = `${notes} ${ranking}`;
   return notes;
-}
-
-function collapsedRankingNote(
-  sortColumn: "amount" | "usage_amount",
-  sortDirection: "asc" | "desc" | undefined
-): string {
-  const direction = sortDirection ?? "asc";
-  const metric = sortColumn === "usage_amount" ? "usage" : "cost";
-  const order = direction === "desc" ? "highest total first" : "lowest total first";
-  const ascHint =
-    direction === "asc"
-      ? ` This page starts with the lowest totals. For the ${sortColumn === "usage_amount" ? "highest usage" : "most expensive groupings"}, call again with sort_direction=desc.`
-      : "";
-
-  return `Results are ordered by each grouping's total ${metric} over the full requested period, ${order}. Each row is one grouping; amount and usage, when present, are the sum of the date bins on this page. Later pages continue this ranking.${ascHint}`;
-}
-
-function shouldCollapseRows(sortColumn: string | undefined, filter: string): boolean {
-  if (sortColumn !== "amount" && sortColumn !== "usage_amount") return false;
-  return !filterNamesSingleResourceId(filter);
-}
-
-function filterNamesSingleResourceId(filter: string): boolean {
-  const equals = [...filter.matchAll(/costs\.resource_id\s*(?<![=!<>])=\s*'([^']*)'/gi)].map((match) => match[1]);
-  const inLists = [...filter.matchAll(/costs\.resource_id\s+IN\s*\(([^)]*)\)/gi)];
-  const inValues = inLists.flatMap((match) => [...match[1].matchAll(/'([^']*)'/g)].map((part) => part[1]));
-  const mentions = filter.match(/costs\.resource_id/gi)?.length ?? 0;
-  if (mentions === 0 || mentions !== equals.length + inLists.length) return false;
-  return new Set([...equals, ...inValues]).size === 1;
-}
-
-function collapseCostRows(rows: CostRow[]): CostRow[] {
-  const groups = new Map<string, CostRow[]>();
-  const order: string[] = [];
-  for (const row of rows) {
-    const key = groupingKey(row);
-    const group = groups.get(key);
-    if (group) {
-      group.push(row);
-    } else {
-      groups.set(key, [row]);
-      order.push(key);
-    }
-  }
-
-  return order.map((key) => {
-    const group = groups.get(key) ?? [];
-    if (group.length <= 1) return group[0] ?? {};
-    return sumCostGroup(group);
-  });
-}
-
-function groupingKey(row: CostRow): string {
-  const identity: Record<string, unknown> = {};
-  for (const key of Object.keys(row).sort()) {
-    if (key === "accrued_at" || key === "amount" || key === "currency" || key === "usage") continue;
-    identity[key] = row[key];
-  }
-  const unit = usageUnit(row);
-  if (unit !== undefined) identity.usage_unit_metric = unit;
-  return JSON.stringify(identity);
-}
-
-function sumCostGroup(group: CostRow[]): CostRow {
-  const [first] = group;
-  if (!first) return {};
-  const summed: CostRow = {};
-  for (const key of Object.keys(first)) {
-    if (key === "accrued_at" || key === "amount" || key === "usage") continue;
-    summed[key] = first[key];
-  }
-  if (group.every((row) => row.accrued_at === first.accrued_at) && first.accrued_at !== undefined) {
-    summed.accrued_at = first.accrued_at;
-  }
-  summed.amount = sumDecimalStrings(group.map((row) => decimalString(row.amount)));
-
-  const usageRows = group.filter((row) => usageAmount(row) !== undefined);
-  const unit = usageUnit(usageRows[0] ?? {});
-  if (usageRows.length > 0 && unit !== undefined) {
-    summed.usage = {
-      amount: sumDecimalStrings(usageRows.map((row) => usageAmount(row) ?? "0")),
-      unit,
-    };
-  }
-  return summed;
-}
-
-function slimCostRow(row: CostRow, totalCurrency: string | undefined, aggregateBy: string | undefined): CostRow {
-  const next: CostRow = { ...row };
-  if (totalCurrency) delete next.currency;
-  if (aggregateBy === "usage" && typeof next.usage_unit === "string" && next.usage_unit === usageUnit(next)) {
-    delete next.usage_unit;
-  }
-  return next;
-}
-
-function usageAmount(row: CostRow | undefined): string | undefined {
-  const amount = row?.usage?.amount;
-  if (typeof amount === "string" && amount.trim() !== "") return amount.trim();
-  if (typeof amount === "number" && Number.isFinite(amount)) return String(amount);
-  return undefined;
-}
-
-function usageUnit(row: CostRow | undefined): string | undefined {
-  const unit = row?.usage?.unit;
-  return typeof unit === "string" ? unit : undefined;
-}
-
-function totalCostCurrency(totalCost: unknown): string | undefined {
-  if (!totalCost || typeof totalCost !== "object" || !("currency" in totalCost)) return undefined;
-  const currency = totalCost.currency;
-  return typeof currency === "string" && currency !== "" ? currency : undefined;
-}
-
-function decimalString(value: unknown): string {
-  if (typeof value === "number" && Number.isFinite(value)) return String(value);
-  if (typeof value === "string" && value.trim() !== "") return value.trim();
-  return "0";
-}
-
-function sumDecimalStrings(values: string[]): string {
-  let scale = 0;
-  const parts = values.map((value) => {
-    const trimmed = value.trim();
-    const negative = trimmed.startsWith("-");
-    const unsigned = negative ? trimmed.slice(1) : trimmed.replace(/^\+/, "");
-    const [whole = "0", frac = ""] = unsigned.split(".");
-    scale = Math.max(scale, frac.length);
-    return { negative, whole: whole || "0", frac };
-  });
-
-  let total = 0n;
-  const factor = 10n ** BigInt(scale);
-  for (const part of parts) {
-    const minor = BigInt(part.whole) * factor + BigInt(part.frac.padEnd(scale, "0") || "0");
-    total += part.negative ? -minor : minor;
-  }
-
-  const negative = total < 0n;
-  const abs = negative ? -total : total;
-  const sign = negative ? "-" : "";
-  if (scale === 0) return `${sign}${abs.toString()}`;
-  const whole = abs / factor;
-  const frac = (abs % factor).toString().padStart(scale, "0");
-  return `${sign}${whole.toString()}.${frac}`;
-}
-
-function fitToCharBudget(result: QueryCostsResult): QueryCostsResult {
-  const costs = result.costs;
-  const page = (rows: CostRow[], truncated: boolean): QueryCostsResult => {
-    if (!truncated) return { ...result, costs: rows };
-    return {
-      ...result,
-      costs: rows,
-      truncated: true,
-      rows_returned: rows.length,
-      rows_omitted: costs.length - rows.length,
-      notes: TRUNCATION_NOTE,
-      pagination: { hasNextPage: false, nextPage: 0 },
-    };
-  };
-
-  if (JSON.stringify(page(costs, false)).length <= RESPONSE_CHAR_BUDGET) return page(costs, false);
-
-  let kept = costs.length;
-  while (kept > 0 && JSON.stringify(page(costs.slice(0, kept), true)).length > RESPONSE_CHAR_BUDGET) {
-    kept -= 1;
-  }
-  return page(costs.slice(0, kept), true);
 }
