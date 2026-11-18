@@ -8,7 +8,7 @@ const success = {
   title: "My Dashboard",
   folder_token: "fldr_dashboard",
   workspace_token: "wrkspc_e5c550d14cfa3101",
-  filter: 'vantage.provider = "aws"',
+  filter: "vantage.provider = 'aws'",
   widgets: [],
   saved_filter_tokens: [],
   date_bin: "day" as const,
@@ -46,6 +46,26 @@ testTool(
           dashboard_token: "dshbrd_fb27faa25ef5ea72",
         });
         expect(res).toEqual(success);
+      },
+    },
+    {
+      name: "successful call with a null filter",
+      apiCallHandler: requestsInOrder([
+        {
+          endpoint: `/v2/dashboards/${pathEncode("dshbrd_fb27faa25ef5ea72")}`,
+          params: {},
+          method: "GET",
+          result: {
+            ok: true,
+            data: { ...success, filter: null },
+          },
+        },
+      ]),
+      handler: async ({ callExpectingSuccess }) => {
+        const res = await callExpectingSuccess({
+          dashboard_token: "dshbrd_fb27faa25ef5ea72",
+        });
+        expect(res).toEqual({ ...success, filter: null });
       },
     },
     {

@@ -54,6 +54,7 @@ const successData = {
     {
       token: "dash_456",
       title: "Azure Monitoring Dashboard",
+      filter: null,
       widgets: [],
       saved_filter_tokens: [],
       date_bin: "day" as const,
