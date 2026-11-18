@@ -44,6 +44,7 @@ export type ToolProperties<Input extends z.ZodRawShape, Output extends z.ZodRawS
   };
   args: Input;
   outputSchema?: Output;
+  compactOutput?: boolean;
 
   execute: (
     args: z.core.$InferObjectOutput<{ -readonly [P in keyof Input]: Input[P] }, Record<string, unknown>>,
@@ -54,6 +55,10 @@ export type ToolProperties<Input extends z.ZodRawShape, Output extends z.ZodRawS
       : z.core.$InferObjectInput<{ -readonly [P in keyof Output]: Output[P] }, Record<string, unknown>>
   >;
 };
+
+function serializeToolContent(value: unknown, compactOutput: boolean | undefined): string {
+  return compactOutput ? JSON.stringify(value) : JSON.stringify(value, null, 2);
+}
 
 const toolSetups = new Map<string, (server: McpServer, generateContext: () => ToolCallContext) => RegisteredTool>();
 
@@ -138,7 +143,7 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
                 content: [
                   {
                     type: "text",
-                    text: JSON.stringify(res, null, 2),
+                    text: serializeToolContent(res, toolProps.compactOutput),
                   },
                 ],
                 isError: false,
@@ -155,7 +160,7 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
                   content: [
                     {
                       type: "text",
-                      text: JSON.stringify(e.exception, null, 2),
+                      text: serializeToolContent(e.exception, toolProps.compactOutput),
                     },
                   ],
                   isError: true,

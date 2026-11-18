@@ -27,7 +27,7 @@ const baseApiParams = {
   end_date: "2023-01-31",
   date_bin: "month" as const,
   groupings: GROUPINGS_API,
-  limit: 1000,
+  limit: 100,
 };
 
 const validInputArguments = {
@@ -154,6 +154,8 @@ const successData: GetCostsResponse = {
   links: {},
 };
 
+const displayedCosts = successData.costs.map(({ currency: _currency, ...row }) => row);
+
 const countSuccessData: GetCostsResponse = {
   ...successData,
   total_count: 42,
@@ -184,7 +186,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         ]),
         handler: async ({ callExpectingSuccess }) => {
           const result = await callExpectingSuccess({ ...validInputArguments, ...sortParams, ...usageSettings });
-          expect(result.costs).toEqual(successData.costs);
+          expect(result.costs).toEqual(displayedCosts);
           expect(result.total_cost).toEqual(successData.total_cost);
         },
       };
@@ -255,7 +257,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         sort_direction: "desc",
         settings_show_previous_period: true,
       });
-      expect(result.costs).toEqual(successData.costs);
+      expect(result.costs).toEqual(displayedCosts);
       expect(result.notes).toContain("each grouping's total cost");
       expect(result.notes).toContain("highest total first");
       expect(result.notes).toContain("Later pages continue this ranking");
@@ -320,7 +322,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       ]),
       handler: async ({ callExpectingSuccess }) => {
         const result = await callExpectingSuccess({ ...validInputArguments, ...sortParams });
-        expect(result.costs).toEqual(successData.costs);
+        expect(result.costs).toEqual(displayedCosts);
       },
     };
   }),
@@ -334,6 +336,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           start_date: undefined,
           end_date: undefined,
           date_bin: undefined,
+          limit: 50,
         },
         method: "GET",
         result: {
@@ -363,7 +366,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         groupings: ["provider", "service", "region"],
       });
       expect(res).toEqual({
-        costs: successData.costs,
+        costs: displayedCosts,
         total_cost: successData.total_cost,
         notes: "Costs records represent one day.",
         pagination: {
@@ -414,7 +417,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         settings_show_previous_period: true,
       });
       expect(res).toEqual({
-        costs: successData.costs,
+        costs: displayedCosts,
         total_cost: successData.total_cost,
         notes:
           "Costs records represent one month, the accrued_at field is the first day of the month. If your date range is less than one month, this record includes only data for that date range, not the full month.",
@@ -433,6 +436,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         params: {
           ...baseApiParams,
           date_bin: "day",
+          limit: 50,
         },
         method: "GET",
         result: {
@@ -447,7 +451,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         date_bin: "day",
       });
       expect(res).toEqual({
-        costs: successData.costs,
+        costs: displayedCosts,
         total_cost: successData.total_cost,
         notes: "Costs records represent one day.",
         pagination: {
@@ -513,7 +517,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         settings_aggregate_by: "count",
       });
       expect(res).toEqual({
-        costs: countSuccessData.costs,
+        costs: displayedCosts,
         total_cost: countSuccessData.total_cost,
         total_count: 42,
         counts: countSuccessData.counts,
@@ -536,6 +540,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           start_date: undefined,
           end_date: undefined,
           date_bin: undefined,
+          limit: 50,
         },
         method: "GET",
         result: {
@@ -567,6 +572,308 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
       expect(err.exception).toEqual({
         errors: [{ message: "Invalid VQL query" }],
       });
+    },
+  },
+  {
+    name: "caps resource_id groupings at 50 even when date_bin is month",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/costs",
+        params: { ...baseApiParams, groupings: "resource_id", limit: 50 },
+        method: "GET",
+        result: { ok: true, data: successData },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      await callExpectingSuccess({ ...validInputArguments, groupings: ["resource_id"] });
+    },
+  },
+  {
+    name: "caps tag groupings at 50 even when date_bin is month",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/costs",
+        params: { ...baseApiParams, groupings: "service,tag:environment", limit: 50 },
+        method: "GET",
+        result: { ok: true, data: successData },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      await callExpectingSuccess({ ...validInputArguments, groupings: ["service", "tag:environment"] });
+    },
+  },
+  {
+    name: "keeps a week bin without resource or tag groupings at 100",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/costs",
+        params: { ...baseApiParams, date_bin: "week", limit: 100 },
+        method: "GET",
+        result: { ok: true, data: successData },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      await callExpectingSuccess({ ...validInputArguments, date_bin: "week" });
+    },
+  },
+  {
+    name: "truncates a page over the character budget and hides the next page",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/costs",
+        params: baseApiParams,
+        method: "GET",
+        result: {
+          ok: true,
+          data: {
+            ...successData,
+            costs: Array.from({ length: 40 }, (_, index) => ({
+              accrued_at: "2023-01-01",
+              currency: "USD",
+              amount: "1.00",
+              provider: "aws",
+              service: `AmazonEC2-${index}`,
+              resource_id: `${"i".padEnd(1500, "a")}-${index}`,
+            })),
+            links: { next: "https://example.com?page=2" },
+          },
+        },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const result = await callExpectingSuccess(validInputArguments);
+      const costs = result.costs as Array<{ resource_id?: string; currency?: string }>;
+      expect(result.truncated).toBe(true);
+      expect(costs.length).toBeGreaterThan(0);
+      expect(costs.length).toBeLessThan(40);
+      expect(result.rows_returned).toBe(costs.length);
+      expect(result.rows_omitted).toBe(40 - costs.length);
+      expect(JSON.stringify(result).length).toBeLessThanOrEqual(40_000);
+      expect(result.total_cost).toEqual(successData.total_cost);
+      expect(result.pagination).toEqual({ hasNextPage: false, nextPage: 0 });
+      expect(result.notes).toContain("Narrow the filter, drop resource_id, or raise date_bin.");
+      expect(result.notes).not.toContain("next page");
+      expect(costs[0]?.currency).toBeUndefined();
+      expect(costs[0]?.resource_id).toBe(`${"i".padEnd(1500, "a")}-0`);
+      expect(costs[costs.length - 1]?.resource_id).toBe(`${"i".padEnd(1500, "a")}-${costs.length - 1}`);
+    },
+  },
+  {
+    name: "collapses amount sorting to one row per grouping and sums usage",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/costs",
+        params: { ...baseApiParams, sort_column: "amount", sort_direction: "desc" },
+        method: "GET",
+        result: {
+          ok: true,
+          data: {
+            ...successData,
+            costs: [
+              {
+                accrued_at: "2023-01-01",
+                currency: "USD",
+                amount: "10.00",
+                provider: "aws",
+                service: "AmazonEC2",
+                usage: { amount: "2.5", unit: "Hrs" },
+              },
+              {
+                accrued_at: "2023-01-02",
+                currency: "USD",
+                amount: "5.50",
+                provider: "aws",
+                service: "AmazonEC2",
+                usage: { amount: "1.5", unit: "Hrs" },
+              },
+              {
+                accrued_at: "2023-01-01",
+                currency: "USD",
+                amount: "2.00",
+                provider: "aws",
+                service: "AmazonS3",
+                usage: { amount: "4", unit: "GB" },
+              },
+              {
+                accrued_at: "2023-01-02",
+                currency: "USD",
+                amount: "3.25",
+                provider: "aws",
+                service: "AmazonS3",
+                usage: { amount: "1", unit: "GB" },
+              },
+            ],
+          },
+        },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const result = await callExpectingSuccess({
+        ...validInputArguments,
+        sort_column: "amount",
+        sort_direction: "desc",
+      });
+      expect(result.costs).toEqual([
+        {
+          amount: "15.50",
+          provider: "aws",
+          service: "AmazonEC2",
+          usage: { amount: "4.0", unit: "Hrs" },
+        },
+        {
+          amount: "5.25",
+          provider: "aws",
+          service: "AmazonS3",
+          usage: { amount: "5", unit: "GB" },
+        },
+      ]);
+      expect(result.truncated).toBeUndefined();
+      expect(result.notes).toContain("sum of the date bins on this page");
+    },
+  },
+  {
+    name: "keeps daily rows when an amount sort filters to one resource_id",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/costs",
+        params: {
+          ...baseApiParams,
+          filter: "(costs.provider = 'aws' AND costs.resource_id = 'i-abc')",
+          date_bin: "day",
+          limit: 50,
+          sort_column: "amount",
+          sort_direction: "desc",
+        },
+        method: "GET",
+        result: {
+          ok: true,
+          data: {
+            ...successData,
+            costs: [
+              {
+                accrued_at: "2023-01-01",
+                currency: "USD",
+                amount: "10.00",
+                provider: "aws",
+                resource_id: "i-abc",
+              },
+              {
+                accrued_at: "2023-01-02",
+                currency: "USD",
+                amount: "4.00",
+                provider: "aws",
+                resource_id: "i-abc",
+              },
+            ],
+          },
+        },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const result = await callExpectingSuccess({
+        ...validInputArguments,
+        filter: "(costs.provider = 'aws' AND costs.resource_id = 'i-abc')",
+        date_bin: "day",
+        sort_column: "amount",
+        sort_direction: "desc",
+      });
+      expect(result.costs).toEqual([
+        { accrued_at: "2023-01-01", amount: "10.00", provider: "aws", resource_id: "i-abc" },
+        { accrued_at: "2023-01-02", amount: "4.00", provider: "aws", resource_id: "i-abc" },
+      ]);
+    },
+  },
+  {
+    name: "omits row currency and a usage_unit that repeats usage.unit",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/costs",
+        params: { ...baseApiParams, "settings[aggregate_by]": "usage" },
+        method: "GET",
+        result: {
+          ok: true,
+          data: {
+            ...successData,
+            costs: [
+              {
+                accrued_at: "2023-01-01",
+                currency: "USD",
+                amount: "1.00",
+                provider: "aws",
+                usage_unit: "GB",
+                usage: { amount: "8", unit: "GB" },
+              },
+              {
+                accrued_at: "2023-01-01",
+                currency: "USD",
+                amount: "2.00",
+                provider: "aws",
+                usage_unit: "Hrs",
+                usage: { amount: "3", unit: "GB" },
+              },
+            ],
+          },
+        },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const result = await callExpectingSuccess({
+        ...validInputArguments,
+        settings_aggregate_by: "usage",
+      });
+      expect(result.costs).toEqual([
+        {
+          accrued_at: "2023-01-01",
+          amount: "1.00",
+          provider: "aws",
+          usage: { amount: "8", unit: "GB" },
+        },
+        {
+          accrued_at: "2023-01-01",
+          amount: "2.00",
+          provider: "aws",
+          usage_unit: "Hrs",
+          usage: { amount: "3", unit: "GB" },
+        },
+      ]);
+    },
+  },
+  {
+    name: "keeps row currency when total_cost has no currency",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: "/v2/costs",
+        params: baseApiParams,
+        method: "GET",
+        result: {
+          ok: true,
+          data: {
+            ...successData,
+            total_cost: { amount: "100.5" },
+            costs: [
+              {
+                accrued_at: "2023-01-01",
+                currency: "USD",
+                amount: "100.5",
+                provider: "aws",
+                service: "AmazonEC2",
+              },
+            ],
+          },
+        },
+      },
+    ]),
+    handler: async ({ callExpectingSuccess }) => {
+      const result = await callExpectingSuccess(validInputArguments);
+      expect(result.costs).toEqual([
+        {
+          accrued_at: "2023-01-01",
+          currency: "USD",
+          amount: "100.5",
+          provider: "aws",
+          service: "AmazonEC2",
+        },
+      ]);
     },
   },
 ];

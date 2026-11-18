@@ -161,6 +161,41 @@ describe("mcp server handler", () => {
     });
     expect(generateContext).toHaveBeenCalledOnce();
   });
+
+  it("serializes schemaless output without indentation when compactOutput is set", async () => {
+    registerTool({
+      name: "compact-tool",
+      title: "Compact Tool",
+      description: "A tool that returns compact JSON",
+      compactOutput: true,
+      args: {},
+      annotations: {
+        readOnly: true,
+        openWorld: false,
+        destructive: false,
+      },
+      async execute() {
+        return { message: "Hello" };
+      },
+    });
+    const mockServer = {
+      registerTool: vi.fn(),
+    } as any;
+    const generateContext = vi.fn(() => mockContext);
+    setupRegisteredTools(mockServer, generateContext);
+
+    const toolHandler = (mockServer.registerTool as any).mock.calls.find((call: any) => call[0] === "compact-tool")[2];
+    const result = await toolHandler({});
+    expect(result).toEqual({
+      content: [
+        {
+          text: JSON.stringify({ message: "Hello" }),
+          type: "text",
+        },
+      ],
+      isError: false,
+    });
+  });
 });
 
 test("tool output schema is typed and loaded properly", () => {
