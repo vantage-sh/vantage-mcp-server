@@ -74,6 +74,16 @@ const validInputArguments = {
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
+    name: "accepts dynamic tag and date column keys",
+    data: {
+      ...validInputArguments,
+      settings: {
+        ...validInputArguments.settings,
+        table_column_order: ["tag:environment", "date:2026-01-01", "costAmount"],
+      },
+    },
+  },
+  {
     name: "minimal valid arguments",
     data: {
       ...undefineds,

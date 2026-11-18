@@ -89,6 +89,13 @@ const validInputArguments: InferValidators<Validators> = {
 
 const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
   {
+    name: "accepts dynamic tag and date column keys",
+    data: {
+      ...minimalValidInputArguments,
+      settings: { table_column_order: ["tag:environment", "date:2026-01-01", "costAmount"] },
+    },
+  },
+  {
     name: "rejects non-string column keys",
     data: { ...minimalValidInputArguments, settings: { table_column_order: [42 as never] } },
     expectedIssues: ["Invalid input: expected string, received number"],

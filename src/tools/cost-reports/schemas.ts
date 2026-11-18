@@ -52,10 +52,16 @@ export const businessMetricTokenForUpdate = z.object({
 });
 
 const tableColumnOrder = z
-  .array(z.string())
+  .array(
+    z
+      .string()
+      .describe(
+        "A table column key, not a display label. Use a report grouping key (for example service, provider, or tag:environment), a metric key (for example costAmount or usageAmount), or a date-bin key such as date:2026-01-01."
+      )
+  )
   .optional()
   .describe(
-    "Ordered Cost Report table column keys. Send [] to reset to the default order; omit to preserve the saved order."
+    'Order table columns using the report groupings and metric keys. For example, with groupings ["service", "provider"], use ["costAmount", "provider", "service"] to put costs first. Comparison columns include previousCostAmount and costChange (or previousUsageAmount and usageChange). Tag and date-bin keys are dynamic, so there is no fixed enum. Unlisted columns follow in their default order. Send [] to reset to the default order; omit to preserve the saved order.'
   );
 
 export const costReportSettingsForCreate = z.object({
