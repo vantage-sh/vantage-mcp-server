@@ -21,11 +21,9 @@ export const calculationDescription = z
     "Description of the Custom Calculation. Send null or an empty string to clear; omit on update to leave unchanged."
   );
 
+const usageUnitName = z.string().regex(/\S/, "Usage unit names must not be blank");
 const usageUnit = z
-  .union([
-    z.string(),
-    z.array(z.string().refine((value) => value.trim().length > 0, "Usage unit names must not be blank")).min(1),
-  ])
+  .union([usageUnitName, z.array(usageUnitName).min(1)])
   .nullable()
   .optional();
 export const calculationFilter = z

@@ -31,6 +31,11 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     expectedIssues: ["Too small: expected array to have >=1 items"],
   },
   {
+    name: "rejects empty scalar usage unit",
+    data: { ...validArguments, filter: { filter: "", usage_unit: "" } },
+    expectedIssues: ["Usage unit names must not be blank"],
+  },
+  {
     name: "rejects blank usage-unit array entry",
     data: { ...validArguments, filter: { filter: "", usage_unit: [" "] } },
     expectedIssues: ["Usage unit names must not be blank"],

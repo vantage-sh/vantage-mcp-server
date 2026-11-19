@@ -34,6 +34,14 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     expectedIssues: ["Too small: expected array to have >=1 items"],
   },
   {
+    name: "rejects whitespace-only scalar division usage units",
+    data: {
+      ...validArguments,
+      filter: { ...divisionFilter, usage_unit_numerator: " ", usage_unit_denominator: "\t" },
+    },
+    expectedIssues: ["Usage unit names must not be blank", "Usage unit names must not be blank"],
+  },
+  {
     name: "rejects blank usage-unit array entry",
     data: { ...validArguments, filter: { filter: "", usage_unit: [" "] } },
     expectedIssues: ["Usage unit names must not be blank"],
