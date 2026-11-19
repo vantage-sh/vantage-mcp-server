@@ -86,6 +86,10 @@ export const TOKEN_KINDS = {
     prefix: "dta_xprt",
     label: "Data Export",
   },
+  enrichment_source: {
+    prefix: "srvc_data_intgrtn",
+    label: "Enrichment Source",
+  },
   financial_commitment_report: {
     prefix: "fncl_cmnt_rprt",
     label: "Financial Commitment Report",
@@ -93,6 +97,10 @@ export const TOKEN_KINDS = {
   folder: {
     prefix: "fldr",
     label: "Folder",
+  },
+  ingest_token: {
+    prefix: "tlm_tok",
+    label: "Ingest Token",
   },
   integration: {
     prefix: "accss_crdntl",

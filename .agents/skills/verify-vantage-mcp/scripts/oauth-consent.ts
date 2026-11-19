@@ -57,7 +57,7 @@ async function main(): Promise<number> {
     const response = await fetch(url, { redirect: "manual", ...init });
     const text = await response.text();
     const headers: Exchange["headers"] = {};
-    for (const name of ["content-type", "www-authenticate", "location"]) {
+    for (const name of ["content-type", "www-authenticate", "location", "x-frame-options", "content-security-policy"]) {
       const value = response.headers.get(name);
       if (value !== null) headers[name] = value;
     }
@@ -184,6 +184,11 @@ async function main(): Promise<number> {
     check("consent-names-client", has(mcp.text, "MCP Inspector (verify)"));
     check("consent-local-application-note", has(mcp.text, "Local application") && has(mcp.text, "localhost:6274"));
     check("consent-no-sse-notice-for-mcp", !has(mcp.text, SSE_NOTICE));
+    check(
+      "consent-forbids-framing",
+      mcp.headers["x-frame-options"] === "DENY" && mcp.headers["content-security-policy"] === "frame-ancestors 'none'",
+      `x-frame-options=${mcp.headers["x-frame-options"]} csp=${mcp.headers["content-security-policy"]}`
+    );
     check(
       "consent-form-carries-csrf-fields",
       /name="transaction_state"\s+value="[^"]+"/.test(mcp.text) && /name="consent_token"\s+value="[^"]+"/.test(mcp.text)

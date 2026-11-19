@@ -17,6 +17,7 @@ import {
 } from "./auth/client-policy";
 import { resolveVantageToken } from "./auth/external-token";
 import { createAuthRouter } from "./auth/request-router";
+import { logClientInitialization } from "./client-attribution";
 import type { AppEnv } from "./env";
 import homepage from "./homepage";
 import { logger } from "./logger";
@@ -66,6 +67,7 @@ export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> 
     Response extends ResponseBodyForPathAndMethod<P, M>,
   >(endpoint: P, params: Request, method: M): Promise<{ data: Response; ok: true } | { errors: unknown[]; ok: false }> {
     return withLogTags({}, async () => {
+      logger.setTags({ mcp_transport: this.getTransportType() });
       const clientVersion = this.server.server.getClientVersion();
       if (clientVersion) {
         logger.setTags({
@@ -128,12 +130,14 @@ export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> 
   }
 
   async init() {
+    const transportType = this.getTransportType();
     this.server = createHostedMcpServer(serverMeta, {
-      transportType: this.getTransportType(),
+      transportType,
       mcpUrl: new URL("/mcp", this.env.SELF_CALLBACK_URL).href,
       storage: this.ctx.storage,
       waitUntil: (promise) => this.ctx.waitUntil(promise),
     });
+    logClientInitialization(this.server, transportType);
     const ctx = {
       env: this.env,
       waitUntil: (promise: Promise<unknown>) => this.ctx.waitUntil(promise),

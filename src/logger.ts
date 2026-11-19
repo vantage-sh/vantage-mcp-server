@@ -3,6 +3,8 @@ import { WorkersLogger } from "workers-tagged-logger";
 export type LogTagHints = {
   mcp_client_name?: string;
   mcp_client_version?: string;
+  /** MCP transport for the session: "streamable-http", "sse", or "rpc". */
+  mcp_transport?: string;
   endpoint?: string;
   method?: string;
   oauth_error_category?: string;
@@ -17,6 +19,8 @@ export type LogTagHints = {
   ok?: boolean;
   /** JSON-serialized API error payload for failed Vantage calls. */
   api_errors?: string;
+  trace_id?: string;
+  span_id?: string;
   "dd.trace_id"?: string;
   "dd.span_id"?: string;
   "otel.trace_id"?: string;

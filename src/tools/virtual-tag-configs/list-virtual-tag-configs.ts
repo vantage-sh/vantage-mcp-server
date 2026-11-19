@@ -5,19 +5,17 @@ import { nonempty } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
-// Much smaller than the shared DEFAULT_LIMIT (128): accounts default to 50 Virtual Tag Configs of up to 100 values each,
-// so a page of 10 summaries stays around 20K tokens in the worst case.
+// Accounts default to 50 Virtual Tag Configs, so a small page keeps browsing short.
 const LIMIT = 10;
 
 const description = `
-Lists or searches the Virtual Tags (Virtual Tag Configs) the current API token can access. Use this to find config and value tokens by key or value name.
-Each value is summarized to its token and name, without filters or allocations; call get-virtual-tag-config-value or get-virtual-tag-config for full details.
+Lists or searches Virtual Tag Configs as a browse list with a value count. Full values come from get-virtual-tag-config.
 Results are paginated; start with page 1 and request the next page while pagination.hasNextPage is true.
 `.trim();
 
 type VirtualTagConfig = GetVirtualTagConfigsResponse["virtual_tag_configs"][number];
 
-function summarize(config: VirtualTagConfig) {
+function toBrowseEntry(config: VirtualTagConfig) {
   return {
     token: config.token,
     key: config.key,
@@ -25,10 +23,7 @@ function summarize(config: VirtualTagConfig) {
     preferred: config.preferred,
     overridable: config.overridable,
     backfill_until: config.backfill_until,
-    values: config.values.map((value) => ({
-      token: value.token,
-      name: value.name ?? value.display_name ?? null,
-    })),
+    value_count: config.values?.length ?? 0,
   };
 }
 
@@ -51,7 +46,7 @@ export default registerTool({
       throw new MCPUserError({ errors: response.errors });
     }
     return {
-      virtual_tag_configs: response.data.virtual_tag_configs.map(summarize),
+      virtual_tag_configs: response.data.virtual_tag_configs.map(toBrowseEntry),
       pagination: paginationData(response.data),
     };
   },

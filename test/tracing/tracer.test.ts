@@ -344,7 +344,7 @@ describe("runWithSpan", () => {
 });
 
 describe("datadogTraceLogTags", () => {
-  it("emits classic dd.* decimals and otel hex ids", () => {
+  it("emits hex trace_id / span_id, classic dd.* decimals, and otel hex ids", () => {
     expect(
       datadogTraceLogTags({
         traceId: "012045e13ff5466d621637c8ee2b3266",
@@ -353,6 +353,8 @@ describe("datadogTraceLogTags", () => {
         sampled: true,
       })
     ).toEqual({
+      trace_id: "012045e13ff5466d621637c8ee2b3266",
+      span_id: "4f9c1a2b3c4d5e6f",
       "dd.trace_id": BigInt("0x621637c8ee2b3266").toString(),
       "dd.span_id": BigInt("0x4f9c1a2b3c4d5e6f").toString(),
       "otel.trace_id": "012045e13ff5466d621637c8ee2b3266",

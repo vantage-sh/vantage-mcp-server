@@ -1,4 +1,5 @@
 import type {
+  UpdateCostReportRequest as ClientCostReportUpdate,
   SupportedMethods as ClientMethods,
   Path as ClientPath,
   RequestBodyForPathAndMethod as ClientRequest,
@@ -45,6 +46,11 @@ type CustomCalculationApi = {
   };
 };
 
+// Core accepts null as an instruction to leave attachments unchanged.
+export type CostReportUpdateRequest = Omit<ClientCostReportUpdate, "custom_calculation_tokens"> & {
+  custom_calculation_tokens?: string[] | null;
+};
+
 type CustomPath = keyof CustomCalculationApi;
 export type Path = ClientPath | CustomPath;
 export type SupportedMethods<P extends Path> = P extends CustomPath
@@ -54,12 +60,11 @@ export type RequestBodyForPathAndMethod<P extends Path, M extends SupportedMetho
   ? CustomCalculationApi[P][Extract<M, keyof CustomCalculationApi[P]>] extends { request: infer R }
     ? R
     : never
-  : ClientRequest<Extract<P, ClientPath>, Extract<M, ClientMethods<Extract<P, ClientPath>>>> &
-      (P extends `/v2/cost_reports/${ReturnType<typeof pathEncode>}`
-        ? M extends "PUT"
-          ? { custom_calculation_tokens?: string[] | null }
-          : unknown
-        : unknown);
+  : P extends `/v2/cost_reports/${ReturnType<typeof pathEncode>}`
+    ? M extends "PUT"
+      ? CostReportUpdateRequest
+      : ClientRequest<Extract<P, ClientPath>, Extract<M, ClientMethods<Extract<P, ClientPath>>>>
+    : ClientRequest<Extract<P, ClientPath>, Extract<M, ClientMethods<Extract<P, ClientPath>>>>;
 export type ResponseBodyForPathAndMethod<P extends Path, M extends SupportedMethods<P>> = P extends CustomPath
   ? CustomCalculationApi[P][Extract<M, keyof CustomCalculationApi[P]>] extends { response: infer R }
     ? R

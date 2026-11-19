@@ -6,7 +6,7 @@ import { DEFAULT_LIMIT } from "../structure/constants";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 
-import { groupingSortArgs } from "./schemas";
+import { assertCostsSort, costsMetricSortNote, groupingSortArgs } from "./schemas";
 
 const description = `
 List the cost items inside a report. The Token of a Report must be provided. Use the page value of 1 to start.
@@ -23,6 +23,8 @@ Only provide these parameters if you need to override the report's defaults.
 
 Use settings_aggregate_by to choose the metric: cost (default), usage, or count.
 When aggregate_by is count, the response includes total_count and counts (date-binned distinct Group By permutation counts for the full requested period). Count is not supported for segment reports.
+
+When the user wants the most expensive or top groupings in the report, set sort_column to amount and sort_direction to desc. Page 1 is that ranking. For highest usage, set settings_aggregate_by to usage and sort_column to usage_amount.
 `.trim();
 
 const args = {
@@ -90,9 +92,7 @@ export default registerTool({
   },
   args,
   async execute(args, ctx) {
-    if (args.sort_direction !== undefined && args.sort_column === undefined) {
-      throw new MCPUserError({ errors: [{ message: "sort_direction requires sort_column" }] });
-    }
+    assertCostsSort(args);
 
     // Build request params. Settings that are not explicitly provided are left out
     // so the API uses the cost report's own configured settings.
@@ -141,6 +141,9 @@ export default registerTool({
           "No date_bin was specified; the API will use the cost report's configured date bin (defaulting to day). Each cost record's time span depends on that setting.";
         break;
     }
+
+    const ranking = costsMetricSortNote(args.sort_column, args.sort_direction);
+    if (ranking) notes = `${notes} ${ranking}`;
 
     return {
       costs: response.data.costs,
