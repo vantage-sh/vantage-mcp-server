@@ -50,6 +50,10 @@ const TRUSTED_CLIENTS: TrustedClient[] = [
 
 const MAX_NAME_LENGTH = 100;
 
+// Schemes that navigate to a script, a local file, or an embedded document.
+// Registration allows other custom schemes (cursor://, vscode://) on purpose.
+const DANGEROUS_REDIRECT_PROTOCOLS = new Set(["about:", "blob:", "data:", "file:", "javascript:", "vbscript:"]);
+
 function normalizeName(name: string): string {
   return name.normalize("NFKC").toLowerCase();
 }
@@ -147,4 +151,66 @@ export function describeRedirectTarget(redirectUri: string): string {
   const url = parseRedirect(redirectUri);
   if (!url) return redirectUri;
   return url.host || `${url.protocol}//`;
+}
+
+function hasRawRedirectHazards(uri: string): boolean {
+  // Control characters, spaces, and backslashes survive into some URL parsers as a different host.
+  for (let i = 0; i < uri.length; i++) {
+    const code = uri.charCodeAt(i);
+    if (code <= 0x20 || code === 0x7f || uri[i] === "\\") return true;
+  }
+  return false;
+}
+
+function isAcceptableRedirectShape(url: URL): boolean {
+  if (url.username || url.password || url.hash) return false;
+  if (DANGEROUS_REDIRECT_PROTOCOLS.has(url.protocol)) return false;
+  if (url.protocol === "https:") return url.hostname.length > 0;
+  if (url.protocol === "http:") return isLoopback(url);
+  return /^[a-z0-9][a-z0-9+.-]*:$/.test(url.protocol);
+}
+
+/**
+ * URL to use when sending the user back to an OAuth client, or null if `requested` is not allowed.
+ *
+ * The consent transaction is stored in an unsigned cookie, so a redirect URI read back from it
+ * has to be checked against the client's registered redirect URIs. The returned URL is built from
+ * the registered value. Loopback clients may use a different port than the one they registered
+ * (RFC 8252); only that port is taken from the request.
+ */
+export function resolveRegisteredRedirect(requested: string, registeredUris: readonly string[]): URL | null {
+  if (typeof requested !== "string" || hasRawRedirectHazards(requested)) return null;
+  const requestedUrl = parseRedirect(requested);
+  if (!requestedUrl || !isAcceptableRedirectShape(requestedUrl)) return null;
+
+  const allowedHosts = new Set<string>();
+  for (const registered of registeredUris) {
+    if (typeof registered !== "string" || hasRawRedirectHazards(registered)) continue;
+    const allowlisted = parseRedirect(registered);
+    if (!allowlisted || !isAcceptableRedirectShape(allowlisted)) continue;
+    if (allowlisted.hostname.length > 0) allowedHosts.add(allowlisted.hostname);
+
+    const loopbackPortOnly =
+      requested !== registered &&
+      isLoopback(requestedUrl) &&
+      isLoopback(allowlisted) &&
+      requestedUrl.protocol === allowlisted.protocol &&
+      requestedUrl.hostname === allowlisted.hostname &&
+      requestedUrl.pathname === allowlisted.pathname &&
+      requestedUrl.search === allowlisted.search;
+    if (requested !== registered && !loopbackPortOnly) continue;
+
+    const redirect = new URL(allowlisted.href);
+    if (loopbackPortOnly) {
+      if (requestedUrl.port !== "" && !/^[0-9]+$/.test(requestedUrl.port)) continue;
+      redirect.port = requestedUrl.port;
+      if (!isLoopback(redirect) || redirect.hostname !== allowlisted.hostname) continue;
+    }
+    if ((redirect.protocol === "https:" || redirect.protocol === "http:") && !allowedHosts.has(redirect.hostname)) {
+      continue;
+    }
+    if (!isAcceptableRedirectShape(redirect)) continue;
+    return redirect;
+  }
+  return null;
 }

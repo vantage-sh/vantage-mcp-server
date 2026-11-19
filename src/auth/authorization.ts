@@ -1,7 +1,7 @@
 import { AuthorizationError, type AuthRequest, type OAuthHelpers } from "@cloudflare/workers-oauth-provider";
 import axios from "axios";
 import type { Context } from "hono";
-import { getCookie, setCookie } from "hono/cookie";
+import { getSignedCookie, setCookie, setSignedCookie } from "hono/cookie";
 import * as oauth from "oauth4webapi";
 import type { AppEnv } from "../env";
 import { logger } from "../logger";
@@ -11,6 +11,7 @@ import {
   describeRedirectTarget,
   isLoopbackRedirect,
   isRecognisedRedirect,
+  resolveRegisteredRedirect,
 } from "./client-policy";
 import { renderConsentScreen } from "./consent-screen";
 import { getOidcConfig } from "./oidc";
@@ -69,10 +70,11 @@ export async function authorize(c: Context<{ Bindings: AppEnv & { OAUTH_PROVIDER
     transactionState,
   };
 
-  // Store the auth request in a transaction-specific cookie
+  // Store the auth request in a transaction-specific cookie. The signature covers the client id
+  // and redirect URI, so the consent screen and the later denial redirect cannot be split apart.
   const cookieName = `auth0_req_${transactionState}`;
   const isHostedEnvironment = c.env.ENVIRONMENT !== "development";
-  setCookie(c, cookieName, btoa(JSON.stringify(auth0AuthRequest)), {
+  await setSignedCookie(c, cookieName, btoa(JSON.stringify(auth0AuthRequest)), c.env.AUTH0_CLIENT_SECRET, {
     httpOnly: true,
     maxAge: 60 * 60 * 1,
     path: "/",
@@ -137,15 +139,23 @@ export async function confirmConsent(c: Context<{ Bindings: AppEnv & { OAUTH_PRO
     return c.text("Invalid transaction state", 400);
   }
 
-  // Get the transaction-specific cookie
+  // Get the transaction-specific cookie. An invalid signature is treated as no transaction:
+  // the client id and redirect URI are covered by the same MAC.
   const cookieName = `auth0_req_${transactionState}`;
-  const auth0AuthRequestCookie = getCookie(c, cookieName);
+  const auth0AuthRequestCookie = await getSignedCookie(c, c.env.AUTH0_CLIENT_SECRET, cookieName);
   if (!auth0AuthRequestCookie) {
     return c.text("Invalid or expired transaction", 400);
   }
 
-  // Parse the Auth0 auth request from the cookie
-  const auth0AuthRequest = JSON.parse(atob(auth0AuthRequestCookie)) as Auth0AuthRequest;
+  let auth0AuthRequest: Auth0AuthRequest;
+  try {
+    auth0AuthRequest = JSON.parse(atob(auth0AuthRequestCookie)) as Auth0AuthRequest;
+  } catch {
+    return c.text("Invalid or expired transaction", 400);
+  }
+  if (auth0AuthRequest.transactionState !== transactionState) {
+    return c.text("Invalid transaction state", 400);
+  }
 
   // Validate the CSRF token
   if (auth0AuthRequest.consentToken !== consentToken) {
@@ -156,10 +166,21 @@ export async function confirmConsent(c: Context<{ Bindings: AppEnv & { OAUTH_PRO
 
   // Handle user denial
   if (!formGivesConsent) {
-    // Parse the MCP client auth request to get the original redirect URI
-    const redirectUri = new URL(auth0AuthRequest.mcpAuthRequest.redirectUri);
+    // The signed cookie binds this client id to the redirect URI. Re-check the registration in case
+    // it changed after consent, matching completeAuthorization on the success path.
+    const client = await c.env.OAUTH_PROVIDER.lookupClient(auth0AuthRequest.mcpAuthRequest.clientId);
+    const redirectUri = resolveRegisteredRedirect(
+      auth0AuthRequest.mcpAuthRequest.redirectUri,
+      client?.redirectUris ?? []
+    );
+    if (!redirectUri) {
+      setCookie(c, cookieName, "", {
+        maxAge: 0,
+        path: "/",
+      });
+      return c.text("Invalid redirect URI", 400);
+    }
 
-    // Add error parameters to the redirect URI
     redirectUri.searchParams.set("error", "access_denied");
     redirectUri.searchParams.set("error_description", "User denied the request");
     if (auth0AuthRequest.mcpAuthRequest.state) {
