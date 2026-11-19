@@ -185,3 +185,11 @@ export const updateDateIntervalSchema = z
   .describe(
     "The date interval of the dashboard. Incompatible with 'start_date' and 'end_date' parameters. Use an empty string to clear the date interval."
   );
+
+export const dashboardFilter = z
+  .string()
+  .nullable()
+  .optional()
+  .describe(
+    "Stored universal VQL filter using vantage.* or tags.* fields in one AND group with =, !=, IN, or NOT IN. LIKE and NOT LIKE are unsupported. Omit on update to preserve; send null or an empty string to clear. Nonempty saved_filter_tokens take precedence; clearing them reactivates this filter."
+  );

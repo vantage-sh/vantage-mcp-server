@@ -3,6 +3,7 @@ import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
 import {
+  dashboardFilter,
   dashboardFolderForCreate,
   dateBinSchema,
   dateIntervalSchema,
@@ -28,6 +29,7 @@ export default registerTool({
     }).optional(),
     folder_token: dashboardFolderForCreate,
     widgets: z.array(widgetSchema).describe("Widgets to add. Omit for an empty Dashboard.").optional(),
+    filter: dashboardFilter,
     saved_filter_tokens: z
       .array(vantageToken("saved_filter"))
       .describe("The tokens of the Saved Filters used in the Dashboard")

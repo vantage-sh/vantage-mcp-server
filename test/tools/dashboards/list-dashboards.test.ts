@@ -41,6 +41,7 @@ const successData = {
     {
       token: "dash_123",
       title: "AWS Cost Dashboard",
+      filter: "vantage.provider = 'aws'",
       widgets: [],
       saved_filter_tokens: [],
       date_bin: "day" as const,
@@ -53,6 +54,7 @@ const successData = {
     {
       token: "dash_456",
       title: "Azure Monitoring Dashboard",
+      filter: null,
       widgets: [],
       saved_filter_tokens: [],
       date_bin: "day" as const,
