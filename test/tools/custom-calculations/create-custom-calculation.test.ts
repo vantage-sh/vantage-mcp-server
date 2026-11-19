@@ -94,6 +94,15 @@ const argumentSchemaTests: SchemaTestTableItem<Validators>[] = [
     },
   },
   {
+    name: "rejects a filter mixing single and division operands",
+    data: {
+      ...validArguments,
+      operation: "division",
+      filter: { filter: "", filter_numerator: "", filter_denominator: "" },
+    },
+    expectedIssues: ["Invalid input"],
+  },
+  {
     name: "requires division denominator",
     data: { ...validArguments, filter: { ...divisionFilter, filter_denominator: undefined as never } },
     expectedIssues: ["Invalid input"],

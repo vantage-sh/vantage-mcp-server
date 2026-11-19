@@ -28,7 +28,7 @@ const usageUnit = z
   .optional();
 export const calculationFilter = z
   .union([
-    z.object({
+    z.strictObject({
       type: z
         .enum(["sum", "average", "min", "max"])
         .optional()
@@ -38,7 +38,7 @@ export const calculationFilter = z
         "Usage unit or non-empty array of equivalent unit names to sum without conversion; omit or send null to use cost data."
       ),
     }),
-    z.object({
+    z.strictObject({
       type: z.literal("division").optional().describe("Optional filter type for division."),
       filter_numerator: z.string().describe("VQL selecting the numerator data."),
       usage_unit_numerator: usageUnit.describe(
@@ -51,5 +51,5 @@ export const calculationFilter = z
     }),
   ])
   .describe(
-    "Calculation filter JSON. If type is provided, match it to operation. On update, replaces the entire filter object."
+    "Calculation filter JSON. Use either a single filter or a numerator and denominator. If type is provided, match it to operation. On update, replaces the entire filter object."
   );
