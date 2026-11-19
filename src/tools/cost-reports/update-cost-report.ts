@@ -1,7 +1,8 @@
-import { pathEncode, type UpdateCostReportRequest } from "@vantage-sh/vantage-client";
+import { pathEncode } from "@vantage-sh/vantage-client";
 import z from "zod";
 import { dateIntervalOptions } from "../../utils/dateIntervalOptions";
 import dateValidator from "../../utils/dateValidator";
+import type { CostReportUpdateRequest } from "../../utils/vantage-api-types";
 import { vantageToken } from "../../utils/zod";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
@@ -14,7 +15,7 @@ import {
 } from "./schemas";
 
 const description = `
-Updates an existing Cost Report. Use to change the title, VQL filter, groupings, date range, chart type, folder, report settings, or attached business metrics.
+Updates an existing Cost Report. Use to change the title, VQL filter, groupings, date range, chart type, folder, report settings, attached business metrics, or attached Custom Calculations (KPIs).
 
 Do not use create-cost-report (creates a new report) or get-cost-report (reads without changing). Use list-cost-reports or get-cost-report to find the cost_report_token.
 `.trim();
@@ -50,6 +51,13 @@ export default registerTool({
       .array(businessMetricTokenForUpdate)
       .optional()
       .describe("Updated BusinessMetric tokens and unit scale metadata."),
+    custom_calculation_tokens: z
+      .array(vantageToken("custom_calculation"))
+      .nullable()
+      .optional()
+      .describe(
+        "Complete replacement set of Custom Calculations (KPIs). Use list-custom-calculations to find tokens. Omit or send null to leave attachments unchanged; [] clears them. New attachments do not enable a chart line."
+      ),
     folder_token: vantageToken("folder", {
       description: "Determines the Workspace the report is assigned to.",
     }).optional(),
@@ -101,11 +109,11 @@ export default registerTool({
     }
 
     const { cost_report_token, ...requestBody } = args;
-    const body: UpdateCostReportRequest = {
+    const body: CostReportUpdateRequest = {
       ...requestBody,
       previous_period_end_date:
-        requestBody.previous_period_end_date as UpdateCostReportRequest["previous_period_end_date"],
-      end_date: requestBody.end_date as UpdateCostReportRequest["end_date"],
+        requestBody.previous_period_end_date as CostReportUpdateRequest["previous_period_end_date"],
+      end_date: requestBody.end_date as CostReportUpdateRequest["end_date"],
     };
     const response = await ctx.callVantageApi(`/v2/cost_reports/${pathEncode(cost_report_token)}`, body, "PUT");
     if (!response.ok) {

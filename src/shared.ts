@@ -1,12 +1,12 @@
+import type { AppEnv } from "./env";
+import { SERVER_VERSION } from "./tools/structure/constants";
+import { formatErrorsForTelemetry, tracer } from "./tracing";
 import type {
   Path,
   RequestBodyForPathAndMethod,
   ResponseBodyForPathAndMethod,
   SupportedMethods,
-} from "@vantage-sh/vantage-client";
-import type { AppEnv } from "./env";
-import { SERVER_VERSION } from "./tools/structure/constants";
-import { formatErrorsForTelemetry, tracer } from "./tracing";
+} from "./utils/vantage-api-types";
 
 export const serverMeta = {
   name: "Vantage Cloud Costs Helper",
