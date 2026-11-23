@@ -4,6 +4,7 @@ import {
   describeRedirectTarget,
   isRecognisedClient,
   isRecognisedRedirect,
+  resolveRegisteredRedirect,
   validateClientRegistration,
 } from "../../src/auth/client-policy";
 
@@ -119,5 +120,87 @@ describe("describeRedirectTarget", () => {
   it("shows the host for web URIs and the scheme for custom schemes", () => {
     expect(describeRedirectTarget("https://evil.example:8443/cb?x=1")).toBe("evil.example:8443");
     expect(describeRedirectTarget("cursor://anysphere.cursor-retrieval/oauth")).toBe("anysphere.cursor-retrieval");
+  });
+});
+
+describe("resolveRegisteredRedirect", () => {
+  const registered = [
+    "https://app.example/callback",
+    "https://app.example/callback?foo=1",
+    "cursor://anysphere.cursor-mcp/oauth/callback",
+    "http://127.0.0.1/callback",
+    "http://localhost:8787/callback",
+    "http://[::1]/callback",
+  ];
+
+  it("returns the registered https URI, not the requested string", () => {
+    const redirect = resolveRegisteredRedirect("https://app.example/callback", registered);
+    expect(redirect?.href).toBe("https://app.example/callback");
+    expect(redirect?.hostname).toBe("app.example");
+  });
+
+  it("keeps a registered query and a custom scheme", () => {
+    expect(resolveRegisteredRedirect("https://app.example/callback?foo=1", registered)?.href).toBe(
+      "https://app.example/callback?foo=1"
+    );
+    expect(resolveRegisteredRedirect("cursor://anysphere.cursor-mcp/oauth/callback", registered)?.protocol).toBe(
+      "cursor:"
+    );
+  });
+
+  it("allows a different loopback port and builds the URL from the registered host", () => {
+    expect(resolveRegisteredRedirect("http://127.0.0.1:4312/callback", registered)?.href).toBe(
+      "http://127.0.0.1:4312/callback"
+    );
+    expect(resolveRegisteredRedirect("http://localhost:9999/callback", registered)?.href).toBe(
+      "http://localhost:9999/callback"
+    );
+    expect(resolveRegisteredRedirect("http://[::1]:4545/callback", registered)?.href).toBe(
+      "http://[::1]:4545/callback"
+    );
+    expect(resolveRegisteredRedirect("http://localhost/callback", registered)?.href).toBe("http://localhost/callback");
+    // Decimal form of 127.0.0.1 still resolves to the registered loopback URI.
+    expect(resolveRegisteredRedirect("http://2130706433/callback", registered)?.href).toBe("http://127.0.0.1/callback");
+  });
+
+  it.each([
+    "https://evil.example/callback",
+    "https://app.example.evil.example/callback",
+    "https://evilapp.example/callback",
+    "https://app.example/callback.evil",
+    "https://app.example/callback/../callback",
+    "https://app.example@evil.example/callback",
+    "https://user:pass@app.example/callback",
+    "https://app.example/callback#frag",
+    "https://evil.example#https://app.example/callback",
+    "http://evil.example/callback",
+    "http://localhost.evil.example/callback",
+    "http://127.0.0.1.evil.example/callback",
+    "http://127.0.0.1@evil.example/callback",
+    "https://app.example:8443/callback",
+    "http://127.0.0.1/other",
+    "//evil.example/callback",
+    "javascript:alert(1)",
+    "data:text/html,hi",
+    "file:///etc/passwd",
+    "https://app.example/callback\r\nLocation: https://evil.example",
+    "https://app.example\\@evil.example/callback",
+    "not a url",
+    "",
+  ])("rejects %s", (requested) => {
+    expect(resolveRegisteredRedirect(requested, registered)).toBeNull();
+  });
+
+  it("rejects a dangerous scheme even when it is the registered value", () => {
+    expect(resolveRegisteredRedirect("javascript:alert(1)", ["javascript:alert(1)"])).toBeNull();
+    expect(resolveRegisteredRedirect("http://evil.example/callback", ["http://evil.example/callback"])).toBeNull();
+  });
+
+  it("rejects a loopback request whose path or query differs from the registration", () => {
+    expect(resolveRegisteredRedirect("http://127.0.0.1:4312/other", registered)).toBeNull();
+    expect(
+      resolveRegisteredRedirect("http://127.0.0.1:4312/callback?next=https://evil.example", registered)
+    ).toBeNull();
+    expect(resolveRegisteredRedirect("http://localhost/callback", ["http://127.0.0.1/callback"])).toBeNull();
   });
 });

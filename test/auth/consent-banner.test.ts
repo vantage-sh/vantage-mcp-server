@@ -16,6 +16,7 @@ async function consentResponse(clientName: string, redirectUri: string) {
   const app = new Hono<{ Bindings: AppEnv & { OAUTH_PROVIDER: OAuthHelpers } }>();
   app.get("/authorize", authorize);
   return app.request("https://hosted-mcp-staging.vantage.sh/authorize", {}, {
+    AUTH0_CLIENT_SECRET: "test-secret",
     AUTH0_SCOPE: "openid offline_access email",
     ENVIRONMENT: "staging",
     OAUTH_PROVIDER: provider,

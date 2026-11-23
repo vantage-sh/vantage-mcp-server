@@ -1,6 +1,6 @@
 import type { OAuthHelpers } from "@cloudflare/workers-oauth-provider";
 import type { Context } from "hono";
-import { getCookie, setCookie } from "hono/cookie";
+import { getSignedCookie, setCookie } from "hono/cookie";
 import * as oauth from "oauth4webapi";
 import type { AppEnv } from "../env";
 import { getOidcConfig } from "./oidc";
@@ -20,14 +20,22 @@ export async function callback(c: Context<{ Bindings: AppEnv & { OAUTH_PROVIDER:
     return c.text("Invalid state parameter", 400);
   }
 
-  // Parse the Auth0 auth request from the transaction-specific cookie
+  // Parse the Auth0 auth request from the transaction-specific cookie.
   const cookieName = `auth0_req_${stateParam}`;
-  const auth0AuthRequestCookie = getCookie(c, cookieName);
+  const auth0AuthRequestCookie = await getSignedCookie(c, c.env.AUTH0_CLIENT_SECRET, cookieName);
   if (!auth0AuthRequestCookie) {
     return c.text("Invalid transaction state or session expired", 400);
   }
 
-  const auth0AuthRequest = JSON.parse(atob(auth0AuthRequestCookie)) as Auth0AuthRequest;
+  let auth0AuthRequest: Auth0AuthRequest;
+  try {
+    auth0AuthRequest = JSON.parse(atob(auth0AuthRequestCookie)) as Auth0AuthRequest;
+  } catch {
+    return c.text("Invalid transaction state or session expired", 400);
+  }
+  if (auth0AuthRequest.transactionState !== stateParam) {
+    return c.text("Invalid transaction state or session expired", 400);
+  }
 
   // Clear the transaction cookie as it's no longer needed
   setCookie(c, cookieName, "", {
