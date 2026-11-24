@@ -3,7 +3,7 @@ import dateValidator from "../../utils/dateValidator";
 import { vantageToken } from "../../utils/zod";
 
 export const BUSINESS_METRICS_LIST_LIMIT = 1000;
-export const BUSINESS_METRIC_DATA_LIMIT = 5000;
+export const BUSINESS_METRIC_DATA_LIMIT = 250;
 
 export const businessMetricValueArgs = {
   business_metric_token: vantageToken("business_metric"),

@@ -5,7 +5,6 @@ import type { GetBusinessMetricValuesResponse } from "@vantage-sh/vantage-client
 import { pathEncode } from "@vantage-sh/vantage-client";
 import { expect, it } from "vitest";
 import tool from "../../../src/tools/business-metrics/get-business-metric-values";
-import { BUSINESS_METRIC_DATA_LIMIT } from "../../../src/tools/business-metrics/schemas";
 import { setupRegisteredTools } from "../../../src/tools/structure/registerTool";
 import {
   dateValidatorPoisoner,
@@ -74,7 +73,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           label_values: ["Prod", "Staging"],
           page: 1,
           start_date: "2024-01-01",
-          limit: BUSINESS_METRIC_DATA_LIMIT,
+          limit: 250,
         },
         method: "GET",
         result: {
@@ -104,7 +103,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           label_values: undefined,
           page: 1,
           start_date: undefined,
-          limit: BUSINESS_METRIC_DATA_LIMIT,
+          limit: 250,
         },
         method: "GET",
         result: {
@@ -139,7 +138,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           label_values: undefined,
           page: 1,
           start_date: undefined,
-          limit: BUSINESS_METRIC_DATA_LIMIT,
+          limit: 250,
         },
         method: "GET",
         result: {
@@ -175,7 +174,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           label_values: ["Prod", "Staging"],
           page: 1,
           start_date: "2024-01-01",
-          limit: BUSINESS_METRIC_DATA_LIMIT,
+          limit: 250,
         },
         method: "GET",
         result: {
@@ -214,7 +213,7 @@ it("serves the same metric page to structured and text MCP clients", async () =>
         label_values: ["Prod", "Staging"],
         page: 1,
         start_date: "2024-01-01",
-        limit: BUSINESS_METRIC_DATA_LIMIT,
+        limit: 250,
       },
       method: "GET",
       result: { ok: true, data },

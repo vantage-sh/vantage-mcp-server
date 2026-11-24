@@ -2,7 +2,6 @@ import type { GetBusinessMetricForecastedValuesResponse } from "@vantage-sh/vant
 import { pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/business-metrics/get-business-metric-forecasted-values";
-import { BUSINESS_METRIC_DATA_LIMIT } from "../../../src/tools/business-metrics/schemas";
 import {
   dateValidatorPoisoner,
   type ExecutionTestTableItem,
@@ -56,7 +55,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         params: {
           page: 1,
           start_date: "2025-01-01",
-          limit: BUSINESS_METRIC_DATA_LIMIT,
+          limit: 250,
         },
         method: "GET",
         result: {
@@ -84,7 +83,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         params: {
           page: 1,
           start_date: undefined,
-          limit: BUSINESS_METRIC_DATA_LIMIT,
+          limit: 250,
         },
         method: "GET",
         result: {
@@ -116,7 +115,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         params: {
           page: 1,
           start_date: "2025-01-01",
-          limit: BUSINESS_METRIC_DATA_LIMIT,
+          limit: 250,
         },
         method: "GET",
         result: {
