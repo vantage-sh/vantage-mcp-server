@@ -1,4 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
+import z from "zod";
 import paginationData from "../../utils/paginationData";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
@@ -7,6 +8,7 @@ import { BUSINESS_METRIC_DATA_LIMIT, historicalBusinessMetricValueArgs } from ".
 const description = `
 Get historical values for a BusinessMetric.
 Values default to monthly sums grouped by label. Use day for daily sums or raw to preserve original timestamps, including hourly values; binned sums may not suit gauges or percentages.
+Table tools can reference the page rows at structuredContent.values.
 Values are returned in descending date order by the Vantage API and can include optional labels.
 When a request depends on labels but exact values are not confirmed, call list-business-metric-labels first and pass the selected values through label_values. Skip label discovery when exact values are already supplied.
 Use start_date to limit results to values on or after a YYYY-MM-DD date.
@@ -24,6 +26,10 @@ export default registerTool({
     readOnly: true,
   },
   args: historicalBusinessMetricValueArgs,
+  outputSchema: {
+    values: z.array(z.object({ date: z.string(), amount: z.string(), label: z.string().nullish() })),
+    pagination: z.object({ nextPage: z.number(), hasNextPage: z.boolean() }),
+  },
   async execute(args, ctx) {
     const { business_metric_token, date_bin, ...params } = args;
     const requestParams = {
@@ -40,8 +46,8 @@ export default registerTool({
       throw new MCPUserError({ errors: response.errors });
     }
     return {
-      values: response.data.values,
       pagination: paginationData(response.data as { links?: { next?: string | null } | null }),
+      values: response.data.values,
     };
   },
 });

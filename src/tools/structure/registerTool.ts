@@ -126,15 +126,8 @@ export default function registerTool<Input extends z.ZodRawShape, Output extends
             try {
               const res = await toolProps.execute(args, ctx);
 
-              if (toolProps.outputSchema) {
-                // Since there's an output schema, we should return structured content.
-                return {
-                  structuredContent: res,
-                };
-              }
-
-              // There's no output schema, so we should return text content.
               return {
+                ...(toolProps.outputSchema && { structuredContent: res }),
                 content: [
                   {
                     type: "text",
