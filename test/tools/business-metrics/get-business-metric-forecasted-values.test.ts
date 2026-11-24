@@ -2,7 +2,6 @@ import type { GetBusinessMetricForecastedValuesResponse } from "@vantage-sh/vant
 import { pathEncode } from "@vantage-sh/vantage-client";
 import { expect } from "vitest";
 import tool from "../../../src/tools/business-metrics/get-business-metric-forecasted-values";
-import { BUSINESS_METRIC_DATA_LIMIT } from "../../../src/tools/business-metrics/schemas";
 import {
   dateValidatorPoisoner,
   type ExecutionTestTableItem,
@@ -49,6 +48,26 @@ const successData: GetBusinessMetricForecastedValuesResponse = {
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   {
+    name: "rejects oversized upstream pages without truncating rows",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: `/v2/business_metrics/${pathEncode(validArguments.business_metric_token)}/forecasted_values`,
+        params: { page: 1, start_date: "2025-01-01", limit: 250 },
+        method: "GET",
+        result: {
+          ok: true,
+          data: { values: Array.from({ length: 251 }, () => ({ date: "2026-01-01", amount: "1" })) },
+        },
+      },
+    ]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const error = await callExpectingMCPUserError(validArguments);
+      expect(error.exception).toEqual({
+        errors: [{ message: "Business metric API exceeded the page-size limit; retry with a narrower query." }],
+      });
+    },
+  },
+  {
     name: "successful call",
     apiCallHandler: requestsInOrder([
       {
@@ -56,7 +75,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         params: {
           page: 1,
           start_date: "2025-01-01",
-          limit: BUSINESS_METRIC_DATA_LIMIT,
+          limit: 250,
         },
         method: "GET",
         result: {
@@ -84,7 +103,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         params: {
           page: 1,
           start_date: undefined,
-          limit: BUSINESS_METRIC_DATA_LIMIT,
+          limit: 250,
         },
         method: "GET",
         result: {
@@ -116,7 +135,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
         params: {
           page: 1,
           start_date: "2025-01-01",
-          limit: BUSINESS_METRIC_DATA_LIMIT,
+          limit: 250,
         },
         method: "GET",
         result: {

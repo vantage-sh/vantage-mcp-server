@@ -8,7 +8,7 @@ const description = `
 Get forecasted values for a BusinessMetric.
 Values are returned in descending date order by the Vantage API and can include optional labels.
 Use start_date to limit results to values on or after a YYYY-MM-DD date.
-This endpoint is paginated. If the user asks for all values, complete data, or values for a date range such as a month, keep calling this tool with pagination.nextPage until pagination.hasNextPage is false before answering.
+Each page contains at most 250 rows. pagination.hasNextPage explicitly indicates that more rows remain; preserve pagination.nextPage when continuing. This endpoint is paginated. If the user asks for all values, complete data, or values for a date range such as a month, keep calling this tool with pagination.nextPage until pagination.hasNextPage is false before answering.
 The API only supports a start_date lower bound. For bounded ranges, such as a specific month, fetch all pages from the requested start date and then filter the returned values to the requested end date locally.
 `.trim();
 
@@ -32,6 +32,11 @@ export default registerTool({
     );
     if (!response.ok) {
       throw new MCPUserError({ errors: response.errors });
+    }
+    if (response.data.values.length > BUSINESS_METRIC_DATA_LIMIT) {
+      throw new MCPUserError({
+        errors: [{ message: "Business metric API exceeded the page-size limit; retry with a narrower query." }],
+      });
     }
     return {
       values: response.data.values,

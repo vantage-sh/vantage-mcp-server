@@ -5,7 +5,6 @@ import type { GetBusinessMetricValuesResponse } from "@vantage-sh/vantage-client
 import { pathEncode } from "@vantage-sh/vantage-client";
 import { expect, it } from "vitest";
 import tool from "../../../src/tools/business-metrics/get-business-metric-values";
-import { BUSINESS_METRIC_DATA_LIMIT } from "../../../src/tools/business-metrics/schemas";
 import { setupRegisteredTools } from "../../../src/tools/structure/registerTool";
 import {
   dateValidatorPoisoner,
@@ -65,6 +64,26 @@ const successData: GetBusinessMetricValuesResponse = {
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   {
+    name: "rejects oversized upstream pages without truncating rows",
+    apiCallHandler: requestsInOrder([
+      {
+        endpoint: `/v2/business_metrics/${pathEncode(validArguments.business_metric_token)}/values`,
+        params: { date_bin: "day", label_values: ["Prod", "Staging"], page: 1, start_date: "2024-01-01", limit: 250 },
+        method: "GET",
+        result: {
+          ok: true,
+          data: { values: Array.from({ length: 251 }, () => ({ date: "2026-01-01", amount: "1" })) },
+        },
+      },
+    ]),
+    handler: async ({ callExpectingMCPUserError }) => {
+      const error = await callExpectingMCPUserError(validArguments);
+      expect(error.exception).toEqual({
+        errors: [{ message: "Business metric API exceeded the page-size limit; retry with a narrower query." }],
+      });
+    },
+  },
+  {
     name: "successful call",
     apiCallHandler: requestsInOrder([
       {
@@ -74,7 +93,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           label_values: ["Prod", "Staging"],
           page: 1,
           start_date: "2024-01-01",
-          limit: BUSINESS_METRIC_DATA_LIMIT,
+          limit: 250,
         },
         method: "GET",
         result: {
@@ -104,7 +123,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           label_values: undefined,
           page: 1,
           start_date: undefined,
-          limit: BUSINESS_METRIC_DATA_LIMIT,
+          limit: 250,
         },
         method: "GET",
         result: {
@@ -139,7 +158,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           label_values: undefined,
           page: 1,
           start_date: undefined,
-          limit: BUSINESS_METRIC_DATA_LIMIT,
+          limit: 250,
         },
         method: "GET",
         result: {
@@ -175,7 +194,7 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
           label_values: ["Prod", "Staging"],
           page: 1,
           start_date: "2024-01-01",
-          limit: BUSINESS_METRIC_DATA_LIMIT,
+          limit: 250,
         },
         method: "GET",
         result: {
@@ -214,7 +233,7 @@ it("serves the same metric page to structured and text MCP clients", async () =>
         label_values: ["Prod", "Staging"],
         page: 1,
         start_date: "2024-01-01",
-        limit: BUSINESS_METRIC_DATA_LIMIT,
+        limit: 250,
       },
       method: "GET",
       result: { ok: true, data },
