@@ -57,9 +57,9 @@ async function main(): Promise<number> {
     return text;
   }
   try {
-    for (const path of ["/mcp", "/sse"]) {
-      const method = path === "/mcp" ? "POST" : "GET";
-      const body = method === "POST" ? initialize : undefined;
+    for (const path of ["/mcp"]) {
+      const method = "POST";
+      const body = initialize;
       const cases: Record<string, Record<string, string>> = {
         missing: {},
         unknown: { "X-Vantage-Extra": "verify" },
@@ -79,11 +79,16 @@ async function main(): Promise<number> {
         await check(`${path}-${label}`, path, headers, expected, method, body);
       }
     }
+    // The legacy SSE endpoint was retired on 2026-11-30 and is no longer routed.
+    for (const path of ["/sse", "/sse/message"]) {
+      await check(`retired-${path}`, path, {}, 404);
+      await check(`retired-${path}-bearer`, path, { Authorization: "Bearer vntg_tkn_verification_invalid" }, 404);
+    }
     const delegation = { "X-Vantage-Agent-Delegation": "verify-invalid", "X-Vantage-Extra": "must-not-forward" };
     for (const path of ["/.well-known/oauth-authorization-server", "/.well-known/oauth-protected-resource/mcp", "/"]) {
       await check(`oauth-precedence-${path}`, path, delegation, 200);
     }
-    for (const path of ["/mcpevil", "/sseevil"]) await check(`boundary-${path}`, path, delegation, 401);
+    for (const path of ["/mcpevil"]) await check(`boundary-${path}`, path, delegation, 401);
     const redirect = "http://localhost:6274/oauth/callback";
     const registration = JSON.parse(
       await check("register-with-delegation", "/register", delegation, 201, "POST", {

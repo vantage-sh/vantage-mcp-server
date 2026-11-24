@@ -1,6 +1,5 @@
 import { join } from "node:path";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { LoggingMessageNotificationSchema } from "@modelcontextprotocol/sdk/types.js";
@@ -8,7 +7,7 @@ import { loopback, type Report, type Run, repoRoot, timeout } from "./support";
 
 type ToolResult = Awaited<ReturnType<Client["callTool"]>>;
 export type CallTool = (name: string, args: Record<string, unknown>) => Promise<ToolResult>;
-export type TransportName = "http" | "sse" | "stdio";
+export type TransportName = "http" | "stdio";
 
 export function coreIdentity(result: ToolResult) {
   const me = toolJson(result);
@@ -102,7 +101,7 @@ export async function smoke(
   const evidence: Record<string, unknown>[] = [];
   report.evidence.transports = evidence;
   for (const name of options.transports) {
-    const path = name === "sse" ? "/sse" : "/mcp";
+    const path = "/mcp";
     const client = new Client({ name: "verify-vantage-mcp", version: "1" }, { capabilities: {} });
     const notifications: unknown[] = [];
     client.setNotificationHandler(LoggingMessageNotificationSchema, (notification) => {
@@ -124,9 +123,7 @@ export async function smoke(
             },
             stderr: "pipe",
           })
-        : name === "sse"
-          ? new SSEClientTransport(new URL(path, run.base), { requestInit })
-          : new StreamableHTTPClientTransport(new URL(path, run.base), { requestInit });
+        : new StreamableHTTPClientTransport(new URL(path, run.base), { requestInit });
     const item: Record<string, unknown> = {
       transport: name,
       entryPoint: name === "stdio" ? "src/local.ts" : `${run.base}${path}`,
@@ -196,15 +193,6 @@ export async function smoke(
             part.mimeType === "text/markdown" && "text" in part && typeof part.text === "string" && part.text.length > 0
         )
       );
-      if (name === "sse") {
-        report.check(
-          "sse-one-deprecation-warning",
-          notifications.filter(
-            (entry) => (entry as { params?: { logger?: string } }).params?.logger === "vantage.sse-deprecation"
-          ).length === 1
-        );
-        report.check("sse-migration-instructions", client.getInstructions()?.includes(new URL("/mcp", run.base).href));
-      }
     } catch (error) {
       item.error = error instanceof Error ? error.message : String(error);
       report.check(`${name}-execution`, false, String(item.error));

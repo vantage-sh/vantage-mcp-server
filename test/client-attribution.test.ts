@@ -1,10 +1,9 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
-import { LoggingMessageNotificationSchema } from "@modelcontextprotocol/sdk/types.js";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { logClientInitialization } from "../src/client-attribution";
 import { logger } from "../src/logger";
-import { createHostedMcpServer } from "../src/sse-deprecation";
 
 const clients: Client[] = [];
 afterEach(async () => {
@@ -19,24 +18,11 @@ function spyOnInitializationLogs() {
 }
 
 async function connect(transportType: string, requestHeaders?: Record<string, string>) {
-  const background: Promise<unknown>[] = [];
-  const server = createHostedMcpServer(
-    { name: "Vantage test", version: "1.0.0" },
-    {
-      transportType,
-      mcpUrl: "https://hosted-mcp-staging.vantage.sh/mcp",
-      storage: { get: vi.fn(async () => undefined), put: vi.fn(async () => undefined) },
-      waitUntil: (promise) => background.push(promise),
-    }
-  );
+  const server = new McpServer({ name: "Vantage test", version: "1.0.0" });
   logClientInitialization(server, transportType);
   server.registerTool("connection-check", {}, async () => ({ content: [{ type: "text", text: "Connected" }] }));
   const client = new Client({ name: "attribution-client", version: "4.5.6" });
   clients.push(client);
-  const warnings: unknown[] = [];
-  client.setNotificationHandler(LoggingMessageNotificationSchema, (notification) => {
-    warnings.push(notification.params);
-  });
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
   await server.connect(serverTransport);
   if (requestHeaders) {
@@ -46,12 +32,11 @@ async function connect(transportType: string, requestHeaders?: Record<string, st
       onmessage?.(message, { ...extra, requestInfo: { headers: requestHeaders } });
   }
   await client.connect(clientTransport);
-  await Promise.all(background);
-  return { client, warnings };
+  return { client };
 }
 
 describe("MCP client initialization attribution", () => {
-  it.each(["streamable-http", "sse"])(
+  it.each(["streamable-http", "rpc"])(
     "logs client name, version, and %s transport once per initialization",
     async (transport) => {
       const { info, withTags } = spyOnInitializationLogs();
@@ -72,7 +57,7 @@ describe("MCP client initialization attribution", () => {
     const { withTags } = spyOnInitializationLogs();
     const traceId = "012045e13ff5466d621637c8ee2b3266";
     const spanId = "4f9c1a2b3c4d5e6f";
-    await connect("sse", { traceparent: `00-${traceId}-${spanId}-01` });
+    await connect("streamable-http", { traceparent: `00-${traceId}-${spanId}-01` });
 
     expect(withTags).toHaveBeenCalledTimes(1);
     expect(withTags.mock.calls[0][0]).toMatchObject({
@@ -81,12 +66,6 @@ describe("MCP client initialization attribution", () => {
       "dd.trace_id": BigInt(`0x${traceId.slice(-16)}`).toString(),
       "dd.span_id": BigInt(`0x${spanId}`).toString(),
     });
-  });
-
-  it("keeps the SSE deprecation warning", async () => {
-    spyOnInitializationLogs();
-    const { warnings } = await connect("sse");
-    expect(warnings).toEqual([expect.objectContaining({ logger: "vantage.sse-deprecation" })]);
   });
 
   it("does not break initialization or tool calls when logging throws", async () => {

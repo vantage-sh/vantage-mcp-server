@@ -87,11 +87,11 @@ test("plaintext credentials are trimmed, validated and redacted", () => {
   }
 });
 
-test("SSE evidence captures the first event and cancels without waiting for EOF", async () => {
+test("Event-stream evidence captures the first event and cancels without waiting for EOF", async () => {
   let cancelled = false;
   const body = new ReadableStream<Uint8Array>({
     start(controller) {
-      controller.enqueue(new TextEncoder().encode("event: endpoint\ndata: /sse/message\n\n"));
+      controller.enqueue(new TextEncoder().encode("event: message\ndata: {}\n\n"));
     },
     cancel() {
       cancelled = true;
@@ -99,7 +99,7 @@ test("SSE evidence captures the first event and cancels without waiting for EOF"
   });
   assert.match(
     await responsePreview(new Response(body, { headers: { "content-type": "text/event-stream" } })),
-    /endpoint/
+    /event: message/
   );
   assert.equal(cancelled, true);
 });

@@ -14,8 +14,7 @@ function matchesRoute(pathname: string, route: string): boolean {
 
 export function createAuthRouter<Env>(
   oauthProvider: FetchHandler<Env>,
-  mcpHandler: FetchHandler<Env>,
-  sseHandler: FetchHandler<Env>
+  mcpHandler: FetchHandler<Env>
 ): FetchHandler<Env> {
   return {
     fetch(request, env, ctx) {
@@ -26,12 +25,7 @@ export function createAuthRouter<Env>(
       }
 
       const pathname = new URL(request.url).pathname;
-      const apiHandler = matchesRoute(pathname, "/mcp")
-        ? mcpHandler
-        : matchesRoute(pathname, "/sse")
-          ? sseHandler
-          : undefined;
-      if (!apiHandler) {
+      if (!matchesRoute(pathname, "/mcp")) {
         return oauthProvider.fetch(request, env, ctx);
       }
 
@@ -45,7 +39,7 @@ export function createAuthRouter<Env>(
         ...authContext.props,
         vantageHeaders: { [AGENT_DELEGATION_HEADER]: delegationToken },
       };
-      return apiHandler.fetch(request, env, ctx);
+      return mcpHandler.fetch(request, env, ctx);
     },
   };
 }

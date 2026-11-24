@@ -19,7 +19,7 @@ Preconditions:
 
 - Core is running at the target host, with a token it accepts. Use a local Core for anything that mutates.
 
-- **SDK checks.** With an owned local run manifest, run `npx tsx "$S/mcp-smoke.ts" "$RUN_DIR" --transports stdio --token-file "$VERIFY_WORK_DIR/state/local-core-token"`. It passes the explicit manifest API host and token through the child environment, checks reads and resources, and closes the child. Select `http,sse,stdio` to compare transport lists and user context. The helper creates Markdown and JSON reports under the run's `evidence/`.
+- **SDK checks.** With an owned local run manifest, run `npx tsx "$S/mcp-smoke.ts" "$RUN_DIR" --transports stdio --token-file "$VERIFY_WORK_DIR/state/local-core-token"`. It passes the explicit manifest API host and token through the child environment, checks reads and resources, and closes the child. Select `http,stdio` to compare transport lists and user context. The helper creates Markdown and JSON reports under the run's `evidence/`.
 - **List tools individually.** With `VANTAGE_TOKEN` already in the environment, run `npx mcp-inspector --cli -e VANTAGE_API_HOST=http://localhost:3000 npx tsx src/local.ts --method tools/list > "$RUN_DIR/evidence/stdio-tools-list.json"`. Exit 0, and the `tools` array includes `get-myself`.
 - **Call a tool.** Run the same command with `--method tools/call --tool-name get-myself`. The result has `isError: false` and the user's details.
 - **Missing token.** Run `npx tsx src/local.ts` with `VANTAGE_TOKEN` unset. It exits non-zero with `VANTAGE_TOKEN environment variable is required.`

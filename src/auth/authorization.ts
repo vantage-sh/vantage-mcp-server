@@ -5,7 +5,6 @@ import { getSignedCookie, setCookie, setSignedCookie } from "hono/cookie";
 import * as oauth from "oauth4webapi";
 import type { AppEnv } from "../env";
 import { logger } from "../logger";
-import { isLegacySseResource } from "../sse-deprecation";
 import {
   claimsUnrecognisedBrand,
   describeRedirectTarget,
@@ -114,9 +113,6 @@ export async function authorize(c: Context<{ Bindings: AppEnv & { OAUTH_PROVIDER
       isRecognisedClient: recognised,
       redirectHost,
       redirectUri: activeRedirect,
-      sseMigrationUrl: isLegacySseResource(mcpClientAuthRequest.resource, c.req.url)
-        ? new URL("/mcp", c.req.url).href
-        : undefined,
       transactionState,
     })
   );

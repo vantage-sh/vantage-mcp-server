@@ -3,7 +3,7 @@ import { WorkersLogger } from "workers-tagged-logger";
 export type LogTagHints = {
   mcp_client_name?: string;
   mcp_client_version?: string;
-  /** MCP transport for the session: "streamable-http", "sse", or "rpc". */
+  /** MCP transport for the session: "streamable-http" or "rpc". */
   mcp_transport?: string;
   endpoint?: string;
   method?: string;

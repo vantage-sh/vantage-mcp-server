@@ -8,12 +8,11 @@ function makeRouter() {
   const mcp = vi.fn(async (_request: Request, _env: object, ctx: ExecutionContext) =>
     Response.json((ctx as ExecutionContext & { props?: object }).props)
   );
-  const sse = vi.fn(async () => new Response("sse"));
-  const router = createAuthRouter({ fetch: oauth }, { fetch: mcp }, { fetch: sse });
+  const router = createAuthRouter({ fetch: oauth }, { fetch: mcp });
   const ctx = {} as ExecutionContext;
   const fetch = (path: string, headers: HeadersInit = {}) =>
     router.fetch(new Request(`https://mcp.example${path}`, { headers }), {}, ctx);
-  return { ctx, fetch, mcp, oauth, sse };
+  return { ctx, fetch, mcp, oauth };
 }
 
 describe("MCP authentication router", () => {
@@ -34,21 +33,13 @@ describe("MCP authentication router", () => {
     expect(oauth).not.toHaveBeenCalled();
   });
 
-  it("retains the header-only agent path on the legacy SSE route", async () => {
-    const { fetch, oauth, sse } = makeRouter();
-    expect((await fetch("/sse/message", { "X-Vantage-Agent-Delegation": "delegation" })).status).toBe(200);
-    expect(sse).toHaveBeenCalledOnce();
-    expect(oauth).not.toHaveBeenCalled();
-  });
-
-  it.each(["/authorize", "/callback", "/.well-known/oauth-authorization-server", "/mcpevil"])(
+  it.each(["/authorize", "/callback", "/.well-known/oauth-authorization-server", "/mcpevil", "/sse", "/sse/message"])(
     "keeps %s with the OAuth provider even when an agent header is present",
     async (path) => {
-      const { fetch, mcp, oauth, sse } = makeRouter();
+      const { fetch, mcp, oauth } = makeRouter();
       expect(await (await fetch(path, { "X-Vantage-Agent-Delegation": "delegation" })).text()).toBe("oauth");
       expect(oauth).toHaveBeenCalledOnce();
       expect(mcp).not.toHaveBeenCalled();
-      expect(sse).not.toHaveBeenCalled();
     }
   );
 
@@ -63,25 +54,10 @@ describe("MCP authentication router", () => {
   it.each(rejectedHeaders)(
     "never lets an agent header shadow Authorization or create auth from unknown headers",
     async (headers) => {
-      const { fetch, mcp, oauth, sse } = makeRouter();
+      const { fetch, mcp, oauth } = makeRouter();
       expect(await (await fetch("/mcp", headers)).text()).toBe("oauth");
       expect(oauth).toHaveBeenCalledOnce();
       expect(mcp).not.toHaveBeenCalled();
-      expect(sse).not.toHaveBeenCalled();
     }
   );
-
-  it("does not let Authorization shadowing bypass OAuth on the legacy SSE route", async () => {
-    const { fetch, oauth, sse } = makeRouter();
-    expect(
-      await (
-        await fetch("/sse/message", {
-          Authorization: "Bearer vntg_tkn_example",
-          "X-Vantage-Agent-Delegation": "delegation",
-        })
-      ).text()
-    ).toBe("oauth");
-    expect(oauth).toHaveBeenCalledOnce();
-    expect(sse).not.toHaveBeenCalled();
-  });
 });

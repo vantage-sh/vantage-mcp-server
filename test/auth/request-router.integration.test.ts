@@ -31,10 +31,9 @@ function makeKv() {
 function makeProvider(resource?: string) {
   const env = { OAUTH_KV: makeKv(), VANTAGE_API_HOST: "https://core.example" };
   const mcp = vi.fn(async () => new Response("mcp"));
-  const sse = vi.fn(async () => new Response("sse"));
   const defaultHandler = vi.fn(async () => new Response("authorization reached"));
   const options: OAuthProviderOptions<typeof env> = {
-    apiHandlers: { "/mcp": { fetch: mcp }, "/sse": { fetch: sse } },
+    apiHandlers: { "/mcp": { fetch: mcp } },
     authorizeEndpoint: "/authorize",
     clientRegistrationEndpoint: "/register",
     defaultHandler: { fetch: defaultHandler },
@@ -43,17 +42,17 @@ function makeProvider(resource?: string) {
     ...(resource ? { resourceMetadata: { resource } } : {}),
   };
   const provider = new OAuthProvider(options);
-  const router = createAuthRouter(provider, { fetch: mcp }, { fetch: sse });
+  const router = createAuthRouter(provider, { fetch: mcp });
   const fetch = (path: string, headers: HeadersInit = {}, init: RequestInit = {}) =>
     router.fetch(new Request(`https://mcp.example${path}`, { headers, ...init }), env, {} as ExecutionContext);
-  return { defaultHandler, env, fetch, mcp, options, sse };
+  return { defaultHandler, env, fetch, mcp, options };
 }
 
 describe("OAuth provider behind the authentication router", () => {
   afterEach(() => vi.unstubAllGlobals());
 
   it("serves OAuth discovery and authorization with agent headers present", async () => {
-    const { defaultHandler, fetch, mcp, sse } = makeProvider();
+    const { defaultHandler, fetch, mcp } = makeProvider();
     const headers = { "X-Vantage-Agent-Delegation": "delegation" };
 
     const discovery = await fetch("/.well-known/oauth-authorization-server", headers);
@@ -65,43 +64,37 @@ describe("OAuth provider behind the authentication router", () => {
     expect((await fetch("/authorize", headers)).status).toBe(200);
     expect(defaultHandler).toHaveBeenCalledOnce();
     expect(mcp).not.toHaveBeenCalled();
-    expect(sse).not.toHaveBeenCalled();
   });
 
-  it.each(["/mcp", "/sse", "/sse/message"])(
-    "passes service-token credentials to the handler without a validation fetch on %s",
-    async (path) => {
-      const core = vi.fn(async () => Response.json({ bearer_token: { scope: ["read"] }, workspaces: [] }));
-      vi.stubGlobal("fetch", core);
-      const { fetch, mcp, sse } = makeProvider();
-      const response = await fetch(path, {
-        Authorization: "Bearer vntg_tkn_service",
-        "X-Vantage-Agent-Delegation": "must-not-forward",
-        "X-Vantage-Scout-Token": "must-not-forward",
-      });
+  it("passes service-token credentials to the handler without a validation fetch", async () => {
+    const core = vi.fn(async () => Response.json({ bearer_token: { scope: ["read"] }, workspaces: [] }));
+    vi.stubGlobal("fetch", core);
+    const { fetch, mcp } = makeProvider();
+    const response = await fetch("/mcp", {
+      Authorization: "Bearer vntg_tkn_service",
+      "X-Vantage-Agent-Delegation": "must-not-forward",
+      "X-Vantage-Scout-Token": "must-not-forward",
+    });
 
-      expect(response.status).toBe(200);
-      expect(core).not.toHaveBeenCalled();
-      const handler = path === "/mcp" ? mcp : sse;
-      const ctx = (handler.mock.calls[0] as unknown as [Request, object, ExecutionContext])[2];
-      expect(ctx).toHaveProperty("props.tokenSet.accessToken", "vntg_tkn_service");
-      expect(ctx).not.toHaveProperty("props.vantageHeaders");
-      expect(ctx).not.toHaveProperty("props.claims");
-    }
-  );
+    expect(response.status).toBe(200);
+    expect(core).not.toHaveBeenCalled();
+    const ctx = (mcp.mock.calls[0] as unknown as [Request, object, ExecutionContext])[2];
+    expect(ctx).toHaveProperty("props.tokenSet.accessToken", "vntg_tkn_service");
+    expect(ctx).not.toHaveProperty("props.vantageHeaders");
+    expect(ctx).not.toHaveProperty("props.claims");
+  });
 
-  it.each(["/mcp", "/sse"])("leaves invalid Vantage tokens for Core to reject on tool calls on %s", async (path) => {
+  it("leaves invalid Vantage tokens for Core to reject on tool calls", async () => {
     const core = vi.fn();
     vi.stubGlobal("fetch", core);
-    const { fetch, mcp, sse } = makeProvider();
-    const response = await fetch(path, {
+    const { fetch, mcp } = makeProvider();
+    const response = await fetch("/mcp", {
       Authorization: "Bearer vntg_tkn_invalid",
       "X-Vantage-Agent-Delegation": "must-not-forward",
     });
     expect(response.status).toBe(200);
     expect(core).not.toHaveBeenCalled();
-    const handler = path === "/mcp" ? mcp : sse;
-    const ctx = (handler.mock.calls[0] as unknown as [Request, object, ExecutionContext])[2];
+    const ctx = (mcp.mock.calls[0] as unknown as [Request, object, ExecutionContext])[2];
     expect(ctx).toHaveProperty("props.tokenSet.accessToken", "vntg_tkn_invalid");
     expect(ctx).not.toHaveProperty("props.vantageHeaders");
   });
@@ -135,12 +128,10 @@ describe("OAuth provider behind the authentication router", () => {
       "fetch",
       vi.fn(async () => new Response())
     );
-    const { fetch, mcp, sse } = makeProvider("https://mcp.example/mcp");
+    const { fetch, mcp } = makeProvider("https://mcp.example/mcp");
     const headers = { Authorization: "Bearer vntg_tkn_service" };
     expect((await fetch("/mcp", headers)).status).toBe(200);
-    expect((await fetch("/sse", headers)).status).toBe(401);
     expect(mcp).toHaveBeenCalledOnce();
-    expect(sse).not.toHaveBeenCalled();
   });
 
   it("keeps bearer requests to discovery, authorization and registration with the OAuth endpoints", async () => {
@@ -161,34 +152,29 @@ describe("OAuth provider behind the authentication router", () => {
     expect(core).not.toHaveBeenCalled();
   });
 
-  it.each(["/mcp", "/sse"])(
-    "rejects present empty or whitespace Authorization on %s without delegation fallback",
-    async (path) => {
-      for (const authorization of ["", " ", "\t"]) {
-        const { fetch, mcp, sse } = makeProvider();
-        const response = await fetch(path, {
-          Authorization: authorization,
-          "X-Vantage-Agent-Delegation": "delegation",
-        });
+  it("rejects present empty or whitespace Authorization without delegation fallback", async () => {
+    for (const authorization of ["", " ", "\t"]) {
+      const { fetch, mcp } = makeProvider();
+      const response = await fetch("/mcp", {
+        Authorization: authorization,
+        "X-Vantage-Agent-Delegation": "delegation",
+      });
 
-        expect(response.status).toBe(401);
-        expect(mcp).not.toHaveBeenCalled();
-        expect(sse).not.toHaveBeenCalled();
-      }
+      expect(response.status).toBe(401);
+      expect(mcp).not.toHaveBeenCalled();
     }
-  );
-
-  it("routes to delegation only when Authorization is absent", async () => {
-    const { fetch, mcp, sse } = makeProvider();
-    expect((await fetch("/mcp", { "X-Vantage-Agent-Delegation": "delegation" })).status).toBe(200);
-    expect(mcp).toHaveBeenCalledOnce();
-    expect(sse).not.toHaveBeenCalled();
   });
 
-  it("accepts an OAuth-issued bearer token on both API routes without forwarding agent headers", async () => {
+  it("routes to delegation only when Authorization is absent", async () => {
+    const { fetch, mcp } = makeProvider();
+    expect((await fetch("/mcp", { "X-Vantage-Agent-Delegation": "delegation" })).status).toBe(200);
+    expect(mcp).toHaveBeenCalledOnce();
+  });
+
+  it("accepts an OAuth-issued bearer token without forwarding agent headers", async () => {
     const core = vi.fn();
     vi.stubGlobal("fetch", core);
-    const { env, fetch, mcp, options, sse } = makeProvider();
+    const { env, fetch, mcp, options } = makeProvider();
     const helpers = getOAuthApi(options, env);
     const client = await helpers.createClient({
       redirectUris: ["http://localhost/callback"],
@@ -232,9 +218,7 @@ describe("OAuth provider behind the authentication router", () => {
 
     const headers = { Authorization: `Bearer ${accessToken}`, "X-Vantage-Agent-Delegation": "must-not-forward" };
     expect((await fetch("/mcp", headers)).status).toBe(200);
-    expect((await fetch("/sse", headers)).status).toBe(200);
     expect(mcp).toHaveBeenCalledOnce();
-    expect(sse).toHaveBeenCalledOnce();
     expect((mcp.mock.calls[0] as unknown as [Request, object, ExecutionContext])[2]).toHaveProperty(
       "props.tokenSet.accessToken",
       "upstream-token"

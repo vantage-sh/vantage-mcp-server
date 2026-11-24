@@ -13,7 +13,7 @@ async function main(): Promise<number> {
   });
   if (values.help) {
     console.log(`Usage: npx tsx mcp-smoke.ts <run-dir> [options]
-  --transports http,sse,stdio    Default: http,sse
+  --transports http,stdio        Default: http
   --auth dev|bearer|delegation|invalid-delegation|oauth    Default: dev
   --expect success|core-error   Default: success
   --token-file PATH             Core token for stdio or --auth bearer (or VERIFY_VANTAGE_TOKEN)
@@ -24,10 +24,10 @@ Use one transport per OAuth invocation, with a token scoped to that resource.`);
     return 0;
   }
   if (positionals.length !== 1) throw new Error("Pass one run directory; see --help");
-  const transports = String(values.transports ?? "http,sse").split(",");
+  const transports = String(values.transports ?? "http").split(",");
   if (
     !transports.length ||
-    transports.some((name) => !["http", "sse", "stdio"].includes(name)) ||
+    transports.some((name) => !["http", "stdio"].includes(name)) ||
     new Set(transports).size !== transports.length
   )
     throw new Error("Invalid transports");
