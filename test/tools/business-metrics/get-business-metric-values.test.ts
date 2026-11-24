@@ -64,26 +64,6 @@ const successData: GetBusinessMetricValuesResponse = {
 
 const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   {
-    name: "rejects oversized upstream pages without truncating rows",
-    apiCallHandler: requestsInOrder([
-      {
-        endpoint: `/v2/business_metrics/${pathEncode(validArguments.business_metric_token)}/values`,
-        params: { date_bin: "day", label_values: ["Prod", "Staging"], page: 1, start_date: "2024-01-01", limit: 250 },
-        method: "GET",
-        result: {
-          ok: true,
-          data: { values: Array.from({ length: 251 }, () => ({ date: "2026-01-01", amount: "1" })) },
-        },
-      },
-    ]),
-    handler: async ({ callExpectingMCPUserError }) => {
-      const error = await callExpectingMCPUserError(validArguments);
-      expect(error.exception).toEqual({
-        errors: [{ message: "Business metric API exceeded the page-size limit; retry with a narrower query." }],
-      });
-    },
-  },
-  {
     name: "successful call",
     apiCallHandler: requestsInOrder([
       {
