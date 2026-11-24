@@ -1,8 +1,12 @@
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { GetBusinessMetricValuesResponse } from "@vantage-sh/vantage-client";
 import { pathEncode } from "@vantage-sh/vantage-client";
-import { expect } from "vitest";
+import { expect, it } from "vitest";
 import tool from "../../../src/tools/business-metrics/get-business-metric-values";
 import { BUSINESS_METRIC_DATA_LIMIT } from "../../../src/tools/business-metrics/schemas";
+import { setupRegisteredTools } from "../../../src/tools/structure/registerTool";
 import {
   dateValidatorPoisoner,
   type ExecutionTestTableItem,
@@ -192,4 +196,43 @@ const executionTests: ExecutionTestTableItem<Validators, OutputSchema>[] = [
   },
 ];
 
-testTool(tool, argumentSchemaTests, executionTests);
+testTool(
+  tool,
+  argumentSchemaTests,
+  [{ name: "empty final page", data: { values: [], pagination: { hasNextPage: false, nextPage: 0 } } }],
+  executionTests
+);
+
+it("serves the same metric page to structured and text MCP clients", async () => {
+  const server = new McpServer({ name: "test-server", version: "1" });
+  const data = { ...successData, links: { next: "https://api.example.test/values?page=2" } };
+  const callVantageApi = requestsInOrder([
+    {
+      endpoint: `/v2/business_metrics/${pathEncode(validArguments.business_metric_token)}/values`,
+      params: {
+        date_bin: "day",
+        label_values: ["Prod", "Staging"],
+        page: 1,
+        start_date: "2024-01-01",
+        limit: BUSINESS_METRIC_DATA_LIMIT,
+      },
+      method: "GET",
+      result: { ok: true, data },
+    },
+  ]);
+  setupRegisteredTools(server, () => ({ callVantageApi }));
+  const client = new Client({ name: "test-client", version: "1" });
+  const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+  await server.connect(serverTransport);
+  try {
+    await client.connect(clientTransport);
+    await client.listTools();
+    const result = await client.callTool({ name: tool.name, arguments: validArguments });
+    const page = { pagination: { nextPage: 2, hasNextPage: true }, values: successData.values };
+    expect(result.structuredContent).toEqual(page);
+    expect(result.content).toEqual([{ type: "text", text: JSON.stringify(page, null, 2) }]);
+  } finally {
+    await client.close();
+    await server.close();
+  }
+});

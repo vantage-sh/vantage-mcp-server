@@ -1,4 +1,5 @@
 import { pathEncode } from "@vantage-sh/vantage-client";
+import z from "zod";
 import paginationData from "../../utils/paginationData";
 import MCPUserError from "../structure/MCPUserError";
 import registerTool from "../structure/registerTool";
@@ -24,6 +25,10 @@ export default registerTool({
     readOnly: true,
   },
   args: historicalBusinessMetricValueArgs,
+  outputSchema: {
+    values: z.array(z.object({ date: z.string(), amount: z.string(), label: z.string().nullish() })),
+    pagination: z.object({ nextPage: z.number(), hasNextPage: z.boolean() }),
+  },
   async execute(args, ctx) {
     const { business_metric_token, date_bin, ...params } = args;
     const requestParams = {
@@ -40,8 +45,8 @@ export default registerTool({
       throw new MCPUserError({ errors: response.errors });
     }
     return {
-      values: response.data.values,
       pagination: paginationData(response.data as { links?: { next?: string | null } | null }),
+      values: response.data.values,
     };
   },
 });
