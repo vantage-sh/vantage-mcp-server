@@ -6,7 +6,7 @@ import registerTool from "../structure/registerTool";
 import { BUSINESS_METRIC_DATA_LIMIT, historicalBusinessMetricValueArgs } from "./schemas";
 
 const description = `
-Get historical values for a BusinessMetric.
+Get historical values for a BusinessMetric. For the highest-total labels and their monthly contributions, use get-ranked-business-metric-values.
 Values default to monthly sums grouped by label. Use day for daily sums or raw to preserve original timestamps, including hourly values; binned sums may not suit gauges or percentages.
 Values are returned in descending date order by the Vantage API and can include optional labels.
 When a request depends on labels but exact values are not confirmed, call list-business-metric-labels first and pass the selected values through label_values. Skip label discovery when exact values are already supplied.

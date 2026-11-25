@@ -51,13 +51,23 @@ export type CostReportUpdateRequest = Omit<ClientCostReportUpdate, "custom_calcu
   custom_calculation_tokens?: string[] | null;
 };
 
-type CustomPath = keyof CustomCalculationApi;
+// Use the published client contract once it includes ranked business metric values.
+type AdditionalApi = CustomCalculationApi & {
+  [P in `/v2/business_metrics/${ReturnType<typeof pathEncode>}/ranked_values`]: {
+    GET: {
+      request: { start_date: string; end_date: string; top_labels: number };
+      response: { months: string[]; monthly_totals: string[]; series: { label: string; amounts: string[] }[] };
+    };
+  };
+};
+
+type CustomPath = keyof AdditionalApi;
 export type Path = ClientPath | CustomPath;
 export type SupportedMethods<P extends Path> = P extends CustomPath
-  ? keyof CustomCalculationApi[P]
+  ? keyof AdditionalApi[P]
   : ClientMethods<Extract<P, ClientPath>>;
 export type RequestBodyForPathAndMethod<P extends Path, M extends SupportedMethods<P>> = P extends CustomPath
-  ? CustomCalculationApi[P][Extract<M, keyof CustomCalculationApi[P]>] extends { request: infer R }
+  ? AdditionalApi[P][Extract<M, keyof AdditionalApi[P]>] extends { request: infer R }
     ? R
     : never
   : P extends `/v2/cost_reports/${ReturnType<typeof pathEncode>}`
@@ -66,7 +76,7 @@ export type RequestBodyForPathAndMethod<P extends Path, M extends SupportedMetho
       : ClientRequest<Extract<P, ClientPath>, Extract<M, ClientMethods<Extract<P, ClientPath>>>>
     : ClientRequest<Extract<P, ClientPath>, Extract<M, ClientMethods<Extract<P, ClientPath>>>>;
 export type ResponseBodyForPathAndMethod<P extends Path, M extends SupportedMethods<P>> = P extends CustomPath
-  ? CustomCalculationApi[P][Extract<M, keyof CustomCalculationApi[P]>] extends { response: infer R }
+  ? AdditionalApi[P][Extract<M, keyof AdditionalApi[P]>] extends { response: infer R }
     ? R
     : never
   : ClientResponse<Extract<P, ClientPath>, Extract<M, ClientMethods<Extract<P, ClientPath>>>>;
