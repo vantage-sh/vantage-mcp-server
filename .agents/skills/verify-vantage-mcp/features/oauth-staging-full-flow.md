@@ -10,7 +10,6 @@ A user adds the staging server to an MCP client, approves the consent screen, si
 - `staging-reconnect`: disconnecting and reconnecting reuses the issued token without a new consent screen.
 - `staging-refresh`: a normal `grant_type=refresh_token` request succeeds, rotates the refresh token, and the resulting access token can call a Core-backed tool.
 - `staging-fresh-auth`: **Clear OAuth State** forces a brand-new registration and login.
-- `staging-sse-oauth`: a fresh grant for `/sse` connects through the SSE transport, calls a tool, and receives the migration warning.
 - `staging-restore`: staging is redeployed from `main` afterwards.
 
 ## How to get to it (user POV)
@@ -34,7 +33,6 @@ Preconditions:
 - **Reconnect.** Choose **Disconnect**, then **Connect**. Inspector connects without opening the consent page, and `list-workspaces` still succeeds.
 - **Fresh authorization.** Choose **Clear OAuth State** in the auth settings, then **Connect**. A new registration and the consent page appear again.
 - **Refresh.** Export the approved client's `client` and `tokens` objects to a permissions-600 JSON file in the staging manifest's `state/`. Run `npx tsx "$S/oauth-refresh.ts" "$RUN_DIR" --credentials-file "$RUN_DIR/state/oauth.json" --resource-path /mcp`. The helper makes one real refresh-token grant through `/token`, saves rotated credentials privately before subsequent assertions, and verifies Core-backed reads with the refreshed access token. Use the saved rotated file for any later refresh. Keep reports; remove all credential files during cleanup. Do not count a new authorization-code login as refresh.
-- **Legacy SSE OAuth.** Repeat fresh authorization with transport **SSE** and URL `https://hosted-mcp-staging.vantage.sh/sse`. The consent page shows the migration notice. Call a read-only tool and capture the SSE notification. A token bound to `/mcp` is expected to be rejected on `/sse` with `invalid_token` / `Invalid audience`; authorize the `/sse` resource separately.
 - **Proof.** The user shares screenshots, or the agent reads Inspector's **History** panel. Then query Datadog read-only for `env:staging service:vantage-mcp-server` over the test window. Expect `GET /authorize` 200, `POST /authorize/consent` 302, `GET /callback` 302, `POST /token` 200, and a `tool/list-workspaces` span with no error.
 - **Restore staging.** Run `gh workflow run "Deploy Worker Staging" --ref main` with no `ref` input, and watch it to `success`. Do this even if the journey failed.
 

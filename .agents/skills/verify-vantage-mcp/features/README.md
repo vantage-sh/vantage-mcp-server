@@ -38,5 +38,5 @@ Each feature file starts with an H1 title and one paragraph describing the user-
 
 - [OAuth discovery, registration, and consent (local)](./oauth-local-consent.md): challenge, metadata, dynamic client registration, and every consent-screen notice. Needs no Core and no Auth0.
 - [OAuth full login (staging)](./oauth-staging-full-flow.md): Inspector completes Auth0 login, calls a tool, and reconnects with the issued token.
-- [Hosted tool calls](./hosted-tool-calls.md): listing and calling tools over `/mcp` and legacy `/sse`, owner-only gating, and the SSE deprecation notice.
+- [Hosted tool calls](./hosted-tool-calls.md): listing and calling tools over `/mcp`, owner-only gating, and the retired `/sse` endpoint.
 - [Local stdio server](./local-stdio.md): `npm run local` with a Vantage API token.

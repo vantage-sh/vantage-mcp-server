@@ -3,7 +3,7 @@ import OAuthProvider, {
   type OAuthHelpers,
   type OAuthProviderOptions,
 } from "@cloudflare/workers-oauth-provider";
-import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import * as Sentry from "@sentry/cloudflare";
 import { McpAgent } from "agents/mcp";
 import { Hono } from "hono";
@@ -23,7 +23,6 @@ import homepage from "./homepage";
 import { logger } from "./logger";
 import setupRegisteredResources from "./resources";
 import { callApi, serverMeta } from "./shared";
-import { createHostedMcpServer } from "./sse-deprecation";
 import { hideAccessPolicyToolsFromNonOwners } from "./tools/access-policies/gating";
 import { setupRegisteredTools } from "./tools/structure/registerTool";
 import { datadogTraceLogTags, formatErrorsForTelemetry, tracer } from "./tracing";
@@ -131,12 +130,7 @@ export class VantageMCP extends McpAgent<Env, Record<string, never>, UserProps> 
 
   async init() {
     const transportType = this.getTransportType();
-    this.server = createHostedMcpServer(serverMeta, {
-      transportType,
-      mcpUrl: new URL("/mcp", this.env.SELF_CALLBACK_URL).href,
-      storage: this.ctx.storage,
-      waitUntil: (promise) => this.ctx.waitUntil(promise),
-    });
+    this.server = new McpServer(serverMeta);
     logClientInitialization(this.server, transportType);
     const ctx = {
       env: this.env,
@@ -165,11 +159,10 @@ type ApiHandler = {
 };
 
 const mcpHandler = VantageMCP.serve("/mcp") as unknown as ApiHandler;
-const sseHandler = VantageMCP.mount("/sse") as unknown as ApiHandler;
 
 function createMcpServer(env: AppEnv): OAuthProvider<AppEnv> {
   const oauthOptions: OAuthProviderOptions<AppEnv> = {
-    apiHandlers: { "/mcp": mcpHandler, "/sse": sseHandler },
+    apiHandlers: { "/mcp": mcpHandler },
     authorizeEndpoint: "/authorize",
     clientRegistrationCallback: ({ clientMetadata }) => {
       const description = validateClientRegistration(clientMetadata);
@@ -239,17 +232,13 @@ function withActiveTrace(request: Request): Request {
 
 const fetchHandler = async (request: Request, env: AppEnv, ctx: ExecutionContext): Promise<Response> => {
   const tracedRequest = withActiveTrace(request);
-  const sse = new URL(tracedRequest.url).pathname.startsWith("/sse");
   if (env.VANTAGE_MCP_TOKEN) {
     // Preserve the local development override, which bypasses OAuth.
-    if (sse) {
-      return VantageMCP.mount("/sse").fetch(tracedRequest, env, ctx);
-    }
     return VantageMCP.serve("/mcp").fetch(tracedRequest, env, ctx);
   }
 
   const oauthProvider = createMcpServer(env);
-  const authRouter = createAuthRouter(oauthProvider, mcpHandler, sseHandler);
+  const authRouter = createAuthRouter(oauthProvider, mcpHandler);
 
   const sentryHandler = Sentry.withSentry((env: AppEnv) => {
     const { id: versionId } = env.CF_VERSION_METADATA;

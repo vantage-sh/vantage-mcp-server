@@ -15,9 +15,6 @@ vi.mock("agents/mcp", () => {
       static serve() {
         return handler;
       }
-      static mount() {
-        return handler;
-      }
     },
   };
 });
@@ -27,32 +24,43 @@ vi.mock("@sentry/cloudflare", () => ({
   captureMessage: vi.fn(),
 }));
 
+function env() {
+  return {
+    VANTAGE_API_HOST: "https://core.example",
+    SELF_CALLBACK_URL: "https://mcp.example/callback",
+    CF_VERSION_METADATA: { id: "test" },
+    OAUTH_KV: { get: vi.fn(async () => null) },
+    OTEL_TRACES_SAMPLE_RATE: "0",
+  } as unknown as AppEnv;
+}
+
 describe("hosted Worker authentication wiring", () => {
   afterEach(() => vi.unstubAllGlobals());
 
-  it.each(["/mcp", "/sse"])(
-    "passes API-token credentials through the deployed provider without a validation fetch on %s",
-    async (path) => {
-      const core = vi.fn(async () => Response.json({ bearer_token: { scope: ["read"] }, workspaces: [] }));
-      vi.stubGlobal("fetch", core);
-      const env = {
-        VANTAGE_API_HOST: "https://core.example",
-        SELF_CALLBACK_URL: "https://mcp.example/callback",
-        CF_VERSION_METADATA: { id: "test" },
-        OAUTH_KV: { get: vi.fn(async () => null) },
-        OTEL_TRACES_SAMPLE_RATE: "0",
-      } as unknown as AppEnv;
-      const response = await worker.fetch(
-        new Request(`https://mcp.example${path}`, {
-          headers: { Authorization: "Bearer vntg_tkn_service", "X-Vantage-Agent-Delegation": "must-not-forward" },
-        }),
-        env,
-        { waitUntil: vi.fn() } as unknown as ExecutionContext
-      );
+  it("passes API-token credentials through the deployed provider without a validation fetch", async () => {
+    const core = vi.fn(async () => Response.json({ bearer_token: { scope: ["read"] }, workspaces: [] }));
+    vi.stubGlobal("fetch", core);
+    const response = await worker.fetch(
+      new Request("https://mcp.example/mcp", {
+        headers: { Authorization: "Bearer vntg_tkn_service", "X-Vantage-Agent-Delegation": "must-not-forward" },
+      }),
+      env(),
+      { waitUntil: vi.fn() } as unknown as ExecutionContext
+    );
 
-      expect(response.status).toBe(200);
-      expect(await response.json()).toEqual({ tokenSet: { accessToken: "vntg_tkn_service" } });
-      expect(core).not.toHaveBeenCalled();
-    }
-  );
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ tokenSet: { accessToken: "vntg_tkn_service" } });
+    expect(core).not.toHaveBeenCalled();
+  });
+
+  it.each(["/sse", "/sse/message"])("no longer serves the retired SSE endpoint at %s", async (path) => {
+    vi.stubGlobal("fetch", vi.fn());
+    const response = await worker.fetch(
+      new Request(`https://mcp.example${path}`, { headers: { Authorization: "Bearer vntg_tkn_service" } }),
+      env(),
+      { waitUntil: vi.fn() } as unknown as ExecutionContext
+    );
+
+    expect(response.status).toBe(404);
+  });
 });

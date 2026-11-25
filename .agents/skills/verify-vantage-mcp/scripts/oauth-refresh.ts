@@ -10,7 +10,7 @@ async function main(): Promise<number> {
     "resource-path": { type: "string" },
   });
   if (values.help) {
-    console.log(`Usage: npx tsx oauth-refresh.ts <run-dir> --credentials-file PATH [--resource-path /mcp|/sse]
+    console.log(`Usage: npx tsx oauth-refresh.ts <run-dir> --credentials-file PATH [--resource-path /mcp]
 Private input JSON (permissions 600): {"client":{"client_id":"..."},"tokens":{"refresh_token":"..."}}
 Optional resource must match the selected resource URL. Obtain credentials through the approved real OAuth flow.
 Makes one refresh attempt, saves rotated credentials under state/, and calls the matching transport. Does not deploy or log in.`);
@@ -19,7 +19,7 @@ Makes one refresh attempt, saves rotated credentials under state/, and calls the
   if (positionals.length !== 1 || !values["credentials-file"])
     throw new Error("Provide run directory and --credentials-file");
   const path = String(values["resource-path"] ?? "/mcp");
-  if (!["/mcp", "/sse"].includes(path)) throw new Error("Resource path must be /mcp or /sse");
+  if (path !== "/mcp") throw new Error("Resource path must be /mcp");
   const run = readRun(positionals[0]);
   if (run.mode === "token") throw new Error("Token-mode runs bypass OAuth");
   const report = new Report(run, "oauth-refresh");
@@ -80,7 +80,7 @@ Makes one refresh attempt, saves rotated credentials under state/, and calls the
       !!tokens.refresh_token && tokens.refresh_token !== input.tokens.refresh_token
     );
     await smoke(run, report, {
-      transports: [path === "/sse" ? "sse" : "http"],
+      transports: ["http"],
       expect: "success",
       headers: {
         Authorization: `Bearer ${tokens.access_token}`,

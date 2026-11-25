@@ -168,7 +168,7 @@ export async function responsePreview(response: Response, limit = 4000): Promise
   const reader = response.body.getReader();
   try {
     const { value } = await reader.read();
-    // SSE connections stay open. Capture one event and cancel instead of waiting for EOF.
+    // Event streams stay open. Capture one event and cancel instead of waiting for EOF.
     if (response.headers.get("content-type")?.includes("text/event-stream")) {
       return new TextDecoder().decode(value).slice(0, limit);
     }

@@ -18,7 +18,6 @@ type AuthorizationServerMetadata = {
 };
 type Registration = Exchange & { body?: { client_id?: string; error?: string } };
 
-const SSE_NOTICE = "Update your Vantage MCP connection";
 const INSPECTOR_REDIRECT = "http://localhost:6274/oauth/callback";
 
 function parseJson<T>(text: string): T | undefined {
@@ -183,7 +182,6 @@ async function main(): Promise<number> {
     );
     check("consent-names-client", has(mcp.text, "MCP Inspector (verify)"));
     check("consent-local-application-note", has(mcp.text, "Local application") && has(mcp.text, "localhost:6274"));
-    check("consent-no-sse-notice-for-mcp", !has(mcp.text, SSE_NOTICE));
     check(
       "consent-forbids-framing",
       mcp.headers["x-frame-options"] === "DENY" && mcp.headers["content-security-policy"] === "frame-ancestors 'none'",
@@ -197,12 +195,6 @@ async function main(): Promise<number> {
     check(
       "consent-sets-transaction-cookie",
       Array.isArray(cookies) && cookies.some((name) => name.startsWith("auth0_req_"))
-    );
-
-    const sse = await consent("consent-sse-resource", authorizeUrl(localClientId, INSPECTOR_REDIRECT, `${base}/sse`));
-    check(
-      "consent-sse-migration-notice",
-      sse.status === 200 && has(sse.text, SSE_NOTICE) && has(sse.text, `${base}/mcp`)
     );
   }
 

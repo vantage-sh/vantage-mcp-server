@@ -14,7 +14,6 @@ export function renderConsentScreen({
   claimsKnownClient,
   transactionState,
   consentToken,
-  sseMigrationUrl,
 }: {
   clientName: string;
   clientLogo: string;
@@ -26,7 +25,6 @@ export function renderConsentScreen({
   claimsKnownClient: boolean;
   transactionState: string;
   consentToken: string;
-  sseMigrationUrl?: string;
 }) {
   return html`
     <!doctype html>
@@ -288,20 +286,6 @@ export function renderConsentScreen({
                     started this connection yourself and recognize that address.
                   </p>
                 </div>`
-            }
-
-            ${
-              sseMigrationUrl
-                ? html`<div class="deprecation-notice" role="note">
-                  <strong>Update your Vantage MCP connection</strong>
-                  <p>
-                    This client is connecting through the deprecated legacy SSE endpoint.
-                    Update your MCP client configuration to use <code>${sseMigrationUrl}</code>
-                    with Streamable HTTP. You can continue authorizing this connection during
-                    the 60-day migration window. The legacy SSE endpoint will be retired on November 30, 2026.
-                  </p>
-                </div>`
-                : ""
             }
 
             <p class="description mb-8">

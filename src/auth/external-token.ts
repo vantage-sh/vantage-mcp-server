@@ -9,9 +9,8 @@ export async function resolveVantageToken({
   // tool call. No extra validation request is needed for each MCP exchange.
   if (!/^vntg_[A-Za-z0-9_-]+$/.test(token)) return null;
 
-  const path = new URL(request.url).pathname.startsWith("/sse") ? "/sse" : "/mcp";
   return {
-    audience: new URL(path, request.url).href,
+    audience: new URL("/mcp", request.url).href,
     props: { tokenSet: { accessToken: token } } satisfies Pick<UserProps, "tokenSet">,
   };
 }
