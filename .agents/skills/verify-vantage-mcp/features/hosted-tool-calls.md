@@ -6,6 +6,7 @@ An authenticated client lists the server's tools and calls them over Streamable 
 
 - `tools-list`: `tools/list` returns every registered tool. `list-access-policies` and the other Access Policy tools appear only when Core reports `is_account_owner: true`.
 - `tool-read`: a read-only call such as `get-myself` or `list-workspaces` returns Core data as JSON text with `isError: false`.
+- `audit-log-details`: Use a user token with access to audit logs. Pass a token from `list-audit-logs` to `get-audit-log` and check that the returned entry has the same token and includes `changed_values` and `unchanged_values`.
 - `ranked-business-metric-values`: For an additive metric, call `get-ranked-business-metric-values` with a date range and `top_labels`. Check the highest period-total labels and verify the monthly totals include labels outside that selection.
 - `cost-metric-sorting`: `list-costs` and `query-costs` accept `sort_column=amount` or `usage_amount` to rank groupings by their totals over the requested dates. Usage sorting requires `settings_aggregate_by=usage` and is unavailable for segment reports; neither metric sort supports count aggregation. Pagination counts date-by-grouping rows, so a grouping can span pages.
 - `tool-error`: a Core rejection comes back as `isError: true` with Core's `errors`, not as a protocol error.
