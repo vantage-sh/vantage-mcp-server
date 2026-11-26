@@ -24,7 +24,7 @@ Each audit log entry can include:
 - The workspace title and workspace token, when available
 - The timestamp when the audit log was created
 
-This list omits field-level change payloads.
+This list omits field-level changes. Use get-audit-log with the entry's token to retrieve them.
 
 Audit logs commonly include actions such as:
 - Creating, updating, or deleting cost reports
