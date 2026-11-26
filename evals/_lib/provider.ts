@@ -1,4 +1,5 @@
 import type { ApiProvider, CallApiContextParams, ProviderOptions, ProviderResponse } from "promptfoo";
+import type { ApiFixture } from "./apiFixtures";
 import { pickTools } from "./distractors";
 import { languageModelFor, parseModelSpec, providerOptionsFor } from "./models";
 import { runToolSelection } from "./runToolSelection";
@@ -40,6 +41,18 @@ export default class ToolSelectionProvider implements ApiProvider {
     ) {
       return { error: "Test vars.distractors must be an array of registered tool names." };
     }
+    const fixtures = context?.vars?.fixtures;
+    if (fixtures !== undefined && !Array.isArray(fixtures)) {
+      return { error: "Test vars.fixtures must be an array of API fixtures." };
+    }
+    const maxSteps = context?.vars?.maxSteps;
+    if (maxSteps !== undefined && (typeof maxSteps !== "number" || maxSteps < 1)) {
+      return { error: "Test vars.maxSteps must be a positive number." };
+    }
+    const maxTargetCalls = context?.vars?.maxTargetCalls;
+    if (maxTargetCalls !== undefined && (typeof maxTargetCalls !== "number" || maxTargetCalls < 1)) {
+      return { error: "Test vars.maxTargetCalls must be a positive number." };
+    }
 
     const handle = parseModelSpec(modelId);
     const toolNames = pickTools(target, distractors as string[] | undefined);
@@ -48,6 +61,10 @@ export default class ToolSelectionProvider implements ApiProvider {
       model: languageModelFor(handle),
       toolNames,
       providerOptions: providerOptionsFor(handle),
+      fixtures: fixtures as ApiFixture[] | undefined,
+      maxSteps,
+      target,
+      maxTargetCalls,
     });
 
     return {
@@ -55,6 +72,7 @@ export default class ToolSelectionProvider implements ApiProvider {
       metadata: {
         modelId: handle.id,
         mode: "mixed",
+        handlers: fixtures ? "fixtures" : "no-op",
         target,
         toolNames,
         toolCalls: result.toolCalls,
